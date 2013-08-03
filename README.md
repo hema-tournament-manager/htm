@@ -1,1 +1,1 @@
-# empty README
+# Hema Tournament Manager
