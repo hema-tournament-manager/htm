@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>Tournament</title>
+</head>
+<body class="lift:content_id=main">
+	<div id="main" class="lift:surround?with=default;at=content">
+		<div class="lift:TournamentView">
+			<head>
+<style>
+li.present {
+	background-color: #ada;
+}
+
+li.not_present {
+	background-color: #daa;
+}
+
+li.not_checked {
+	background-color: #dca;
+}
+</style>
+			</head>
+			<h2 id="tournamentName">Tournament</h2>
+			<h3>Fights</h3>
+			<div id="tournamentRound">
+				<div class="moveParticipants">
+					<form method="post">
+						Advance
+						<button id="advanceAll"
+							title="Advance all participants to the next round (useful for poule phase)">
+							<img src="/images/group.png" /> All
+						</button>
+						or
+						<button id="advanceSelected"
+							title="Advance a custom selection of participants to the next round (useful for switching from poule phase to single elimination)">
+							<img src="/images/cut_red.png" /> Selected
+						</button>
+						or
+						<button id="advanceWinners"
+							title="Advance only the winners to the next round (useful for single elimination phase)">
+							<img src="/images/medal_gold_2.png" /> Winners
+						</button>
+						or <select id="advanceSingle"><option>-- Just
+								this one --</option></select>
+					</form>
+				</div>
+				<div class="round">
+					<button class="deleteRound" title="Delete Round">x</button>
+					<h4 id="roundName">Round 1</h4>
+					<p>
+						Time limit: <input type="number" name="timeLimit" /> seconds,
+						with a break at <input type="number" name="fightBreak" /> seconds
+						(0 = no limit)
+					</p>
+					<p>
+						Exchange limit: <input type="number" name="exchangeLimit" />
+						exchanges (0 = no limit)
+					</p>
+					<p>
+						<button class="reorder">Reorder</button>
+						<button class="planSwiss">Plan Swiss Round</button>
+					</p>
+					<div id="roundPool" class="pool">
+						<button class="deletePool" title="Delete Pool">x</button>
+						<h4 id="poolName">Pool 1</h4>
+						<table>
+							<tr id="poolFight">
+								<td class="fightOrder">1</td>
+								<td class="red"></td>
+								<td class="results">vs</td>
+								<td class="blue"></td>
+								<td class="actions">
+									<button name="moveUp">^</button>
+									<button name="moveDown">v</button>
+									<button name="remove">x</button>
+									<button name="unlock">unlock</button>
+									</li>
+								</td>
+							</tr>
+						</table>
+						<p class="poolParticipantListHeader">
+							<span>8</span> participants
+						</p>
+						<table class="poolParticipantList">
+							<tr id="poolParticipant">
+								<td class="starStatus"><img src="/images/star_gray.png" /></td>
+								<td class="ranking"></td>
+								<td class="name"></td>
+								<td class="club"></td>
+								<td class="initial" title="Initial ranking"></td>
+								<td class="fights" title="Number of fights"></td>
+								<td class="points" title="Points"></td>
+								<td class="hitsReceived" title="Hits Received"></td>
+								<td class="cleanHitsDealt" title="Clean Hits Dealt"></td>
+								<td class="doubleHits" title="Double Hits"></td>
+								<td class="firstHitsDealt" title="First Hits Dealt"></td>
+								<td class="cleanHitsReceived" title="Clean Hits Received"></td>
+								<td class="wins" title="Wins"></td>
+								<td class="hasFights"></td>
+								<td class="actions"></td>
+							</tr>
+							<tr>
+								<td id="addPoolParticipant" colspan="15"></td>
+							</tr>
+						</table>
+						<form method="post">
+							<input id="planParticipantA" /> <input id="planParticipantB" />
+						</form>
+					</div>
+					<button class="addPool">Add Poule</button>
+				</div>
+			</div>
+			<form method="post">
+				<input id="newRoundName" type="text" placeholder="New Round" />
+			</form>
+
+			<h3>Participants</h3>
+			<ul>
+				<li id="tournamentParticipant"><img src="/images/star_gray.png" />
+					<span>Pietje Puk</span>
+					<button>x</button></li>
+			</ul>
+			<form method="post">
+				<input id="addParticipant" type="text" placeholder="Add Participant" />
+			</form>
+		</div>
+	</div>
+</body>
+</html>
+

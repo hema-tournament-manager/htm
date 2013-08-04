@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>Registration</title>
+<style>
+</style>
+</head>
+<body class="lift:content_id=main">
+	<div id="main" class="lift:surround?with=default;at=content">
+		<head>
+<style>
+/* <![CDATA[ */
+form div {
+	margin: 4px;
+}
+
+form div input[type=text] {
+	display: block;
+}
+
+/* ]]> */
+</style>
+		</head>
+		<form class="lift:ParticipantRegistration?form=post">
+			<h2>Participant Registration</h2>
+			<fieldset>
+				<legend>Personalia</legend>
+				<div style="float: left;">
+					<label>Name <input name="name" /></label>
+				</div>
+				<div style="float: left;">
+					<label>Short Name <input name="shortName" /></label>
+				</div>
+				<div style="float: left; clear: left;">
+					<label>Club <input name="club" /></label>
+				</div>
+				<div style="float: left;">
+					<label>Club Code<input name="clubCode" /></label>
+				</div>
+			</fieldset>
+			<fieldset>
+				<legend>Registration</legend>
+				<div style="float: left; clear: left;">
+					<label><input name="present" /> Present</label>
+				</div>
+				<div style="float: left; clear: left;">
+					<label><input name="equipmentCheck" /> Equipment Checked</label>
+				</div>
+			</fieldset>
+			<fieldset>
+				<legend>HEMA Experience</legend>
+				<div style="float: left; clear: left;">
+					<label><input name="question1" /> Has more than one year of
+						HEMA experience</label>
+				</div>
+				<div style="float: left; clear: left;">
+					<label><input name="question2" /> Has fought in a HEMA
+						tournament before</label>
+				</div>
+				<div style="float: left; clear: left;">
+					<label><input name="question3" /> Has earned a top-three
+						position in a previous HEMA tournament</label>
+				</div>
+			</fieldset>
+			<div style="clear: left;">
+				<input name="save" type="submit" />
+			</div>
+		</form>
+	</div>
+</body>
+</html>
+

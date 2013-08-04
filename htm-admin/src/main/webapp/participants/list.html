@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>Participants</title>
+<style>
+</style>
+</head>
+<body class="lift:content_id=main">
+	<div id="main" class="lift:surround?with=default;at=content">
+		<head>
+			<style>
+			/* <![CDATA[ */
+			#countrySelect {
+				display: none;
+				position: absolute;
+				padding: 0;
+				margin: 0;
+			}
+			.flag {
+				cursor: pointer;
+			}
+			.flag img {
+				border: solid 2px red;
+			}
+			.flag img.viewerFlagAvailable {
+				border-color: green;
+			}
+			tr.present:nth-child(even), tr.present:nth-child(even) td {
+				background: #ada !important;
+			}
+			tr.present, tr.present td{
+				background: #beb !important;
+			}
+			/* ]]> */
+			</style>
+		</head>
+		<div class="lift:ParticipantList">
+		<h2>Participants</h2>
+		<div id="countrySelect"><select><option>Netherlands</option></select></div>
+		<table>
+			<tbody>
+				<tr class="participant">
+					<td class="id" title="Swordfish ID">1</td>
+					<td class="flag"><img src="/images/flags/ad.png"/></td>
+					<td class="name" title="Name">Naampje</td>
+					<td class="shortName" title="Short Name">Nmpje</td>
+					<td class="club" title="Club">Nmpje</td>
+					<td class="clubCode" title="Club Code">Nmpje</td>
+					<td class="actions"></td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+	</div>
+</body>
+</html>
+

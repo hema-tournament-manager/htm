@@ -1,0 +1,3 @@
+db.url=jdbc:h2:htm_admin
+db.user=sa
+db.password=masterkey
