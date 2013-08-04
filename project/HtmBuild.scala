@@ -11,6 +11,10 @@ object HtmBuild extends Build {
 		name := buildName + "-Admin",
 		libraryDependencies ++= Seq(jettyWebapp, jettyTest, liftWebkit, liftMapper, junit))
 		
+	lazy val battleSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
+		name := buildName + "-Battle",
+		libraryDependencies ++= Seq(jettyWebapp, jettyTest, liftWebkit, liftMapper, junit))
+		
 	lazy val libSettings = buildSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Lib",
 		libraryDependencies ++= Seq(liftWebkit, liftMapper, dispatch))
@@ -19,6 +23,11 @@ object HtmBuild extends Build {
 		id = "admin",
 		base = file("htm-admin"),
 		settings = adminSettings) dependsOn (lib)
+		
+	lazy val battle = Project(
+		id = "battle",
+		base = file("htm-battle"),
+		settings = battleSettings) dependsOn (lib)
 		
 	lazy val lib = Project(
 		id = "lib",

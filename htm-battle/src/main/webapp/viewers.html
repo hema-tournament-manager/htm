@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+    <title>Home</title>
+  </head>
+  <body class="lift:content_id=main">
+    <div id="main" class="lift:surround?with=default2;at=content">
+    	<h2>Viewers</h2>
+				<form class="lift:form.ajax">
+					<div class="lift:AddViewer">
+						<input type="text" name="alias" placeholder="alias" /> <input
+							type="text" name="host" placeholder="ip-address or hostname" />:<input
+							type="text" name="port" value="8080" placeholder="port" size="4" />
+							<select name="mode"></select>
+						<input type="submit" value="Add" />
+					</div>
+				</form>
+				<div class="lift:comet?type=ViewerList;name=Other">
+					<ul>
+						<li><span class="alias">Viewer1</span> <span class="mode">mode</span> <span class="screen">screen</span></li>
+					</ul>
+
+				</div>
+    </div>
+  </body>
+</html>

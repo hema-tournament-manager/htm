@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:lift="http://liftweb.net/">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<title class="lift:Menu.title">HTM:</title>
+<link rel="stylesheet" type="text/css"
+	href="/static/css/smoothness/jquery-ui-1.8.23.custom.css" />
+<script id="jquery" src="/static/js/jquery-1.7.2.min.js"
+	type="text/javascript"></script>
+<script id="jqueryui" src="/static/js/jquery-ui-1.8.23.custom.min.js"
+	type="text/javascript"></script>
+<script id="json" src="/classpath/json.js" type="text/javascript"></script>
+<style type="text/css">
+/* <![CDATA[ */
+.red {
+	color: red;
+}
+
+.blue {
+	color: blue;
+}
+
+.histExchange,.histA,.histBA,.histB,.histAB,.histD {
+	text-align: center;
+}
+
+.histA,.histBA {
+	background: #faa;
+}
+
+.histB,.histAB {
+	background: #aaf;
+}
+
+.histD {
+	background: #faf;
+}
+
+/* ]]> */
+</style>
+</head>
+<body class="lift:content_id=main">
+	<div class="container">
+		<div id="main" class="lift:surround?with=default2;at=content">
+			<head>
+<style>
+.invisible {
+	display: none;
+}
+
+#scoringButtons,#scoringButtonsRapier {
+	text-align: center;
+	float: left;
+}
+
+#scoringButtons button,#scoringButtonsRapier button {
+	width: 250px;
+}
+
+#scoringButtons button,#scoringButtonsRapier button {
+	margin: 5px;
+}
+
+#scoring {
+	margin-bottom: 100px;
+}
+
+.double {
+	color: #a0a;
+}
+
+#fighters {
+	float: left;
+	/*background: url(/images/flags/ITred.png) left bottom no-repeat, url(/images/flags/NLblue.png) right bottom no-repeat;*/
+}
+
+#fighters .names,#fighters .clubs {
+	text-shadow: #fff 1px 1px 0px;
+}
+
+#fighters .names {
+	font-size: 18pt;
+}
+
+#fighters .clubs {
+	font-size: 12pt;
+}
+
+#fighters .red {
+	float: left;
+	margin-right: 20px;
+}
+
+#fighters .blue {
+	float: right;
+}
+</style>
+			</head>
+			<div id="scoreHistory"
+				class="ui-corner-all labeledContainer lift:comet?type=ScoreHistory&name=Other">
+				<h3>Score History</h3>
+				<table>
+					<thead>
+						<tr>
+							<th>Exchange</th>
+							<th>Time</th>
+							<th>Remark</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr id="scoreHistLine">
+							<td class="histExchange">1</td>
+							<td class="histT">0:00.000</td>
+							<td class="histRemark">Empty statement</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="currentFight"
+				class="lift:comet?type=CurrentFight;name=Other">
+				<div id="rules" class="labeledContainer ui-corner-all">
+					<h3>Rules</h3>
+					<span class="label">Time limit:</span><span class="value"><span
+						name="timeLimit">2 minutes</span> per fight</span> <span class="label">Break:</span><span
+						class="value"><span name="timeBreak">break at 2
+							minutes</span></span> <span class="label">Exchange limit:</span><span
+						class="value"><span name="exchangeLimit">no exchange
+							limit</span></span>
+				</div>
+				<div id="fighters" class="labeledContainer ui-corner-all">
+					<div class="names">
+						<h3>Fighters</h3>
+						<span class="red">Pietje Puk</span><span class="blue">Pietje
+							Puk</span>
+					</div>
+					<div class="clubs">
+						<span class="red">Club X</span><span class="blue">Club Y</span>
+					</div>
+				</div>
+				<div id="timerContainer"
+					class="ui-corner-all labeledContainer clear-left">
+					<h3>Timer</h3>
+					<span id="timer">0:00.000</span>
+					<button name="start">Start</button>
+					<button name="stop">Stop</button>
+				</div>
+				<div class="labeledContainer ui-corner-all" id="scoring">
+					<h3>Scoring</h3>
+					<div class="clear" id="scoringButtons">
+						<div>
+							<button name="hitA">
+								Point for <span class="red">Red</span>
+							</button>
+							<button name="hitB">
+								Point for <span class="blue">Blue</span>
+							</button>
+						</div>
+						<div>
+							<button name="afterAB">
+								Afterblow on <span class="red">Red</span>
+							</button>
+							<button name="afterBA">
+								Afterblow on <span class="blue">Blue</span>
+							</button>
+						</div>
+						<div>
+							<button name="double"><span class="double">Double</span> Hit</button>
+						</div>
+						<div>
+							<button id="undo"><b>Undo</b> Last Score</button>
+						</div>
+					</div>
+					<div class="clear" id="scoringButtonsRapier">
+						<div>
+							<button name="2hitA">
+								<b>2</b> Points for <span class="red">Red</span>
+							</button>
+							<button name="2hitB">
+								<b>2</b> Points for <span class="blue">Blue</span>
+							</button>
+						</div>
+						<div>
+							<button name="1hitA">
+								<b>1</b> Point for <span class="red">Red</span>
+							</button>
+							<button name="1hitB">
+								<b>1</b> Point for <span class="blue">Blue</span>
+							</button>
+						</div>
+						<div>
+							<button name="2hitA_1hitB">
+								<b>2</b> Points for <span class="red">Red</span><br/><b>1</b> for <span
+									class="blue">Blue</span>
+							</button>
+							<button name="2hitB_1hitA">
+								<b>2</b> Points for <span class="blue">Blue</span><br/><b>1</b> for <span
+									class="red">Red</span>
+							</button>
+						</div>
+						<div>
+							<button name="2double"><b>2</b> Point <span class="double">Double</span> Hit</button>
+						</div>
+						<div>
+							<button name="1double"><b>1</b> Point <span class="double">Double</span> Hit</button>
+						</div>
+						<div>
+							<button id="undoR"><b>Undo</b> Last Score</button>
+						</div>
+					</div>
+					<div class="scoreContainer clear-left" id="scoreContainerRed">
+						<div class="score ui-corner-all">
+							<span class="label">Score Red</span> <span id="scoreA"
+								class="value">-</span>
+							<button name="scoreAMin">-</button>
+							<button name="scoreAPlus">+</button>
+						</div>
+						<div class="score ui-corner-all">
+							<span class="label">Afterblows Red</span> <span id="scoreAAfter"
+								class="value">-</span>
+							<button name="scoreAAfterMin">-</button>
+							<button name="scoreAAfterPlus">+</button>
+						</div>
+					</div>
+					<div class="scoreContainer" id="scoreContainerDouble">
+						<div class="score ui-corner-all">
+							<span class="label">Double Hits</span> <span id="doubleHits"
+								class="value">-</span>
+							<button name="scoreDMin">-</button>
+							<button name="scoreDPlus">+</button>
+						</div>
+					</div>
+					<div class="scoreContainer" id="scoreContainerBlue">
+						<div class="score ui-corner-all">
+							<span class="label">Score Blue</span> <span id="scoreB"
+								class="value">-</span>
+							<button name="scoreBMin">-</button>
+							<button name="scoreBPlus">+</button>
+						</div>
+						<div class="score ui-corner-all">
+							<span class="label">Afterblows Blue</span> <span id="scoreBAfter"
+								class="value">-</span>
+							<button name="scoreBAfterMin">-</button>
+							<button name="scoreBAfterPlus">+</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>
