@@ -15,6 +15,10 @@ object HtmBuild extends Build {
 		name := buildName + "-Battle",
 		libraryDependencies ++= Seq(jettyWebapp, jettyTest, liftWebkit, liftMapper, junit))
 		
+	lazy val viewerJmeSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
+		name := buildName + "-Viewer-JME",
+		libraryDependencies ++= Seq(jettyWebapp, jettyTest, liftWebkit, liftMapper, junit, jmeCore, jmeDesktop, jmeLwjgl, jmeLwjglNatives, lwjgl))
+		
 	lazy val libSettings = buildSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Lib",
 		libraryDependencies ++= Seq(liftWebkit, liftMapper, dispatch))
@@ -28,6 +32,11 @@ object HtmBuild extends Build {
 		id = "battle",
 		base = file("htm-battle"),
 		settings = battleSettings) dependsOn (lib)
+		
+	lazy val viewerJme = Project(
+		id = "viewer-jme",
+		base = file("htm-viewer-jme"),
+		settings = viewerJmeSettings) dependsOn (lib)	
 		
 	lazy val lib = Project(
 		id = "lib",
@@ -50,7 +59,8 @@ object BuildSettings {
       "Scala Tools Releases" at "http://scala-tools.org/repo-releases/",
       "Java.net Maven2 Repository" at "http://download.java.net/maven/2/",
       "Mandubian repository snapshots" at "https://github.com/mandubian/mandubian-mvn/raw/master/snapshots/",
-      "Mandubian repository releases" at "https://github.com/mandubian/mandubian-mvn/raw/master/releases/"),
+      "Mandubian repository releases" at "https://github.com/mandubian/mandubian-mvn/raw/master/releases/",
+      "Sonatype OSS Public" at "https://oss.sonatype.org/content/groups/public/"),
     autoScalaLibrary := true,
     offline := false)
 }
@@ -74,6 +84,7 @@ object Dependencies {
   val scalaTestVersion = "2.0.M5-B1"
   val junitVersion = "4.11"
   val mockitoVersion = "1.9.0"
+  val jmeVersion = "3.0.0.20120512-SNAPSHOT"
 
   val scala = "org.scala-lang" % "scala-library" % BuildSettings.buildScalaVersion % "provided"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % BuildSettings.buildScalaVersion
@@ -91,4 +102,9 @@ object Dependencies {
   val liftMapper = "net.liftweb" %% "lift-mapper" % liftVersion % "compile"
   val dispatch = "net.databinder.dispatch" %% "core" % "0.9.1"
   val junit = "junit" % "junit" % junitVersion
+  val jmeCore = "com.jme3" % "jME3-core" % jmeVersion
+  val jmeDesktop = "com.jme3" % "jME3-desktop" % jmeVersion
+  val jmeLwjgl = "com.jme3" % "jME3-lwjgl" % jmeVersion
+  val jmeLwjglNatives = "com.jme3" % "jME3-lwjgl-natives" % jmeVersion
+  val lwjgl = "com.jme3" % "lwjgl" % jmeVersion
 }
