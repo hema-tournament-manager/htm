@@ -2,6 +2,7 @@ import sbt._
 import sbt.Keys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
 import com.typesafe.sbt.SbtScalariform._
+import com.earldouglas.xsbtwebplugin.PluginKeys._
 
 object HtmBuild extends Build {
 	import Dependencies._
@@ -9,19 +10,68 @@ object HtmBuild extends Build {
 	
 	lazy val adminSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Admin",
-		libraryDependencies ++= Seq(jettyWebapp, jettyTest, liftWebkit, liftMapper, junit))
+		port in container.Configuration := 8079,
+		libraryDependencies ++= Seq(
+               "org.eclipse.jetty" % "jetty-webapp" % "8.0.4.v20111024" % "container",
+               "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
+               "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
+               "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
+               "net.liftweb" %% "lift-textile" % liftVersion % "compile",
+               "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
+               "junit" % "junit" % "4.7" % "test",
+               "ch.qos.logback" % "logback-classic" % "0.9.26",
+               "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
+               "com.h2database" % "h2" % "1.2.147",
+               "net.databinder.dispatch" %% "core" % "0.9.1"))
 		
 	lazy val battleSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Battle",
-		libraryDependencies ++= Seq(jettyWebapp, jettyTest, liftWebkit, liftMapper, junit))
+		port in container.Configuration := 8080,
+		libraryDependencies ++= Seq(
+			   "org.eclipse.jetty" % "jetty-webapp" % "8.0.4.v20111024" % "container",
+               "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
+               "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
+               "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
+               "net.liftweb" %% "lift-textile" % liftVersion % "compile",
+               "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
+               "junit" % "junit" % "4.7" % "test",
+               "ch.qos.logback" % "logback-classic" % "0.9.26",
+               "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
+               "com.h2database" % "h2" % "1.2.147",
+               "net.databinder.dispatch" %% "core" % "0.9.1"))
 		
 	lazy val viewerJmeSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Viewer-JME",
-		libraryDependencies ++= Seq(jettyWebapp, jettyTest, liftWebkit, liftMapper, junit, jmeCore, jmeDesktop, jmeLwjgl, jmeLwjglNatives, lwjgl))
+		port in container.Configuration := 8081,
+		libraryDependencies ++= Seq(
+		       "org.eclipse.jetty" % "jetty-webapp" % "8.0.4.v20111024" % "container",
+               "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
+               "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
+               "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
+               "net.liftweb" %% "lift-json" % liftVersion % "compile",
+               "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
+               "junit" % "junit" % "4.7" % "test",
+               "ch.qos.logback" % "logback-classic" % "0.9.26",
+               "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
+               "com.h2database" % "h2" % "1.2.147",
+               "com.jme3" % "jME3-core" % "3.0.0.20120512-SNAPSHOT",
+               "com.jme3" % "jME3-desktop" % "3.0.0.20120512-SNAPSHOT",
+               "com.jme3" % "jME3-lwjgl" % "3.0.0.20120512-SNAPSHOT",
+               "com.jme3" % "jME3-lwjgl-natives" % "3.0.0.20120512-SNAPSHOT",
+               "com.jme3" % "lwjgl" % "3.0.0.20120512-SNAPSHOT"))
 		
 	lazy val libSettings = buildSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Lib",
-		libraryDependencies ++= Seq(liftWebkit, liftMapper, dispatch))
+		libraryDependencies ++= Seq(
+		       "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
+               "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
+               "net.liftweb" %% "lift-textile" % liftVersion % "compile",
+               "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
+               "junit" % "junit" % "4.7" % "test",
+               "ch.qos.logback" % "logback-classic" % "0.9.26",
+               "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
+               "com.h2database" % "h2" % "1.2.147",
+               "net.databinder.dispatch" %% "core" % "0.9.1"))
 		
 	lazy val admin = Project(
 		id = "admin",
@@ -48,7 +98,7 @@ object BuildSettings {
   val buildOrganization = "nl.malienkolders"
   val buildName = "HTM"
   val buildVersion = "0.0.1-SNAPSHOT"
-  val buildScalaVersion = "2.10.2"
+  val buildScalaVersion = "2.9.1"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -79,10 +129,10 @@ object Format {
 }
 
 object Dependencies {
-  val liftVersion = "2.5"
-  val jettyVersion = "8.1.12.v20130726"
+  val liftVersion = "2.4"
+  val jettyVersion = "8.0.4.v20111024" //"8.1.12.v20130726"
   val scalaTestVersion = "2.0.M5-B1"
-  val junitVersion = "4.11"
+  val junitVersion = "4.7" //"4.11"
   val mockitoVersion = "1.9.0"
   val jmeVersion = "3.0.0.20120512-SNAPSHOT"
 

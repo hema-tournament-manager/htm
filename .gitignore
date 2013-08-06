@@ -6,3 +6,5 @@ target
 bin
 .settings
 .worksheet
+*.h2.db
+*.lock.db
