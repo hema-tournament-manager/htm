@@ -16,7 +16,7 @@
 ## Getting started
 
 * Clone this repository
-* Run <code>sbt eclipse</code> to generate Eclipse project files for all the components
+* Run `sbt eclipse` to generate Eclipse project files for all the components
 * Import all four projects into Eclipse
-* In Eclipse, run src/test/scala/Run&lt;Admin|BattleStation|JMonkeyViewer&gt;.scala to start an application
-* Open application in a browser using localhost:&lt;port&gt; where port is 8079 for Admin, 8080 for Battle and 8081 for Viewer
+* In Eclipse, run src/test/scala/Run<Admin|BattleStation|JMonkeyViewer>.scala to start an application
+* Open application in a browser using localhost:<port> where port is 8079 for Admin, 8080 for Battle and 8081 for Viewer
