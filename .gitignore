@@ -8,3 +8,5 @@ bin
 .worksheet
 *.h2.db
 *.lock.db
+/play
+/services
