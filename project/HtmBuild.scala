@@ -3,6 +3,7 @@ import sbt.Keys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
 import com.typesafe.sbt.SbtScalariform._
 import com.earldouglas.xsbtwebplugin.PluginKeys._
+import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object HtmBuild extends Build {
 	import Dependencies._
@@ -113,7 +114,8 @@ object BuildSettings {
       "Mandubian repository releases" at "https://github.com/mandubian/mandubian-mvn/raw/master/releases/",
       "Sonatype OSS Public" at "https://oss.sonatype.org/content/groups/public/"),
     autoScalaLibrary := true,
-    offline := false)
+    offline := false,
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource)
 }
 
 object Format {

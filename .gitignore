@@ -10,3 +10,5 @@ bin
 *.lock.db
 /play
 /services
+*.so
+*.dll
