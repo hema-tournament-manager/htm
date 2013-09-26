@@ -11,7 +11,7 @@
 
 1. [Eclipse IDE for Java EE Developers](http://eclipse.org/downloads/packages/release/juno/sr2) (Juno or previous, Kepler doesn't seem to work)
 2. [Scala IDE for Scala 2.9](http://scala-ide.org/download/current.html) (with Play plugin)
-3. [SBT 0.12.2](http://www.scala-sbt.org/0.12.2/docs/Getting-Started/Setup.html)
+3. [SBT](http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html)
 
 ## Getting started
 
