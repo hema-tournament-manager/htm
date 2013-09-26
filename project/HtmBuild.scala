@@ -17,7 +17,7 @@ object HtmBuild extends Build {
                "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
                "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
                "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
-               "net.liftweb" %% "lift-textile" % liftVersion % "compile",
+               //"net.liftweb" %% "lift-textile" % liftVersion % "compile",
                "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
                "junit" % "junit" % "4.7" % "test",
                "ch.qos.logback" % "logback-classic" % "0.9.26",
@@ -34,7 +34,7 @@ object HtmBuild extends Build {
                "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
                "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
                "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
-               "net.liftweb" %% "lift-textile" % liftVersion % "compile",
+               //"net.liftweb" %% "lift-textile" % liftVersion % "compile",
                "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
                "junit" % "junit" % "4.7" % "test",
                "ch.qos.logback" % "logback-classic" % "0.9.26",
@@ -67,7 +67,7 @@ object HtmBuild extends Build {
 		libraryDependencies ++= Seq(
 		       "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
                "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
-               "net.liftweb" %% "lift-textile" % liftVersion % "compile",
+               //"net.liftweb" %% "lift-textile" % liftVersion % "compile",
                "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
                "junit" % "junit" % "4.7" % "test",
                "ch.qos.logback" % "logback-classic" % "0.9.26",
@@ -100,7 +100,7 @@ object BuildSettings {
   val buildOrganization = "nl.malienkolders"
   val buildName = "HTM"
   val buildVersion = "1.0-SNAPSHOT"
-  val buildScalaVersion = "2.9.1"
+  val buildScalaVersion = "2.10.2"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -132,7 +132,7 @@ object Format {
 }
 
 object Dependencies {
-  val liftVersion = "2.4"
+  val liftVersion = "2.5"
   val jettyVersion = "8.0.4.v20111024" //"8.1.12.v20130726"
   val scalaTestVersion = "2.0.M5-B1"
   val junitVersion = "4.7" //"4.11"
