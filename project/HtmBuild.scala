@@ -22,7 +22,8 @@ object HtmBuild extends Build {
                "ch.qos.logback" % "logback-classic" % "0.9.26",
                "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
                "com.h2database" % "h2" % "1.2.147",
-               "net.databinder.dispatch" %% "core" % "0.9.1"))
+               "net.databinder.dispatch" %% "core" % "0.9.1",
+               "nl.htm" %% "htm-importer" % "0.1-SNAPSHOT"))
 		
 	lazy val battleSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Battle",

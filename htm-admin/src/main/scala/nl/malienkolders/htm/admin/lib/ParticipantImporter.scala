@@ -8,6 +8,7 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.model._
 import net.liftweb.mapper._
 import net.liftweb.util._
+import nl.htm.importer.DummyImporter
 
 object ParticipantImporter {
 
@@ -70,62 +71,32 @@ object ParticipantImporter {
   def doImport = {
     val noCountry = Country.find(By(Country.code2, "")).get
 
-    replacements.foreach(println _)
+    val data = DummyImporter.doImport()
 
     val tournaments = if (Tournament.count == 0) {
-      tournamentNames.map { case (identifier, name) => Tournament.create.name(name).identifier(identifier).saveMe }
+      data.tournaments.map { case t => Tournament.create.name(t.name).identifier(t.id).saveMe }
     } else {
       Tournament.findAll(OrderBy(Tournament.id, Ascending))
     }
 
-    if (Tournament.count > 0) {
-      tournaments.zip(tournamentNames).foreach {
-        case (t, (identifier, _)) =>
-          t.identifier(identifier).save
-      }
-    }
-
-    val data = Source.fromURL(new URL("http://www.ghfs.se/swordfish-attendee.php"), "UTF-8").getLines.mkString
-    val entry = new Regex("""<tr><td bgcolor="[^"]+">(\d+)</td>""" +
-      """<td bgcolor="[^"]+">([^<]+)</td>""" +
-      """<td bgcolor="[^"]+">([^<]*)</td>""" +
-      """<td bgcolor="[^"]+">([^<]*)</td>""" +
-      """<td bgcolor="[^"]+" align="center">(X?)</td>""" +
-      """<td bgcolor="[^"]+" align="center">(X?)</td>""" +
-      """<td bgcolor="[^"]+" align="center">(X?)</td>""" +
-      """<td bgcolor="[^"]+" align="center">(X?)</td>""" +
-      """<td bgcolor="[^"]+" align="center">(X?)</td>""" +
-      """<td bgcolor="[^"]+" align="center">(X?)</td>""" +
-      """<td bgcolor="[^"]+" align="center">([^<]*)</td></tr>""")
-    val entries = (for (
-      entry(id, name, club, _, longsword, longswordF, wrestling, sabre, rapier, swordbuckler, countryName) <- entry findAllIn data
-    ) yield {
-      val (clubCode, clubName) = normalizeClub(club)
-      val country = Country.find(By(Country.name, countryName)) openOr (noCountry)
-      (Participant.find(By(Participant.externalId, id)).map(_.country(country)).openOr(Participant.create.
-        externalId(id).
-        name(normalizeName(name)).
-        shortName(nameReplacements.get(id).getOrElse(shortenName(normalizeName(name)))).
-        club(clubName).
-        clubCode(clubCode).
-        country(country)),
-        List(longsword, longswordF, wrestling, sabre, rapier, swordbuckler))
-    }).toList
+    val ps = data.participants.map(p => Participant.create.externalId(p.sourceIds.head.id).
+      name(p.name).
+      shortName(p.shortName).
+      club(p.club).
+      clubCode(p.clubCode).
+      country(Country.find(By(Country.code2, p.country)).getOrElse(noCountry)))
 
     // insert participant if it doesn't exist yet
-    entries.foreach {
-      case (p, _) =>
-        p.save
-    }
+    ps.foreach(_.save)
 
     // add participants to tournaments
     tournaments.foreach { t =>
       t.participants.clear
       t.save
     }
-    entries.foreach {
-      case (p, ts) =>
-        ts.zipWithIndex.filter(_._1 == "X").foreach { case (_, index) => tournaments(index).participants += p }
+    data.subscriptions.foreach {
+      case (t, tps) =>
+        tournaments.find(_.identifier == t.id).foreach(t => t.participants ++= tps.map(p => ps.find(_.name == p.name).get))
     }
     tournaments.foreach(_.save)
   }
