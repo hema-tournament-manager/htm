@@ -11,12 +11,12 @@ import renderer.queue.RenderQueue.Bucket
 import scene.Geometry
 import scene.Node
 import scene.shape.Quad
-import texture.Texture2D;
+import texture.Texture2D
 import java.awt.image.BufferedImage
 
 class TextLabel(private var _text: String,
                 var align: Align,
-                val fontFamily: String,
+                val font: HtmFont,
                 private var _color: Color,
                 val size: (Float, Float),
                 val pixelsPerUnit: Int,
@@ -38,15 +38,15 @@ class TextLabel(private var _text: String,
 
   attachChild(label);
 
-  def this(text: String, fontFamily: String, color: Color, size: (Float, Float), pixelsPerUnit: Int, assetManager: AssetManager,
+  def this(text: String, font: HtmFont, color: Color, size: (Float, Float), pixelsPerUnit: Int, assetManager: AssetManager,
            faceCullMode: FaceCullMode = FaceCullMode.Off) =
-    this(text, AlignCenter, fontFamily, color, size, pixelsPerUnit, assetManager, faceCullMode)
+    this(text, AlignCenter, font, color, size, pixelsPerUnit, assetManager, faceCullMode)
 
   def this(text: String, color: Color, size: (Float, Float), pixelsPerUnit: Int, assetManager: AssetManager, faceCullMode: FaceCullMode = FaceCullMode.Off) =
-    this(text, AlignCenter, Font.DIALOG, color, size, pixelsPerUnit, assetManager, faceCullMode)
+    this(text, AlignCenter, Dialog, color, size, pixelsPerUnit, assetManager, faceCullMode)
 
   def createTexture() = {
-    val img: PaintableImage = new TextImage(text, align, fontFamily, color, resolution)
+    val img: PaintableImage = new TextImage(text, align, font, color, resolution)
     img.refreshImage()
     new Texture2D(img)
   }
@@ -73,7 +73,7 @@ class TextLabel(private var _text: String,
 }
 
 class VarTextLabel(val text: String,
-                   val fontFamily: String,
+                   val font: HtmFont,
                    private var _color: Color,
                    val height: Float,
                    val pixelsPerUnit: Int,
@@ -82,7 +82,7 @@ class VarTextLabel(val text: String,
 
   val tempImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
   val tempG = tempImg.createGraphics()
-  val pixelWidth = tempG.getFontMetrics(new Font(fontFamily, Font.PLAIN, (height * pixelsPerUnit).toInt)).stringWidth(text).max(1)
+  val pixelWidth = tempG.getFontMetrics(font.load().deriveFont(Font.PLAIN, (height * pixelsPerUnit).toInt)).stringWidth(text).max(1)
   val width = (pixelWidth.toFloat / pixelsPerUnit).max(0.001f)
   val resolution: (Int, Int) = (pixelWidth, (height * pixelsPerUnit).toInt)
   val quad = new Quad(width, height, true)
@@ -100,10 +100,10 @@ class VarTextLabel(val text: String,
   attachChild(label);
 
   def this(text: String, color: Color, height: Float, pixelsPerUnit: Int, assetManager: AssetManager, faceCullMode: FaceCullMode = FaceCullMode.Off) =
-    this(text, Font.DIALOG, color, height, pixelsPerUnit, assetManager, faceCullMode)
+    this(text, Dialog, color, height, pixelsPerUnit, assetManager, faceCullMode)
 
   def createTexture() = {
-    val img: PaintableImage = new TextImage(text, AlignLeft, fontFamily, color, resolution)
+    val img: PaintableImage = new TextImage(text, AlignLeft, font, color, resolution)
     img.refreshImage()
     new Texture2D(img)
   }

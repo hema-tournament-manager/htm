@@ -29,11 +29,11 @@ object PoolOverviewAppState extends nl.malienkolders.htm.viewer.jmonkey.lib.stat
   }
   implicit def intToPixelsToUnit(i: Int): PixelsToUnit = PixelsToUnit(i)
 
-  val font = "Copperplate Gothic Bold"
+  val font = Copperplate
   val color = Color.black
   val lineHeight = 29 pixels
 
-  lazy val message = new TextLabel("", AlignLeft, "Arial Bold", Color.black, (4f, 0.4f), 200, app.getAssetManager())
+  lazy val message = new TextLabel("", AlignLeft, Arial, Color.black, (4f, 0.4f), 200, app.getAssetManager())
 
   class FightLabel(f: MarshalledViewerFightSummary) extends Node("FightLabel") {
     val bg = createTexturedPanel("FightLabelBack", "Poule/Overview/bar_" + (if (f.order.toInt.odd_?) "light" else "dark") + ".png", SpectatorScreen.upp, true)

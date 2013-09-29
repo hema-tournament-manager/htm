@@ -36,7 +36,7 @@ object FightAppState extends nl.malienkolders.htm.viewer.jmonkey.lib.state.Fight
   }
   implicit def intToPixelsToUnit(i: Int): PixelsToUnit = PixelsToUnit(i)
 
-  lazy val message = new TextLabel("", AlignLeft, "Arial Bold", Color.black, (SpectatorScreen.ratio * 2, 36 pixels), SpectatorScreen.ppu.toInt, app.getAssetManager())
+  lazy val message = new TextLabel("", AlignLeft, Arial, Color.black, (SpectatorScreen.ratio * 2, 36 pixels), SpectatorScreen.ppu.toInt, app.getAssetManager())
   val messagePositionShown = (-SpectatorScreen.ratio + 0.05f, -1f + (10 pixels), 10f)
   val messagePositionHidden = (-SpectatorScreen.ratio + 0.05f, -1.1f, 10f)
 
@@ -142,8 +142,8 @@ object FightAppState extends nl.malienkolders.htm.viewer.jmonkey.lib.state.Fight
   lazy val fighterBlueClub = createFighterClubLabel(AlignRight)
 
   def createScoreLabel = createNumericLabel("0")
-  def createFighterNameLabel(align: Align) = new TextLabel("Een Hele Lange Naam", align, "Copperplate Gothic Bold", Color.white, (SpectatorScreen.ratio - 0.15f, 0.1f), 300, app.getAssetManager())
-  def createFighterClubLabel(align: Align) = new TextLabel("Een Hele Lange Vereniging", align, "Copperplate Gothic Bold", Color.white, (SpectatorScreen.ratio - 0.15f, 0.06f), 300, app.getAssetManager())
+  def createFighterNameLabel(align: Align) = new TextLabel("Een Hele Lange Naam", align, Copperplate, Color.white, (SpectatorScreen.ratio - 0.15f, 0.1f), 300, app.getAssetManager())
+  def createFighterClubLabel(align: Align) = new TextLabel("Een Hele Lange Vereniging", align, Copperplate, Color.white, (SpectatorScreen.ratio - 0.15f, 0.06f), 300, app.getAssetManager())
 
   def createNumericLabel(initialValue: String, alignment: BitmapFont.Align = BitmapFont.Align.Center) = {
     val label = new BitmapText(app.getAssetManager().loadFont("Interface/Fonts/Raavi.fnt"), false)
@@ -305,9 +305,9 @@ object FightAppState extends nl.malienkolders.htm.viewer.jmonkey.lib.state.Fight
     List(rollerRoll1, rollerRoll2, rollerRoll3, rollerRoll4)
   }
 
-  lazy val phaseName = new TextLabel("poule phase", AlignLeft, "Copperplate Gothic Bold", Color.black, (4f, 0.5f), 200, app.getAssetManager())
-  lazy val roundName = new TextLabel("ROUND 6", AlignLeft, "Raavi Bold", Color.black, (4f, 0.4f), 200, app.getAssetManager())
-  lazy val fightName = new TextLabel("FIGHT 29", AlignLeft, "Raavi Bold", Color.black, (4f, 0.4f), 200, app.getAssetManager())
+  lazy val phaseName = new TextLabel("poule phase", AlignLeft, Copperplate, Color.black, (4f, 0.5f), 200, app.getAssetManager())
+  lazy val roundName = new TextLabel("ROUND 6", AlignLeft, Raavi, Color.black, (4f, 0.4f), 200, app.getAssetManager())
+  lazy val fightName = new TextLabel("FIGHT 29", AlignLeft, Raavi, Color.black, (4f, 0.4f), 200, app.getAssetManager())
   lazy val exchangeLimit = createNumericLabel("10")
 
   def tournamentBannerResourceName(tournamentIdentifier: Option[String]) = "Fight/Header/" + tournamentIdentifier.map("banner_" + _).getOrElse("banner") + ".jpg"

@@ -26,7 +26,7 @@ import com.jme3.cinematic.events.CinematicEvent
 
 object PoolRankingAppState extends state.PoolRankingAppState {
 
-  val font = "Copperplate Gothic Bold"
+  val font = Copperplate
   val color = Color.black
   val lineHeight = 29 pixels
 

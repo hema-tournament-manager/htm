@@ -30,7 +30,7 @@ object DesignerAppState extends TournamentAppState("Designer") {
     label
   }
 
-  lazy val message = new TextLabel("", AlignLeft, "Raavi Bold", Color.black, (4f, 0.4f), 200, app.getAssetManager())
+  lazy val message = new TextLabel("", AlignLeft, Raavi, Color.black, (4f, 0.4f), 200, app.getAssetManager())
 
   def label = controls(control)._2
 

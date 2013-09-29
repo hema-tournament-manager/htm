@@ -26,7 +26,7 @@ object FightAppState extends nl.malienkolders.htm.viewer.jmonkey.lib.state.Fight
   }
   implicit def intToPixelsToUnit(i: Int): PixelsToUnit = PixelsToUnit(i)
 
-  lazy val message = new TextLabel("", AlignLeft, "Raavi Bold", Color.black, (4f, 0.4f), 200, app.getAssetManager())
+  lazy val message = new TextLabel("", AlignLeft, Raavi, Color.black, (4f, 0.4f), 200, app.getAssetManager())
 
   def createScoreLabel = createNumericLabel("0")
 
@@ -87,12 +87,12 @@ object FightAppState extends nl.malienkolders.htm.viewer.jmonkey.lib.state.Fight
     rootNode.attachChild(clubBlueName)
   }
 
-  lazy val tournamentName = new TextLabel("Longsword Open", AlignLeft, "Copperplate Gothic Bold", Color.white, (220 pixels, 22 pixels), 400, app.getAssetManager())
-  lazy val roundName = new TextLabel("1st place", AlignLeft, "Copperplate Gothic Bold", Color.lightGray, (220 pixels, 22 pixels), 400, app.getAssetManager())
-  lazy val fighterRedName = new TextLabel("Fighter Red", AlignLeft, "Copperplate Gothic Bold", Color.white, (280 pixels, 22 pixels), 400, app.getAssetManager())
-  lazy val clubRedName = new TextLabel("Club Red", AlignLeft, "Copperplate Gothic Bold", Color.white, (268 pixels, 15 pixels), 600, app.getAssetManager())
-  lazy val fighterBlueName = new TextLabel("Fighter Blue", AlignRight, "Copperplate Gothic Bold", Color.white, (280 pixels, 22 pixels), 400, app.getAssetManager())
-  lazy val clubBlueName = new TextLabel("Club Blue", AlignRight, "Copperplate Gothic Bold", Color.white, (268 pixels, 15 pixels), 600, app.getAssetManager())
+  lazy val tournamentName = new TextLabel("Longsword Open", AlignLeft, Copperplate, Color.white, (220 pixels, 22 pixels), 400, app.getAssetManager())
+  lazy val roundName = new TextLabel("1st place", AlignLeft, Copperplate, Color.lightGray, (220 pixels, 22 pixels), 400, app.getAssetManager())
+  lazy val fighterRedName = new TextLabel("Fighter Red", AlignLeft, Copperplate, Color.white, (280 pixels, 22 pixels), 400, app.getAssetManager())
+  lazy val clubRedName = new TextLabel("Club Red", AlignLeft, Copperplate, Color.white, (268 pixels, 15 pixels), 600, app.getAssetManager())
+  lazy val fighterBlueName = new TextLabel("Fighter Blue", AlignRight, Copperplate, Color.white, (280 pixels, 22 pixels), 400, app.getAssetManager())
+  lazy val clubBlueName = new TextLabel("Club Blue", AlignRight, Copperplate, Color.white, (268 pixels, 15 pixels), 600, app.getAssetManager())
 
   def updateTextLabels(f: MarshalledViewerFight) {
     tournamentName.text = f.tournament.name

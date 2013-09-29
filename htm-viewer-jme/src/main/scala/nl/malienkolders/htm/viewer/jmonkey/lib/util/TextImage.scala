@@ -6,20 +6,21 @@ import java.awt.Graphics2D
 import java.awt.RenderingHints
 import scala.collection.mutable.Map
 
-class TextImage(text: String, align: Align, fontFamily: String, color: Color, size: (Int, Int)) extends PaintableImage(size, true) {
+class TextImage(text: String, align: Align, htmFont: HtmFont, color: Color, size: (Int, Int)) extends PaintableImage(size, true) {
 
   def this(text: String, align: Align, color: Color, size: (Int, Int)) =
-    this(text, align, Font.DIALOG, color, size)
+    this(text, align, Dialog, color, size)
 
   def this(text: String, color: Color, size: (Int, Int)) =
-    this(text, AlignCenter, Font.DIALOG, color, size)
+    this(text, AlignCenter, Dialog, color, size)
 
   val background = new Color(0, 0, 0, 0)
 
   def paint(g: Graphics2D) {
-    val textToDraw = if (fontFamily.toLowerCase().contains("copperplate")) TextImage.copperplateSafe(text) else text
-    val fontMetrics = TextImage.calculateFontSize(fontFamily, size._2, g)
-    val font = new Font(fontFamily, Font.PLAIN, fontMetrics._1)
+    val fontRaw = htmFont.load()
+    val textToDraw = if (fontRaw.getFontName().toLowerCase().contains("copperplate")) TextImage.copperplateSafe(text) else text
+    val fontMetrics = TextImage.calculateFontSize(fontRaw, size._2, g)
+    val font = htmFont.load().deriveFont(Font.PLAIN, fontMetrics._1)
     g.setBackground(background)
     g.clearRect(0, 0, getWidth(), getHeight())
     g.setFont(font)
@@ -38,13 +39,13 @@ class TextImage(text: String, align: Align, fontFamily: String, color: Color, si
 object TextImage {
   val heightToFontSize = Map[String, (Int, Int, Int)]()
 
-  def calculateFontSize(fontName: String, height: Int, g: Graphics2D) = {
-    val key = fontName + "__" + height
+  def calculateFontSize(fontRaw: Font, height: Int, g: Graphics2D) = {
+    val key = fontRaw.getFontName() + "__" + height
     if (heightToFontSize.contains(key)) {
       heightToFontSize(key)
     } else {
       def getFontSize(fontHeight: Int): (Int, Int, Int) = {
-        val font = new Font(fontName, Font.PLAIN, fontHeight)
+        val font = fontRaw.deriveFont(Font.PLAIN, fontHeight)
         val metrics = g.getFontMetrics(font)
         if (metrics.getAscent() + metrics.getDescent() <= height)
           (fontHeight, metrics.getAscent(), metrics.getDescent())
