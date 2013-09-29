@@ -7,9 +7,9 @@ abstract class HtmFont {
 }
 
 class SystemFont(fontName: String) extends HtmFont {
-	def load(): Font = {
-	  new Font(fontName, Font.PLAIN, 10)
-	}
+  def load(): Font = {
+    new Font(fontName, Font.PLAIN, 10)
+  }
 }
 
 class ResourceFont(resourceName: String) extends HtmFont {

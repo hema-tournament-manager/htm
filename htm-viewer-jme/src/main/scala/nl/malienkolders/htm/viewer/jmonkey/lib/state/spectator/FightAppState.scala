@@ -323,8 +323,11 @@ object FightAppState extends nl.malienkolders.htm.viewer.jmonkey.lib.state.Fight
 
   def updateTextLabels(f: MarshalledViewerFight) {
     hideTournamentBanners
-    val banner = tournamentBanners(f.tournament.identifier)
-    banner.setLocalTranslation((857 - 512) pixels, (384 - 140) pixels, 10f)
+
+    if (tournamentBanners.contains(f.tournament.identifier)) {
+      val banner = tournamentBanners(f.tournament.identifier)
+      banner.setLocalTranslation((857 - 512) pixels, (384 - 140) pixels, 10f)
+    }
     f.roundName.split("/") match {
       case Array(phase, round) =>
         phaseName.text = phase.toLowerCase().trim()

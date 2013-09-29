@@ -15,6 +15,8 @@ import dispatch._
 import Http._
 import net.liftweb.json._
 import nl.malienkolders.htm.lib._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 object BattleServer extends LiftActor with ListenerManager {
 
