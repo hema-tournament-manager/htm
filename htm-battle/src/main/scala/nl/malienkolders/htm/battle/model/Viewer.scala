@@ -18,6 +18,8 @@ import EncodingHelpers._
 import snippet.ShowAdminConnection
 import nl.malienkolders.htm.lib.model.ViewerMessage
 import nl.malienkolders.htm.lib.model.MarshalledPoolRanking
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated {
   def getSingleton = Viewer

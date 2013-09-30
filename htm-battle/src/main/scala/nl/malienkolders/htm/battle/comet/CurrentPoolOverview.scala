@@ -14,6 +14,8 @@ import JsCmds._
 import json._
 import scala.xml.Text
 import nl.malienkolders.htm.lib.model._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 class CurrentPoolOverview extends CometActor with CometListener {
 

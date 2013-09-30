@@ -23,7 +23,7 @@ object HtmBuild extends Build {
                "ch.qos.logback" % "logback-classic" % "0.9.26",
                "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
                "com.h2database" % "h2" % "1.2.147",
-               "net.databinder.dispatch" %% "core" % "0.9.1",
+               "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion,
                "nl.htm" %% "htm-importer" % "0.1-SNAPSHOT"))
 		
 	lazy val battleSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
@@ -40,7 +40,7 @@ object HtmBuild extends Build {
                "ch.qos.logback" % "logback-classic" % "0.9.26",
                "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
                "com.h2database" % "h2" % "1.2.147",
-               "net.databinder.dispatch" %% "core" % "0.9.1"))
+               "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion))
 		
 	lazy val viewerJmeSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Viewer-JME",
@@ -73,7 +73,7 @@ object HtmBuild extends Build {
                "ch.qos.logback" % "logback-classic" % "0.9.26",
                "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
                "com.h2database" % "h2" % "1.2.147",
-               "net.databinder.dispatch" %% "core" % "0.9.1"))
+               "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion))
 		
 	lazy val admin = Project(
 		id = "admin",
@@ -138,6 +138,7 @@ object Dependencies {
   val junitVersion = "4.7" //"4.11"
   val mockitoVersion = "1.9.0"
   val jmeVersion = "3.0.0.20120512-SNAPSHOT"
+	val dispatchVersion = "0.11.0"
 
   val scala = "org.scala-lang" % "scala-library" % BuildSettings.buildScalaVersion % "provided"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % BuildSettings.buildScalaVersion
@@ -153,7 +154,7 @@ object Dependencies {
   val h2 = "com.h2database" % "h2" % "1.3.171"
   val liftWebkit = "net.liftweb" %% "lift-webkit" % liftVersion % "compile"
   val liftMapper = "net.liftweb" %% "lift-mapper" % liftVersion % "compile"
-  val dispatch = "net.databinder.dispatch" %% "core" % "0.9.1"
+  val dispatch = "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion
   val junit = "junit" % "junit" % junitVersion
   val jmeCore = "com.jme3" % "jME3-core" % jmeVersion
   val jmeDesktop = "com.jme3" % "jME3-desktop" % jmeVersion

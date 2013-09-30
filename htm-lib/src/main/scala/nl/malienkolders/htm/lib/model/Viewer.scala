@@ -10,6 +10,8 @@ import scala.xml._
 import dispatch._
 import Http._
 import net.liftweb.json._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 case class ViewerMessage(message: String, duration: Long)
 

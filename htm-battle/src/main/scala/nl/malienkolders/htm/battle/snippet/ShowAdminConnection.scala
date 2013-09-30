@@ -9,6 +9,8 @@ import JsCmds._
 import util.Helpers._
 import nl.malienkolders.htm.battle.model.AdminServer
 import net.liftweb.mapper.{ OrderBy, Descending }
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 object ShowAdminConnection {
 

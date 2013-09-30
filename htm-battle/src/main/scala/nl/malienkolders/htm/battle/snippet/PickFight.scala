@@ -12,6 +12,8 @@ import Helpers._
 import dispatch._
 import Http._
 import json._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 class PickFight {
 

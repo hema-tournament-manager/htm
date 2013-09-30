@@ -14,6 +14,8 @@ import net.liftweb.common.Box
 import scala.xml.Text
 import js._
 import JsCmds._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 object Overview {
 
