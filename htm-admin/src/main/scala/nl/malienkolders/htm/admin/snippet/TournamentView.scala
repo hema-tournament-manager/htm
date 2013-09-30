@@ -222,6 +222,10 @@ object TournamentView {
       S.notice("Unlocked fight " + fight.shortLabel)
     }
 
+    def edit(fight: Fight) {
+      S.redirectTo("/fights/edit/"+fight.id.is)
+    }
+    
     def renderResults(f: Fight) = {
       if (f.inProgress.get) {
         Text("in progress")
@@ -322,7 +326,8 @@ object TournamentView {
                   "name=moveUp" #> SHtml.ajaxButton(EntityRef("uArr"), () => { moveUp(f); refresh() }, "title" -> "Move Up", (if (f.order == 1) "disabled" else "enabled") -> "true") &
                   "name=moveDown" #> SHtml.ajaxButton(EntityRef("dArr"), () => { moveDown(f); refresh() }, "title" -> "Move Down", (if (f.order == p.fights.size) "disabled" else "enabled") -> "true") &
                   "name=remove" #> SHtml.ajaxButton(EntityRef("otimes"), () => { delete(p, f); refresh() }, "title" -> "Remove") &
-                  "name=unlock" #> SHtml.ajaxButton("unlock", () => { unlock(f); refresh(Some(p)) }, "title" -> "Unlock", (if (f.inProgress.is) "enabled" else "disabled") -> "true")
+                  "name=unlock" #> SHtml.ajaxButton("unlock", () => { unlock(f); refresh(Some(p)) }, "title" -> "Unlock", (if (f.inProgress.is) "enabled" else "disabled") -> "true") &
+                  "name=edit" #> SHtml.ajaxButton("edit", () => { edit(f); refresh(Some(p)) }, "title" -> "Edit", (if (f.inProgress.is) "disabled" else "enabled") -> "true")
               }) &
               ".poolParticipantListHeader" #> (
                 "* [onclick]" #> SHtml.ajaxInvoke(() => Run("$('#poolParticipantList" + p.id.is + "').toggle()")) &

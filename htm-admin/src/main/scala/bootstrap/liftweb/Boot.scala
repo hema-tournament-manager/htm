@@ -49,6 +49,7 @@ class Boot {
       TournamentView.menu ::
       TournamentEdit.menu ::
       TournamentAdvance.menu ::
+      FightEdit.menu ::
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::
       (Menu.i("Import") / "import") ::
