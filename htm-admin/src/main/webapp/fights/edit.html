@@ -5,6 +5,16 @@
 <title>Fight</title>
 </head>
 <body class="lift:content_id=main">
+
+  <link data-lift="head" type="text/css" rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.2/css/smoothness
+          /jquery-ui-1.10.2.custom.min.css">
+  </link>
+
+  <script data-lift="tail"
+    src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js">
+  </script>
+
 	<div id="main" class="lift:surround?with=default;at=content">
 		<form class="lift:FightEdit?form=post">
 			<h2>Edit Fight</h2>
@@ -13,9 +23,13 @@
 				 <span class="blue"><span class="name">Blue</span> (<span class="club">Team Blue</span>)</span>
 			</h3>
 
-Score Red: <input name="scoreRed"/><br/>
-Score Blue: <input name="scoreBlue"/>
+			Score Red: <input name="scoreRed"/><br/>
+			Score Blue: <input name="scoreBlue"/><br/> <br />
+			
+			Time start: <input name="timeStart"/><br/>
+			Time stop: <input name="timeStop"/><br/>
 
+			<button id="doEdit">Save</button>
 		</form>
 	</div>
 </body>
