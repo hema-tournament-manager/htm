@@ -24,6 +24,8 @@ li.not_checked {
 			</head>
 			<h2 id="tournamentName">Tournament</h2>
 			<h3>Fights</h3>
+<div class="row">
+	<div class="col-md-9">
 			<div id="tournamentRound">
 				<div class="moveParticipants">
 					<form method="post">
@@ -46,9 +48,12 @@ li.not_checked {
 								this one --</option></select>
 					</form>
 				</div>
-				<div class="round">
-					<button class="deleteRound" title="Delete Round">x</button>
-					<h4 id="roundName">Round 1</h4>
+				<div class="panel panel-default round">
+					<div class="panel-heading">
+						<button class="deleteRound btn btn-default pull-right" title="Delete Round">x</button>
+						<h3 id="roundName" class="panel-title">Round 1</h3>
+					</div>
+					<div class="panel-body">
 					<p>
 						Time limit: <input type="number" name="timeLimit" /> seconds,
 						with a break at <input type="number" name="fightBreak" /> seconds
@@ -62,10 +67,13 @@ li.not_checked {
 						<button class="reorder">Reorder</button>
 						<button class="planSwiss">Plan Swiss Round</button>
 					</p>
-					<div id="roundPool" class="pool">
-						<button class="deletePool" title="Delete Pool">x</button>
-						<h4 id="poolName">Pool 1</h4>
-						<table>
+					<div id="roundPool" class="pool panel panel-default">
+						<div class="panel-heading">
+							<button class="deletePool btn btn-default pull-right" title="Delete Pool">x</button>
+							<h4 id="poolName" class="panel-title">Pool 1</h4>
+						</div>
+						<table class="table">
+							<tbody>
 							<tr id="poolFight">
 								<td class="fightOrder">1</td>
 								<td class="red"></td>
@@ -80,11 +88,14 @@ li.not_checked {
 									</li>
 								</td>
 							</tr>
+							</tbody>
 						</table>
+						<div class="panel-body">
 						<p class="poolParticipantListHeader">
 							<span>8</span> participants
 						</p>
-						<table class="poolParticipantList">
+						</div>
+						<table class="poolParticipantList table">
 							<tr id="poolParticipant">
 								<td class="starStatus"><img src="/images/star_gray.png" /></td>
 								<td class="ranking"></td>
@@ -106,28 +117,45 @@ li.not_checked {
 								<td id="addPoolParticipant" colspan="15"></td>
 							</tr>
 						</table>
-						<form method="post">
-							<input id="planParticipantA" /> <input id="planParticipantB" />
-						</form>
+						<div class="panel-body">
+							<form method="post">
+								<input id="planParticipantA" /> <input id="planParticipantB" />
+							</form>
+						</div>
 					</div>
-					<button class="addPool">Add Poule</button>
+					<button class="addPool btn btn-default">Add Poule</button>
+				</div>
 				</div>
 			</div>
-			<form method="post">
-				<input id="newRoundName" type="text" placeholder="New Round" />
-			</form>
-
-			<h3>Participants</h3>
-			<ul>
-				<li id="tournamentParticipant"><img src="/images/star_gray.png" />
-					<span>Pietje Puk</span>
-					<button>x</button></li>
-			</ul>
-			<form method="post">
-				<input id="addParticipant" type="text" placeholder="Add Participant" />
-			</form>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Add Round</h3>
+			</div>
+			<div class="panel-body">
+				<form method="post">
+					<input id="newRoundName" type="text" placeholder="New Round" />
+				</form>
+			</div>
 		</div>
 	</div>
+	<div class="col-md-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Participants</h3>
+			</div>
+			<ul class="list-group">
+				<li id="tournamentParticipant" class="list-group-item"><img src="/images/star_gray.png" />
+					<span>Pietje Puk</span>
+					<button class="pull-right">x</button></li>
+			</ul>
+			<div class="panel-body">
+				<form method="post">
+					<input id="addParticipant" type="text" placeholder="Add Participant" />
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 </body>
 </html>
 
