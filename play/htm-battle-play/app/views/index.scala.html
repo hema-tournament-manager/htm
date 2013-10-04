@@ -22,9 +22,31 @@
       <div class="col-md-8">
       	<div class="panel panel-default">
 			<div class="panel-heading"><h3 class="panel-title">Fights Round 1, Pool 2</h3></div>
-			<div class="panel-body">
-				lijstje
-			</div>    	
+			<table class="table table-condensed table-hover" data-ng-click="incCurrentFight()">
+				<tbody>
+					<tr data-ng-show="currentFight &gt; 3">
+						<td colspan="8" class="text-center">{{fights | filter:beforeRangeFunction | size}} more</td>
+					</tr>
+					<tr data-ng-repeat="fight in fights | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false">
+						<td>{{fight.plannedTime}}</td>
+						<td>{{fight.id}}</td>
+						<td class="text-left">{{fight.a}}</td>
+						<td class="text-center"></td>
+						<td class="text-center">vs</td>
+						<td class="text-center"></td>
+						<td class="text-right">{{fight.b}}</td>
+						<td width="10%">
+							<div data-ng-show="fight.hover" data-ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}">
+								<span data-ng-show="fight.index &gt;= currentFight" title="Move down" class="glyphicon glyphicon-arrow-down"></button>
+								<span data-ng-show="fight.index &gt; currentFight" title="Move up" class="glyphicon glyphicon-arrow-up"></button>
+							</div>
+						</td>
+					</tr>
+					<tr data-ng-show="currentFight &lt; 18">
+						<td colspan="8" class="text-center">{{fights | filter:afterRangeFunction | size}} more</td>
+					</tr>
+				</tbody>
+			</table>  	
       	</div>
       	<div class="panel panel-default htm-current-fight">
 			<div class="panel-heading">

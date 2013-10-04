@@ -17,6 +17,14 @@ angular.module('htm.services', []).
       self.executeInstallation = function(path, apps) {
     	return playRoutes.controllers.Application.install().post({path: path, apps: apps});
       };
+      
+      self.generateFights = function(n) {
+    	  var result = Array();
+    	  for (var i = 1; i <= n; i++) {
+    		  result.push({'id': i, 'index': i, 'plannedTime': "14:30", 'a': "A" + i, 'b': "B" + i});
+    	  }
+    	  return result;
+      }
     };
     return new AppService();
   }]);

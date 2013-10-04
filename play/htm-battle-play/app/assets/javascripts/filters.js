@@ -9,5 +9,11 @@ angular.module("common.filters", []).
   
   filter("size", function() { return function(value) {
 	 return value.length; 
+  }}).
+  
+  filter("inRangeOf", function() { return function(value, index) {
+	  if (angular.isArray(value)) {
+		  return value.slice(index - 2, index + 2);
+	  }
   }});
   
