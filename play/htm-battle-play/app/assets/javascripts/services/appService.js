@@ -21,7 +21,19 @@ angular.module('htm.services', []).
       self.generateFights = function(n) {
     	  var result = Array();
     	  for (var i = 1; i <= n; i++) {
-    		  result.push({'id': i, 'index': i, 'plannedTime': "14:30", 'a': "A" + i, 'b': "B" + i});
+    		  result.push({
+    			  id: i, 
+    			  index: i, 
+    			  plannedTime: "14:30", 
+    			  a: {
+    				  name: "A" + i 
+    			  },
+    			  b: {
+    				  name: "B" + i
+    			  },
+    			  exchanges: [
+    			    {time: 1, diffA: 1, diffB: 0, diffAfterblowA: 0, diffAfterblowB: 0, diffDouble: 0}]
+    		  });
     	  }
     	  return result;
       }

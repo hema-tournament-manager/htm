@@ -1,11 +1,14 @@
 "use strict";
 
 var BattleCtrl = function($scope, $timeout, appService) {
-    $scope.fight = {'a': 'Fighter A', 'b': 'Fighter B'};
+	var _ = window._;
+	
     $scope.fights = appService.generateFights(20);
     $scope.currentFight = 1;
+    $scope.fight = _.find($scope.fights, function(f) { return f.index == $scope.currentFight; });
+    
     $scope.timer = {'running': false, 'lastStart': -1, 'currentTime': 0};
-    var _ = window._;
+    
     $scope.toggleTimer = function() {
     	$scope.timer.running = !$scope.timer.running;
     	if ($scope.timer.running) {

@@ -30,11 +30,11 @@
 					<tr data-ng-repeat="fight in fights | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false">
 						<td>{{fight.plannedTime}}</td>
 						<td>{{fight.id}}</td>
-						<td class="text-left">{{fight.a}}</td>
+						<td class="text-left">{{fight.a.name}}</td>
 						<td class="text-center"></td>
 						<td class="text-center">vs</td>
 						<td class="text-center"></td>
-						<td class="text-right">{{fight.b}}</td>
+						<td class="text-right">{{fight.b.name}}</td>
 						<td width="10%">
 							<div data-ng-show="fight.hover" data-ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}">
 								<span data-ng-show="fight.index &gt;= currentFight" title="Move down" class="glyphicon glyphicon-arrow-down"></button>
@@ -58,7 +58,7 @@
 						<big>Time: {{timer.currentTime}} of 3:00 <span data-ng-click="toggleTimer()" data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4">
-						<big>Exchange: 3 of 10</big>
+						<big>Exchange: {{fight.exchanges | size}} of 10</big>
 					</div>
 					<div class="col-sm-2 col-md-2">
 						<button type="button" class="btn btn-default">Undo</button>
@@ -69,17 +69,17 @@
 				</div>
 				<div class="row htm-padding-top">
 					<div class="col-sm-4 col-md-4">
-						<h2 class="panel-title">Maarten Kamphuis</h2>
+						<h2 class="panel-title">{{fight.a.name}}</h2>
 					</div>
 					<div class="col-sm-4 col-md-4">
 						<div class="row">
-							<div class="col-sm-4 col-md-4 text-center">2</div>
-							<div class="col-sm-4 col-md-4 text-center">(3)</div>
-							<div class="col-sm-4 col-md-4 text-center">5</div>
+							<div class="col-sm-4 col-md-4 text-center"></div>
+							<div class="col-sm-4 col-md-4 text-center"></div>
+							<div class="col-sm-4 col-md-4 text-center"></div>
 						</div>
 					</div>
 					<div class="col-sm-4 col-md-4">
-						<h2 class="panel-title pull-right">Patrick Swayze</h2>
+						<h2 class="panel-title pull-right">{{fight.b.name}}</h2>
 					</div>
 				</div>
 				<div class="row htm-fight-buttons htm-padding-top">

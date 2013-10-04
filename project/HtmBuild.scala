@@ -41,7 +41,7 @@ object HtmBuild extends Build {
                "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
                "com.h2database" % "h2" % "1.2.147",
                "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion))
-		
+    
 	lazy val viewerJmeSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Viewer-JME",
 		port in container.Configuration := 8081,
