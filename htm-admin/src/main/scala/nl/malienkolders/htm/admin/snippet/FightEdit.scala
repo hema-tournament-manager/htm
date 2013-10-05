@@ -16,16 +16,16 @@ object FightEdit {
   lazy val loc = menu.toLoc
 
   def render = {
-    
+
     val f = Fight.findByKey(FightEdit.loc.currentValue.map(_.param).get.toLong).get
     val totalScore = f.currentScore
-    
+
     val score = Score.create
     score.diffA(totalScore.a)
     score.diffB(totalScore.b)
-    
+
     val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    
+
     def process() {
       f.scores.clear()
       f.scores += score

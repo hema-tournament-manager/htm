@@ -223,9 +223,9 @@ object TournamentView {
     }
 
     def edit(fight: Fight) {
-      S.redirectTo("/fights/edit/"+fight.id.is)
+      S.redirectTo("/fights/edit/" + fight.id.is)
     }
-    
+
     def renderResults(f: Fight) = {
       if (f.inProgress.get) {
         Text("in progress")
