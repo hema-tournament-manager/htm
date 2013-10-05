@@ -28,13 +28,18 @@ object ParticipantList {
         cmd += "$('#flag" + p.id.is + "').removeClass('viewerFlagAvailable');"
       Run(cmd)
     }
+    
+    def registerAll() = {
+      ps foreach (_.isPresent(true).isEquipmentChecked(true).save)
+      S.redirectTo("/participants/list")
+    }
 
     "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
       val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
       selectedParticipant = Empty
       cmd & Run("$('#countrySelect').hide();")
     }, "id" -> "countrySelectDropdown") &
-      ".participant" #> ps.map { p =>
+      ".participant" #> (ps.map { p =>
         val c = p.country.obj.get
         ".participant [class]" #> (if (p.isPresent.is) "present" else "not-present") &
           ".id *" #> p.externalId.is &
@@ -54,7 +59,13 @@ object ParticipantList {
 
             }) &
             ".actions *" #> <a href={ "/participants/register/" + p.externalId.is }>register</a>
-      }
+      }) &
+      ".totals" #> (
+          ".people *" #> ps.size &
+          ".countries *" #> ps.groupBy(_.country.is).size &
+          ".clubs *" #> ps.groupBy(_.clubCode.is).size &
+          ".actions *" #> SHtml.submit("register all", registerAll, "class" -> "btn btn-default")
+       )
   }
 
 }
