@@ -8,6 +8,7 @@ import util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import java.text.SimpleDateFormat
 import net.liftweb.http.js.JsCmds.Run
+import java.util.Date
 
 object FightEdit {
 
@@ -32,7 +33,13 @@ object FightEdit {
       f.save()
       S.redirectTo("/tournaments/view/" + f.pool.foreign.get.round.foreign.get.tournament.is)
     }
-    S.appendJs(Run("$('#timeStop').datepicker({dateFormat: 'yy-mm-dd hh:nn:ss'});"))
+
+    val dateFormatStr = "yy-mm-dd";
+    val timeFormatStr = "HH:mm:ss";
+    
+    val datetimepickerInitStr = s"datetimepicker({ dateFormat: '$dateFormatStr', timeFormat: '$timeFormatStr' });";
+    
+    S.appendJs(Run("$('#timeStop')."+datetimepickerInitStr) & Run("$('#timeStart')."+datetimepickerInitStr))
     ".red" #> (
       ".name *" #> f.fighterA.obj.get.name.is &
       ".club [title]" #> f.fighterA.obj.get.club.is &
@@ -43,8 +50,8 @@ object FightEdit {
         ".club *" #> f.fighterB.obj.get.clubCode.is) &
         "name=scoreRed" #> SHtml.text(totalScore.a.toString, s => score.diffA(s.toInt)) &
         "name=scoreBlue" #> SHtml.text(totalScore.b.toString, s => score.diffB(s.toInt)) &
-        "name=timeStart" #> SHtml.text("", s => f.timeStart(df.parse(s).getTime()), "type" -> "datetime") &
-        "name=timeStop" #> SHtml.text("", s => f.timeStop(df.parse(s).getTime())) &
+        "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker" ) &
+        "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker" ) &
         "#doEdit" #> SHtml.onSubmitUnit(process)
 
   }
