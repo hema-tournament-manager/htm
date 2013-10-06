@@ -24,6 +24,8 @@ import scala.xml.EntityRef
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 import nl.malienkolders.htm.lib.SwissTournament
+import java.text.SimpleDateFormat
+import java.util.Date
 
 case class ParamInfo(param: String)
 
@@ -32,6 +34,8 @@ object TournamentView {
     pi => pi.param) / "tournaments" / "view"
   lazy val loc = menu.toLoc
 
+  val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+  
   def render = {
     val t = {
       val param = TournamentView.loc.currentValue.map(_.param).get
@@ -309,7 +313,9 @@ object TournamentView {
           } &
           "name=timeLimit" #> SHtml.ajaxText((r.timeLimitOfFight.get / 1000).toString, { time => r.timeLimitOfFight(time.toLong seconds); r.save; S.notice("Time limit saved") }, "type" -> "number") &
           "name=fightBreak" #> SHtml.ajaxText((r.breakInFightAt.get / 1000).toString, { time => r.breakInFightAt(time.toLong seconds); r.save; S.notice("Break time saved") }, "type" -> "number") &
+          "name=fightBreakDuration" #> SHtml.ajaxText((r.breakDuration.get / 1000).toString, { time => r.breakDuration(time.toLong seconds); r.save; S.notice("Break duration saved") }, "type" -> "number") &
           "name=exchangeLimit" #> SHtml.ajaxText(r.exchangeLimit.toString, { time => r.exchangeLimit(time.toInt); r.save; S.notice("Exchange limit saved") }, "type" -> "number") &
+          "name=timeBetweenFights" #> SHtml.ajaxText((r.timeBetweenFights.get / 1000).toString, { time => r.timeBetweenFights(time.toLong seconds); r.save; S.notice("Time between fights saved") }, "type" -> "number") &
           "#roundPool" #> r.pools.map { p =>
             val pptsAlphabetic = p.participants.sortBy(_.name.is)
             val pptsRanking = SwissTournament.ranking(p)
@@ -318,6 +324,7 @@ object TournamentView {
               refresh()
             } &
               "#poolName *" #> <span><a name={ "poule" + p.id.is }></a>{ "Poule %d" format p.order.is }</span> &
+              "name=poolStartTime" #> SHtml.ajaxText(df.format(new Date(p.startTime)), { s => p.startTime(df.parse(s).getTime()); p.save; S.notice("Pool start-time saved") }) &
               "#poolFight *" #> p.fights.map(f => {
                 ".fightOrder *" #> f.order.is &
                   ".red *" #> renderFightFighter(f.fighterA.obj.get) &

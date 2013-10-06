@@ -5,7 +5,7 @@ import net.liftweb._
 import mapper._
 
 case class MarshalledPoolSummary(id: Long, order: Long, round: MarshalledRoundSummary, fightCount: Long, participantsCount: Long)
-case class MarshalledPool(id: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
+case class MarshalledPool(id: Long, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
 case class MarshalledViewerPool(summary: MarshalledPoolSummary, fights: List[MarshalledViewerFightSummary])
 case class MarshalledPoolRanking(poolInfo: MarshalledPoolSummary, ranked: List[MarshalledParticipant], points: List[SwissTournament.ParticipantScores])
 
@@ -14,6 +14,9 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   def primaryKeyField = id
   object id extends MappedLongIndex(this)
+  
+  object startTime extends MappedLong(this)
+  
   object order extends MappedLong(this)
   object round extends MappedLongForeignKey(this, Round)
   object fights extends MappedOneToMany(Fight, Fight.pool, OrderBy(Fight.order, Ascending)) with Owned[Fight] with Cascade[Fight]
@@ -21,7 +24,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   def nextFight = fights.filter(f => f.inProgress == false && f.finished_? == false).headOption
 
-  def toMarshalled = MarshalledPool(id.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledPool(id.is, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
   def toViewer = MarshalledViewerPool(toMarshalledSummary, fights.map(_.toViewerSummary).toList)
   def toMarshalledSummary = MarshalledPoolSummary(
     id.is,

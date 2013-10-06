@@ -57,11 +57,14 @@ li.not_checked {
 					<p>
 						Time limit: <input type="number" name="timeLimit" /> seconds,
 						with a break at <input type="number" name="fightBreak" /> seconds
-						(0 = no limit)
+						(0 = no limit) with break duration <input type="number" name="fightBreakDuration"/> seconds
 					</p>
 					<p>
 						Exchange limit: <input type="number" name="exchangeLimit" />
 						exchanges (0 = no limit)
+					</p>
+					<p>
+						Time between fights: <input type="number" name="timeBetweenFights" /> seconds
 					</p>
 					<p>
 						<button class="reorder">Reorder</button>
@@ -71,6 +74,9 @@ li.not_checked {
 						<div class="panel-heading">
 							<button class="deletePool btn btn-default pull-right" title="Delete Pool">x</button>
 							<h4 id="poolName" class="panel-title">Pool 1</h4>
+							<br/>
+							<p>Start-time: <input type="datetime" name="poolStartTime" class="hasDatePicker datetimepicker"/> </p>
+							
 						</div>
 						<table class="table">
 							<tbody>

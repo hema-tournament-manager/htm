@@ -888,6 +888,7 @@
 			}
 
 			this.$input.trigger("change");
+			this.$input.focus();
 		},
 
 		_onFocus: function () {
