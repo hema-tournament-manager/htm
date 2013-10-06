@@ -282,6 +282,7 @@ object TournamentView {
           "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, pt); refresh() }, "title" -> "Remove from Tournament")) &
       "#newRoundName" #> SHtml.text("", newRound, "placeholder" -> "New Round") &
       "#tournamentRound" #> t.rounds.map(r =>
+        ".roundAnchor [name]" #> ("round" + r.id.get) &
         ".moveParticipants" #> (if (r.order.is > 1) {
           "#advanceAll" #> SHtml.button(<span><img src="/images/group.png"/> All</span>, () => advance(r, All)) &
             "#advanceSelected" #> SHtml.button(<span><img src="/images/cut_red.png"/> Selected</span>, () => S.redirectTo("/tournaments/advance/" + r.id.is)) &
@@ -364,7 +365,11 @@ object TournamentView {
                 "#planParticipantB" #> (SHtml.select(("-1", "-- Select Blue --") :: pptsAlphabetic.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => fighterB = Participant.findByKey(id.toLong)) ++
                   SHtml.submit("Plan", () => addFight(p)))
           }) &
-      "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong))
+      "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong)) &
+      ".navbar-nav" #> (
+          "li" #> t.rounds.map(r => 
+            	"a [href]" #> ("#round" + r.id.get) &
+            	"a *" #> r.name.get))
 
   }
 
