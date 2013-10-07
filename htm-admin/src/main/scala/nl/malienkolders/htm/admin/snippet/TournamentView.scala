@@ -23,7 +23,7 @@ import scala.xml.EntityRef
 import scala.xml.EntityRef
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
-import nl.malienkolders.htm.lib.SwissTournament
+import nl.malienkolders.htm.lib.{ RoundRobinTournament, SwissTournament }
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -35,7 +35,7 @@ object TournamentView {
   lazy val loc = menu.toLoc
 
   val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-  
+
   def render = {
     val t = {
       val param = TournamentView.loc.currentValue.map(_.param).get
@@ -120,6 +120,17 @@ object TournamentView {
         round.save
       }
     }
+
+    def planRoundRobin(round: Round) {
+      if (finishedFights_?(round)) {
+        S.notice("Cannot plan this round, because fights have been fought")
+        //      } else if (round.order.is != 1) {
+        //        S.notice("Cannot plan this round, because it is not the first round")
+      } else {
+        RoundRobinTournament.planning(round)
+      }
+    }
+
     def planSwissRound(round: Round) {
       if (finishedFights_?(round)) {
         S.notice("Cannot plan this round, because fights have been fought")
@@ -283,14 +294,14 @@ object TournamentView {
       "#newRoundName" #> SHtml.text("", newRound, "placeholder" -> "New Round") &
       "#tournamentRound" #> t.rounds.map(r =>
         ".roundAnchor [name]" #> ("round" + r.id.get) &
-        ".moveParticipants" #> (if (r.order.is > 1) {
-          "#advanceAll" #> SHtml.button(<span><img src="/images/group.png"/> All</span>, () => advance(r, All)) &
-            "#advanceSelected" #> SHtml.button(<span><img src="/images/cut_red.png"/> Selected</span>, () => S.redirectTo("/tournaments/advance/" + r.id.is)) &
-            "#advanceWinners" #> SHtml.button(<span><img src="/images/medal_gold_2.png"/> Winners</span>, () => advance(r, Winners)) &
-            "#advanceSingle" #> (SHtml.selectObj((Empty -> "-- Just this one --") :: allParticipantsFromPrevious(r), Empty, { p: Box[Participant] => p.foreach(p => advance(r, Single(p))) }) ++ SHtml.submit("OK", () => ()))
-        } else {
-          "*" #> ""
-        }) &
+          ".moveParticipants" #> (if (r.order.is > 1) {
+            "#advanceAll" #> SHtml.button(<span><img src="/images/group.png"/> All</span>, () => advance(r, All)) &
+              "#advanceSelected" #> SHtml.button(<span><img src="/images/cut_red.png"/> Selected</span>, () => S.redirectTo("/tournaments/advance/" + r.id.is)) &
+              "#advanceWinners" #> SHtml.button(<span><img src="/images/medal_gold_2.png"/> Winners</span>, () => advance(r, Winners)) &
+              "#advanceSingle" #> (SHtml.selectObj((Empty -> "-- Just this one --") :: allParticipantsFromPrevious(r), Empty, { p: Box[Participant] => p.foreach(p => advance(r, Single(p))) }) ++ SHtml.submit("OK", () => ()))
+          } else {
+            "*" #> ""
+          }) &
           "#roundName *" #> <span><a name={ "round" + r.id.is }></a>{ r.order + ": " + r.name }</span> &
           ".deleteRound [onclick]" #> SHtml.ajaxInvoke { () =>
             deleteRound(t, r)
@@ -308,6 +319,10 @@ object TournamentView {
           } else {
             ".reorder" #> ""
           }) &
+          ".planRoundRobin [onclick]" #> SHtml.ajaxInvoke { () =>
+            planRoundRobin(r)
+            refresh()
+          } &
           ".planSwiss [onclick]" #> SHtml.ajaxInvoke { () =>
             planSwissRound(r)
             refresh()
@@ -367,9 +382,9 @@ object TournamentView {
           }) &
       "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong)) &
       ".navbar-nav" #> (
-          "li" #> t.rounds.map(r => 
-            	"a [href]" #> ("#round" + r.id.get) &
-            	"a *" #> r.name.get))
+        "li" #> t.rounds.map(r =>
+          "a [href]" #> ("#round" + r.id.get) &
+            "a *" #> r.name.get))
 
   }
 

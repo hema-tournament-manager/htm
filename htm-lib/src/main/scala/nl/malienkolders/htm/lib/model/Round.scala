@@ -19,15 +19,17 @@ class Round extends LongKeyedMapper[Round] with OneToMany[Long, Round] {
   object timeLimitOfFight extends MappedLong(this)
   object breakInFightAt extends MappedLong(this)
   object exchangeLimit extends MappedInt(this)
-  
+
   object breakDuration extends MappedLong(this)
   object timeBetweenFights extends MappedLong(this)
-  
+
   object pools extends MappedOneToMany(Pool, Pool.round, OrderBy(Pool.order, Ascending)) with Owned[Pool] with Cascade[Pool]
 
   def previousRound = {
     Round.find(By(Round.order, order.is - 1), By(Round.tournament, tournament.is))
   }
+
+  def previousRounds: List[Round] = previousRound.map(prev => prev :: prev.previousRounds).getOrElse(List())
 
   def toMarshalled = MarshalledRound(id.is, order.is, name.is, timeLimitOfFight.is, breakInFightAt.is, exchangeLimit.is, breakDuration.is, timeBetweenFights.is, pools.map(_.toMarshalledSummary).toList)
   def toMarshalledSummary = MarshalledRoundSummary(id.is,

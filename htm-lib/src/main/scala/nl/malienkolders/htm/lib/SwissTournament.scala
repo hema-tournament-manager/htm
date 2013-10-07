@@ -9,7 +9,7 @@ import net.liftweb.util.Helpers._
 import net.liftweb.common.Box.box2Option
 import net.liftweb.util.StringPromotable.intToStrPromo
 
-object SwissTournament {
+object SwissTournament extends nl.malienkolders.htm.lib.Tournament {
 
   case class ParticipantScores(
       initialRanking: Int,
@@ -122,11 +122,11 @@ object SwissTournament {
       Fight.find(ByList(Fight.pool, prevPools.map(_.id.is)), By(Fight.fighterA, b.id.is), By(Fight.fighterB, a.id.is)).isDefined
   }
 
-  def planning(r: Round) = {
-    val pr = r.previousRound
+  def planning(round: Round): List[Pool] = {
+    val pr = round.previousRound
     val ppr = pr.map(_.previousRound)
-    val prs = if (pr.isDefined) List(pr.get) ++ (if (ppr.get.isDefined) List(ppr.get.get) else List()) else List()
-    val ranked = ranking(r)
+    val prs = round.previousRounds
+    val ranked = ranking(round)
     ranked.map {
       case (p, pts) =>
         val pp = pr.map(_.pools.find(_.order.is == p.order.is).get)
@@ -159,7 +159,7 @@ object SwissTournament {
             val a = group.head
             val b = group.drop(1).reverse.find(b => !haveFoughtBefore(prs.flatMap(_.pools.toList), b, a) && b.clubCode.is != a.clubCode.is).
               orElse(group.drop(1).reverse.find(b => !haveFoughtBefore(prs.flatMap(_.pools.toList), b, a))).getOrElse(group.drop(1).head)
-            p.fights += Fight.create.fighterA(a).fighterB(b).inProgress(false).order(p.fights.size + 1)
+            p.addFight(a, b)
             group = group.filterNot(pt => pt.id.is == a.id.is || pt.id.is == b.id.is)
           }
           if (group.size == 1) {

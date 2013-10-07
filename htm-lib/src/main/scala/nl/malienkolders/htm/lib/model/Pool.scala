@@ -14,15 +14,17 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   def primaryKeyField = id
   object id extends MappedLongIndex(this)
-  
+
   object startTime extends MappedLong(this)
-  
+
   object order extends MappedLong(this)
   object round extends MappedLongForeignKey(this, Round)
   object fights extends MappedOneToMany(Fight, Fight.pool, OrderBy(Fight.order, Ascending)) with Owned[Fight] with Cascade[Fight]
   object participants extends MappedManyToMany(PoolParticipants, PoolParticipants.pool, PoolParticipants.participant, Participant)
 
   def nextFight = fights.filter(f => f.inProgress == false && f.finished_? == false).headOption
+
+  def addFight(a: Participant, b: Participant) = fights += Fight.create.fighterA(a).fighterB(b).inProgress(false).order(fights.size + 1)
 
   def toMarshalled = MarshalledPool(id.is, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
   def toViewer = MarshalledViewerPool(toMarshalledSummary, fights.map(_.toViewerSummary).toList)
