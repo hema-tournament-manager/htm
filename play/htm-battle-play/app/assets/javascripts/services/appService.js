@@ -31,6 +31,7 @@ angular.module('htm.services', []).
     			  b: {
     				  name: "B" + i
     			  },
+    			  score: {a: 3, d: 1, b: 6},
     			  exchanges: [
     			    {time: 1, diffA: 1, diffB: 0, diffAfterblowA: 0, diffAfterblowB: 0, diffDouble: 0}]
     		  });
