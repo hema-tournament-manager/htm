@@ -23,8 +23,7 @@ object HtmBuild extends Build {
                "ch.qos.logback" % "logback-classic" % "0.9.26",
                "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
                "com.h2database" % "h2" % "1.2.147",
-               "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion,
-               "nl.htm" %% "htm-importer" % "0.1-SNAPSHOT"))
+               "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion))
 		
 	lazy val battleSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Battle",
@@ -75,10 +74,15 @@ object HtmBuild extends Build {
                "com.h2database" % "h2" % "1.2.147",
                "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion))
 		
+	lazy val importerSettings = buildSettings ++ Format.settings ++ Seq(
+		name := buildName + "-Importer",
+		libraryDependencies ++= Seq(
+			"org.specs2" %% "specs2" % "2.2.3" % "test"))
+
 	lazy val admin = Project(
 		id = "admin",
 		base = file("htm-admin"),
-		settings = adminSettings) dependsOn (lib)
+		settings = adminSettings) dependsOn (lib, importer)
 		
 	lazy val battle = Project(
 		id = "battle",
@@ -94,6 +98,11 @@ object HtmBuild extends Build {
 		id = "lib",
 		base = file("htm-lib"),
 		settings = libSettings)
+
+	lazy val importer = Project(
+		id = "importer",
+		base = file("htm-importer"),
+		settings = importerSettings)
 }
 
 object BuildSettings {
