@@ -9,23 +9,30 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/animate-custom.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
 	</head>
-	<body>
+	<body data-ng-controller="BattleCtrl">
     @*-- Header -- *@
     <header class="container">
-      <div class="page-header">
-        <h1>Arena 1 &mdash; Longsword Open <small class="pull-right">14:00 - 15:00</small></h1>
+      <div class="page-header" data-ng-cloak>
+        <h1>{{arena.name}} &mdash; {{tournament.name}} <small class="pull-right">14:00 - 15:00</small></h1>
       </div>
     </header>
     @* -- Main Content -- *@
-    <div class="container" data-ng-controller="BattleCtrl" data-ng-cloak>
+    <div class="container" data-ng-cloak>
       <div class="row">
       <div class="col-md-8">
       	<div class="panel panel-default">
-			<div class="panel-heading"><h3 class="panel-title">Fights Round 1, Pool 2</h3></div>
+			<div class="panel-heading"><h3 class="panel-title">{{round.name}}, Pool {{pool.order}}</h3></div>
 			<table class="table table-condensed table-hover" data-ng-click="incCurrentFight()">
 				<tbody>
-					<tr data-ng-show="currentFight &gt; 3">
-						<td colspan="8" class="text-center">{{fights | filter:beforeRangeFunction | size}} more</td>
+					<tr>
+						<td colspan="8" class="text-center" data-ng-switch data-on="fightsBefore()">
+							<span data-ng-switch-when="true">
+								{{fights | filter:beforeRangeFunction | size}} more
+							</span>
+							<span data-ng-switch-default>
+								&mdash; start of pool &mdash;
+							</span>
+						</td>
 					</tr>
 					<tr data-ng-repeat="fight in fights | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false">
 						<td>{{fight.plannedTime}}</td>
@@ -42,8 +49,15 @@
 							</div>
 						</td>
 					</tr>
-					<tr data-ng-show="currentFight &lt; 18">
-						<td colspan="8" class="text-center">{{fights | filter:afterRangeFunction | size}} more</td>
+					<tr>
+						<td colspan="8" class="text-center" data-ng-switch data-on="fightsAfter()">
+							<span data-ng-switch-when="true">
+								{{fights | filter:afterRangeFunction | size}} more
+							</span>
+							<span data-ng-switch-default>
+								&mdash; end of pool &mdash;
+							</span>
+						</td>
 					</tr>
 				</tbody>
 			</table>  	
