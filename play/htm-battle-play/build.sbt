@@ -14,7 +14,10 @@ libraryDependencies ++= Seq(
   "org.webjars" % "bootstrap" % "3.0.0" exclude ("org.webjars", "jquery"),
   "org.webjars" % "angularjs" % "1.1.5" exclude ("org.webjars", "jquery"),
   "org.webjars" % "angular-ui-bootstrap" % "0.6.0-1" exclude ("org.webjars", "jquery"),
-  "org.webjars" % "underscorejs" % "1.5.1" exclude ("org.webjars", "jquery")  
+  "org.webjars" % "underscorejs" % "1.5.1" exclude ("org.webjars", "jquery") ,
+  "nl.malienkolders" %% "htm-lib" % "1.0-SNAPSHOT",
+  "net.databinder.dispatch" %% "dispatch-core" % "0.11.0",
+  "net.liftweb" %% "lift-webkit" % "2.5" 
 )     
 
 play.Project.playScalaSettings

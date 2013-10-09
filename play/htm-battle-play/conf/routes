@@ -3,7 +3,14 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                           controllers.Application.poolSelection
+
+GET     /fight                  controllers.Application.fight
+
+GET     /api/currentPool        controllers.Application.currentPool
+POST    /api/subscribe          controllers.Application.subscribe	
+GET     /api/admin/tournaments	controllers.AdminInterface.tournaments
+GET     /api/admin/round/:id	controllers.AdminInterface.round(id: Long)
 
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 

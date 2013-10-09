@@ -1,6 +1,11 @@
 /* fix for Angular UI Bootstrap */
 .nav, .pagination, .carousel a { cursor: pointer; }
 
+/* http://docs.angularjs.org/api/ng.directive:ngCloak */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
 .htm-current-fight-box {
 	@red: rgba(200, 0, 0, 0.8);
 	@nothing: rgba(255, 255, 255, 0);

@@ -9,13 +9,8 @@ angular.module('htm.services', []).
   factory("appService", ["$http", "$q", "playRoutes", function($http, $q, playRoutes) {
     var AppService = function() {
       var self = this;
-      self.defaultInstallationFolder = function() {
-        return playRoutes.controllers.Application.defaultInstallationFolder().get().then(function (response) {
-        	return response.data;
-        });
-      };
-      self.executeInstallation = function(path, apps) {
-    	return playRoutes.controllers.Application.install().post({path: path, apps: apps});
+      self.fetchTournaments = function(adminBase) {
+    	  return $http.get(adminBase + "/api/tournaments");
       };
       
       self.generateFights = function(n) {

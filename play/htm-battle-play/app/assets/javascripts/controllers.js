@@ -137,3 +137,37 @@ var BattleCtrl = function($scope, $timeout, appService) {
     $('#score-options').hide();
 	
 };
+
+
+var PoolsCtrl = function($scope, $timeout, playRoutes, appService) {
+	$scope.tournaments = new Array();
+	$scope.currentPoolId = -1;
+	var _ = window._;
+
+	playRoutes.controllers.AdminInterface.tournaments().get().success(function(data, status) {
+		$scope.tournaments = _.map(data, function(tournament) { tournament.fetchedRounds = new Array(); return tournament; });
+		_.each($scope.tournaments, function(tournament) {
+			_.each(tournament.rounds, function(roundId) {
+				playRoutes.controllers.AdminInterface.round(roundId).get().success(function(data, status) {
+					tournament.fetchedRounds.push(data);
+				});
+			});
+		});
+	}).error(function(data, status, headers) {
+		$scope.tournaments = "Error " + status + ": " + headers();
+	});
+	
+	$scope.refreshCurrentPoolId = function() {
+		playRoutes.controllers.Application.currentPool().get().success(function(data, status) {
+			$scope.currentPoolId = data;
+		});
+	};
+	
+	$scope.subscribe = function(pool) {
+		playRoutes.controllers.Application.subscribe().post(pool).success(function(data, status) {
+			$scope.refreshCurrentPoolId();
+		});
+	};
+	
+	$scope.refreshCurrentPoolId();
+};
