@@ -70,8 +70,8 @@
 			</div>
 			<div class="panel-body htm-current-fight-box">
 				<div class="row htm-fight-buttons">
-					<div class="col-sm-4 col-md-4">
-						<big>Time: {{timer.currentTime}} of 3:00 <span data-ng-click="toggleTimer()" data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
+					<div class="col-sm-4 col-md-4 htm-timer" data-ng-click="toggleTimer()">
+						Time: <big><strong>{{timer.currentTime}}</strong> of 3:00 <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4">
 						<big>Exchange: {{fight.exchanges | size}} of 10</big>
@@ -175,8 +175,8 @@
     <script src="@routes.Assets.at("javascripts/services/appService.js")"></script>
     
     <div id="score-options" class="btn-group">
-        <button type="button" ng-repeat="score in possibleScores" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger', blue: 'btn btn-primary'}[scoreSide]">{{score}}</button>
-        <button type="button" ng-click="cancelScoreSelect()" class="btn btn-default" title="Cancel">
+        <button type="button" ng-repeat="score in possibleScores" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
+        <button type="button" ng-click="cancelScoreSelect()" class="btn btn-default btn-lg" title="Cancel">
         	<span class="glyphicon glyphicon-remove-circle"></span>
         </button>
     </div>
