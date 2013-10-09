@@ -1,11 +1,35 @@
-.htm-current-fight {
-	
+/* fix for Angular UI Bootstrap */
+.nav, .pagination, .carousel a { cursor: pointer; }
+
+.htm-current-fight-box {
+	@red: rgba(200, 0, 0, 0.8);
+	@nothing: rgba(255, 255, 255, 0);
+	@blue: rgba(0, 50, 200, 0.8);
+	background: -webkit-gradient(linear, left top, right top, from(@red), color-stop(0.05, @nothing), color-stop(0.95, @nothing), to(@blue));
+	/* Safari 5.1+, Chrome 10+ */
+	background: -webkit-linear-gradient(left, @red, @nothing 10%, @nothing 90%, @blue);
+	/* Firefox 3.6+ */
+	background: -moz-linear-gradient(left, @red, @nothing, @blue);
+	/* IE 10 */
+	background: -ms-linear-gradient(left, @red, @nothing, @blue);
+	/* Opera 11.10+ */
+	background: -o-linear-gradient(left, @red, @nothing, @blue);
+}
+
+#score-options {
+	z-index: 1000;
+	position: absolute;
 }
 
 .htm-fight-buttons {
 	button {
 		display: block;
 		width: 100%;
+	}
+	
+	.dropdown-menu {
+		margin-left: 30px;
+		margin-top: -20px;
 	}
 }
 
