@@ -165,7 +165,7 @@ var PoolsCtrl = function($scope, $timeout, playRoutes, appService) {
 	
 	$scope.subscribe = function(pool) {
 		playRoutes.controllers.Application.subscribe().post(pool).success(function(data, status) {
-			$scope.refreshCurrentPoolId();
+			window.location = playRoutes.controllers.Application.fight().url;
 		});
 	};
 	

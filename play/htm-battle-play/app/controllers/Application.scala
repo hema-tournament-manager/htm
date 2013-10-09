@@ -55,6 +55,7 @@ object Application extends Controller {
         routes.javascript.AdminInterface.tournaments,
         routes.javascript.AdminInterface.round,
         routes.javascript.Application.currentPool,
+        routes.javascript.Application.fight,
         routes.javascript.Application.subscribe)).as(JAVASCRIPT)
   }
 
