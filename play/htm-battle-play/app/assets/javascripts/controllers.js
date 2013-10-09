@@ -5,7 +5,7 @@ var BattleCtrl = function($scope, $timeout, appService) {
 	
 	$scope.arena = {name: "Arena 1"};
 	$scope.tournament = {name: "Longsword Open"};
-	$scope.round = {name: "Round 1"};
+	$scope.round = {name: "Round 1", timeLimit: 10};
 	$scope.pool = {order: 3};
     $scope.fights = appService.generateFights(20);
     $scope.currentFight = 1;
@@ -115,15 +115,17 @@ var BattleCtrl = function($scope, $timeout, appService) {
 			d: 0});
     };
     
-    $scope.cleanRed = function() {
-    	$scope.scoreSide = "red";
-    	$scope.scoreSelected = function(score) {
-    		$scope.fight.exchanges.push({time: $scope.timer.currentTime, a: score, b: 0, type: "clean", d: 0});
-    		$scope.fight.score.a += score;
-    		$('#score-options').hide();
-    	};
-    	$('#score-options').show().position({my: "center center", at: "center center", of: "#clean-red-btn"});
-    }
+    $scope.exchangeLimitReached = function() {
+    	return $scope.fight.exchanges.length >= 10;
+    };
+    
+    $scope.timeLimitReached = function() {
+    	return $scope.timer.currentTime >= $scope.round.timeLimit;
+    };
+    
+    $scope.doubleHitLimitReached = function() {
+    	return $scope.fight.score.d >= 3;
+    };
     
     $(document).keypress(function(event) {
 		// space

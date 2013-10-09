@@ -71,7 +71,7 @@
 			<div class="panel-body htm-current-fight-box">
 				<div class="row htm-fight-buttons">
 					<div class="col-sm-4 col-md-4 htm-timer" data-ng-click="toggleTimer()">
-						Time: <big><strong>{{timer.currentTime}}</strong> of 3:00 <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
+						Time: <big><strong>{{timer.currentTime}}</strong> of {{round.timeLimit}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4">
 						<big>Exchange: {{fight.exchanges | size}} of 10</big>
@@ -96,6 +96,20 @@
 					</div>
 					<div class="col-sm-4 col-md-4">
 						<h2 class="panel-title pull-right">{{fight.b.name}}</h2>
+					</div>
+				</div>
+				<div class="htm-padding-top">
+					<div data-ng-show="exchangeLimitReached()" class="alert alert-warning">
+						<span class="glyphicon glyphicon-list"></span>
+						<strong>Limit reached!</strong> The <em>exchange limit</em> has been reached
+					</div>
+					<div data-ng-show="timeLimitReached()" class="alert alert-warning">
+						<span class="glyphicon glyphicon-time"></span>
+						<strong>Limit reached!</strong> The <em>time limit</em> has been reached
+					</div>
+					<div data-ng-show="doubleHitLimitReached()" class="alert alert-warning">
+						<span class="glyphicon glyphicon-transfer"></span>
+						<strong>Limit reached!</strong> The <em>double hit limit</em> has been reached
 					</div>
 				</div>
 				<div class="row htm-fight-buttons htm-padding-top">
@@ -164,7 +178,7 @@
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.position.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("ui-bootstrap.js"))"></script>
+    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("ui-bootstrap-tpls.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular-cookies.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("underscore.js"))"></script>
     <script src="@routes.Application.jsRoutes"></script>
