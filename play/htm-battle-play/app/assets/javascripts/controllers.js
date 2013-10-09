@@ -54,4 +54,11 @@ var BattleCtrl = function($scope, $timeout, appService) {
     	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
     };
     
-  };
+    $(document).keypress(function(event) {
+		// space
+		if (event.keyCode == 32) {
+			$scope.toggleTimer();
+		}
+	});
+	
+};
