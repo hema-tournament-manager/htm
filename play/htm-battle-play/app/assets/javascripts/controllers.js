@@ -40,18 +40,30 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     	$scope.round = data;
     });
     
-    $scope.timer = {'running': false, 'lastStart': -1, 'currentTime': 0};
+    $scope.timer = {running: false, lastStart: -1, currentTime: 0, displayTime: 0};
+    
+    $scope.timerValue = function() {
+    	var result = $scope.timer.currentTime;
+    	if ($scope.timer.running) {
+    		result += new Date().getTime() - $scope.timer.lastStart;
+    	}
+    	return result;
+    };
     
     $scope.toggleTimer = function() {
     	$scope.timer.running = !$scope.timer.running;
     	if ($scope.timer.running) {
-    		$timeout($scope.tick, 1000);
+    		$scope.timer.lastStart = new Date();
+    		$scope.tick();
+    	} else {
+    		$scope.timer.currentTime += new Date().getTime() - $scope.timer.lastStart;
+    		$scope.timer.displayTime = $scope.timer.currentTime;
     	}
     }
     $scope.tick = function() {
     	if ($scope.timer.running) {
-    		$scope.timer.currentTime = $scope.timer.currentTime + 1;
-    		$timeout($scope.tick, 1000);
+    		$scope.timer.displayTime = $scope.timerValue();
+    		$timeout($scope.tick, 500);
     	}
     };
     
@@ -90,17 +102,26 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     	$('#score-options').hide();
     };
     
+    
+    $scope.pushExchange = function(exchange) {
+    	$scope.fight.exchanges.push(exchange);
+    	$scope.fight.scores.push({
+    		diffA: exchange.a,
+    		diffB: exchange.b,
+    		diffDouble: exchange.d
+    	});
+    };
+    
     $scope.hitButtonClicked = function(scoreType, side) {
     	$scope.scoreSide = side;
     	if (scoreType == "clean") {
 	    	$scope.scoreSelected = function(score) {
-	    		$scope.fight.exchanges.push({
-	    			time: $scope.timer.currentTime, 
-	    			a: side == "red" ? score : 0, 
-	    			b: side == "blue" ? score : 0, 
-	    			type: scoreType, 
-	    			d: 0});
-	    		$scope.fight.score[side == "red" ? "a" : "b"] += score;
+	    		$scope.pushExchange({
+		    			time: $scope.timerValue(),
+		    			a: side == "red" ? score : 0, 
+		    			b: side == "blue" ? score : 0, 
+		    			type: scoreType, 
+		    			d: 0});
 	    		$('#score-options').hide();
 	    	}
     	} else {
@@ -108,14 +129,12 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     			var firstScore = score;
     			$scope.scoreSide = side == "red" ? "blue" : "red";
     			$scope.scoreSelected = function(score) {
-    				$scope.fight.exchanges.push({
-    	    			time: $scope.timer.currentTime, 
+    				$scope.pushExchange({
+    	    			time: $scope.timerValue(), 
     	    			a: side == "red" ? firstScore : score, 
     	    			b: side == "blue" ? firstScore : score, 
     	    			type: scoreType, 
     	    			d: 0});
-    	    		$scope.fight.score.a += side == "red" ? firstScore : score;
-    	    		$scope.fight.score.b += side == "blue" ? firstScore : score;
     	    		$('#score-options').hide();
     			}
     		}
@@ -124,8 +143,8 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     };
     
     $scope.doubleHitClicked = function() {
-    	$scope.fight.exchanges.push({
-			time: $scope.timer.currentTime, 
+    	$scope.pushExchange({
+			time: $scope.timerValue(), 
 			a: 0, 
 			b: 0, 
 			type: "double", 
@@ -134,8 +153,8 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     };
     
     $scope.noHitClicked = function() {
-    	$scope.fight.exchanges.push({
-			time: $scope.timer.currentTime, 
+    	$scope.pushExchange({
+			time: $scope.timerValue(), 
 			a: 0, 
 			b: 0, 
 			type: "none", 
@@ -147,7 +166,7 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     };
     
     $scope.timeLimitReached = function() {
-    	return $scope.timer.currentTime >= $scope.round.timeLimit;
+    	return $scope.timerValue() >= $scope.round.timeLimitOfFight;
     };
     
     $scope.doubleHitLimitReached = function() {

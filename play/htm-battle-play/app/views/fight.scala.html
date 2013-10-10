@@ -41,11 +41,11 @@
 					<tr data-ng-repeat="fight in fights | orderBy:'order' | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false">
 						<td>{{fight.plannedTime}}</td>
 						<td>{{fight.id}}</td>
-						<td class="text-left">{{fight.fighterA.name}}</td>
+						<td class="text-left">{{fight.fighterA.name}} <span data-ng-show="fight.fighterA.clubCode">({{fight.fighterA.clubCode}})</span></td>
 						<td class="text-center"></td>
 						<td class="text-center">vs</td>
 						<td class="text-center"></td>
-						<td class="text-right">{{fight.fighterB.name}}</td>
+						<td class="text-right">{{fight.fighterB.name}} <span data-ng-show="fight.fighterB.clubCode">({{fight.fighterB.clubCode}})</span></td>
 						<td width="10%">
 							<div data-ng-show="fight.hover" data-ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}">
 								<span data-ng-show="fight.index &gt;= currentFight" title="Move down" class="glyphicon glyphicon-arrow-down"></button>
@@ -73,7 +73,7 @@
 			<div class="panel-body htm-current-fight-box">
 				<div class="row htm-fight-buttons">
 					<div class="col-sm-4 col-md-4 htm-timer" data-ng-click="toggleTimer()">
-						Time: <big><strong>{{timer.currentTime}}</strong> of {{round.timeLimit}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
+						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{round.timeLimitOfFight | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4">
 						<big>Exchange: {{fight.exchanges | size}} of 10</big>
