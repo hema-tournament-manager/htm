@@ -15,10 +15,6 @@
       <div class="page-header" data-ng-cloak>
         <h1>{{arena.name}} &mdash; {{poolSummary.round.tournament.name}} <small class="pull-right"></small></h1>
       </div>
-      <div>{{poolSummary}}</div>
-      <div>{{pool}}</div>
-      <div>{{round}}</div>
-      <div>{{fights}}</div>
     </header>
     @* -- Main Content -- *@
     <div class="container" data-ng-cloak>
@@ -38,7 +34,7 @@
 							</span>
 						</td>
 					</tr>
-					<tr data-ng-repeat="fight in fights | orderBy:'order' | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false">
+					<tr data-ng-repeat="fight in fights | orderBy:'order' | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight.id]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false">
 						<td>{{fight.plannedTime}}</td>
 						<td>{{fight.id}}</td>
 						<td class="text-left">{{fight.fighterA.name}} <span data-ng-show="fight.fighterA.clubCode">({{fight.fighterA.clubCode}})</span></td>
@@ -68,15 +64,29 @@
       	</div>
       	<div class="panel panel-default">
 			<div class="panel-heading">
-				<h3 class="panel-title">Current fight</h3>
+				<h3 class="panel-title">
+					Current fight
+					<div class="dropdown pull-right" data-ng-show="currentFight.order &gt; -1">
+						<a id="fight-menu" class="dropdown-toggle" href="#" data-toggle="dropdown" title="Fight menu">
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</a>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="fight-menu">
+							<li><a data-ng-click="cancelFight()">Cancel fight</a></li>
+							<li><a data-ng-click="confirmFight()">Confirm fight</a></li>
+						</ul>
+					</div>
+				</h3>
 			</div>
-			<div class="panel-body htm-current-fight-box">
+			<div class="panel-body" data-ng-hide="currentFight.order &gt; -1">
+				<button class="btn btn-primary" data-ng-click="startFight()">Start fight</button>
+			</div>
+			<div class="panel-body htm-current-fight-box" data-ng-show="currentFight.order &gt; -1">
 				<div class="row htm-fight-buttons">
 					<div class="col-sm-4 col-md-4 htm-timer" data-ng-click="toggleTimer()">
 						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{round.timeLimitOfFight | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4">
-						<big>Exchange: {{fight.exchanges | size}} of 10</big>
+						<big>Exchange: {{currentFight.exchanges | size}} of 10</big>
 					</div>
 					<div class="col-sm-2 col-md-2">
 						<button type="button" class="btn btn-default">Undo</button>
@@ -87,31 +97,31 @@
 				</div>
 				<div class="row htm-padding-top">
 					<div class="col-sm-4 col-md-4">
-						<h2 class="panel-title">{{fight.fighterA.name}}</h2>
+						<h2 class="panel-title">{{currentFight.fighterA.name}}</h2>
 					</div>
 					<div class="col-sm-4 col-md-4">
 						<div class="row">
-							<div class="col-sm-4 col-md-4 text-center">{{fight.totalScore().a}}</div>
-							<div class="col-sm-4 col-md-4 text-center">({{fight.totalScore().d}})</div>
-							<div class="col-sm-4 col-md-4 text-center">{{fight.totalScore().b}}</div>
+							<div class="col-sm-4 col-md-4 text-center">{{currentFight.totalScore().a}}</div>
+							<div class="col-sm-4 col-md-4 text-center">({{currentFight.totalScore().d}})</div>
+							<div class="col-sm-4 col-md-4 text-center">{{currentFight.totalScore().b}}</div>
 						</div>
 					</div>
 					<div class="col-sm-4 col-md-4">
-						<h2 class="panel-title pull-right">{{fight.fighterB.name}}</h2>
+						<h2 class="panel-title pull-right">{{currentFight.fighterB.name}}</h2>
 					</div>
 				</div>
 				<div class="htm-padding-top">
 					<div data-ng-show="exchangeLimitReached()" class="alert alert-warning">
 						<span class="glyphicon glyphicon-list"></span>
-						<strong>Limit reached!</strong> The <em>exchange limit</em> has been reached
+						<strong>Limit reached!</strong> The <em>exchange limit</em> has been reached, <a href="#" class="alert-link" data-ng-click="confirmFight()">confirm this fight</a>
 					</div>
 					<div data-ng-show="timeLimitReached()" class="alert alert-warning">
 						<span class="glyphicon glyphicon-time"></span>
-						<strong>Limit reached!</strong> The <em>time limit</em> has been reached
+						<strong>Limit reached!</strong> The <em>time limit</em> has been reached, <a href="#" class="alert-link" data-ng-click="confirmFight()">confirm this fight</a>
 					</div>
 					<div data-ng-show="doubleHitLimitReached()" class="alert alert-warning">
 						<span class="glyphicon glyphicon-transfer"></span>
-						<strong>Limit reached!</strong> The <em>double hit limit</em> has been reached
+						<strong>Limit reached!</strong> The <em>double hit limit</em> has been reached, <a href="#" class="alert-link" data-ng-click="confirmFight()">confirm this fight</a>
 					</div>
 				</div>
 				<div class="row htm-fight-buttons htm-padding-top">
@@ -175,6 +185,13 @@
       </div>
       </div>
     </div>
+    
+          <div>PoolSummary: {{poolSummary}}</div>
+      <div>Pool: {{pool}}</div>
+      <div>Round: {{round}}</div>
+      <div>Fights: {{fights}}</div>
+      <div>Current Fight: {{currentFight}}</div>
+    
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.core.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.position.js"))"></script>

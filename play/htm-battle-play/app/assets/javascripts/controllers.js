@@ -9,9 +9,8 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
 	$scope.poolSummary = {};
 	$scope.pool = {};
     $scope.fights = new Array();
-    $scope.currentFight = 1;
+    $scope.currentFight = {order: -1};
     $scope.fightsShowing = [1, 5];
-    $scope.fight = {};
     $scope.possibleScores = [0, 1, 2, 3];
     
     playRoutes.controllers.Application.currentPool().get().success(function(data, status) {
@@ -31,7 +30,6 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     					}, {a: 0, b: 0, d: 0});
     				};
     				$scope.fights.push(fight);
-    				$scope.fight = _.find($scope.fights, function(f) { return f.order == $scope.currentFight; })
     			});
     		});
     	});
@@ -104,8 +102,8 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     
     
     $scope.pushExchange = function(exchange) {
-    	$scope.fight.exchanges.push(exchange);
-    	$scope.fight.scores.push({
+    	$scope.currentFight.exchanges.push(exchange);
+    	$scope.currentFight.scores.push({
     		diffA: exchange.a,
     		diffB: exchange.b,
     		diffDouble: exchange.d
@@ -149,7 +147,6 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
 			b: 0, 
 			type: "double", 
 			d: 1});
-    	$scope.fight.score.d += 1;
     };
     
     $scope.noHitClicked = function() {
@@ -162,7 +159,7 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     };
     
     $scope.exchangeLimitReached = function() {
-    	return $scope.fight.exchanges.length >= 10;
+    	return $scope.currentFight.exchanges.length >= 10;
     };
     
     $scope.timeLimitReached = function() {
@@ -170,7 +167,19 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     };
     
     $scope.doubleHitLimitReached = function() {
-    	return $scope.fight.totalScore().d >= 3;
+    	return $scope.currentFight.totalScore().d >= 3;
+    };
+    
+    $scope.startFight = function() {
+    	if ($scope.fights.length > 0) {
+    		$scope.currentFight = _.reduce($scope.fights, function(memo, fight) {
+    			if (fight.order < memo.order) {
+    				return fight;
+    			} else {
+    				return memo;
+    			}
+    		}, {order: 99999});
+    	}
     };
     
     $(document).keypress(function(event) {
