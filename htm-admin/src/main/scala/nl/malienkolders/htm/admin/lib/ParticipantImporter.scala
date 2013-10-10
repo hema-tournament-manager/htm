@@ -9,6 +9,8 @@ import nl.malienkolders.htm.admin.model._
 import net.liftweb.mapper._
 import net.liftweb.util._
 import nl.htm.importer.DummyImporter
+import nl.htm.importer.swordfish.Swordfish2013Importer
+import nl.htm.importer.swordfish.SwordfishSettings
 
 object ParticipantImporter {
 
@@ -71,7 +73,7 @@ object ParticipantImporter {
   def doImport = {
     val noCountry = Country.find(By(Country.code2, "")).get
 
-    val data = DummyImporter.doImport()
+    val data = Swordfish2013Importer.doImport(SwordfishSettings("http://www.ghfs.se/swordfish-attendee.php", Country.findAll.map(c => c.code2.get -> c.name.get)))
 
     val tournaments = if (Tournament.count == 0) {
       data.tournaments.map { case t => Tournament.create.name(t.name).identifier(t.id).saveMe }
