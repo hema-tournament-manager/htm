@@ -208,6 +208,7 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
 		// space
 		if (event.keyCode == 32) {
 			$scope.toggleTimer();
+			event.preventDefault();
 		}
 	});
     
