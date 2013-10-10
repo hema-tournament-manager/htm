@@ -1,17 +1,44 @@
 "use strict";
 
-var BattleCtrl = function($scope, $timeout, appService) {
+var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
 	var _ = window._;
 	
 	$scope.arena = {name: "Arena 1"};
-	$scope.tournament = {name: "Longsword Open"};
-	$scope.round = {name: "Round 1", timeLimit: 10};
-	$scope.pool = {order: 3};
-    $scope.fights = appService.generateFights(20);
+//	$scope.tournament = {name: "Longsword Open"};
+	$scope.round = {};
+	$scope.poolSummary = {};
+	$scope.pool = {};
+    $scope.fights = new Array();
     $scope.currentFight = 1;
     $scope.fightsShowing = [1, 5];
-    $scope.fight = _.find($scope.fights, function(f) { return f.index == $scope.currentFight; });
+    $scope.fight = {};
     $scope.possibleScores = [0, 1, 2, 3];
+    
+    playRoutes.controllers.Application.currentPool().get().success(function(data, status) {
+    	$scope.poolSummary = data;
+    	playRoutes.controllers.AdminInterface.pool($scope.poolSummary.id).get().success(function(data) {
+    		$scope.pool = data;
+    		_.each($scope.pool.fights, function(fight) {
+    			playRoutes.controllers.AdminInterface.fight(fight).get().success(function(data) {
+    				var fight = data;
+    				fight['exchanges'] = new Array();
+    				fight['totalScore'] = function() {
+    					return _.reduce(this.scores, function(memo, score) {
+    						memo.a += score.diffA;
+    						memo.b += score.diffB;
+    						memo.d += score.diffDouble;
+    						return memo;
+    					}, {a: 0, b: 0, d: 0});
+    				};
+    				$scope.fights.push(fight);
+    				$scope.fight = _.find($scope.fights, function(f) { return f.order == $scope.currentFight; })
+    			});
+    		});
+    	});
+    });
+    playRoutes.controllers.Application.currentRound().get().success(function(data, status) {
+    	$scope.round = data;
+    });
     
     $scope.timer = {'running': false, 'lastStart': -1, 'currentTime': 0};
     
@@ -37,15 +64,15 @@ var BattleCtrl = function($scope, $timeout, appService) {
     };
     
     $scope.beforeRangeFunction = function(item) {
-    	return item.index < $scope.fightsShowing[0];
+    	return item.order < $scope.fightsShowing[0];
     };
     
     $scope.inRangeFunction = function(item) {
-    	return item.index >= $scope.fightsShowing[0] && item.index <= $scope.fightsShowing[1];
+    	return item.order >= $scope.fightsShowing[0] && item.order <= $scope.fightsShowing[1];
     };
     
     $scope.afterRangeFunction = function(item) {
-    	return item.index > $scope.fightsShowing[1];
+    	return item.order > $scope.fightsShowing[1];
     };
     
     $scope.incCurrentFight = function() {
@@ -124,7 +151,7 @@ var BattleCtrl = function($scope, $timeout, appService) {
     };
     
     $scope.doubleHitLimitReached = function() {
-    	return $scope.fight.score.d >= 3;
+    	return $scope.fight.totalScore().d >= 3;
     };
     
     $(document).keypress(function(event) {

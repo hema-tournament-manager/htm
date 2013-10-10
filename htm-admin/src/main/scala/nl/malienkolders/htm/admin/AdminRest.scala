@@ -29,6 +29,9 @@ object AdminRest extends RestHelper {
     case "api" :: "round" :: AsLong(roundId) :: "pools" :: Nil JsonGet _ =>
       Extraction.decompose(Round.findByKey(roundId).map(_.pools.map(_.toMarshalled)).getOrElse(false))
 
+    case "api" :: "pool" :: AsLong(poolId) :: Nil JsonGet _ =>
+      Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalled).getOrElse(false))
+
     case "api" :: "pool" :: AsLong(poolId) :: "viewer" :: Nil JsonGet _ =>
       val p = Pool.findByKey(poolId)
       var j = p.map(p => Extraction.decompose(p.toViewer)).getOrElse[JValue](JBool(false))
