@@ -38,9 +38,12 @@
 						<td>{{fight.plannedTime}}</td>
 						<td>{{fight.id}}</td>
 						<td class="text-left">{{fight.fighterA.name}} <span data-ng-show="fight.fighterA.clubCode">({{fight.fighterA.clubCode}})</span></td>
-						<td class="text-center"></td>
-						<td class="text-center">vs</td>
-						<td class="text-center"></td>
+						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().a}}</span></td>
+						<td class="text-center">
+							<span data-ng-show="fight.timeStop == 0">vs</span>
+							<span data-ng-show="fight.timeStop &gt; 0">({{fight.totalScore().d}})</span>
+						</td>
+						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().b}}</span></td>
 						<td class="text-right">{{fight.fighterB.name}} <span data-ng-show="fight.fighterB.clubCode">({{fight.fighterB.clubCode}})</span></td>
 						<td width="10%">
 							<div data-ng-show="fight.hover" data-ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}">
@@ -78,7 +81,7 @@
 				</h3>
 			</div>
 			<div class="panel-body" data-ng-hide="currentFight.order &gt; -1">
-				<button class="btn btn-primary" data-ng-click="startFight()">Start fight</button>
+				<button class="btn btn-primary" data-ng-click="startNextFight()">Start fight</button>
 			</div>
 			<div class="panel-body htm-current-fight-box" data-ng-show="currentFight.order &gt; -1">
 				<div class="row htm-fight-buttons">

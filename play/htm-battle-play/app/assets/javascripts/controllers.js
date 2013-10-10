@@ -43,7 +43,7 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     $scope.timerValue = function() {
     	var result = $scope.timer.currentTime;
     	if ($scope.timer.running) {
-    		result += new Date().getTime() - $scope.timer.lastStart;
+    		result += Date.now() - $scope.timer.lastStart;
     	}
     	return result;
     };
@@ -51,10 +51,10 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     $scope.toggleTimer = function() {
     	$scope.timer.running = !$scope.timer.running;
     	if ($scope.timer.running) {
-    		$scope.timer.lastStart = new Date();
+    		$scope.timer.lastStart = Date.now();
     		$scope.tick();
     	} else {
-    		$scope.timer.currentTime += new Date().getTime() - $scope.timer.lastStart;
+    		$scope.timer.currentTime += Date.now() - $scope.timer.lastStart;
     		$scope.timer.displayTime = $scope.timer.currentTime;
     	}
     }
@@ -63,6 +63,18 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     		$scope.timer.displayTime = $scope.timerValue();
     		$timeout($scope.tick, 500);
     	}
+    };
+    
+    $scope.stopTimer = function() {
+    	if ($scope.timer.running) {
+    		$scope.toggleTimer();
+    	}
+    };
+    
+    $scope.resetTimer = function() {
+    	$scope.stopTimer();
+    	$scope.timer.currentTime = 0;
+    	$scope.timer.displayTime = 0;
     };
     
     $scope.fightsBefore = function() {
@@ -170,15 +182,28 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     	return $scope.currentFight.totalScore().d >= 3;
     };
     
-    $scope.startFight = function() {
+    $scope.startNextFight = function() {
+		$scope.resetTimer();
     	if ($scope.fights.length > 0) {
     		$scope.currentFight = _.reduce($scope.fights, function(memo, fight) {
-    			if (fight.order < memo.order) {
+    			if (fight.timeStop == 0 && (memo.order == -1 || fight.order < memo.order)) {
     				return fight;
     			} else {
     				return memo;
     			}
-    		}, {order: 99999});
+    		}, {order: -1});
+    		
+    		$scope.currentFight.timeStart = Date.now();
+    	}
+    };
+    
+    $scope.confirmFight = function() {
+    	if ($scope.currentFight.order > -1) {
+    		$scope.stopTimer();
+    		$scope.currentFight.timeStop = Date.now();
+    		$scope.currentFight.netDuration = $scope.timerValue();
+    		
+    		$scope.startNextFight();
     	}
     };
     
