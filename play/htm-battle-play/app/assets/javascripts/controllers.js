@@ -212,6 +212,10 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
 		}
 	});
     
+    $(window).on("beforeunload", function() {
+    	return "You might lose some information by doing this!";
+    });
+    
     $('#score-options').hide();
 	
 };
