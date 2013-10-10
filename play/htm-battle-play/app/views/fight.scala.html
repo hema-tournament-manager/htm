@@ -47,8 +47,8 @@
 						<td class="text-right">{{fight.fighterB.name}} <span data-ng-show="fight.fighterB.clubCode">({{fight.fighterB.clubCode}})</span></td>
 						<td width="10%">
 							<div data-ng-show="fight.hover" data-ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}">
-								<span data-ng-show="fight.order &gt;= currentFight.order" title="Move down" class="glyphicon glyphicon-arrow-down"></button>
-								<span data-ng-show="fight.order &gt; currentFight.order && fight.order &gt; 1" title="Move up" class="glyphicon glyphicon-arrow-up"></button>
+								<a href="#" data-ng-show="fight.order &gt;= currentFight.order" title="Move down" class="glyphicon glyphicon-arrow-down"></a>
+								<a href="#" data-ng-show="fight.order &gt; currentFight.order && fight.order &gt; 1" title="Move up" class="glyphicon glyphicon-arrow-up"></a>
 							</div>
 						</td>
 					</tr>
@@ -74,8 +74,8 @@
 							<span class="glyphicon glyphicon-chevron-down"></span>
 						</a>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="fight-menu">
-							<li><a data-ng-click="cancelFight()">Cancel fight</a></li>
-							<li><a data-ng-click="confirmFight()">Confirm fight</a></li>
+							<li><a href="#" data-ng-click="cancelFight()">Cancel fight</a></li>
+							<li><a href="#" data-ng-click="confirmFight()">Confirm fight</a></li>
 						</ul>
 					</div>
 				</h3>
@@ -103,7 +103,7 @@
 						<h2 class="panel-title">{{currentFight.fighterA.name}}</h2>
 					</div>
 					<div class="col-sm-4 col-md-4">
-						<div class="row">
+						<div class="row scores">
 							<div class="col-sm-4 col-md-4 text-center">{{currentFight.totalScore().a}}</div>
 							<div class="col-sm-4 col-md-4 text-center">({{currentFight.totalScore().d}})</div>
 							<div class="col-sm-4 col-md-4 text-center">{{currentFight.totalScore().b}}</div>

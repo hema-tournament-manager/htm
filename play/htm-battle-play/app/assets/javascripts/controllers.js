@@ -164,15 +164,15 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     };
     
     $scope.exchangeLimitReached = function() {
-    	return $scope.currentFight.exchanges.length >= 10;
+    	return $scope.currentFight.order > -1 && $scope.currentFight.exchanges.length >= 10;
     };
     
     $scope.timeLimitReached = function() {
-    	return $scope.timerValue() >= $scope.round.timeLimitOfFight;
+    	return $scope.currentFight.order > -1 && $scope.timerValue() >= $scope.round.timeLimitOfFight;
     };
     
     $scope.doubleHitLimitReached = function() {
-    	return $scope.currentFight.totalScore().d >= 3;
+    	return $scope.currentFight.order > -1 && $scope.currentFight.totalScore().d >= 3;
     };
     
     $scope.startNextFight = function() {
