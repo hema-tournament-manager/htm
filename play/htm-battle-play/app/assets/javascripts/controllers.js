@@ -97,13 +97,6 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     	return item.order > $scope.fightsShowing[1];
     };
     
-    $scope.incCurrentFight = function() {
-    	$scope.currentFight = $scope.currentFight + 1;
-    	$scope.fightsShowing[0] = Math.max($scope.currentFight - 2, 1);
-    	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
-    	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
-    };
-    
     $scope.scoreSide = "blue";
     
     $scope.scoreSelected = function(score) {};
@@ -194,6 +187,10 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     		}, {order: -1});
     		
     		$scope.currentFight.timeStart = Date.now();
+    		
+    		$scope.fightsShowing[0] = Math.max($scope.currentFight.order - 2, 1);
+        	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
+        	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
     	}
     };
     

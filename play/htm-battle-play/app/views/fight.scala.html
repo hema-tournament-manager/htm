@@ -22,7 +22,7 @@
       <div class="col-md-8">
       	<div class="panel panel-default">
 			<div class="panel-heading"><h3 class="panel-title">{{round.name}}, Pool {{pool.order}}</h3></div>
-			<table class="table table-condensed table-hover" data-ng-click="incCurrentFight()">
+			<table class="table table-condensed table-hover">
 				<tbody>
 					<tr>
 						<td colspan="8" class="text-center" data-ng-switch data-on="fightsBefore()">
@@ -34,7 +34,7 @@
 							</span>
 						</td>
 					</tr>
-					<tr data-ng-repeat="fight in fights | orderBy:'order' | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight.id]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false">
+					<tr data-ng-repeat="fight in fights | orderBy:'order' | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight.id]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false" data-ng-animate="{enter: 'animated fadeIn'}">
 						<td>{{fight.plannedTime}}</td>
 						<td>{{fight.id}}</td>
 						<td class="text-left">{{fight.fighterA.name}} <span data-ng-show="fight.fighterA.clubCode">({{fight.fighterA.clubCode}})</span></td>
@@ -47,8 +47,8 @@
 						<td class="text-right">{{fight.fighterB.name}} <span data-ng-show="fight.fighterB.clubCode">({{fight.fighterB.clubCode}})</span></td>
 						<td width="10%">
 							<div data-ng-show="fight.hover" data-ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}">
-								<span data-ng-show="fight.index &gt;= currentFight" title="Move down" class="glyphicon glyphicon-arrow-down"></button>
-								<span data-ng-show="fight.index &gt; currentFight" title="Move up" class="glyphicon glyphicon-arrow-up"></button>
+								<span data-ng-show="fight.order &gt;= currentFight.order" title="Move down" class="glyphicon glyphicon-arrow-down"></button>
+								<span data-ng-show="fight.order &gt; currentFight.order && fight.order &gt; 1" title="Move up" class="glyphicon glyphicon-arrow-up"></button>
 							</div>
 						</td>
 					</tr>
