@@ -27,7 +27,7 @@ object Importer {
       S.redirectTo("/tournaments/list")
     }
     "#clear" #> SHtml.checkbox(clear, clear = _, "id" -> "clear") &
-    "#clearTournaments" #> SHtml.checkbox(clearTournaments, clearTournaments = _, "id" -> "clearTournaments") &
+      "#clearTournaments" #> SHtml.checkbox(clearTournaments, clearTournaments = _, "id" -> "clearTournaments") &
       "#doImport" #> SHtml.onSubmitUnit(process)
   }
 

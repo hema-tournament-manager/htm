@@ -27,7 +27,7 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
   lazy val clubName2Code = clubCode2Name.map { case (c, n) => (n, c) }
 
   lazy val replacements = Map(readTuplesFromFile("clubreplacements").map { case (o, r) => (o.toLowerCase(), r) }: _*)
-  
+
   lazy val countryReplacements = Map(readTuplesFromFile("countryreplacements"): _*)
 
   def nameReplacements = Map("9" -> "F. v. d. Bussche-H.")
@@ -94,28 +94,31 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
       val countryName = countryReplacements.get(countryNameRaw).getOrElse(countryNameRaw)
       val country = s.countries.find { case (_, name) => countryName == name }.map(_._1).getOrElse(noCountry)
       val p = Participant(
-          List(SourceId("swordfish", id)),
-          normalizeName(name),
-          nameReplacements.get(id).getOrElse(shortenName(normalizeName(name))),
-          clubName,
-          clubCode,
-          country)
+        List(SourceId("swordfish", id)),
+        normalizeName(name),
+        nameReplacements.get(id).getOrElse(shortenName(normalizeName(name))),
+        clubName,
+        clubCode,
+        country)
       (p, List(longsword, longswordLadies, wrestling, sabre, rapier))
     }).toList
 
-    val registrations: List[(Tournament, Participant)] = entries.flatMap{ case (p, ts) =>
-      // find all tournaments that this person has registered for 
-      ts.zipWithIndex.filter(_._1 startsWith("X")).map { case (_, index) =>
-        // map them to a tuple describing this registration
-        tournaments(index) -> p
-      }
+    val registrations: List[(Tournament, Participant)] = entries.flatMap {
+      case (p, ts) =>
+        // find all tournaments that this person has registered for 
+        ts.zipWithIndex.filter(_._1 startsWith ("X")).map {
+          case (_, index) =>
+            // map them to a tuple describing this registration
+            tournaments(index) -> p
+        }
     }
-    
+
     // group the registrations together by Tournament and collect the participants in a list
-    val registrationsGrouped: Map[Tournament, List[Participant]] = registrations.groupBy(_._1).map { case (t, ps) =>
-      (t, ps.map(p => p._2))
+    val registrationsGrouped: Map[Tournament, List[Participant]] = registrations.groupBy(_._1).map {
+      case (t, ps) =>
+        (t, ps.map(p => p._2))
     }
-    
+
     EventData(entries.map(_._1), tournaments, registrationsGrouped)
   }
 

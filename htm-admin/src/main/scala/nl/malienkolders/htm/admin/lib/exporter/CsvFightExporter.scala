@@ -43,5 +43,4 @@ object CsvFightExporter extends FightExporter {
     out.close()
   }
 
-  
 }
