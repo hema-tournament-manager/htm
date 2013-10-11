@@ -27,21 +27,21 @@ object JsonFightExporter extends FightExporter {
 
   implicit def renderRound(r: Round): JValue =
     ("Name" -> r.name.get) ~
-    ("Arena" -> List(
+      ("Arena" -> List(
         ("Name" -> "Arena 1") ~
-        ("ID" -> "1") ~
-        ("Fight" -> r.pools.flatMap(_.fights.toList))))
-        
-  implicit def renderFight(f: Fight): JValue =
-    	("Fighter_1" -> f.fighterA.get.toString) ~
-    	("Fighter_2" -> f.fighterB.get.toString) ~
-    	("Score_1" -> f.currentScore.a.toString) ~
-    	("Score_2" -> f.currentScore.b.toString) ~
-    	("Doubles" -> f.currentScore.double.toString) ~
-    	("Status" -> fightStatus(f))
+          ("ID" -> "1") ~
+          ("Fight" -> r.pools.flatMap(_.fights.toList))))
 
-   def fightStatus(f: Fight): String = if (f.finished_?) "finished" else if (f.started_?) "fighting" else "pending"
-    	
+  implicit def renderFight(f: Fight): JValue =
+    ("Fighter_1" -> f.fighterA.get.toString) ~
+      ("Fighter_2" -> f.fighterB.get.toString) ~
+      ("Score_1" -> f.currentScore.a.toString) ~
+      ("Score_2" -> f.currentScore.b.toString) ~
+      ("Doubles" -> f.currentScore.double.toString) ~
+      ("Status" -> fightStatus(f))
+
+  def fightStatus(f: Fight): String = if (f.finished_?) "finished" else if (f.started_?) "fighting" else "pending"
+
   def doExport: Unit = {
     val tree: JValue = "Event" -> (
       ("Title" -> "Swordfish 2013") ~
