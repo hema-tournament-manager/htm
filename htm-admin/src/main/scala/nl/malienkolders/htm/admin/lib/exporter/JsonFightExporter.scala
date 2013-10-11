@@ -33,8 +33,8 @@ object JsonFightExporter extends FightExporter {
           ("Fight" -> r.pools.flatMap(_.fights.toList))))
 
   implicit def renderFight(f: Fight): JValue =
-    ("Fighter_1" -> f.fighterA.get.toString) ~
-      ("Fighter_2" -> f.fighterB.get.toString) ~
+    ("Fighter_1" -> f.fighterA.foreign.get.externalId.get) ~
+      ("Fighter_2" -> f.fighterB.foreign.get.externalId.get) ~
       ("Score_1" -> f.currentScore.a.toString) ~
       ("Score_2" -> f.currentScore.b.toString) ~
       ("Doubles" -> f.currentScore.double.toString) ~
