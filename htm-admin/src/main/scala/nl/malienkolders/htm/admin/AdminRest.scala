@@ -74,6 +74,11 @@ object AdminRest extends RestHelper {
     case "api" :: "fight" :: AsLong(id) :: Nil JsonGet _ =>
       Fight.findByKey(id).map(f => Extraction.decompose(f.toMarshalled)).getOrElse[JValue](JBool(false))
 
+    case "api" :: "fight" :: "update" :: Nil JsonPost json -> _ =>
+      val fight = Extraction.extract[MarshalledFight](json)
+      FightServer ! FightUpdate(fight)
+      JBool(true)
+
     case "api" :: "ping" :: Nil JsonGet _ =>
       JString("pong")
   }

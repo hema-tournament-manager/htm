@@ -4,20 +4,19 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.concurrent.Akka
 import akka.actor.Actor
-import actors.RequestCurrentPool
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
 import net.liftweb.json._
 import play.api.libs.json.JsNumber
-import actors.SubscribePool
 import nl.malienkolders.htm.lib.model.MarshalledPoolSummary
 import akka.actor.Props
 import actors.BattleServer
-import actors.RequestCurrentFight
+import actors.BattleServerMsgs._
 import nl.malienkolders.htm.lib.model.MarshalledRound
 import nl.malienkolders.htm.lib.model.MarshalledFight
 import play.api.libs.json.JsObject
-import actors.SetCurrentFight
+import play.api.libs.json.JsString
+import nl.malienkolders.htm.lib.model.MarshalledFight
 
 object Application extends Controller {
 
@@ -55,19 +54,22 @@ object Application extends Controller {
     }.getOrElse(BadRequest)
   }
 
-  def currentFight = Action.async {
-    val f = for (c <- (battleServer ? RequestCurrentFight).mapTo[(Option[MarshalledRound], Option[MarshalledPoolSummary], Option[MarshalledFight])]) yield c
-    f.map{case (_, _, of) => of.map(f => Ok(Serialization.write(f))).getOrElse(BadRequest) }
-  }
-
   def currentRound = Action.async {
-    val f = for (c <- (battleServer ? RequestCurrentFight).mapTo[(Option[MarshalledRound], Option[MarshalledPoolSummary], Option[MarshalledFight])]) yield c
-    f.map{case (or, _, _) => or.map(r => Ok(Serialization.write(r))).getOrElse(BadRequest) }
+    val f = for (c <- (battleServer ? RequestCurrentFight).mapTo[(Option[MarshalledRound], Option[MarshalledPoolSummary])]) yield c
+    f.map{case (or, _) => or.map(r => Ok(Serialization.write(r))).getOrElse(BadRequest) }
   }
 
   def currentPool = Action.async {
-    val f = for (c <- (battleServer ? RequestCurrentFight).mapTo[(Option[MarshalledRound], Option[MarshalledPoolSummary], Option[MarshalledFight])]) yield c
-    f.map{case (_, op, _) => op.map(p => Ok(Serialization.write(p))).getOrElse(BadRequest) }
+    val f = for (c <- (battleServer ? RequestCurrentFight).mapTo[(Option[MarshalledRound], Option[MarshalledPoolSummary])]) yield c
+    f.map{case (_, op) => op.map(p => Ok(Serialization.write(p))).getOrElse(BadRequest) }
+  }
+  
+  def fightUpdate = Action { request =>
+  	request.body.asJson.map { json =>
+  	  val fight = Serialization.read[MarshalledFight](json.toString)
+  	  battleServer ! FightUpdate(fight)
+  	  Ok("Updated fight")
+  	}.getOrElse(BadRequest)
   }
 
   def jsRoutes(varName: String = "jsRoutes") = Action { implicit request =>
@@ -81,6 +83,7 @@ object Application extends Controller {
         routes.javascript.Application.currentPool,
         routes.javascript.Application.currentPoolId,
         routes.javascript.Application.fight,
+        routes.javascript.Application.fightUpdate,
         routes.javascript.Application.subscribe)).as(JAVASCRIPT)
   }
 

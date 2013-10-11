@@ -13,11 +13,12 @@ import java.util.Date
 
 class BattleServer extends Actor {
 
+  import BattleServerMsgs._
+  
   implicit val formats = Serialization.formats(NoTypeHints)
   
    private var currentRound: Option[MarshalledRound] = None
   private var currentPool: Option[MarshalledPoolSummary] = None
-  private var currentFight: Option[MarshalledFight] = None
   private var timer: Long = 0
   private var lastTimerStart: Long = -1
   private var timerRunning = false
@@ -50,7 +51,7 @@ class BattleServer extends Actor {
       
     case PoolSubscription(pool) => sender ! (currentPool.isDefined && currentPool.get == pool)
 
-    case RequestCurrentFight => sender ! (currentRound, currentPool, currentFight)
+    case RequestCurrentFight => sender ! (currentRound, currentPool)
     
     case SetCurrentFight(pool) => {
       currentPool = Some(pool)
@@ -61,124 +62,24 @@ class BattleServer extends Actor {
       println("ROUND: " + round)
       if (round.isDefined) {
         currentRound = Some(round.get)
-        val req = :/(adminHost) / "api" / "pool" / pool.id.toString / "fight" / "pop"
-        currentFight = Http(req OK as.String).fold[Option[MarshalledFight]](
-          _ => None,
-          success => Some(Serialization.read[MarshalledFight](success))).apply
       }
       timer = 0
       timerRunning = false
       breakTimeReached = false
 
-      viewerServer ! InitFight(currentRound, currentPool, currentFight)
+      viewerServer ! InitFight(currentRound, currentPool)
       viewerServer ! StopTimer(timer)
       viewerServer ! UpdateScores(currentScore)
       viewerServer ! ShowView(new FightView)
 
-      if (currentFight.isDefined) {
-        try {
-          val req = :/(adminHost) / "api" / "pool" / pool.id.toString / "fight" / "peek"
-          val nextFight = Http(req OK as.String).fold[Option[MarshalledFight]](
-            _ => None,
-            success => success match {
-              case "false" => None
-              case _ => Some(Serialization.read[MarshalledFight](success))
-            }).apply
-          viewerServer ! ShowMessage(
-            nextFight match {
-              case Some(f) => "Next up: %s (red) vs %s (blue)" format (f.fighterA.shortName, f.fighterB.shortName)
-              case _ => ""
-            }, -1)
-        } catch {
-          case _: Throwable => viewerServer ! ShowMessage("", -1)
-        }
-      }
-
-      sender ! (currentRound, currentPool, currentFight)
+      sender ! (currentRound, currentPool)
     }
   
-  case s: Score => {
-      if (!s.isExchange || currentRound.get.exchangeLimit == 0 || exchangeCount < currentRound.get.exchangeLimit) {
-        scores = s :: scores
-        viewerServer ! UpdateScores(currentScore)
-      }
+    case FightUpdate(fight) => {
+      val req = :/(adminHost) / "api" / "fight" / "update" <:< Map("Content-Type" -> "application/json")
+      Http(req.POST << Serialization.write(fight)).apply
     }
-    case Undo => {
-      scores = scores.drop(1)
-      viewerServer ! UpdateScores(currentScore)
-    }
-    case Cancel => {
-      if (timerRunning) {
-        timerRunning = false
-        timer += System.currentTimeMillis - lastTimerStart
-      }
-
-      val req = :/(adminHost) / "api" / "fight" / "cancel" <:< Map("Content-Type" -> "application/json")
-      val f = currentFight.get
-      val result = Http(req.POST << Serialization.write(MarshalledFight(
-        f.id,
-        f.pool,
-        f.round,
-        f.order,
-        f.fighterA,
-        f.fighterB,
-        fightStartedAt,
-        new Date().getTime(),
-        timer,
-        List()))).fold[Boolean](_ => false, resp => resp.getResponseBody().toBoolean).apply
-
-      if (result) {
-        currentFight = None
-        timer = 0
-        timerRunning = false
-        scores = List()
-
-        viewerServer ! ShowMessage("", -1)
-        self ! UpdateViewer(new PoolOverview)
-        viewerServer ! ShowView(new PoolOverview)
-      }
-    }
-    case Finish => {
-      if (timerRunning) {
-        timerRunning = false
-        timer += System.currentTimeMillis - lastTimerStart
-      }
-
-      val req = :/(adminHost) / "api" / "fight" / "confirm" <:< Map("Content-Type" -> "application/json")
-      val f = currentFight.get
-      val result = Http(req.POST << Serialization.write(MarshalledFight(
-        f.id,
-        f.pool,
-        f.round,
-        f.order,
-        f.fighterA,
-        f.fighterB,
-        fightStartedAt,
-        new Date().getTime(),
-        timer,
-        scores.map(s => MarshalledScore(
-          s.timeInFight,
-          s.timeInWorld,
-          s.a,
-          s.b,
-          s.aAfter,
-          s.bAfter,
-          s.double,
-          s.remark,
-          s.isSpecial,
-          s.isExchange))))).fold[Boolean](_ => false, resp => resp.getResponseBody().toBoolean).apply
-
-      if (result) {
-        currentFight = None
-        timer = 0
-        timerRunning = false
-        scores = List()
-
-        viewerServer ! ShowMessage("", -1)
-        self ! UpdateViewer(new PoolOverview)
-        viewerServer ! ShowView(new PoolOverview)
-      }
-    }
+    
     case UpdateViewer(v) =>
       v match {
         case _: PoolOverview =>
@@ -198,7 +99,7 @@ class BattleServer extends Actor {
                 success => Some(Serialization.read[MarshalledPoolRanking](success))).apply
             }.getOrElse(None))
         case _: FightView =>
-          viewerServer ! InitFight(currentRound, currentPool, currentFight)
+          viewerServer ! InitFight(currentRound, currentPool)
           viewerServer ! UpdateScores(currentScore)
         case _ =>
         // ignore
@@ -206,15 +107,17 @@ class BattleServer extends Actor {
     case msg =>
       println(msg.toString)
   }
+ 
 }
-
-case class BattleServerUpdate(currentRound: Option[MarshalledRound], currentPool: Option[MarshalledPoolSummary], currentFight: Option[MarshalledFight], nextFight: Option[MarshalledFight], currentTime: Long, scores: List[Score])
+object BattleServerMsgs {
+  case class BattleServerUpdate(currentRound: Option[MarshalledRound], currentPool: Option[MarshalledPoolSummary], nextFight: Option[MarshalledFight], currentTime: Long, scores: List[Score])
 case object RequestCurrentPool
 case class SubscribePool(pool: MarshalledPoolSummary)
 case class UnsubscribePool(pool: MarshalledPoolSummary)
 case class PoolSubscription(pool: MarshalledPoolSummary)
 case object RequestCurrentFight
 case class SetCurrentFight(pool: MarshalledPoolSummary)
+case class FightUpdate(fight: MarshalledFight)
 case class UpdateViewer(v: View)
 case object UpdateTimer
 case object Start
@@ -227,3 +130,5 @@ case class ScoreUpdate(scores: List[Score])
 
 case class Score(a: Int, aAfter: Int, b: Int, bAfter: Int, double: Int, timeInWorld: Long, timeInFight: Long, remark: String, isSpecial: Boolean, isExchange: Boolean)
 case class ScorePoints(a: Int, aAfter: Int, b: Int, bAfter: Int, double: Int, remark: String, isSpecial: Boolean, isExchange: Boolean)
+}
+

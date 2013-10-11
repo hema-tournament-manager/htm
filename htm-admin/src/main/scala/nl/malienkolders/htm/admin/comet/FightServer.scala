@@ -37,6 +37,9 @@ object FightServer extends LiftActor {
       fight.inProgress(false)
       reply(if (fight.save) FightMsg(fight) else NoFightMsg)
     }
+    case FightUpdate(f) => {
+      Fight.findByKey(f.id).get.fromMarshalled(f).inProgress(f.timeStop == 0).save
+    }
   }
 
 }
@@ -45,4 +48,5 @@ case class PeekFight(pool: Pool)
 case class PopFight(pool: Pool)
 case class FightMsg(fight: Fight)
 case class FightResult(fight: Fight, confirm: Boolean)
+case class FightUpdate(fight: MarshalledFight)
 case object NoFightMsg

@@ -12,6 +12,7 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     $scope.currentFight = {order: -1};
     $scope.fightsShowing = [1, 5];
     $scope.possibleScores = [0, 1, 2, 3];
+    $scope.pendingOperation = false;
     
     playRoutes.controllers.Application.currentPool().get().success(function(data, status) {
     	$scope.poolSummary = data;
@@ -109,10 +110,18 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     $scope.pushExchange = function(exchange) {
     	$scope.currentFight.exchanges.push(exchange);
     	$scope.currentFight.scores.push({
+    		timeInFight: exchange.time,
+    		timeInWorld: Date.now(),
     		diffA: exchange.a,
     		diffB: exchange.b,
-    		diffDouble: exchange.d
+    		diffAAfterblow: 0,
+    		diffBAfterblow: 0,
+    		diffDouble: exchange.d,
+    		scoreType: exchange.type,
+    		isSpecial: false,
+    		isExchange: true
     	});
+    	playRoutes.controllers.Application.fightUpdate().post($scope.currentFight);
     };
     
     $scope.hitButtonClicked = function(scoreType, side) {
@@ -200,7 +209,9 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
     		$scope.currentFight.timeStop = Date.now();
     		$scope.currentFight.netDuration = $scope.timerValue();
     		
-    		$scope.startNextFight();
+    		playRoutes.controllers.Application.fightUpdate().post($scope.currentFight).success(function(data, status) {
+    			$scope.startNextFight();
+    		});
     	}
     };
     
