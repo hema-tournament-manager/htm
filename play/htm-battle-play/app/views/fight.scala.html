@@ -10,6 +10,27 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
 	</head>
 	<body data-ng-controller="BattleCtrl">
+    <script type="text/ng-template" id="exchangeList.html">
+		<div class="modal-dialog">
+			<div class="modal-content">
+    			<div class="modal-header">
+					<button type="button" class="close" ng-click="close()" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Exchanges</h4>
+				</div>
+    			<div class="modal-body">
+					<ul>
+        		        <li ng-repeat="exchange in exchanges">
+                		    {{ exchange }}
+		                </li>
+        		    </ul>
+				</div>
+    			<div class="modal-footer">
+					<button class="btn btn-warning" ng-click="close()">Close</button>
+				</div>
+			</div>
+		</div>
+	</script>
+    
     @*-- Header -- *@
     <header class="container">
       <div class="page-header" data-ng-cloak>
@@ -89,7 +110,7 @@
 						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{round.timeLimitOfFight | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4">
-						<big>Exchange: {{currentFight.exchanges | size}} of 10</big>
+						<big data-ng-click="showExchanges()">Exchange: {{currentFight.exchanges | size}} of 10</big>
 					</div>
 					<div class="col-sm-2 col-md-2">
 						<button type="button" class="btn btn-default">Undo</button>

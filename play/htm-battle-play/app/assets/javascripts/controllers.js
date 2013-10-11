@@ -1,6 +1,6 @@
 "use strict";
 
-var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
+var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
 	var _ = window._;
 	
 	$scope.arena = {name: "Arena 1"};
@@ -172,6 +172,18 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
 			d: 0});
     };
     
+    $scope.showExchanges = function() {
+    	var modalInstance = $modal.open({
+    	      templateUrl: 'exchangeList.html',
+    	      controller: ExchangeListCtrl,
+    	      resolve: {
+    	        exchanges: function () {
+    	          return $scope.currentFight.exchanges;
+    	        }
+    	      }
+    	    });
+    };
+    
     $scope.exchangeLimitReached = function() {
     	return $scope.currentFight.order > -1 && $scope.currentFight.exchanges.length >= 10;
     };
@@ -231,6 +243,13 @@ var BattleCtrl = function($scope, $timeout, playRoutes, appService) {
 	
 };
 
+var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
+	$scope.exchanges = exchanges;
+	
+	$scope.close = function() {
+		$modalInstance.dismiss('cancel');
+	};
+};
 
 var PoolsCtrl = function($scope, $timeout, playRoutes, appService) {
 	$scope.tournaments = new Array();

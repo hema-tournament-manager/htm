@@ -6,6 +6,9 @@
   display: none !important;
 }
 
+/* fix for https://github.com/angular-ui/bootstrap/issues/331 */
+.modal {display: block;height: 0;overflow: visible;}
+
 .htm-current-fight-box {
 	@red: rgba(200, 0, 0, 0.8);
 	@nothing: rgba(255, 255, 255, 0);
