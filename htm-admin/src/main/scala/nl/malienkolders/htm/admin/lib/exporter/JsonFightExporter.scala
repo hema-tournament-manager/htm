@@ -16,7 +16,7 @@ object JsonFightExporter extends FightExporter {
   implicit def renderParticipant(p: Participant): JValue =
     ("ID" -> p.externalId.get) ~
       ("Name" -> p.name.get) ~
-      ("Club" -> p.club.get)
+      ("Club" -> p.clubCode.get)
 
   implicit def renderTournament(t: Tournament): JValue =
     ("Type" -> t.name.get) ~
