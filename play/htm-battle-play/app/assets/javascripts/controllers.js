@@ -13,6 +13,7 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
     $scope.fightsShowing = [1, 5];
     $scope.possibleScores = [0, 1, 2, 3];
     $scope.pendingOperation = false;
+    $scope.redoScore = false;
     
     playRoutes.controllers.Application.currentPool().get().success(function(data, status) {
     	$scope.poolSummary = data;
@@ -106,6 +107,14 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
     	$('#score-options').hide();
     };
     
+    $scope.undoClicked = function () {
+    	$scope.redoScore = $scope.currentFight.scores.pop();
+    };
+    
+    $scope.redoClicked = function () {
+    	$scope.currentFight.scores.push($scope.redoScore);
+    	$scope.redoScore = false;
+    };
     
     $scope.pushExchange = function(exchange) {
     	$scope.currentFight.scores.push({
