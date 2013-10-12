@@ -129,7 +129,7 @@
 						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{round.timeLimitOfFight | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4 htm-clickable">
-						<big data-ng-click="showExchanges()">Exchange: {{currentFight.totalScore().x}} of 10</big>
+						<big data-ng-click="showExchanges()">Exchange: {{currentFight.totalScore().x}} <span data-ng-show="round.exchangeLimit &gt; 0">of {{round.exchangeLimit}}</span></big>
 					</div>
 					<div class="col-sm-2 col-md-2">
 						<button type="button" class="btn btn-sm btn-default" data-ng-click="undoClicked()" data-ng-disabled="currentFight.scores.length == 0">Undo</button>

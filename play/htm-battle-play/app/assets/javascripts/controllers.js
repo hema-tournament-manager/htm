@@ -193,7 +193,7 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
     };
     
     $scope.exchangeLimitReached = function() {
-    	return $scope.currentFight.order > -1 && $scope.currentFight.totalScore().x >= 10;
+    	return $scope.currentFight.order > -1 && $scope.round.exchangeLimit > 0 && $scope.currentFight.totalScore().x >= $scope.round.exchangeLimit;
     };
     
     $scope.timeLimitReached = function() {
