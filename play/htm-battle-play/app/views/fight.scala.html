@@ -19,9 +19,28 @@
 				</div>
     			<div class="modal-body">
 					<ul>
-        		        <li ng-repeat="exchange in exchanges">
-                		    {{ exchange }}
-		                </li>
+						<table class="table table-condensed">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>time</th>
+									<th>red</th>
+									<th>double</th>
+									<th>blue</th>
+									<th>type</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="score in exchanges">
+									<td>{{score.exchangeId}}</td>
+									<td>{{score.timeInFight | minutes}}</td>
+									<td>{{score.diffA}}</td>
+									<td>{{score.diffDouble}}</td>
+									<td>{{score.diffB}}</td>
+									<td>{{score.scoreType}}</td>
+								</tr>
+							</tbody>
+						</table>
         		    </ul>
 				</div>
     			<div class="modal-footer">
@@ -110,7 +129,7 @@
 						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{round.timeLimitOfFight | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4">
-						<big data-ng-click="showExchanges()">Exchange: {{currentFight.exchanges | size}} of 10</big>
+						<big data-ng-click="showExchanges()">Exchange: {{currentFight.totalScore().x}} of 10</big>
 					</div>
 					<div class="col-sm-2 col-md-2">
 						<button type="button" class="btn btn-default">Undo</button>

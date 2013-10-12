@@ -21,14 +21,14 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
     		_.each($scope.pool.fights, function(fight) {
     			playRoutes.controllers.AdminInterface.fight(fight).get().success(function(data) {
     				var fight = data;
-    				fight['exchanges'] = new Array();
     				fight['totalScore'] = function() {
     					return _.reduce(this.scores, function(memo, score) {
     						memo.a += score.diffA;
     						memo.b += score.diffB;
     						memo.d += score.diffDouble;
+    						memo.x += score.isExchange ? 1 : 0;
     						return memo;
-    					}, {a: 0, b: 0, d: 0});
+    					}, {a: 0, b: 0, d: 0, x: 0});
     				};
     				$scope.fights.push(fight);
     			});
@@ -108,7 +108,6 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
     
     
     $scope.pushExchange = function(exchange) {
-    	$scope.currentFight.exchanges.push(exchange);
     	$scope.currentFight.scores.push({
     		timeInFight: exchange.time,
     		timeInWorld: Date.now(),
@@ -171,21 +170,21 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
 			type: "none", 
 			d: 0});
     };
-    
+
     $scope.showExchanges = function() {
     	var modalInstance = $modal.open({
     	      templateUrl: 'exchangeList.html',
     	      controller: ExchangeListCtrl,
     	      resolve: {
     	        exchanges: function () {
-    	          return $scope.currentFight.exchanges;
+    	          return $scope.currentFight.scores;
     	        }
     	      }
     	    });
     };
     
     $scope.exchangeLimitReached = function() {
-    	return $scope.currentFight.order > -1 && $scope.currentFight.exchanges.length >= 10;
+    	return $scope.currentFight.order > -1 && $scope.currentFight.totalScore().x >= 10;
     };
     
     $scope.timeLimitReached = function() {
@@ -245,6 +244,14 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
 
 var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
 	$scope.exchanges = exchanges;
+	var exchangeCounter = 1;
+	_.each($scope.exchanges, function(score) {
+		if (score.isExchange) {
+			score.exchangeId = exchangeCounter++;
+		} else {
+			score.exchangeId = "-";
+		}
+	});
 	
 	$scope.close = function() {
 		$modalInstance.dismiss('cancel');
