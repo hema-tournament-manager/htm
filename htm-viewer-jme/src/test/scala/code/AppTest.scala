@@ -13,7 +13,7 @@ object AppTest {
     suite
   }
 
-  def main(args : Array[String]) {
+  def main(args: Array[String]) {
     junit.textui.TestRunner.run(suite)
   }
 }
