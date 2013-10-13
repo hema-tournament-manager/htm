@@ -17,11 +17,6 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
     "sabre" -> "Sabre",
     "rapier_dagger" -> "Rapier & Dagger")
 
-  def readTuplesFromFile(filename: String) = Source.fromInputStream(Swordfish2013Importer.getClass().getResourceAsStream(filename), "UTF-8").getLines().toList.map(line => line.split(" -> ") match {
-    case Array(code, name) => code -> name
-    case _ => "" -> ""
-  })
-
   lazy val clubCode2Name = Map(readTuplesFromFile("clubcodes"): _*)
 
   lazy val clubName2Code = clubCode2Name.map { case (c, n) => (n, c) }

@@ -1,6 +1,7 @@
 package nl.htm.importer
 
 import scala.util.Random
+import scala.io.Source
 
 case class Tournament(id: String, name: String)
 
@@ -14,6 +15,11 @@ abstract class Importer[Settings] {
   implicit def tuple2sourceId(t: (String, String)): SourceId = SourceId(t._1, t._2)
 
   def doImport(s: Settings): EventData;
+
+  protected def readTuplesFromFile(filename: String) = Source.fromInputStream(getClass().getResourceAsStream(filename), "UTF-8").getLines().toList.map(line => line.split(" -> ") match {
+    case Array(code, name) => code -> name
+    case _ => "" -> ""
+  })
 }
 
 case class EmptySettings()
