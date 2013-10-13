@@ -23,6 +23,8 @@ class Round extends LongKeyedMapper[Round] with OneToMany[Long, Round] {
   object breakDuration extends MappedLong(this)
   object timeBetweenFights extends MappedLong(this)
 
+  object ruleset extends MappedString(this, 32)
+
   object pools extends MappedOneToMany(Pool, Pool.round, OrderBy(Pool.order, Ascending)) with Owned[Pool] with Cascade[Pool]
 
   def previousRound = {

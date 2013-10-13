@@ -60,6 +60,9 @@ body {
 					</div>
 					<div class="panel-body">
 					<p>
+						Ruleset: <select name="ruleset"></select>
+					</p>
+					<p>
 						Time limit: <input type="number" name="timeLimit" /> seconds,
 						with a break at <input type="number" name="fightBreak" /> seconds
 						(0 = no limit) with break duration <input type="number" name="fightBreakDuration"/> seconds
@@ -73,8 +76,7 @@ body {
 					</p>
 					<p>
 						<button class="reorder">Reorder</button>
-						<button class="planRoundRobin">Plan Round Robin</button>
-						<button class="planSwiss">Plan Swiss Round</button>
+						<button class="plan">Automatic Planning</button>
 					</p>
 					<div id="roundPool" class="pool panel panel-default">
 						<div class="panel-heading">

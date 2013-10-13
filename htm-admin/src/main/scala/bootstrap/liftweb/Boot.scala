@@ -14,6 +14,7 @@ import nl.malienkolders.htm.lib._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.snippet.TournamentView
 import nl.malienkolders.htm.admin.AdminRest
+import nl.malienkolders.htm.lib.RoundRobinTournament
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -36,7 +37,7 @@ class Boot {
     // Use Lift's Mapper ORM to populate the database
     // you don't need to use Mapper to use Lift... use
     // any ORM you want
-    Schemifier.schemify(true, Schemifier.infoF _, User, Country, Score, Tournament, TournamentParticipants, Round, Pool, PoolParticipants, Participant, Fight, ParticipantNameMapping)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Country, Score, model.Tournament, TournamentParticipants, Round, Pool, PoolParticipants, Participant, Fight, ParticipantNameMapping)
 
     // where to search snippet
     LiftRules.addToPackages("nl.malienkolders.htm.admin")
@@ -44,6 +45,9 @@ class Boot {
 
     CountryImporter.doImport
 
+    SwissTournament.register
+    RoundRobinTournament.register
+    
     val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list") ::
       TournamentView.menu ::

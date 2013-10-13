@@ -34,7 +34,11 @@ package swiss {
 
 import swiss.ParticipantScores
 
-object SwissTournament extends nl.malienkolders.htm.lib.Tournament[ParticipantScores] {
+object SwissTournament extends nl.malienkolders.htm.lib.Tournament {
+
+  val id = "swiss"
+
+  type Scores = ParticipantScores
 
   def compare(rapierRules: Boolean)(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {

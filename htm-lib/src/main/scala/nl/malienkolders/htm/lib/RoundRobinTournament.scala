@@ -8,6 +8,8 @@ import net.liftweb.mapper._
 import net.liftweb.util.Helpers._
 import net.liftweb.util.StringPromotable.intToStrPromo
 
+import roundRobin.ParticipantScores
+
 package roundRobin {
   case class ParticipantScores(
       initialRanking: Int,
@@ -27,9 +29,11 @@ package roundRobin {
   }
 }
 
-import roundRobin.ParticipantScores
+object RoundRobinTournament extends nl.malienkolders.htm.lib.Tournament {
 
-object RoundRobinTournament extends nl.malienkolders.htm.lib.Tournament[ParticipantScores] {
+  val id = "round-robin"
+
+  type Scores = ParticipantScores
 
   implicit class PimpedInt(val i: Int) extends AnyVal {
     def isEven = i % 2 == 0
