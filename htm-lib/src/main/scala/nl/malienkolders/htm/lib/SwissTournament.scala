@@ -9,7 +9,7 @@ import net.liftweb.util.Helpers._
 import net.liftweb.common.Box.box2Option
 import net.liftweb.util.StringPromotable.intToStrPromo
 
-object SwissTournament extends nl.malienkolders.htm.lib.Tournament {
+package swiss {
 
   case class ParticipantScores(
       initialRanking: Int,
@@ -29,6 +29,12 @@ object SwissTournament extends nl.malienkolders.htm.lib.Tournament {
     def hitsReceived = cleanHitsReceived + specialHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
     def firstHits = cleanHitsDealt + specialHitsDealt + afterblowsDealt
   }
+
+}
+
+import swiss.ParticipantScores
+
+object SwissTournament extends nl.malienkolders.htm.lib.Tournament[ParticipantScores] {
 
   def compare(rapierRules: Boolean)(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {

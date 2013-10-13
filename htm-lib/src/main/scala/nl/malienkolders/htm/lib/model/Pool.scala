@@ -7,7 +7,7 @@ import mapper._
 case class MarshalledPoolSummary(id: Long, order: Long, round: MarshalledRoundSummary, fightCount: Long, participantsCount: Long)
 case class MarshalledPool(id: Long, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
 case class MarshalledViewerPool(summary: MarshalledPoolSummary, fights: List[MarshalledViewerFightSummary])
-case class MarshalledPoolRanking(poolInfo: MarshalledPoolSummary, ranked: List[MarshalledParticipant], points: List[SwissTournament.ParticipantScores])
+case class MarshalledPoolRanking(poolInfo: MarshalledPoolSummary, ranked: List[MarshalledParticipant], points: List[swiss.ParticipantScores])
 
 class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToMany {
   def getSingleton = Pool

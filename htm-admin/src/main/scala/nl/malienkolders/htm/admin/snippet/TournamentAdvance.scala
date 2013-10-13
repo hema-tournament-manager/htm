@@ -12,6 +12,7 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.lib.TournamentUtils._
 import scala.util.Random
 import nl.malienkolders.htm.lib.SwissTournament
+import nl.malienkolders.htm.lib.swiss.ParticipantScores
 
 object TournamentAdvance {
   val menu = Menu.param[ParamInfo]("Advance Participants", "Advance Participants", s => Full(ParamInfo(s)),
@@ -28,7 +29,7 @@ object TournamentAdvance {
 
     implicit val random = new scala.util.Random(cr.id.is)
 
-    ".participant" #> SwissTournament.ranking(pr).foldLeft(List[(Participant, SwissTournament.ParticipantScores)]())(_ ++ _._2).sortWith((p1, p2) => SwissTournament.compare(t.rapier_?)(p1._2, p2._2)).zipWithIndex.map {
+    ".participant" #> SwissTournament.ranking(pr).foldLeft(List[(Participant, ParticipantScores)]())(_ ++ _._2).sortWith((p1, p2) => SwissTournament.compare(t.rapier_?)(p1._2, p2._2)).zipWithIndex.map {
       case ((p, s), i) =>
         ".selected *" #> SHtml.checkbox(false, b => if (b) selected = p :: selected) &
           SwissTournament.renderRankedFighter(i + 1, p, s)
