@@ -138,7 +138,7 @@ object TournamentView {
 
     def newPool(round: Round) {
       if (finishedFights_?(round)) {
-        S.notice("Cannot add a poule, because fights have been fought")
+        S.notice("Cannot add a pool, because fights have been fought")
       } else {
         val pool = Pool.create.order(round.pools.size + 1)
         round.pools += pool
@@ -150,7 +150,7 @@ object TournamentView {
     }
     def deletePool(round: Round, pool: Pool) {
       if (finishedFights_?(round)) {
-        S.notice("Cannot delete a poule, because fights have been fought")
+        S.notice("Cannot delete a pool, because fights have been fought")
       } else {
         val surplusParticipants = pool.participants.toList
         round.pools -= pool
@@ -203,7 +203,7 @@ object TournamentView {
 
     def refresh(anchor: Option[Any] = None) =
       S.redirectTo(t.id.is.toString + anchor.map {
-        case p: Pool => "#poule" + p.id.is
+        case p: Pool => "#pool" + p.id.is
         case r: Round => "#round" + r.id.is
         case _ => ""
       }.getOrElse(""))
@@ -313,7 +313,7 @@ object TournamentView {
               deletePool(r, p)
               refresh()
             } &
-              "#poolName *" #> <span><a name={ "poule" + p.id.is }></a>{ "Poule %d" format p.order.is }</span> &
+              "#poolName *" #> <span><a name={ "pool" + p.id.is }></a>{ "Pool %d" format p.order.is }</span> &
               "name=poolStartTime" #> SHtml.ajaxText(df.format(new Date(p.startTime.get)), { s => p.startTime(df.parse(s).getTime()); p.save; S.notice("Pool start-time saved") }) &
               "#poolFight *" #> p.fights.map(f => {
                 ".fightOrder *" #> f.order.is &
@@ -340,7 +340,7 @@ object TournamentView {
                       ruleset.renderRankedFighter(i + 1, pt, ps) &
                       ".hasFights *" #> (if (hasFights) "" else "Not fighting") &
                       (if (!hasFights)
-                        ".actions *" #> SHtml.ajaxButton(EntityRef("otimes"), () => Confirm("There is no way back!", SHtml.ajaxInvoke { () => removeFromPool(p, pt); RedirectTo("/tournaments/view/" + t.identifier.is) }._2.cmd), "title" -> "Remove from poule")
+                        ".actions *" #> SHtml.ajaxButton(EntityRef("otimes"), () => Confirm("There is no way back!", SHtml.ajaxInvoke { () => removeFromPool(p, pt); RedirectTo("/tournaments/view/" + t.identifier.is) }._2.cmd), "title" -> "Remove from pool")
                       else
                         ".actions *" #> "")
 
@@ -356,9 +356,14 @@ object TournamentView {
           }) &
       "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong)) &
       ".navbar-nav" #> (
-        "li" #> t.rounds.map(r =>
-          "a [href]" #> ("#round" + r.id.get) &
-            "a *" #> r.name.get))
+        ".dropdown" #> t.rounds.map(r =>
+          ".dropdown-toggle [href]" #> ("#round" + r.id.get) &
+            ".dropdown-toggle span" #> r.name.get &
+            "ul" #> (
+                ".roundref a [href]" #> ("#round" + r.id.get) &
+                ".poolref" #> r.pools.map(p =>
+                  "a [href]" #> ("#pool" + p.id.get) &
+                  "a *" #> ("Pool " + p.order.get)))))
 
   }
 
