@@ -8,8 +8,6 @@ import net.liftweb.mapper._
 import net.liftweb.util.Helpers._
 import net.liftweb.util.StringPromotable.intToStrPromo
 
-import roundRobin.ParticipantScores
-
 package roundRobin {
   case class ParticipantScores(
       initialRanking: Int,
@@ -21,13 +19,23 @@ package roundRobin {
       cleanHitsDealt: Int,
       afterblowsReceived: Int,
       afterblowsDealt: Int,
-      doubleHits: Int) {
+      doubleHits: Int) extends Scores {
     def points = wins * 3 + ties * 1
     def group = if (fights > 0) points else -10 + initialRanking
     def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
     def firstHits = cleanHitsDealt + afterblowsDealt
+
+    val fields: List[(String, () => AnyVal)] = List(
+      "initial ranking" -> initialRanking,
+      "nr of fights" -> fights,
+      "points" -> points,
+      "clean hits dealt" -> cleanHitsDealt,
+      "double hits" -> doubleHits,
+      "clean hits received" -> cleanHitsReceived)
   }
 }
+
+import roundRobin.ParticipantScores
 
 object RoundRobinTournament extends nl.malienkolders.htm.lib.Tournament {
 
@@ -39,6 +47,8 @@ object RoundRobinTournament extends nl.malienkolders.htm.lib.Tournament {
     def isEven = i % 2 == 0
     def isOdd = !isEven
   }
+
+  val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {
@@ -141,17 +151,5 @@ object RoundRobinTournament extends nl.malienkolders.htm.lib.Tournament {
       (p, ranking(p))
     }
   }
-
-  def renderRankedFighter(rank: Int, p: Participant, s: ParticipantScores) =
-    ".ranking *" #> rank &
-      ".name *" #> p.name &
-      ".club [title]" #> p.club &
-      ".club *" #> p.clubCode &
-      ".initial *" #> s.initialRanking &
-      ".fights *" #> s.fights &
-      ".points *" #> s.points.toString &
-      ".cleanHitsDealt *" #> s.cleanHitsDealt.toString &
-      ".doubleHits *" #> s.doubleHits.toString &
-      ".cleanHitsReceived *" #> s.cleanHitsReceived.toString
 
 }

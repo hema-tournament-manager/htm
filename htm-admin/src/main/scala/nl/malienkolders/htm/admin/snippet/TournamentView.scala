@@ -67,8 +67,7 @@ object TournamentView {
       t.save
       val pool = Pool.create.order(1)
       round.ruleset(
-          round.previousRound.map(_.ruleset.get).getOrElse((Rulesets.rulesets.head.id))
-      )
+        round.previousRound.map(_.ruleset.get).getOrElse((Rulesets.rulesets.head.id)))
       round.pools += pool
       round.save
       if (round.order == 1) {
@@ -337,7 +336,8 @@ object TournamentView {
                       "img [class]" #> ("star" + pt.id) &
                       "img [onclick]" #> SHtml.ajaxInvoke(() => toggleStar(pt)) &
                       ".participantName *" #> pt.name.is &
-                      ruleset.renderRankedFighter(i + 1, pt, ps) &
+                      ruleset.renderRankedFighter(i + 1, pt) &
+                      ".scores" #> ps.row &
                       ".hasFights *" #> (if (hasFights) "" else "Not fighting") &
                       (if (!hasFights)
                         ".actions *" #> SHtml.ajaxButton(EntityRef("otimes"), () => Confirm("There is no way back!", SHtml.ajaxInvoke { () => removeFromPool(p, pt); RedirectTo("/tournaments/view/" + t.identifier.is) }._2.cmd), "title" -> "Remove from pool")
@@ -360,9 +360,9 @@ object TournamentView {
           ".dropdown-toggle [href]" #> ("#round" + r.id.get) &
             ".dropdown-toggle span" #> r.name.get &
             "ul" #> (
-                ".roundref a [href]" #> ("#round" + r.id.get) &
-                ".poolref" #> r.pools.map(p =>
-                  "a [href]" #> ("#pool" + p.id.get) &
+              ".roundref a [href]" #> ("#round" + r.id.get) &
+              ".poolref" #> r.pools.map(p =>
+                "a [href]" #> ("#pool" + p.id.get) &
                   "a *" #> ("Pool " + p.order.get)))))
 
   }

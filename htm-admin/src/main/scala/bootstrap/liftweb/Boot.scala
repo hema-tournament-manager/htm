@@ -45,9 +45,10 @@ class Boot {
 
     CountryImporter.doImport
 
-    SwissTournament.register
     RoundRobinTournament.register
-    
+    SwissTournament.register
+    SwissSpecialHitsTournament.register
+
     val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list") ::
       TournamentView.menu ::
