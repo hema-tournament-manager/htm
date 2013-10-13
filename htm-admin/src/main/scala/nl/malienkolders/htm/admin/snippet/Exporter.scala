@@ -20,7 +20,7 @@ object Exporter {
     def process() {
       val exporter = exportType match {
         case "json" => JsonFightExporter
-        case "csv" => CsvFightExporter 
+        case "csv" => CsvFightExporter
       }
       exporter.doExport
       S.notice("Export succeeded")

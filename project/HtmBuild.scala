@@ -77,7 +77,8 @@ object HtmBuild extends Build {
 	lazy val importerSettings = buildSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Importer",
 		libraryDependencies ++= Seq(
-			"org.specs2" %% "specs2" % "2.2.3" % "test"))
+			"org.specs2" %% "specs2" % "2.2.3" % "test",
+			"org.apache.poi" % "poi-ooxml" % "3.9"))
 
 	lazy val admin = Project(
 		id = "admin",
