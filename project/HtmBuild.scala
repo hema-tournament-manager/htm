@@ -24,6 +24,7 @@ object HtmBuild extends Build {
                "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
                "com.h2database" % "h2" % "1.2.147",
                "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion,
+							 "org.apache.poi" % "poi" % "3.9",
                "nl.htm" %% "htm-importer" % "0.1-SNAPSHOT"))
 		
 	lazy val battleSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
