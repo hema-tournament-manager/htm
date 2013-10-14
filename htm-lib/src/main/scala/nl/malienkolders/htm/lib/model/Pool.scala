@@ -38,6 +38,11 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
     val (pts, ss) = SwissTournament.ranking(this).unzip
     MarshalledPoolRanking(toMarshalledSummary, pts.map(_.toMarshalled), ss)
   }
+  
+  def poolName: String = {
+    ('A'.toInt + (order.get - 1)).toChar.toString;
+  }
+  
 }
 object Pool extends Pool with LongKeyedMetaMapper[Pool]
 

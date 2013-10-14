@@ -23,7 +23,7 @@ object TournamentAdvance {
     val cr = Round.findByKey(TournamentAdvance.loc.currentValue.map(_.param).get.toLong).get
     val t = cr.tournament.obj.get
     val pr = cr.previousRound.get
-    val ruleset = Rulesets.ruleset(cr.ruleset.get).get
+    val ruleset = Rulesets.ruleset(cr.ruleset.get)
 
     var selected: List[Participant] = List()
 

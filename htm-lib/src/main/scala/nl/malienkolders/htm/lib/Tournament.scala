@@ -58,8 +58,8 @@ object Tournament {
     _rulesets = _rulesets :+ t
   }
 
-  def ruleset(id: String): Option[Tournament] =
-    rulesets.find(_.id == id)
+  def ruleset(id: String): Tournament =
+    rulesets.find(_.id == id).getOrElse(rulesets.head);
 
   def rulesets = _rulesets
 }

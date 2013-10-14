@@ -66,6 +66,7 @@ object TournamentView {
       t.rounds += round
       t.save
       val pool = Pool.create.order(1)
+      pool.startTime(System.currentTimeMillis());
       round.ruleset(
         round.previousRound.map(_.ruleset.get).getOrElse((Rulesets.rulesets.head.id)))
       round.pools += pool
@@ -129,9 +130,7 @@ object TournamentView {
         //      } else if (round.order.is != 1) {
         //        S.notice("Cannot plan this round, because it is not the first round")
       } else {
-        for (ruleset <- Rulesets.ruleset(round.ruleset.get)) {
-          ruleset.planning(round)
-        }
+        Rulesets.ruleset(round.ruleset.get).planning(round)
       }
     }
 
@@ -140,6 +139,9 @@ object TournamentView {
         S.notice("Cannot add a pool, because fights have been fought")
       } else {
         val pool = Pool.create.order(round.pools.size + 1)
+        
+        pool.startTime(System.currentTimeMillis());
+        
         round.pools += pool
         round.save
 
@@ -259,6 +261,7 @@ object TournamentView {
         <span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span><span style="float:right" title={ f.club.is }>{ f.clubCode.is }</span></span>
 
     "#tournamentName *" #> t.name &
+      "name=downloadSchedule" #> SHtml.link("/download_schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Download"), "class" -> "btn btn-default") &
       "#tournamentParticipant" #> tournamentParticipants.map(pt =>
         "* [class]" #> (if (pt.isPresent.get && pt.isEquipmentChecked.get) "present" else if (!pt.isPresent.get) "not_present" else "not_checked") &
           "img [src]" #> ("/images/" + (if (pt.isStarFighter.get) "star" else "star_gray") + ".png") &
@@ -306,7 +309,7 @@ object TournamentView {
           "name=timeBetweenFights" #> SHtml.ajaxText((r.timeBetweenFights.get / 1000).toString, { time => r.timeBetweenFights(time.toLong seconds); r.save; S.notice("Time between fights saved") }, "type" -> "number") &
           "#roundPool" #> r.pools.map { p =>
             val pptsAlphabetic = p.participants.sortBy(_.name.is)
-            val ruleset = Rulesets.ruleset(r.ruleset.get).get
+            val ruleset = Rulesets.ruleset(r.ruleset.get)
             val pptsRanking: List[(Participant, ruleset.Scores)] = ruleset.ranking(p)
             ".deletePool [onclick]" #> SHtml.ajaxInvoke { () =>
               deletePool(r, p)
@@ -365,6 +368,10 @@ object TournamentView {
                 "a [href]" #> ("#pool" + p.id.get) &
                   "a *" #> ("Pool " + p.order.get)))))
 
+  }
+  
+  def downloadSchedule(tournament: Tournament) = {
+    OutputStreamResponse(ScheduleExporter.doExport(tournament) _, List("content-disposition" -> "inline; filename=\"schedule.xls\""))
   }
 
 }

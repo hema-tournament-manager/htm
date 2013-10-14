@@ -73,6 +73,23 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
       finished_?,
       currentScore)
   }
+  
+  def plannedStartTime: Long = {
+    
+    val pool = this.pool.foreign.get;
+    val round = pool.round.foreign.get;
+    
+    val result = pool.startTime.get + (round.timeLimitOfFight.get + round.timeBetweenFights.get + round.breakDuration) * (order.get - 1)
+    
+    return result;    
+  }
+  
+  def plannedEndTime: Long = {
+    val pool = this.pool.foreign.get;
+    val round = pool.round.foreign.get;
+    
+    return plannedStartTime + round.timeLimitOfFight.get; 
+  }
 }
 
 object Fight extends Fight with LongKeyedMetaMapper[Fight] with CRUDify[Long, Fight] {
