@@ -10,6 +10,8 @@ object SwissSpecialHitsTournament extends Tournament {
 
   type Scores = ParticipantScores
 
+  val possiblePoints = List(0, 1, 2)
+
   def emptyScore = SwissTournament.emptyScore
 
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = SwissTournament.compare(true)(s1, s2)(random)
