@@ -33,7 +33,7 @@ class Round extends LongKeyedMapper[Round] with OneToMany[Long, Round] {
 
   def previousRounds: List[Round] = previousRound.map(prev => prev :: prev.previousRounds).getOrElse(List())
 
-  def rulesetImpl = nl.malienkolders.htm.lib.Tournament.ruleset(ruleset.get).get
+  def rulesetImpl = nl.malienkolders.htm.lib.Tournament.ruleset(ruleset.get)
 
   def toMarshalled = MarshalledRound(id.is, order.is, name.is, timeLimitOfFight.is, breakInFightAt.is, exchangeLimit.is, breakDuration.is, timeBetweenFights.is, rulesetImpl.possiblePoints, pools.map(_.toMarshalledSummary).toList)
   def toMarshalledSummary = MarshalledRoundSummary(id.is,
