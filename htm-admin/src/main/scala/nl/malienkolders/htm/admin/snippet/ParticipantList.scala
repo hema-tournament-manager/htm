@@ -28,7 +28,7 @@ object ParticipantList {
         cmd += "$('#flag" + p.id.is + "').removeClass('viewerFlagAvailable');"
       Run(cmd)
     }
-    
+
     def registerAll() = {
       ps foreach (_.isPresent(true).isEquipmentChecked(true).save)
       S.redirectTo("/participants/list")
@@ -61,11 +61,10 @@ object ParticipantList {
             ".actions *" #> <a href={ "/participants/register/" + p.externalId.is }>register</a>
       }) &
       ".totals" #> (
-          ".people *" #> ps.size &
-          ".countries *" #> ps.groupBy(_.country.is).size &
-          ".clubs *" #> ps.groupBy(_.clubCode.is).size &
-          ".actions *" #> SHtml.submit("register all", registerAll, "class" -> "btn btn-default")
-       )
+        ".people *" #> ps.size &
+        ".countries *" #> ps.groupBy(_.country.is).size &
+        ".clubs *" #> ps.groupBy(_.clubCode.is).size &
+        ".actions *" #> SHtml.submit("register all", registerAll, "class" -> "btn btn-default"))
   }
 
 }

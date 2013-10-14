@@ -9,7 +9,7 @@ import net.liftweb.util.Helpers._
 import net.liftweb.common.Box.box2Option
 import net.liftweb.util.StringPromotable.intToStrPromo
 
-object SwissTournament {
+package swiss {
 
   case class ParticipantScores(
       initialRanking: Int,
@@ -23,12 +23,37 @@ object SwissTournament {
       specialHitsDealt: Int,
       afterblowsReceived: Int,
       afterblowsDealt: Int,
-      doubleHits: Int) {
+      doubleHits: Int) extends Scores {
     def points = wins * 1 + ties * 0.5
     def group = if (fights > 0) points else -10 + initialRanking
     def hitsReceived = cleanHitsReceived + specialHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
     def firstHits = cleanHitsDealt + specialHitsDealt + afterblowsDealt
+
+    val fields: List[(String, () => AnyVal)] = List(
+      "initial ranking" -> initialRanking,
+      "nr of fights" -> fights,
+      "points" -> points,
+      "hits received" -> hitsReceived,
+      "clean hits dealt" -> cleanHitsDealt,
+      "double hits" -> doubleHits,
+      "special hits dealt" -> specialHitsDealt,
+      "clean hits received" -> cleanHitsReceived,
+      "first hits dealt" -> firstHits,
+      "nr of wins" -> wins)
   }
+}
+
+import swiss.ParticipantScores
+
+object SwissTournament extends nl.malienkolders.htm.lib.Tournament {
+
+  val id = "swiss"
+
+  type Scores = ParticipantScores
+
+  val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+  def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = compare(false)(s1, s2)
 
   def compare(rapierRules: Boolean)(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {
@@ -122,11 +147,11 @@ object SwissTournament {
       Fight.find(ByList(Fight.pool, prevPools.map(_.id.is)), By(Fight.fighterA, b.id.is), By(Fight.fighterB, a.id.is)).isDefined
   }
 
-  def planning(r: Round) = {
-    val pr = r.previousRound
+  def planning(round: Round): List[Pool] = {
+    val pr = round.previousRound
     val ppr = pr.map(_.previousRound)
-    val prs = if (pr.isDefined) List(pr.get) ++ (if (ppr.get.isDefined) List(ppr.get.get) else List()) else List()
-    val ranked = ranking(r)
+    val prs = round.previousRounds
+    val ranked = ranking(round)
     ranked.map {
       case (p, pts) =>
         val pp = pr.map(_.pools.find(_.order.is == p.order.is).get)
@@ -159,7 +184,7 @@ object SwissTournament {
             val a = group.head
             val b = group.drop(1).reverse.find(b => !haveFoughtBefore(prs.flatMap(_.pools.toList), b, a) && b.clubCode.is != a.clubCode.is).
               orElse(group.drop(1).reverse.find(b => !haveFoughtBefore(prs.flatMap(_.pools.toList), b, a))).getOrElse(group.drop(1).head)
-            p.fights += Fight.create.fighterA(a).fighterB(b).inProgress(false).order(p.fights.size + 1)
+            p.addFight(a, b)
             group = group.filterNot(pt => pt.id.is == a.id.is || pt.id.is == b.id.is)
           }
           if (group.size == 1) {
@@ -171,21 +196,5 @@ object SwissTournament {
         p.saveMe
     }
   }
-
-  def renderRankedFighter(rank: Int, p: Participant, s: ParticipantScores) =
-    ".ranking *" #> rank &
-      ".name *" #> p.name &
-      ".club [title]" #> p.club &
-      ".club *" #> p.clubCode &
-      ".initial *" #> s.initialRanking &
-      ".fights *" #> s.fights &
-      ".points *" #> s.points.toString &
-      ".hitsReceived *" #> s.hitsReceived.toString &
-      ".cleanHitsDealt *" #> s.cleanHitsDealt.toString &
-      ".doubleHits *" #> s.doubleHits.toString &
-      ".specialHitsDealt *" #> s.specialHitsDealt.toString &
-      ".cleanHitsReceived *" #> s.cleanHitsReceived.toString &
-      ".firstHitsDealt *" #> s.firstHits.toString &
-      ".wins *" #> s.wins.toString
 
 }

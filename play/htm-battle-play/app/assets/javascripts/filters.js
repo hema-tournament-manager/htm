@@ -15,5 +15,14 @@ angular.module("common.filters", []).
 	  if (angular.isArray(value)) {
 		  return value.slice(index - 2, index + 2);
 	  }
+  }}).
+  
+  filter("minutes", function() { return function(value) {
+	  var date = new Date(value);
+	  var mm = date.getUTCMinutes();
+	  var ss = date.getSeconds();
+	  if (ss < 10)
+		  	ss = "0" + ss;
+	  return mm + ":" + ss;
   }});
   

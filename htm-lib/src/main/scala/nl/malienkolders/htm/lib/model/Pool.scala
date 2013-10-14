@@ -7,22 +7,24 @@ import mapper._
 case class MarshalledPoolSummary(id: Long, order: Long, round: MarshalledRoundSummary, fightCount: Long, participantsCount: Long)
 case class MarshalledPool(id: Long, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
 case class MarshalledViewerPool(summary: MarshalledPoolSummary, fights: List[MarshalledViewerFightSummary])
-case class MarshalledPoolRanking(poolInfo: MarshalledPoolSummary, ranked: List[MarshalledParticipant], points: List[SwissTournament.ParticipantScores])
+case class MarshalledPoolRanking(poolInfo: MarshalledPoolSummary, ranked: List[MarshalledParticipant], points: List[swiss.ParticipantScores])
 
 class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToMany {
   def getSingleton = Pool
 
   def primaryKeyField = id
   object id extends MappedLongIndex(this)
-  
+
   object startTime extends MappedLong(this)
-  
+
   object order extends MappedLong(this)
   object round extends MappedLongForeignKey(this, Round)
   object fights extends MappedOneToMany(Fight, Fight.pool, OrderBy(Fight.order, Ascending)) with Owned[Fight] with Cascade[Fight]
   object participants extends MappedManyToMany(PoolParticipants, PoolParticipants.pool, PoolParticipants.participant, Participant)
 
   def nextFight = fights.filter(f => f.inProgress == false && f.finished_? == false).headOption
+
+  def addFight(a: Participant, b: Participant) = fights += Fight.create.fighterA(a).fighterB(b).inProgress(false).order(fights.size + 1)
 
   def toMarshalled = MarshalledPool(id.is, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
   def toViewer = MarshalledViewerPool(toMarshalledSummary, fights.map(_.toViewerSummary).toList)

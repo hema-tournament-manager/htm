@@ -16,7 +16,7 @@ import nl.malienkolders.htm.viewer.jmonkey.lib.util._
 import nl.malienkolders.htm.lib.model.ViewerMessage
 import net.liftweb.util.TimeHelpers._
 import nl.malienkolders.htm.lib.model._
-import nl.malienkolders.htm.lib.SwissTournament.ParticipantScores
+import nl.malienkolders.htm.lib.swiss.ParticipantScores
 
 object DesignerAppState extends TournamentAppState("Designer") {
 

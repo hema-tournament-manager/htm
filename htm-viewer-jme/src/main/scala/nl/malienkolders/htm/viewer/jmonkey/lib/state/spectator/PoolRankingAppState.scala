@@ -13,7 +13,7 @@ import javax.imageio._
 import nl.malienkolders.htm.viewer.jmonkey.SpectatorScreen
 import scala.collection.immutable.List
 import nl.malienkolders.htm.lib.HtmHelpers._
-import nl.malienkolders.htm.lib.SwissTournament
+import nl.malienkolders.htm.lib.swiss.ParticipantScores
 import com.jme3.material.RenderState.FaceCullMode
 import com.jme3.math.Quaternion
 import com.jme3.math.FastMath
@@ -38,7 +38,7 @@ object PoolRankingAppState extends state.PoolRankingAppState {
 
   lazy val fighterLabelPivot = new Node("FighterLabels")
 
-  class FighterLabel(rank: Int, f: MarshalledParticipant, s: SwissTournament.ParticipantScores) extends Node("FighterLabel" + f.id) {
+  class FighterLabel(rank: Int, f: MarshalledParticipant, s: ParticipantScores) extends Node("FighterLabel" + f.id) {
     val bg = createTexturedPanel("FightLabelBack", "Poule/Ranking/bar_" + (if (rank.odd_?) "light" else "dark") + ".png", SpectatorScreen.upp, true)
     val order = new TextLabel(rank.toString, AlignRight, font, color, (30 pixels, 22 pixels), 400, app.getAssetManager(), FaceCullMode.Back)
     val fighterName = new TextLabel(f.shortName, AlignLeft, font, Color.black, (525 pixels, lineHeight), 400, app.getAssetManager(), FaceCullMode.Back)

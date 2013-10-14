@@ -36,10 +36,10 @@ object FightEdit {
 
     val dateFormatStr = "yy-mm-dd";
     val timeFormatStr = "HH:mm:ss";
-    
+
     val datetimepickerInitStr = s"datetimepicker({ dateFormat: '$dateFormatStr', timeFormat: '$timeFormatStr' });";
-    
-    S.appendJs(Run("$('#timeStop')."+datetimepickerInitStr) & Run("$('#timeStart')."+datetimepickerInitStr))
+
+    S.appendJs(Run("$('#timeStop')." + datetimepickerInitStr) & Run("$('#timeStart')." + datetimepickerInitStr))
     ".red" #> (
       ".name *" #> f.fighterA.obj.get.name.is &
       ".club [title]" #> f.fighterA.obj.get.club.is &
@@ -50,8 +50,8 @@ object FightEdit {
         ".club *" #> f.fighterB.obj.get.clubCode.is) &
         "name=scoreRed" #> SHtml.text(totalScore.a.toString, s => score.diffA(s.toInt)) &
         "name=scoreBlue" #> SHtml.text(totalScore.b.toString, s => score.diffB(s.toInt)) &
-        "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker" ) &
-        "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker" ) &
+        "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker") &
+        "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker") &
         "#doEdit" #> SHtml.onSubmitUnit(process)
 
   }

@@ -26,7 +26,7 @@ object Overview {
     def fetchRound(roundId: Long) = {
       val req = :/(ShowAdminConnection.adminHost) / "api" / "round" / roundId.toString
       Http(req OK as.String).fold[MarshalledRound](
-        _ => MarshalledRound(-1, -1, "Round not found", 0, 0, 0, List()),
+        _ => MarshalledRound(-1, -1, "Round not found", 0, 0, 0, 0, 0, List()),
         success => Serialization.read[MarshalledRound](success)).apply
     }
 
