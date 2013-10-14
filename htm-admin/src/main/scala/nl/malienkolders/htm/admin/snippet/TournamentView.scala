@@ -139,9 +139,9 @@ object TournamentView {
         S.notice("Cannot add a pool, because fights have been fought")
       } else {
         val pool = Pool.create.order(round.pools.size + 1)
-        
+
         pool.startTime(System.currentTimeMillis());
-        
+
         round.pools += pool
         round.save
 
@@ -369,7 +369,7 @@ object TournamentView {
                   "a *" #> ("Pool " + p.order.get)))))
 
   }
-  
+
   def downloadSchedule(tournament: Tournament) = {
     OutputStreamResponse(ScheduleExporter.doExport(tournament) _, List("content-disposition" -> "inline; filename=\"schedule.xls\""))
   }
