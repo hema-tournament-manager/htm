@@ -121,7 +121,9 @@
 				</h3>
 			</div>
 			<div class="panel-body" data-ng-hide="currentFight.order &gt; -1">
-				<button class="btn btn-primary" data-ng-click="startNextFight()">Start fight</button>
+				<button class="btn btn-primary" data-ng-click="startNextFight()" data-ng-disabled="findNextFight().order &lt; 0">
+					Start fight
+				</button>
 			</div>
 			<div class="panel-body htm-current-fight-box" data-ng-show="currentFight.order &gt; -1">
 				<div class="row htm-fight-buttons">
@@ -234,6 +236,7 @@
       <div>Round: {{round}}</div>
       <div>Fights: {{fights}}</div>
       <div>Current Fight: {{currentFight}}</div>
+      <div>Next Fight: {{findNextFight()}}</div>
     
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.core.js"))"></script>

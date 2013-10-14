@@ -202,22 +202,30 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
     	return $scope.currentFight.order > -1 && $scope.currentFight.totalScore().d >= 3;
     };
     
+    $scope.findNextFight = function() {
+    	return _.reduce($scope.fights, function(memo, fight) {
+			if (fight.timeStop == 0 && (memo.order == -1 || fight.order < memo.order)) {
+				return fight;
+			} else {
+				return memo;
+			}
+		}, {order: -1});
+    };
+    
     $scope.startNextFight = function() {
 		$scope.resetTimer();
     	if ($scope.fights.length > 0) {
-    		$scope.currentFight = _.reduce($scope.fights, function(memo, fight) {
-    			if (fight.timeStop == 0 && (memo.order == -1 || fight.order < memo.order)) {
-    				return fight;
-    			} else {
-    				return memo;
-    			}
-    		}, {order: -1});
+    		$scope.currentFight = $scope.findNextFight();
     		
-    		$scope.currentFight.timeStart = Date.now();
-    		
-    		$scope.fightsShowing[0] = Math.max($scope.currentFight.order - 2, 1);
-        	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
-        	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
+    		if ($scope.currentFight.order > -1) {
+	    		$scope.currentFight.timeStart = Date.now();
+	    		$scope.timer.currentTime = _.reduce($scope.currentFight.scores, function(memo, score) { return Math.max(score.timeInFight, memo); }, 0);
+	    		$scope.timer.displayTime = $scope.timerValue();
+	    		
+	    		$scope.fightsShowing[0] = Math.max($scope.currentFight.order - 2, 1);
+	        	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
+	        	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
+    		}
     	}
     };
     
