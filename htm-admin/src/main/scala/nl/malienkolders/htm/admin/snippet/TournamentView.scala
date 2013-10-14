@@ -12,6 +12,7 @@ import nl.malienkolders.htm.lib.{ Tournament => Rulesets }
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.HtmHelpers._
 import nl.malienkolders.htm.admin.lib._
+import nl.malienkolders.htm.admin.lib.exporter._
 import nl.malienkolders.htm.admin.lib.TournamentUtils._
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.sitemap.LocPath.stringToLocPath

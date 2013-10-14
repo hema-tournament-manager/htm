@@ -1,4 +1,4 @@
-package nl.malienkolders.htm.admin.lib
+package nl.malienkolders.htm.admin.lib.exporter
 
 import nl.malienkolders.htm.lib.model.Tournament
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -10,39 +10,11 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Sheet
 import java.util.Date
 
-object ScheduleExporter {
-
-  implicit class PimpedRow(row: Row) {
-
-    def getOrCreateCell(index: Int): Cell = {
-      val cell = row.getCell(index)
-      if (cell == null) {
-        return row.createCell(index);
-      } else {
-        return cell;
-      }
-    }
-
-  }
-
-  implicit class PimpedSheet(sheet: Sheet) {
-
-    def getOrCreateRow(index: Int): Row = {
-      val row = sheet.getRow(index)
-      if (row == null) {
-        return sheet.createRow(index);
-      } else {
-        return row;
-      }
-    }
-
-  }
+object ScheduleExporter extends ExcelExporter {
 
   def doExport(tournament: Tournament)(outputStream: OutputStream) {
 
-    val resourceStream = getClass().getResourceAsStream("schedule_template.xls");
-
-    val workbook = WorkbookFactory.create(resourceStream);
+    val workbook = loadWorkbook("schedule");
 
     val sheet = workbook.getSheetAt(0);
 

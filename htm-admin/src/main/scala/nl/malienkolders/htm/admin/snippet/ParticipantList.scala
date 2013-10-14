@@ -10,6 +10,8 @@ import http._
 import mapper._
 import js._
 import JsCmds._
+import nl.malienkolders.htm.admin.lib.exporter.ParticipantsExporter
+import scala.xml.Text
 
 object ParticipantList {
 
@@ -34,6 +36,7 @@ object ParticipantList {
       S.redirectTo("/participants/list")
     }
 
+    "#download" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), <span><span class="glyphicon glyphicon-download"></span> Download</span>, "class" -> "btn btn-default pull-right") &
     "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
       val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
       selectedParticipant = Empty
@@ -65,6 +68,10 @@ object ParticipantList {
         ".countries *" #> ps.groupBy(_.country.is).size &
         ".clubs *" #> ps.groupBy(_.clubCode.is).size &
         ".actions *" #> SHtml.submit("register all", registerAll, "class" -> "btn btn-default"))
+  }
+  
+  def downloadParticipantList() = {
+    OutputStreamResponse(ParticipantsExporter.doExport _, List("content-disposition" -> "inline; filename=\"participants.xls\""))
   }
 
 }
