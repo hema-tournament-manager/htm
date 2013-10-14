@@ -251,7 +251,7 @@
     <script src="@routes.Assets.at("javascripts/services/appService.js")"></script>
     
     <div id="score-options" class="btn-group">
-        <button type="button" ng-repeat="score in possibleScores" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
+        <button type="button" ng-repeat="score in round.possiblePoints" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
         <button type="button" ng-click="cancelScoreSelect()" class="btn btn-default btn-lg" title="Cancel">
         	<span class="glyphicon glyphicon-remove-circle"></span>
         </button>

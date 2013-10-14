@@ -43,6 +43,8 @@ object RoundRobinTournament extends nl.malienkolders.htm.lib.Tournament {
 
   type Scores = ParticipantScores
 
+  val possiblePoints = List(0, 1, 2, 3)
+
   implicit class PimpedInt(val i: Int) extends AnyVal {
     def isEven = i % 2 == 0
     def isOdd = !isEven

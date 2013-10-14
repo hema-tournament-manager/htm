@@ -51,6 +51,8 @@ object SwissTournament extends nl.malienkolders.htm.lib.Tournament {
 
   type Scores = ParticipantScores
 
+  val possiblePoints = List(0, 1)
+
   val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = compare(false)(s1, s2)

@@ -43,6 +43,8 @@ abstract class Tournament {
 
   def emptyScore: Scores
 
+  def possiblePoints: List[Int]
+
   def renderRankedFighter(rank: Int, p: Participant) =
     ".ranking *" #> rank &
       ".name *" #> p.name &

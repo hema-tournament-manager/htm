@@ -4,14 +4,12 @@ var BattleCtrl = function($scope, $timeout, $modal, playRoutes, appService) {
 	var _ = window._;
 	
 	$scope.arena = {name: "Arena 1"};
-//	$scope.tournament = {name: "Longsword Open"};
 	$scope.round = {};
 	$scope.poolSummary = {};
 	$scope.pool = {};
     $scope.fights = new Array();
     $scope.currentFight = {order: -1};
     $scope.fightsShowing = [1, 5];
-    $scope.possibleScores = [0, 1, 2, 3];
     $scope.pendingOperation = false;
     $scope.redoScore = false;
     
@@ -288,6 +286,8 @@ var PoolsCtrl = function($scope, $timeout, playRoutes, appService) {
 	$scope.refreshCurrentPoolId = function() {
 		playRoutes.controllers.Application.currentPool().get().success(function(data, status) {
 			$scope.currentPoolId = data;
+		}).error(function(data, status) {
+			$scope.currentPoolId = -1;
 		});
 	};
 	
