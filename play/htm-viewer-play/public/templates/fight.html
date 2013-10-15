@@ -1,0 +1,17 @@
+<img class="background" src="/assets/images/fight/background.png"/>
+<img class="background" src="/assets/images/fight/backdrops.png"/>
+<img class="background" src="/assets/images/fight/header_footer.png"/>
+<img class="background" src="/assets/images/fight/points.png"/>
+<div class="background fight" ng-cloak>
+	<div class="score-red">{{ fight.totalScore().a }}</div>
+	<div class="score-blue">{{ fight.totalScore().b }}</div>
+	<div class="score-double" ng-show="fight.totalScore().d &lt;= 3">
+		<span ng-repeat="a in range(fight.totalScore().d) track by $index">X</span>
+	</div>
+	<div class="score-double" ng-show="fight.totalScore().d &gt; 3">
+		{{ fight.totalScore().d }}
+	</div>
+	<div class="fighter-bar">
+		<img src="/assets/images/fight/fighter_bar.png"/>
+	</div>
+</div>

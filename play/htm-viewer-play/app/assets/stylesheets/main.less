@@ -1,0 +1,81 @@
+body {
+	background: black;
+	overflow: hidden;
+	font-family: sans-serif;
+}
+
+@-webkit-keyframes spin {
+	from { -webkit-transform: rotateY(0deg); }
+	to { -webkit-transform: rotateY(90deg); }
+}
+
+#main {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1024px;
+	height: 768px;
+	overflow: hidden;
+	
+	background: white;
+	
+	.background {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 1024px;
+		height: 768px;
+		
+		text-align: center;
+	}
+	
+	.empty {
+		.logo {
+			margin-top: 100px;
+			-webkit-animation-duration: 6s;
+			-webkit-animation-name: spin;
+			-webkit-animation-timing-function: linear;
+			-webkit-animation-iteration-count: infinite;
+			-webkit-animation-direction: alternate;
+		}
+	}
+	
+	.fight {
+		.fighter-bar {
+			position: absolute;
+			left: 0;
+			top: 550px;
+		}
+		
+		.score-red, .score-blue {
+			position: absolute;
+			width: 117px;
+			height: 70px;
+			top: 236px;
+			font-size: 50pt;
+			font-weight: bold;
+		}
+		
+		.score-red {
+			left: 38px;
+		}
+		
+		.score-blue {
+			left: 866px;
+		}
+		
+		.score-double {
+			position: absolute;
+			width: 96px;
+			height: 46px;
+			left: 462px;
+			top: 268px;
+			font-size: 30pt;
+			padding-top: 2px;
+		}
+	}
+	
+	.overview {
+		
+	}
+}
