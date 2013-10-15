@@ -56,20 +56,20 @@ object Application extends Controller {
 
   def currentRound = Action.async {
     val f = for (c <- (battleServer ? RequestCurrentFight).mapTo[(Option[MarshalledRound], Option[MarshalledPoolSummary])]) yield c
-    f.map{case (or, _) => or.map(r => Ok(Serialization.write(r))).getOrElse(BadRequest) }
+    f.map { case (or, _) => or.map(r => Ok(Serialization.write(r))).getOrElse(BadRequest) }
   }
 
   def currentPool = Action.async {
     val f = for (c <- (battleServer ? RequestCurrentFight).mapTo[(Option[MarshalledRound], Option[MarshalledPoolSummary])]) yield c
-    f.map{case (_, op) => op.map(p => Ok(Serialization.write(p))).getOrElse(BadRequest) }
+    f.map { case (_, op) => op.map(p => Ok(Serialization.write(p))).getOrElse(BadRequest) }
   }
-  
+
   def fightUpdate = Action { request =>
-  	request.body.asJson.map { json =>
-  	  val fight = Serialization.read[MarshalledFight](json.toString)
-  	  battleServer ! FightUpdate(fight)
-  	  Ok("Updated fight")
-  	}.getOrElse(BadRequest)
+    request.body.asJson.map { json =>
+      val fight = Serialization.read[MarshalledFight](json.toString)
+      battleServer ! FightUpdate(fight)
+      Ok("Updated fight")
+    }.getOrElse(BadRequest)
   }
 
   def jsRoutes(varName: String = "jsRoutes") = Action { implicit request =>

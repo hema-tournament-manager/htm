@@ -16,5 +16,5 @@ object ParticipantsExporter extends ExcelExporter {
     }
     workbook.write(out)
   }
-  
+
 }

@@ -12,11 +12,11 @@ object AdminInterface extends Controller {
   def tournaments = Action.async {
     WS.url("http://localhost:8079/api/tournaments").get.map(response => Ok(response.json))
   }
-  
+
   def round(id: Long) = Action.async {
     WS.url("http://localhost:8079/api/round/" + id).get.map(response => Ok(response.json))
   }
-  
+
   def pool(id: Long) = Action.async {
     WS.url("http://localhost:8079/api/pool/" + id).get.map(response => Ok(response.json))
   }

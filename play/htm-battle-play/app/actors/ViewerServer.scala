@@ -6,11 +6,11 @@ import nl.malienkolders.htm.lib._
 import nl.malienkolders.htm.lib.model._
 
 class ViewerServer extends Actor {
-	
+
   def receive = {
-    case _ => 
+    case _ =>
   }
-  
+
 }
 
 abstract class ViewerMessage
