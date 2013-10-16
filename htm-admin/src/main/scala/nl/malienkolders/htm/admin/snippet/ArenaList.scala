@@ -21,6 +21,7 @@ class ArenaList {
         ".pool" #> a.pools.map { implicit p =>
           implicit val r = p.round.foreign.get
           implicit val t = r.tournament.foreign.get
+          ".pool [class+]" #> (if (p.finished_?) "success" else "waiting") &
           ".time *" #> df.format(new Date(p.startTime.is)) &
             ".tournament *" #> tournamentName &
             ".round *" #> roundName &

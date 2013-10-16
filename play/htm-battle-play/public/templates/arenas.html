@@ -17,7 +17,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr data-ng-repeat="pool in arena.fetchedPools | orderBy:'startTime'" data-ng-class="{true: 'finished', false: 'waiting'}[pool.finished]" data-ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
+			<tr data-ng-repeat="pool in arena.fetchedPools | orderBy:'startTime'" data-ng-class="{true: 'success', false: 'waiting'}[pool.finished]" data-ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
 				<td>{{pool.startTime | hours}}</td>
 				<td>{{pool.round.tournament.name}}</td>
 				<td>{{pool.round.name}}</td>
