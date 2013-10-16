@@ -14,6 +14,12 @@ object AdminRest extends RestHelper {
   override implicit val formats = Serialization.formats(NoTypeHints)
 
   serve {
+    case "api" :: "arenas" :: Nil JsonGet _ =>
+      Extraction.decompose(Arena.findAll.map(_.toMarshalled))
+      
+    case "api" :: "arena" :: AsLong(arenaId) :: "pools" :: Nil JsonGet _ =>
+      Extraction.decompose(Arena.findByKey(arenaId).map(_.pools.map(_.toMarshalledSummary)).getOrElse(false))
+    
     case "api" :: "tournaments" :: Nil JsonGet _ =>
       Extraction.decompose(Tournament.findAll.map(_.toMarshalled))
 

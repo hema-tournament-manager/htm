@@ -18,22 +18,33 @@
     </header>
     @* -- Main Content -- *@
     <div class="container" data-ng-cloak>
-		<div data-ng-repeat="tournament in tournaments" data-ng-animate="{enter: 'animated slideInLeft', leave: 'animated slideOutRight'}">
-			<h2>{{tournament.name}}</h2>
-			<div>
-				<div data-ng-repeat="round in tournament.fetchedRounds | orderBy:'order'" data-ng-animate="{enter: 'animated bounceIn', leave: 'animated bounceOut'}" class="panel panel-default">
-					<div class="panel-heading">
-						{{round.name}}
-					</div>
-					<div class="panel-body">
-						<div class="pull-left" data-ng-repeat="pool in round.pools | orderBy:'order'">
-							<button class="btn btn-lg" title="Click to subscribe" data-ng-click="subscribe(pool)" data-ng-class="{true: 'btn-primary', false: 'btn-default'}[pool.id == currentPoolId]">
-								Pool {{pool.order}}
-							</button>
-						</div>
-					</div>
-				</div>
+		<div data-ng-repeat="arena in arenas" class="panel panel-default pull-left" data-ng-animate="{enter: 'animated slideInLeft', leave: 'animated slideOutRight'}">
+			<div class="panel-heading">
+				<h2 class="panel-title">{{arena.name}}</h2>
 			</div>
+			<div class="panel-body">
+				<button class="btn btn-lg" title="Click to subscribe" data-ng-click="subscribe(arena)" data-ng-class="{true: 'btn-primary', false: 'btn-default'}[arena.id == currentArenaId]">
+					Subscribe
+				</button>
+			</div>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Time</th>
+						<th>Tournament</th>
+						<th>Round</th>
+						<th>Pool</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr data-ng-repeat="pool in arena.fetchedPools | orderBy:'startTime'" data-ng-animate="{enter: 'animated bounceIn', leave: 'animated bounceOut'}">
+						<td>{{pool.startTime | hours}}</td>
+						<td>{{pool.round.tournament.name}}</td>
+						<td>{{pool.round.name}}</td>
+						<td>Pool {{pool.order}}</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>

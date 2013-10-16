@@ -274,28 +274,27 @@ var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
 };
 
 var PoolsCtrl = function($scope, $timeout, playRoutes, appService) {
-	$scope.tournaments = new Array();
-	$scope.currentPoolId = -1;
+	$scope.arenas = new Array();
+	$scope.currentArenaId = -1;
 	var _ = window._;
 
-	playRoutes.controllers.AdminInterface.tournaments().get().success(function(data, status) {
-		$scope.tournaments = _.map(data, function(tournament) { tournament.fetchedRounds = new Array(); return tournament; });
-		_.each($scope.tournaments, function(tournament) {
-			_.each(tournament.rounds, function(roundId) {
-				playRoutes.controllers.AdminInterface.round(roundId).get().success(function(data, status) {
-					tournament.fetchedRounds.push(data);
-				});
+	playRoutes.controllers.AdminInterface.arenas().get().success(function(data, status) {
+		$scope.arenas = _.map(data, function(arena) { arena.fetchedPools = new Array(); return arena; });
+		_.each($scope.arenas, function(arena) {
+			playRoutes.controllers.AdminInterface.arena(arena.id).get().success(function(data, status) {
+				console.log(JSON.stringify(data));
+				arena.fetchedPools = data;
 			});
 		});
 	}).error(function(data, status, headers) {
-		$scope.tournaments = "Error " + status + ": " + headers();
+		$scope.arenas = "Error " + status + ": " + headers();
 	});
 	
-	$scope.refreshCurrentPoolId = function() {
+	$scope.refreshCurrentArenaId = function() {
 		playRoutes.controllers.Application.currentPool().get().success(function(data, status) {
-			$scope.currentPoolId = data;
+			$scope.currentArenaId = data;
 		}).error(function(data, status) {
-			$scope.currentPoolId = -1;
+			$scope.currentArenaId = -1;
 		});
 	};
 	
@@ -305,5 +304,5 @@ var PoolsCtrl = function($scope, $timeout, playRoutes, appService) {
 		});
 	};
 	
-	$scope.refreshCurrentPoolId();
+	$scope.refreshCurrentArenaId();
 };

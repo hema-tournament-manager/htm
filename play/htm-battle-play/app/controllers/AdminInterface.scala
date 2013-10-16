@@ -25,4 +25,12 @@ object AdminInterface extends Controller {
     WS.url("http://localhost:8079/api/fight/" + id).get.map(response => Ok(response.json))
   }
 
+  def arenas = Action.async {
+    WS.url("http://localhost:8079/api/arenas").get.map(response => Ok(response.json))
+  }
+
+  def arena(id: Long) = Action.async {
+    WS.url("http://localhost:8079/api/arena/" + id + "/pools").get.map(response => Ok(response.json))
+  }
+
 }

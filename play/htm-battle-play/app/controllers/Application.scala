@@ -75,6 +75,8 @@ object Application extends Controller {
   def jsRoutes(varName: String = "jsRoutes") = Action { implicit request =>
     Ok(
       Routes.javascriptRouter(varName)(
+        routes.javascript.AdminInterface.arena,
+        routes.javascript.AdminInterface.arenas,
         routes.javascript.AdminInterface.fight,
         routes.javascript.AdminInterface.pool,
         routes.javascript.AdminInterface.round,
