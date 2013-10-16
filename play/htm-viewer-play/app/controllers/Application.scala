@@ -26,8 +26,8 @@ object Application extends Controller {
   def index = Action {
     Ok(views.html.index())
   }
-  
-  def ping = Action { Ok }
+
+  def ping = Action { Ok("true") }
 
   def update(view: String) = Action(parse.json) { req =>
     updateChannel.push(Json.obj(

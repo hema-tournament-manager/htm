@@ -58,6 +58,7 @@ class Boot {
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::
       (Menu.i("Arenæ") / "arenas" / "list") ::
+      (Menu.i("Viewers") / "viewers" / "list") ::
       (Menu.i("Import") / "import") ::
       (Menu.i("Export") / "export") :: Nil
 

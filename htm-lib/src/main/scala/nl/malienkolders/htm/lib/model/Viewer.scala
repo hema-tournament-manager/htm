@@ -26,9 +26,16 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
   object arenas extends MappedManyToMany(ArenaViewers, ArenaViewers.viewer, ArenaViewers.arena, Arena)
 
   object rest {
-    def baseRequest = :/(url.get)
+    def baseRequest = :/(url.get) / "api"
     implicit val formats = Serialization.formats(NoTypeHints)
 
+    def ping = {
+      val req = baseRequest / "ping"
+      Http(req OK as.String).fold(
+        _ => false,
+        success => true).apply
+    }
+    
     def poll = {
       val req = baseRequest / "poll"
       Http(req OK as.String).fold(
