@@ -57,7 +57,7 @@ class Boot {
       FightEdit.menu ::
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::
-   	  (Menu.i("Arenæ") / "arenas" / "list") ::
+      (Menu.i("Arenæ") / "arenas" / "list") ::
       (Menu.i("Import") / "import") ::
       (Menu.i("Export") / "export") :: Nil
 

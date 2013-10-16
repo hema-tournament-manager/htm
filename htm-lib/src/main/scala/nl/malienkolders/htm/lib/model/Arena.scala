@@ -11,12 +11,12 @@ import net.liftweb.json._
 
 class Arena extends LongKeyedMapper[Arena] with IdPK with CreatedUpdated with Ordered[Arena] with ManyToMany with OneToMany[Long, Arena] {
   def getSingleton = Arena
-  
+
   object name extends MappedString(this, 64)
-  
+
   object pools extends MappedOneToMany(Pool, Pool.arena, OrderBy(Pool.startTime, Ascending)) with Owned[Pool]
   object viewers extends MappedManyToMany(ArenaViewers, ArenaViewers.arena, ArenaViewers.viewer, Viewer)
-  
+
   def compare(that: Arena) = this.name.is.compareTo(that.name.is)
 }
 
@@ -26,7 +26,7 @@ object Arena extends Arena with LongKeyedMetaMapper[Arena] {
 
 class ArenaViewers extends LongKeyedMapper[ArenaViewers] with IdPK {
   def getSingleton = ArenaViewers
-  
+
   object arena extends MappedLongForeignKey(this, Arena)
   object viewer extends MappedLongForeignKey(this, Viewer)
 }

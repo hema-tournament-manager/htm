@@ -21,8 +21,8 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
   object round extends MappedLongForeignKey(this, Round)
   object fights extends MappedOneToMany(Fight, Fight.pool, OrderBy(Fight.order, Ascending)) with Owned[Fight] with Cascade[Fight]
   object participants extends MappedManyToMany(PoolParticipants, PoolParticipants.pool, PoolParticipants.participant, Participant)
-  object arena extends MappedLongForeignKey(this, Arena) 
-  
+  object arena extends MappedLongForeignKey(this, Arena)
+
   def nextFight = fights.filter(f => f.inProgress == false && f.finished_? == false).headOption
 
   def addFight(a: Participant, b: Participant) = fights += Fight.create.fighterA(a).fighterB(b).inProgress(false).order(fights.size + 1)
