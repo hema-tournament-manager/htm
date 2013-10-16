@@ -68,6 +68,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     		$scope.timer.currentTime += Date.now() - $scope.timer.lastStart;
     		$scope.timer.displayTime = $scope.timer.currentTime;
     	}
+    	playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
     }
     $scope.tick = function() {
     	if ($scope.timer.running) {
@@ -118,13 +119,13 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     
     $scope.undoClicked = function () {
     	$scope.redoScore = $scope.currentFight.scores.pop();
-    	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
+    	$scope.sendUpdate();
     };
     
     $scope.redoClicked = function () {
     	$scope.currentFight.scores.push($scope.redoScore);
     	$scope.redoScore = false;
-    	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
+    	$scope.sendUpdate();
     };
     
     $scope.pushExchange = function(exchange) {
@@ -140,7 +141,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     		isSpecial: false,
     		isExchange: true
     	});
-    	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
+    	$scope.sendUpdate();
     };
     
     $scope.hitButtonClicked = function(scoreType, side) {
@@ -215,6 +216,10 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     	return $scope.round != false && $scope.currentFight.started && $scope.currentFight.totalScore().d >= 3;
     };
     
+    $scope.sendUpdate = function() {
+    	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
+    };
+    
      $scope.startFight = function() {
 		$scope.resetTimer();
     	
@@ -226,6 +231,8 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
 	    		$scope.currentFight.timeStart = Date.now();
 	    		$scope.timer.currentTime = _.reduce($scope.currentFight.scores, function(memo, score) { return Math.max(score.timeInFight, memo); }, 0);
 	    		$scope.timer.displayTime = $scope.timerValue();
+	    		
+	    		$scope.sendUpdate();
 	    	});
     	}
     };

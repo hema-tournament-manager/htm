@@ -23,6 +23,7 @@ var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
     	if ($scope.timer.running) {
     		result += Date.now() - $scope.timer.lastStart;
     	}
+    	result = Math.max(0, $scope.poolSummary.round.timeLimitOfFight - result);
     	return result;
     };
     
@@ -33,7 +34,7 @@ var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
     }
     $scope.stopTimer = function() {
     	$scope.timer.running = false;
-		$scope.timer.displayTime = $scope.timer.time;
+		$scope.timer.displayTime = $scope.timerValue();
     }
     
     $scope.tick = function() {
@@ -46,7 +47,8 @@ var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
 	stateService.change(function(view, state) {
 		if (view == "fight") {
 			_.extend($scope, state);
-			if (state.timer) {
+			if (_.has(state, "timer")) {
+				console.log(state.timer.action);
 				if (state.timer.action == "start") {
 					$scope.startTimer();
 				} else {

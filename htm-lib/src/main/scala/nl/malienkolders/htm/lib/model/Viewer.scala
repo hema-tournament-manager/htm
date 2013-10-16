@@ -64,19 +64,12 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
     def message(arena: Arena, message: String): Boolean = update(arena, Serialization.write(
       Map("message" -> message)))
 
-    object timer {
-      def start(arena: Arena, time: Long) = fightUpdate(arena, Serialization.write(
-        Map(
-          "timer" -> Map(
-            "action" -> "start",
-            "time" -> time.toString))))
+    def timerUpdate(arena: Arena, action: String, time: Long) = fightUpdate(arena, Serialization.write(
+      Map(
+        "timer" -> Map(
+          "action" -> action,
+          "time" -> time))))
 
-      def stop(arena: Arena, time: Long) = fightUpdate(arena, Serialization.write(
-        Map(
-          "timer" -> Map(
-            "action" -> "stop",
-            "time" -> time.toString))))
-    }
   }
 }
 

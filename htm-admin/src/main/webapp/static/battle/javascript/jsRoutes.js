@@ -22,6 +22,11 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.fightUpdate 
       function() {
       return _wA({method:"POST", url:"/" + "api/fight/update"})
       }
+
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.timerUpdate = 
+    function(id) {
+    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("id", id) + "/timer"})
+    }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.pool = 
       function(id) {
