@@ -42,7 +42,7 @@ object FightServer extends LiftActor {
       fight.inProgress(f.timeStop == 0).save
       val arena = fight.pool.obj.get.arena.obj.get
       arena.viewers.foreach { viewer =>
-      	viewer.rest.fightUpdate(arena, fight)
+        viewer.rest.fightUpdate(arena, fight)
       }
     }
   }

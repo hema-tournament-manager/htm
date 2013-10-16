@@ -18,14 +18,7 @@ object HtmBuild extends Build {
 		"nl.malienkolders" %% "htm-lib" % "1.0-SNAPSHOT",
 		"net.databinder.dispatch" %% "dispatch-core" % "0.11.0",
 		"net.liftweb" %% "lift-webkit" % "2.5" )
-		
-	val battle = play.Project(
-    	appName("battle"),
-    	appVersion,
-    	appDependencies,
-    	path = file("htm-battle-play")).settings(Format.settings: _*).settings(defaultScalaSettings: _*).
-    	settings(closureCompilerOptions := Seq("rjs"))
-		
+
 	val viewer = play.Project(
 		appName("viewer"),
 		appVersion,

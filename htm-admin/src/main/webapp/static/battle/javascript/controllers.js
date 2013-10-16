@@ -118,11 +118,13 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     
     $scope.undoClicked = function () {
     	$scope.redoScore = $scope.currentFight.scores.pop();
+    	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
     };
     
     $scope.redoClicked = function () {
     	$scope.currentFight.scores.push($scope.redoScore);
     	$scope.redoScore = false;
+    	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
     };
     
     $scope.pushExchange = function(exchange) {
@@ -191,7 +193,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
 
     $scope.showExchanges = function() {
     	var modalInstance = $modal.open({
-    	      templateUrl: 'exchangeList.html',
+    	      templateUrl: '/static/battle/templates/exchangeList.html',
     	      controller: ExchangeListCtrl,
     	      resolve: {
     	        exchanges: function () {

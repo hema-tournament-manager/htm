@@ -26,7 +26,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
   def nextFight = fights.filter(f => f.inProgress == false && f.finished_? == false).headOption
 
   def finished_? = fights.map(_.finished_?).toList.forall(_ == true)
-  
+
   def addFight(a: Participant, b: Participant) = fights += Fight.create.fighterA(a).fighterB(b).inProgress(false).order(fights.size + 1)
 
   def toMarshalled = MarshalledPool(id.is, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
@@ -47,14 +47,14 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
   def poolName: String = {
     ('A'.toInt + (order.get - 1)).toChar.toString;
   }
-  
+
 }
 object Pool extends Pool with LongKeyedMetaMapper[Pool] {
-	def defaultArena(tournament: Tournament): Arena = {
-      tournament.defaultArena.foreign.getOrElse(Arena.findAll.head)
-    }
-  
-    def create(t: Tournament) = super.create.arena(defaultArena(t)).startTime(System.currentTimeMillis())
+  def defaultArena(tournament: Tournament): Arena = {
+    tournament.defaultArena.foreign.getOrElse(Arena.findAll.head)
+  }
+
+  def create(t: Tournament) = super.create.arena(defaultArena(t)).startTime(System.currentTimeMillis())
 }
 
 class PoolParticipants extends LongKeyedMapper[PoolParticipants] with IdPK {

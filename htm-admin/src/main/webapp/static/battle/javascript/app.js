@@ -5,10 +5,10 @@ controller('BattleCtrl', ['$rootScope', '$scope', '$timeout', '$modal', '$locati
 controller('PoolsCtrl', ['$rootScope', '$scope', '$timeout', '$location', 'playRoutes', 'appService', PoolsCtrl]).config(
 		[ '$routeProvider', function($routeProvider) {
 			$routeProvider.when('/arenas', {
-				templateUrl : 'assets/templates/arenas.html',
+				templateUrl : 'static/battle/templates/arenas.html',
 				controller : 'PoolsCtrl'
 			}).when('/fight', {
-				templateUrl : 'assets/templates/fight.html',
+				templateUrl : 'static/battle/templates/fight.html',
 				controller : 'BattleCtrl'
 			}).otherwise({
 				redirectTo : '/arenas'
