@@ -36,12 +36,12 @@ object Application extends Controller {
   def switchFeed = Action {
     Ok.chunked(switchOut &> EventSource()).as("text/event-stream")
   }
-  
+
   def fightUpdate = Action(parse.json) { req =>
     fightChannel.push(req.body)
     Ok
   }
-  
+
   def fightFeed = Action {
     Ok.chunked(fightOut &> EventSource()).as("text/event-stream")
   }
