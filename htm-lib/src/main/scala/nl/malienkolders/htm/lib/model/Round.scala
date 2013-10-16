@@ -4,7 +4,7 @@ package model
 import net.liftweb._
 import mapper._
 
-case class MarshalledRoundSummary(id: Long, order: Long, name: String, tournament: MarshalledTournamentSummary)
+case class MarshalledRoundSummary(id: Long, order: Long, name: String, timeLimitOfFight: Long, breakInFightAt: Long, exchangeLimit: Int, breakDuration: Long, tournament: MarshalledTournamentSummary)
 case class MarshalledRound(id: Long, order: Long, name: String, timeLimitOfFight: Long, breakInFightAt: Long, exchangeLimit: Int, breakDuration: Long, timeBetweenFights: Long, possiblePoints: List[Int], pools: List[MarshalledPoolSummary])
 
 class Round extends LongKeyedMapper[Round] with OneToMany[Long, Round] {
@@ -36,9 +36,14 @@ class Round extends LongKeyedMapper[Round] with OneToMany[Long, Round] {
   def rulesetImpl = nl.malienkolders.htm.lib.Tournament.ruleset(ruleset.get)
 
   def toMarshalled = MarshalledRound(id.is, order.is, name.is, timeLimitOfFight.is, breakInFightAt.is, exchangeLimit.is, breakDuration.is, timeBetweenFights.is, rulesetImpl.possiblePoints, pools.map(_.toMarshalledSummary).toList)
-  def toMarshalledSummary = MarshalledRoundSummary(id.is,
+  def toMarshalledSummary = MarshalledRoundSummary(
+    id.is,
     order.is,
     name.is,
+    timeLimitOfFight.is,
+    breakInFightAt.is,
+    exchangeLimit.is,
+    breakDuration.is,
     tournament.obj.get.toMarshalledSummary)
 }
 object Round extends Round with LongKeyedMetaMapper[Round]

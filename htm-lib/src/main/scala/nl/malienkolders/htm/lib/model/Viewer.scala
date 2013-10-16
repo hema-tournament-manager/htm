@@ -54,7 +54,12 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
       update(arena, "fight", data)
     }
 
-    def fightUpdate(arena: Arena, f: Fight): Boolean = fightUpdate(arena, Serialization.write(f.toMarshalled))
+    def fightUpdate(arena: Arena, f: Fight): Boolean = {
+      if (state != "fight") {
+        fightUpdate(arena, Serialization.write(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
+      }
+      fightUpdate(arena, Serialization.write(f.toMarshalled))
+    }
 
     def message(arena: Arena, message: String): Boolean = update(arena, Serialization.write(
       Map("message" -> message)))

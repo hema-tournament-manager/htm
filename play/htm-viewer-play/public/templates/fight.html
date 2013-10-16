@@ -9,7 +9,7 @@
 		<span ng-repeat="a in range(totalScore.d) track by $index">X</span>
 	</div>
 	<div class="score-double" ng-show="totalScore.d &gt; 3">
-		{{ fight.totalScore.d }}
+		{{ totalScore.d }}
 	</div>
 	<div class="fighter-bar">
 		<img src="/assets/images/fight/fighter_bar.png"/>
@@ -25,5 +25,23 @@
 	</div>
 	<div class="message">
 		{{ message }}
+	</div>
+	<div class="exchangeCount">
+		{{ totalScore.x }}
+	</div>
+	<div class="exchangeLimit">
+		{{ poolSummary.round.exchangeLimit }}
+	</div>
+	<div class="timer">
+		{{ timer.displayTime | minutes }}
+	</div>
+	<div class="tournament">
+		{{ poolSummary.round.tournament.name }}
+	</div>
+	<div class="round">
+		{{ poolSummary.round.name }}
+	</div>
+	<div class="pool">
+		Pool {{ poolSummary.order }}
 	</div>
 </div>

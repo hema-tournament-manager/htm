@@ -6,7 +6,7 @@ angular
 				[ 'common.playRoutes', 'common.filters', 'htm.services',
 						'ui.bootstrap' ]).controller('EmptyCtrl',
 				[ '$scope', '$location', 'playRoutes', 'stateService', EmptyCtrl ]).controller(
-				'FightCtrl', [ '$scope', 'playRoutes', 'stateService', FightCtrl ]).config(
+				'FightCtrl', [ '$scope', '$timeout', 'playRoutes', 'stateService', FightCtrl ]).config(
 				[ '$routeProvider', function($routeProvider) {
 					$routeProvider.when('/empty', {
 						templateUrl : 'assets/templates/empty.html',
