@@ -114,7 +114,7 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
         (t, ps.map(p => p._2))
     }
 
-    EventData(entries.map(_._1), tournaments, registrationsGrouped)
+    EventData(3, entries.map(_._1), tournaments, registrationsGrouped)
   }
 
 }

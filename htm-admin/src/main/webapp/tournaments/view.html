@@ -26,9 +26,9 @@ body {
 }
 </style>
 			</head>
+			<h2><span id="tournamentName">Tournament</span> <button name="downloadSchedule" class="pull-right">Download schedule</button></h2>
 			<p>
-				<h2 id="tournamentName">Tournament</h2>
-				<button name="downloadSchedule">Download schedule</button>
+				Default arena: <select name="tournamentArena"></select>
 			</p>
 			<h3>Fights</h3>
 <div class="row">
@@ -86,7 +86,7 @@ body {
 							<button class="deletePool btn btn-default pull-right" title="Delete Pool"><span class="glyphicon glyphicon-trash"></span></button>
 							<h4 id="poolName" class="panel-title">Pool 1</h4>
 							<br/>
-							<p>Start-time: <input type="datetime" name="poolStartTime" class="hasDatePicker datetimepicker"/> </p>
+							<p>Arena: <select name="poolArena"></select> Start-time: <input type="datetime" name="poolStartTime" class="hasDatePicker datetimepicker"/> </p>
 							
 						</div>
 						<table class="table">

@@ -53,6 +53,7 @@ object HeffacImporter extends Importer[EmptySettings] {
     }).toList.filter(_._1.isDefined).map(t => (t._1.get, t._2))
 
     EventData(
+        2,
       participantSubscriptions.map(_._1),
       tournaments,
       tournaments.map(t => t -> participantSubscriptions.filter(_._2.contains(t)).map(_._1)).toMap)

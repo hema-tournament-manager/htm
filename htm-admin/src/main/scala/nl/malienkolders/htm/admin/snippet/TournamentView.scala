@@ -51,7 +51,7 @@ object TournamentView {
 
     var fighterA: Box[Participant] = Empty
     var fighterB: Box[Participant] = Empty
-
+ *
     def finishedFights_?(round: Round) = {
       round.pools.exists(_.fights.exists(_.finished_?))
     }
@@ -62,11 +62,17 @@ object TournamentView {
       tournament.save
       refresh()
     }
+    
+    def defaultArena(tournament: Tournament): Arena = {
+      tournament.defaultArena.foreign.getOrElse(Arena.findAll.head)
+    }
+    
     def newRound(name: String) {
       val round = Round.create.name(name).order(t.rounds.size + 1).timeLimitOfFight(180 seconds).breakInFightAt(0 seconds).exchangeLimit(10)
       t.rounds += round
       t.save
       val pool = Pool.create.order(1)
+      pool.arena(defaultArena(t))
       pool.startTime(System.currentTimeMillis());
       round.ruleset(
         round.previousRound.map(_.ruleset.get).getOrElse((Rulesets.rulesets.head.id)))
@@ -140,7 +146,7 @@ object TournamentView {
         S.notice("Cannot add a pool, because fights have been fought")
       } else {
         val pool = Pool.create.order(round.pools.size + 1)
-
+        pool.arena(defaultArena(t))
         pool.startTime(System.currentTimeMillis());
 
         round.pools += pool
@@ -261,9 +267,10 @@ object TournamentView {
       else
         <span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span><span style="float:right" title={ f.club.is }>{ f.clubCode.is }</span></span>
 
-    "#tournamentName *" #> t.name &
-      "name=downloadSchedule" #> SHtml.link("/download_schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Download"), "class" -> "btn btn-default") &
-      "#tournamentParticipant" #> tournamentParticipants.map(pt =>
+    "#tournamentName" #> t.name &
+    	"name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
+      "name=downloadSchedule" #> SHtml.link("/download_schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Download Schedule"), "class" -> "btn btn-default") &
+      "#tournamentParticipant" #> tournamentParticipants.map(pt => 
         "* [class]" #> (if (pt.isPresent.get && pt.isEquipmentChecked.get) "present" else if (!pt.isPresent.get) "not_present" else "not_checked") &
           "img [src]" #> ("/images/" + (if (pt.isStarFighter.get) "star" else "star_gray") + ".png") &
           "img [class]" #> ("star" + pt.id) &
@@ -318,6 +325,7 @@ object TournamentView {
             } &
               "#poolName *" #> <span><a name={ "pool" + p.id.is }></a>{ "Pool %d" format p.order.is }</span> &
               "name=poolStartTime" #> SHtml.ajaxText(df.format(new Date(p.startTime.get)), { s => p.startTime(df.parse(s).getTime()); p.save; S.notice("Pool start-time saved") }) &
+              "name=poolArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), Full(p.arena.get.toString), { arena => p.arena(arena.toLong); p.save; S.notice("Arena changed") }) &
               "#poolFight *" #> p.fights.map(f => {
                 ".fightOrder *" #> f.order.is &
                   ".red *" #> renderFightFighter(f.fighterA.obj.get) &

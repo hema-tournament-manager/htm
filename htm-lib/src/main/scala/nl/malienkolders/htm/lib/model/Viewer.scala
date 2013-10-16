@@ -17,16 +17,16 @@ case class ViewerMessage(message: String, duration: Long)
 
 case class Screen(id: String, width: Int, height: Int, fullscreenSupported: Boolean)
 
-class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated {
+class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with ManyToMany {
   def getSingleton = Viewer
 
   object alias extends MappedPoliteString(this, 32)
-  object hostname extends MappedString(this, 64)
-  object port extends MappedInt(this)
+  object url extends MappedString(this, 255)
   object screen extends MappedInt(this)
+  object arenas extends MappedManyToMany(ArenaViewers, ArenaViewers.viewer, ArenaViewers.arena, Arena)
 
   object rest {
-    def baseRequest = :/("%s:%d" format (hostname.get, port.get))
+    def baseRequest = :/(url.get)
     implicit val formats = Serialization.formats(NoTypeHints)
 
     def poll = {
