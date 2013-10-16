@@ -25,12 +25,20 @@ object AdminInterface extends Controller {
     WS.url("http://localhost:8079/api/fight/" + id).get.map(response => Ok(response.json))
   }
 
+  def fightUpdate = Action.async(parse.json) { req =>
+    WS.url("http://localhost:8079/api/fight/update").post(req.body).map(_ => Ok)
+  }
+
   def arenas = Action.async {
     WS.url("http://localhost:8079/api/arenas").get.map(response => Ok(response.json))
   }
 
   def arena(id: Long) = Action.async {
     WS.url("http://localhost:8079/api/arena/" + id + "/pools").get.map(response => Ok(response.json))
+  }
+
+  def poolFight(poolId: Long, fightOrder: Long) = Action.async {
+    WS.url("http://localhost:8079/api/pool/" + poolId + "/fight/" + fightOrder).get.map(response => Ok(response.json))
   }
 
 }

@@ -4,6 +4,7 @@ import net.liftweb._
 import http._
 import rest._
 import json._
+import mapper._
 import util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.comet._
@@ -59,6 +60,9 @@ object AdminRest extends RestHelper {
         case _ => JBool(false)
       }.getOrElse[JValue](JBool(false))
 
+    case "api" :: "pool" :: AsLong(poolId) :: "fight" :: AsLong(fightOrder) :: Nil JsonGet _ =>
+      Extraction.decompose(Fight.find(By(Fight.pool, poolId), By(Fight.order, fightOrder)).map(_.toMarshalledSummary).getOrElse(false))
+
     case "api" :: "pool" :: AsLong(poolId) :: "ranking" :: Nil JsonGet _ =>
       val res = Pool.findByKey(poolId).get.toMarshalledRanking
       Extraction.decompose(res)
@@ -81,7 +85,7 @@ object AdminRest extends RestHelper {
       Fight.findByKey(id).map(f => Extraction.decompose(f.toMarshalled)).getOrElse[JValue](JBool(false))
 
     case "api" :: "fight" :: "update" :: Nil JsonPost json -> _ =>
-      val fight = Extraction.extract[MarshalledFight](json)
+      val fight = Extraction.extract[MarshalledFightSummary](json)
       FightServer ! FightUpdate(fight)
       JBool(true)
 

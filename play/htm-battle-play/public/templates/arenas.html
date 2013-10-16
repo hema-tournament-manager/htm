@@ -1,0 +1,28 @@
+<div data-ng-repeat="arena in arenas" class="panel panel-default pull-left">
+	<div class="panel-heading">
+		<h2 class="panel-title">{{arena.name}}</h2>
+	</div>
+	<div class="panel-body">
+		<button class="btn btn-default btn-lg" title="Click to subscribe" data-ng-click="subscribe(arena)">
+			Fight!
+		</button>
+	</div>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Time</th>
+				<th>Tournament</th>
+				<th>Round</th>
+				<th>Pool</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="pool in arena.fetchedPools | orderBy:'startTime'" data-ng-class="{true: 'finished', false: 'waiting'}[pool.finished]" data-ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
+				<td>{{pool.startTime | hours}}</td>
+				<td>{{pool.round.tournament.name}}</td>
+				<td>{{pool.round.name}}</td>
+				<td>Pool {{pool.order}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

@@ -3,21 +3,16 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.poolSelection
+GET     /                           controllers.Application.index
 
-GET     /fight                  controllers.Application.fight
-
-GET     /api/currentPoolId      controllers.Application.currentPoolId
-GET     /api/currentRound       controllers.Application.currentRound
-GET     /api/currentPool        controllers.Application.currentPool
-POST    /api/fight              controllers.Application.fightUpdate
-POST    /api/subscribe          controllers.Application.subscribe	
 GET     /api/admin/tournaments	controllers.AdminInterface.tournaments
 GET     /api/admin/round/:id    controllers.AdminInterface.round(id: Long)
 GET     /api/admin/pool/:id     controllers.AdminInterface.pool(id: Long)
 GET     /api/admin/fight/:id     controllers.AdminInterface.fight(id: Long)
+POST    /api/admin/fight/update  controllers.AdminInterface.fightUpdate
 GET     /api/admin/arenas		controllers.AdminInterface.arenas
 GET     /api/admin/arena/:id    controllers.AdminInterface.arena(id: Long)
+GET     /api/admin/pool/:id/fight/:order    controllers.AdminInterface.poolFight(id: Long, order: Long)
 
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 

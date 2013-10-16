@@ -1,67 +1,9 @@
-@(appName: String)
-<!DOCTYPE html>
-<html data-ng-app="htm">
-  <head>
-    <title>@appName</title>
-    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.ico")">
-    <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))" />
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/cerulean.min.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/animate-custom.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-	</head>
-	<body data-ng-controller="BattleCtrl">
-    <script type="text/ng-template" id="exchangeList.html">
-		<div class="modal-dialog">
-			<div class="modal-content">
-    			<div class="modal-header">
-					<button type="button" class="close" ng-click="close()" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Exchanges</h4>
-				</div>
-    			<div class="modal-body">
-					<ul>
-						<table class="table table-condensed">
-							<thead>
-								<tr>
-									<th>#</th>
-									<th>time</th>
-									<th>red</th>
-									<th>double</th>
-									<th>blue</th>
-									<th>type</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr data-ng-repeat="score in exchanges">
-									<td>{{score.exchangeId}}</td>
-									<td>{{score.timeInFight | minutes}}</td>
-									<td>{{score.diffA}}</td>
-									<td>{{score.diffDouble}}</td>
-									<td>{{score.diffB}}</td>
-									<td>{{score.scoreType}}</td>
-								</tr>
-							</tbody>
-						</table>
-        		    </ul>
-				</div>
-    			<div class="modal-footer">
-					<button class="btn btn-warning" ng-click="close()">Close</button>
-				</div>
+<div class="row">
+	<div class="col-md-8">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Fights</h3>
 			</div>
-		</div>
-	</script>
-    
-    @*-- Header -- *@
-    <header class="container">
-      <div class="page-header" data-ng-cloak>
-        <h1>{{arena.name}} &mdash; {{poolSummary.round.tournament.name}} <small class="pull-right"></small></h1>
-      </div>
-    </header>
-    @* -- Main Content -- *@
-    <div class="container" data-ng-cloak>
-      <div class="row">
-      <div class="col-md-8">
-      	<div class="panel panel-default">
-			<div class="panel-heading"><h3 class="panel-title">{{round.name}}, Pool {{pool.order}}</h3></div>
 			<table class="table table-condensed table-hover">
 				<tbody>
 					<tr>
@@ -74,8 +16,9 @@
 							</span>
 						</td>
 					</tr>
-					<tr data-ng-repeat="fight in fights | orderBy:'order' | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight.id]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false" data-ng-animate="{enter: 'animated fadeIn'}">
-						<td>{{fight.plannedTime}}</td>
+					<tr data-ng-repeat="fight in fights | orderBy:'globalOrder' | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight.id]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false" data-ng-animate="{enter: 'animated fadeIn'}">
+						<td ng-show="fight.loading">Loading...</td>
+						<td ng-show="!fight.loading">{{fight.plannedTime | hours}}</td>
 						<td>{{fight.id}}</td>
 						<td class="text-left">{{fight.fighterA.name}} <span data-ng-show="fight.fighterA.clubCode">({{fight.fighterA.clubCode}})</span></td>
 						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().a}}</span></td>
@@ -104,28 +47,28 @@
 					</tr>
 				</tbody>
 			</table>  	
-      	</div>
-      	<div class="panel panel-default">
+     	</div>
+     	<div class="panel panel-default">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					Current fight
-					<div class="dropdown pull-right" data-ng-show="currentFight.order &gt; -1">
+					<div class="dropdown pull-right" data-ng-show="currentFight.started">
 						<a id="fight-menu" class="dropdown-toggle" href="#" data-toggle="dropdown" title="Fight menu">
 							<span class="glyphicon glyphicon-chevron-down"></span>
 						</a>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="fight-menu">
-							<li><a href="#" data-ng-click="cancelFight()">Cancel fight</a></li>
-							<li><a href="#" data-ng-click="confirmFight()">Confirm fight</a></li>
+							<li><a href="" data-ng-click="cancelFight()">Cancel fight</a></li>
+							<li><a href="" data-ng-click="confirmFight()">Confirm fight</a></li>
 						</ul>
 					</div>
 				</h3>
 			</div>
-			<div class="panel-body" data-ng-hide="currentFight.order &gt; -1">
-				<button class="btn btn-primary" data-ng-click="startNextFight()" data-ng-disabled="findNextFight().order &lt; 0">
+			<div class="panel-body" data-ng-hide="currentFight.started">
+				<button class="btn btn-primary" data-ng-click="startFight()" data-ng-disabled="findNextFight().order &lt; 0">
 					Start fight
 				</button>
 			</div>
-			<div class="panel-body htm-current-fight-box" data-ng-show="currentFight.order &gt; -1">
+			<div class="panel-body htm-current-fight-box" data-ng-show="currentFight.started">
 				<div class="row htm-fight-buttons">
 					<div class="col-sm-4 col-md-4 htm-clickable" data-ng-click="toggleTimer()">
 						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{round.timeLimitOfFight | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
@@ -192,72 +135,52 @@
 					</div>
 				</div>
 			</div>
-      	</div>
-      </div>
-      <div class="col-md-4">
-      <div class="panel panel-default">
-      
-			<div class="panel-heading"><h3 class="panel-title">Messages</h3></div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Messages</h3>
+			</div>
 			<div class="panel-body">
 				lijstje
 			</div>  
 			<div class="panel-footer"><input type="text"/></div>  	
-      	</div>
-      	<div class="panel panel-default">
-      		<div class="panel-body">Public announcement</div>
-      	</div>
-      	<div class="panel panel-default">
-      		<div class="panel-heading"><h3 class="panel-title">Support</h3></div>
-				  <div class="panel-body">
-				  <p class="btn-group">
-							<button type="button" class="btn btn-default">Call Tech Support</button>
-							<button type="button" class="btn btn-default">Call Organisation</button>
-							</p>
-				  	<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    Request <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" role="menu">
-    <li><a href="#">Replacement weapon</a></li>
-    <li><a href="#">Medical assistance</a></li>
-    <li><a href="#">Referee</a></li>
-    <li><a href="#">Judge</a></li>
-    <li><a href="#">Staff</a></li>
-  </ul>
-  </div>
-				  </div>
-      	</div>
-      </div>
-      </div>
-    </div>
-    
-          <div>PoolSummary: {{poolSummary}}</div>
-      <div>Pool: {{pool}}</div>
-      <div>Round: {{round}}</div>
-      <div>Fights: {{fights}}</div>
-      <div>Current Fight: {{currentFight}}</div>
-      <div>Next Fight: {{findNextFight()}}</div>
-    
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.core.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.position.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("ui-bootstrap-tpls.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular-cookies.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("underscore.js"))"></script>
-    <script src="@routes.Application.jsRoutes"></script>
-    <script src="@routes.Assets.at("javascripts/controllers.js")"></script>
-    <script src="@routes.Assets.at("javascripts/app.js")"></script>
-    <script src="@routes.Assets.at("javascripts/filters.js")"></script>
-    <script src="@routes.Assets.at("javascripts/services/playRoutes.js")"></script>
-    <script src="@routes.Assets.at("javascripts/services/appService.js")"></script>
-    
-    <div id="score-options" class="btn-group">
-        <button type="button" ng-repeat="score in round.possiblePoints" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
-        <button type="button" ng-click="cancelScoreSelect()" class="btn btn-default btn-lg" title="Cancel">
-        	<span class="glyphicon glyphicon-remove-circle"></span>
-        </button>
-    </div>
-  </body>
-</html>
+     	</div>
+   		<div class="panel panel-default">
+   			<div class="panel-body">Public announcement</div>
+   		</div>
+   		<div class="panel panel-default">
+   			<div class="panel-heading">
+   				<h3 class="panel-title">Support</h3>
+  			</div>
+			<div class="panel-body">
+				<p class="btn-group">
+					<button type="button" class="btn btn-default">Call Tech Support</button>
+					<button type="button" class="btn btn-default">Call Organisation</button>
+				</p>
+				<div class="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						Request <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="#">Replacement weapon</a></li>
+						<li><a href="#">Medical assistance</a></li>
+						<li><a href="#">Referee</a></li>
+						<li><a href="#">Judge</a></li>
+						<li><a href="#">Staff</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div>{{fights}}</div>
+
+<div id="score-options" class="btn-group">
+	<button type="button" ng-repeat="score in round.possiblePoints" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
+	<button type="button" ng-click="cancelScoreSelect()" class="btn btn-default btn-lg" title="Cancel">
+		<span class="glyphicon glyphicon-remove-circle"></span>
+	</button>
+</div>

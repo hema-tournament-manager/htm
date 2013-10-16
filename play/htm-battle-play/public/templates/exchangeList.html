@@ -1,0 +1,37 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+  			<div class="modal-header">
+			<button type="button" class="close" ng-click="close()" aria-hidden="true">&times;</button>
+			<h4 class="modal-title">Exchanges</h4>
+		</div>
+  			<div class="modal-body">
+			<ul>
+				<table class="table table-condensed">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>time</th>
+							<th>red</th>
+							<th>double</th>
+							<th>blue</th>
+							<th>type</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-ng-repeat="score in exchanges">
+							<td>{{score.exchangeId}}</td>
+							<td>{{score.timeInFight | minutes}}</td>
+							<td>{{score.diffA}}</td>
+							<td>{{score.diffDouble}}</td>
+							<td>{{score.diffB}}</td>
+							<td>{{score.scoreType}}</td>
+						</tr>
+					</tbody>
+				</table>
+      		    </ul>
+		</div>
+  			<div class="modal-footer">
+			<button class="btn btn-warning" ng-click="close()">Close</button>
+		</div>
+	</div>
+</div>

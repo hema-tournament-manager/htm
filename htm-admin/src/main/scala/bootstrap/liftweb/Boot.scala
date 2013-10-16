@@ -26,8 +26,8 @@ class Boot {
       val vendor =
         new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
           Props.get("db.url") openOr
-            "jdbc:h2:mem:htm_admin",
-          Props.get("db.user"), Props.get("db.password"))
+            "jdbc:h2:htm_admin",
+          Props.get("db.user") or Full("sa"), Props.get("db.password") or Full("masterkey"))
 
       LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
 
