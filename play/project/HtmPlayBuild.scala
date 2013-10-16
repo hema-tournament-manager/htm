@@ -23,13 +23,15 @@ object HtmBuild extends Build {
     	appName("battle"),
     	appVersion,
     	appDependencies,
-    	path = file("htm-battle-play")).settings(Format.settings: _*).settings(defaultScalaSettings: _*)
+    	path = file("htm-battle-play")).settings(Format.settings: _*).settings(defaultScalaSettings: _*).
+    	settings(closureCompilerOptions := Seq("rjs"))
 		
 	val viewer = play.Project(
 		appName("viewer"),
 		appVersion,
 		appDependencies,
-		path = file("htm-viewer-play")).settings(Format.settings: _*).settings(defaultScalaSettings: _*)
+		path = file("htm-viewer-play")).settings(Format.settings: _*).settings(defaultScalaSettings: _*).
+    	settings(closureCompilerOptions := Seq("rjs"))
 }
 
 object Format {
