@@ -38,7 +38,12 @@ object FightServer extends LiftActor {
       reply(if (fight.save) FightMsg(fight) else NoFightMsg)
     }
     case FightUpdate(f) => {
-      Fight.findByKey(f.id).get.fromMarshalledSummary(f).inProgress(f.timeStop == 0).save
+      val fight = Fight.findByKey(f.id).get.fromMarshalledSummary(f)
+      fight.inProgress(f.timeStop == 0).save
+      val arena = fight.pool.obj.get.arena.obj.get
+      arena.viewers.foreach { viewer =>
+      	viewer.rest.fightUpdate(arena, fight)
+      }
     }
   }
 

@@ -26,6 +26,8 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
   object arenas extends MappedManyToMany(ArenaViewers, ArenaViewers.viewer, ArenaViewers.arena, Arena)
 
   object rest {
+    var state = "empty"
+
     def baseRequest = :/(url.get) / "api"
     implicit val formats = Serialization.formats(NoTypeHints)
 
@@ -35,73 +37,40 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
         _ => false,
         success => true).apply
     }
-    
-    def poll = {
-      val req = baseRequest / "poll"
-      Http(req OK as.String).fold(
-        _ => List[Screen](),
-        success => parse(success).extract[List[Screen]]).apply
+
+    private def update(arena: Arena, screen: String, data: String): Boolean = {
+      state = screen
+      update(arena, data)
     }
 
-    def state = {
-      val req = baseRequest / "state"
-      Http(req OK as.String).fold(
+    private def update(arena: Arena, data: String): Boolean = {
+      val req = dispatch.url("http://" + url.get + "/api/update/text/" + (arena.id.get) + "/" + state).POST.setBody(data).addHeader("Content-Type", "text/plain")
+      Http(req).fold[Boolean](
         _ => false,
-        success => asBoolean(success) match {
-          case Full(b) => b
-          case _ => false
-        }).apply
+        resp => resp.getResponseBody().toBoolean).apply
     }
 
-    def boot = {
-      val req = baseRequest / "boot" / screen.get.toString
-      Http(req OK as.String).fold(
-        _ => true,
-        success => asBoolean(success) match {
-          case Full(b) => b
-          case _ => false
-        }).apply
+    private def fightUpdate(arena: Arena, data: String): Boolean = {
+      update(arena, "fight", data)
     }
 
-    def shutdown = {
-      val req = baseRequest / "shutdown"
-      Http(req OK as.String).fold(
-        _ => true,
-        success => asBoolean(success) match {
-          case Full(b) => b
-          case _ => false
-        }).apply
-    }
+    def fightUpdate(arena: Arena, f: Fight): Boolean = fightUpdate(arena, Serialization.write(f.toMarshalled))
 
-    def score(scores: (Int, Int, Int)) = {
-      val req = baseRequest / "score" / scores._1.toString / scores._2.toString / scores._3.toString
-      Http(req OK as.String).fold(
-        _ => true,
-        success => asBoolean(success) match {
-          case Full(b) => b
-          case _ => false
-        }).apply
-    }
+    def message(arena: Arena, message: String): Boolean = update(arena, Serialization.write(
+      Map("message" -> message)))
 
     object timer {
-      def start(time: Long) = {
-        val req = baseRequest / "timer" / "start" / time.toString
-        Http(req OK as.String).fold(
-          _ => true,
-          success => asBoolean(success) match {
-            case Full(b) => b
-            case _ => false
-          }).apply
-      }
-      def stop(time: Long) = {
-        val req = baseRequest / "timer" / "stop" / time.toString
-        Http(req OK as.String).fold(
-          _ => true,
-          success => asBoolean(success) match {
-            case Full(b) => b
-            case _ => false
-          }).apply
-      }
+      def start(arena: Arena, time: Long) = fightUpdate(arena, Serialization.write(
+        Map(
+          "timer" -> Map(
+            "action" -> "start",
+            "time" -> time.toString))))
+
+      def stop(arena: Arena, time: Long) = fightUpdate(arena, Serialization.write(
+        Map(
+          "timer" -> Map(
+            "action" -> "stop",
+            "time" -> time.toString))))
     }
   }
 }

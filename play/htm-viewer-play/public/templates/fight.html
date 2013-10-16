@@ -13,6 +13,15 @@
 	</div>
 	<div class="fighter-bar">
 		<img src="/assets/images/fight/fighter_bar.png"/>
+
+		<div class="fighter red">
+			<img ng-src="/assets/images/fight/flags/{{fighterA.country}}red.png"/>
+			<span class="name">{{fighterA.name}}</span>
+		</div>
+		<div class="fighter blue">
+			<img ng-src="/assets/images/fight/flags/{{fighterB.country}}blue.png"/>
+			<span class="name">{{fighterB.name}}</span>
+		</div>
 	</div>
 	<div class="message">
 		{{ message }}

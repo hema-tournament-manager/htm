@@ -46,7 +46,14 @@ angular.module('htm.services', []).
 		  "fight": {
 			  "message": "",
 			  "timer": {},
-			  "fight": {}
+			  "fighterA": {
+				  "name": "Rood",
+				  "country": "NL"
+			  },
+			  "fighterB": {
+				  "name": "Blauw",
+				  "country": "NL"
+			  }
 		  }
 	  };
 	  return {
