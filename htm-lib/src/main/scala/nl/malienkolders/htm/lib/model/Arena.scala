@@ -14,7 +14,7 @@ class Arena extends LongKeyedMapper[Arena] with IdPK with CreatedUpdated with Or
   
   object name extends MappedString(this, 64)
   
-  object pools extends MappedOneToMany(Pool, Pool.arena, OrderBy(Pool.order, Ascending)) with Owned[Pool]
+  object pools extends MappedOneToMany(Pool, Pool.arena, OrderBy(Pool.startTime, Ascending)) with Owned[Pool]
   object viewers extends MappedManyToMany(ArenaViewers, ArenaViewers.arena, ArenaViewers.viewer, Viewer)
   
   def compare(that: Arena) = this.name.is.compareTo(that.name.is)
