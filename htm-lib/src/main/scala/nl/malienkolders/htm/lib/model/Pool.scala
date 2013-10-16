@@ -47,9 +47,15 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
   def poolName: String = {
     ('A'.toInt + (order.get - 1)).toChar.toString;
   }
-
+  
 }
-object Pool extends Pool with LongKeyedMetaMapper[Pool]
+object Pool extends Pool with LongKeyedMetaMapper[Pool] {
+	def defaultArena(tournament: Tournament): Arena = {
+      tournament.defaultArena.foreign.getOrElse(Arena.findAll.head)
+    }
+  
+    def create(t: Tournament) = super.create.arena(defaultArena(t)).startTime(System.currentTimeMillis())
+}
 
 class PoolParticipants extends LongKeyedMapper[PoolParticipants] with IdPK {
   def getSingleton = PoolParticipants

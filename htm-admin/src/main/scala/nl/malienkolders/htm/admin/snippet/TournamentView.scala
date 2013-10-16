@@ -63,17 +63,11 @@ object TournamentView {
       refresh()
     }
 
-    def defaultArena(tournament: Tournament): Arena = {
-      tournament.defaultArena.foreign.getOrElse(Arena.findAll.head)
-    }
-
     def newRound(name: String) {
       val round = Round.create.name(name).order(t.rounds.size + 1).timeLimitOfFight(180 seconds).breakInFightAt(0 seconds).exchangeLimit(10)
       t.rounds += round
       t.save
-      val pool = Pool.create.order(1)
-      pool.arena(defaultArena(t))
-      pool.startTime(System.currentTimeMillis());
+      val pool = Pool.create(t).order(1)
       round.ruleset(
         round.previousRound.map(_.ruleset.get).getOrElse((Rulesets.rulesets.head.id)))
       round.pools += pool
@@ -145,9 +139,7 @@ object TournamentView {
       if (finishedFights_?(round)) {
         S.notice("Cannot add a pool, because fights have been fought")
       } else {
-        val pool = Pool.create.order(round.pools.size + 1)
-        pool.arena(defaultArena(t))
-        pool.startTime(System.currentTimeMillis());
+        val pool = Pool.create(t).order(round.pools.size + 1)
 
         round.pools += pool
         round.save
