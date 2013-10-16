@@ -21,29 +21,23 @@ object Application extends Controller {
 
   implicit val timeout = Timeout(10000)
 
-  val (switchOut, switchChannel) = Concurrent.broadcast[String]
-  val (fightOut, fightChannel) = Concurrent.broadcast[JsValue]
+  val (updateOut, updateChannel) = Concurrent.broadcast[JsValue]
 
   def index = Action {
     Ok(views.html.index())
   }
+  
+  def ping = Action { Ok }
 
-  def switch(view: String) = Action {
-    switchChannel.push(view)
+  def update(view: String) = Action(parse.json) { req =>
+    updateChannel.push(Json.obj(
+      "view" -> view,
+      "payload" -> req.body))
     Ok
   }
 
-  def switchFeed = Action {
-    Ok.chunked(switchOut &> EventSource()).as("text/event-stream")
-  }
-
-  def fightUpdate = Action(parse.json) { req =>
-    fightChannel.push(req.body)
-    Ok
-  }
-
-  def fightFeed = Action {
-    Ok.chunked(fightOut &> EventSource()).as("text/event-stream")
+  def updateFeed = Action {
+    Ok.chunked(updateOut &> EventSource()).as("text/event-stream")
   }
 
   def jsRoutes(varName: String = "jsRoutes") = Action { implicit request =>

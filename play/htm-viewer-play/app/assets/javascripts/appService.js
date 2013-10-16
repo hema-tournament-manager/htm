@@ -2,7 +2,6 @@
 
 /* Services */
 
-
 // Demonstrate how to register services
 // In this case it is a simple value service.
 angular.module('htm.services', []).
@@ -35,4 +34,34 @@ angular.module('htm.services', []).
       }
     };
     return new AppService();
-  }]);
+  }])
+  .factory("stateService", function() {
+	  var _ = window._;
+	  var callback = function(update) {};
+	  var view = "empty";
+	  var state = {
+		  "empty": {
+			  "message": ""
+		  },
+		  "fight": {
+			  "message": "",
+			  "timer": {},
+			  "fight": {}
+		  }
+	  };
+	  return {
+		  put: function(view_, update) {
+			  view = view_;
+			  console.log(view_);
+			  console.log(state[view]);
+			  state[view] = _.extend(state[view], update);
+			  callback(view, state[view]);
+		  },
+		  get: function(view) {
+			  return state[view];
+		  },
+		  change: function(callback_) {
+			  callback = callback_;
+		  }
+	  };
+  });

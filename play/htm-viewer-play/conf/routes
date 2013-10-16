@@ -5,10 +5,11 @@
 # Home page
 GET     /                           controllers.Application.index
 
-GET     /switchFeed				controllers.Application.switchFeed
+GET     /updateFeed				controllers.Application.updateFeed
 
-POST    /api/switch/:view       controllers.Application.switch(view: String)
-POST    /api/fight				controllers.Application.fightUpdate
+GET     /api/ping				controllers.Application.ping
+
+POST    /api/update/:view       controllers.Application.update(view: String)
 
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 
