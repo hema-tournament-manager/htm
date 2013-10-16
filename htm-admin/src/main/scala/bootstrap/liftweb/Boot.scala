@@ -43,6 +43,16 @@ class Boot {
     LiftRules.addToPackages("nl.malienkolders.htm.admin")
     LiftRules.addToPackages("nl.malienkolders.htm.lib")
 
+    LiftRules.liftRequest.append{
+    	case Req("static" :: "battle" :: "templates" :: "arenas" :: Nil, "html", _) => false
+    }
+    LiftRules.liftRequest.append{
+    	case Req("static" :: "battle" :: "templates" :: "exchangeList" :: Nil, "html", _) => false
+    }
+    LiftRules.liftRequest.append{
+    	case Req("static" :: "battle" :: "templates" :: "fight" :: Nil, "html", _) => false
+    }
+    
     CountryImporter.doImport
 
     RoundRobinTournament.register
@@ -60,7 +70,9 @@ class Boot {
       (Menu.i("Arenæ") / "arenas" / "list") ::
       (Menu.i("Viewers") / "viewers" / "list") ::
       (Menu.i("Import") / "import") ::
-      (Menu.i("Export") / "export") :: Nil
+      (Menu.i("Export") / "export") :: 
+      (Menu.i("Battle") / "battle") ::
+      Nil
 
     // Build SiteMap
     def sitemap = SiteMap(entries: _*)

@@ -191,7 +191,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
 
     $scope.showExchanges = function() {
     	var modalInstance = $modal.open({
-    	      templateUrl: 'exchangeList.html',
+    	      templateUrl: '/static/battle/templates/exchangeList.html',
     	      controller: ExchangeListCtrl,
     	      resolve: {
     	        exchanges: function () {
