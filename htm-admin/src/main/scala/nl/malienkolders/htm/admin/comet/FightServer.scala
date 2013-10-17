@@ -45,7 +45,7 @@ object FightServer extends LiftActor {
         viewer.rest.fightUpdate(arena, fight)
       }
     }
-    
+
     case TimerUpdate(f, TimerMessage(action, time)) => {
       val fight = Fight.findByKey(f).get
       val arena = fight.pool.obj.get.arena.obj.get

@@ -99,21 +99,20 @@ object AdminRest extends RestHelper {
 
     case "api" :: "ping" :: Nil JsonGet _ =>
       JString("pong")
-      
+
     case "api" :: "viewers" :: Nil JsonGet _ =>
       Extraction.decompose(Viewer.findAll.map(_.toMarshalled).toList)
-      
+
     case "api" :: "viewer" :: "update" :: Nil JsonPost json -> _ =>
       JBool(json match {
         case JObject(JField("view", JString(view)) :: JField("viewers", JArray(viewers)) :: JField("payload", payload) :: Nil) =>
-          	viewers.map(_ match {case JInt(id) => id.toLong case _ => -1}).filter(_ > -1).foreach { viewerId => 
-          		Viewer.findByKey(viewerId).foreach(viewer =>
-          		  	viewer.rest.update(view, compact(render(payload)))
-          		  )
-          	}
-	        true
+          viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
+            Viewer.findByKey(viewerId).foreach(viewer =>
+              viewer.rest.update(view, compact(render(payload))))
+          }
+          true
         case _ =>
-        	false
+          false
       })
   }
 
