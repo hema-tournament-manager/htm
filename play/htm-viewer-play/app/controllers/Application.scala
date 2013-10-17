@@ -29,20 +29,17 @@ object Application extends Controller {
 
   def ping = Action { Ok("true") }
 
-  def update(arena: Long, view: String) = Action(parse.json) { req =>
-    updateChannel.push(Json.obj(
-      "arena" -> arena,
-      "view" -> view,
-      "payload" -> req.body))
+  def updateImpl(msg: JsValue) = {
+    updateChannel.push(msg)
     Ok("true")
   }
 
-  def updateText(arena: Long, view: String) = Action(parse.text) { req =>
-    updateChannel.push(Json.obj(
-      "arena" -> arena,
-      "view" -> view,
-      "payload" -> Json.parse(req.body)))
-    Ok("true")
+  def update = Action(parse.json) { req =>
+    updateImpl(req.body)
+  }
+
+  def updateText = Action(parse.text) { req =>
+    updateImpl(Json.parse(req.body))
   }
 
   def updateFeed = Action {

@@ -6,7 +6,8 @@ angular
 				[ 'common.playRoutes', 'common.filters', 'htm.services',
 						'ui.bootstrap' ]).controller('EmptyCtrl',
 				[ '$scope', '$location', 'playRoutes', 'stateService', EmptyCtrl ]).controller(
-				'FightCtrl', [ '$scope', '$timeout', 'playRoutes', 'stateService', FightCtrl ]).config(
+						'FightCtrl', [ '$scope', '$timeout', 'playRoutes', 'stateService', FightCtrl ]).controller(
+								'OverviewArenaCtrl', [ '$scope', 'stateService', OverviewArenaCtrl ]).config(
 				[ '$routeProvider', function($routeProvider) {
 					$routeProvider.when('/empty', {
 						templateUrl : 'assets/templates/empty.html',
@@ -14,9 +15,9 @@ angular
 					}).when('/fight', {
 						templateUrl : 'assets/templates/fight.html',
 						controller : 'FightCtrl'
-					}).when('/overview', {
-						templateUrl : 'partials/phone-detail.html',
-						controller : 'PhoneDetailCtrl'
+					}).when('/overview/arena', {
+						templateUrl : 'assets/templates/overview/arena.html',
+						controller : 'OverviewArenaCtrl'
 					}).otherwise({
 						redirectTo : '/empty'
 					});

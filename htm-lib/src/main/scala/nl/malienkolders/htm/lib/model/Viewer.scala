@@ -43,41 +43,48 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
         success => true).apply
     }
 
-    private def update(arena: Arena, screen: String, data: String): Boolean = {
+    private def update(arena: Arena, screen: String, data: JValue): Boolean = {
       state = screen
       update(arena, data)
     }
 
-    private def update(arena: Arena, data: String): Boolean = {
-      val req = dispatch.url("http://" + url.get + "/api/update/text/" + (arena.id.get) + "/" + state).POST.setBody(data).addHeader("Content-Type", "text/plain")
+    private def update(arena: Arena, data: JValue): Boolean = {
+      val serialized = compact(render(JObject(
+          JField("view", JString(state)) :: 
+          JField("arena", JInt(arena.id.get)) :: 
+          JField("payload", data) :: Nil)))
+      val req = dispatch.url("http://" + url.get + "/api/update/text").POST.setBody(serialized).addHeader("Content-Type", "text/plain")
       Http(req).fold[Boolean](
         _ => false,
         resp => resp.getResponseBody().toBoolean).apply
     }
 
-    def update(view: String, data: String): Boolean = {
+    def update(view: String, data: JValue): Boolean = {
       state = view;
-      val req = dispatch.url("http://" + url.get + "/api/update/text/0/" + state).POST.setBody(data).addHeader("Content-Type", "text/plain")
+      val serialized = compact(render(JObject(
+          JField("view", JString(state)) :: 
+          JField("payload", data) :: Nil)))
+      val req = dispatch.url("http://" + url.get + "/api/update/text").POST.setBody(serialized).addHeader("Content-Type", "text/plain")
       Http(req).fold[Boolean](
         _ => false,
         resp => resp.getResponseBody().toBoolean).apply
     }
 
-    private def fightUpdate(arena: Arena, data: String): Boolean = {
+    private def fightUpdate(arena: Arena, data: JValue): Boolean = {
       update(arena, "fight", data)
     }
 
     def fightUpdate(arena: Arena, f: Fight): Boolean = {
       if (state != "fight") {
-        fightUpdate(arena, Serialization.write(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
+        fightUpdate(arena, Extraction.decompose(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
       }
-      fightUpdate(arena, Serialization.write(f.toMarshalled))
+      fightUpdate(arena, Extraction.decompose(f.toMarshalled))
     }
 
-    def message(arena: Arena, message: String): Boolean = update(arena, Serialization.write(
+    def message(arena: Arena, message: String): Boolean = update(arena, Extraction.decompose(
       Map("message" -> message)))
 
-    def timerUpdate(arena: Arena, action: String, time: Long) = fightUpdate(arena, Serialization.write(
+    def timerUpdate(arena: Arena, action: String, time: Long) = fightUpdate(arena, Extraction.decompose(
       Map(
         "timer" -> Map(
           "action" -> action,

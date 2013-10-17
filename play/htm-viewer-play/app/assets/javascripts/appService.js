@@ -36,6 +36,11 @@ angular.module('htm.services', [])
 				  "name": "Blauw",
 				  "country": "NL"
 			  }
+		  },
+		  "overview/arena": {
+			  "message": "",
+			  "arena": "",
+			  "fights": []
 		  }
 	  };
 	  return {

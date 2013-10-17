@@ -1,19 +1,43 @@
 <nav class="navbar navbar-default navbar-static-top">
 	<div class="navbar-header">
-		<span class="navbar-brand">Viewers</span>
+		<a href="/viewers/list" class="navbar-brand">Back to admin</a>
 	</div>
-	<p class="navbar-text">
-		<div ng-repeat="viewer in viewers" class="checkbox">
-			<label>
-				<input type="checkbox" value="" ng-model="viewer.selected">
-				{{ viewer.alias }}
-			</label>
-		</div>
-	</p>
 </nav>
-
 <div class="container">
 	<div class="row">
-		<button class="btn btn-default" ng-click="update('empty', {message: ''})">Empty</button>
+		<div class="col-md-3">
+			<div class="panel" ng-class="{true: 'panel-default', false: 'panel-danger'}[hasViewers()]">
+				<div class="panel-heading">
+					<h3 class="panel-title">Viewers</h3>
+				</div>
+				<ul class="list-group">
+					<li class="list-group-item" ng-repeat="viewer in viewers">
+						<label>
+							<input type="checkbox" ng-model="viewer.selected">
+							{{ viewer.alias }}
+						</label>
+					</li>
+				</ul>
+			</div>
+		</div>			
+		<div class="col-md-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">View switch</h3>
+				</div>
+				<div class="panel-body">
+					<button class="btn btn-default" ng-click="update('empty', {message: ''})" ng-disabled="!hasViewers()">Empty</button>
+					<button class="btn btn-default" ng-click="update('fight', {message: ''})" ng-disabled="!hasViewers()">Fight</button>
+					<div class="btn-group" ng-show="arenas">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-disabled="!hasViewers()">
+	  						Arena overview <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+    						<li ng-repeat="arena in arenas"><a href="" ng-click="update('overview/arena', {message: '', arena: arena.name, fights: arena.id})">{{arena.name}}</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

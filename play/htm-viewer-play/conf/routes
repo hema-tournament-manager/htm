@@ -9,9 +9,9 @@ GET     /updateFeed				controllers.Application.updateFeed
 
 GET     /api/ping				controllers.Application.ping
 
-POST    /api/update/:arena/:view       controllers.Application.update(arena: Long, view: String)
+POST    /api/update       controllers.Application.update
 
-POST    /api/update/text/:arena/:view       controllers.Application.updateText(arena: Long, view: String)
+POST    /api/update/text       controllers.Application.updateText
 
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 
