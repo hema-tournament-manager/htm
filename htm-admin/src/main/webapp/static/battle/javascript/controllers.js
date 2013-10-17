@@ -300,6 +300,7 @@ var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
 
 var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, appService) {
 	$rootScope.title = "HEFFAC 2013";
+	$rootScope.subtitle = "";
 	
 	$scope.arenas = new Array();
 	var _ = window._;
