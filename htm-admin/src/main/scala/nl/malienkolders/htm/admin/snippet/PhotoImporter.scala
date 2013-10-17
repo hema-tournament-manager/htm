@@ -14,26 +14,26 @@ import nl.malienkolders.htm.admin.lib.PhotoImporterBackend
 
 object PhotoImporter extends Loggable {
 
-	def render = {
-		var clear = false
-		var clearTournaments = false
+  def render = {
+    var clear = false
+    var clearTournaments = false
 
-		def process() {}
-		
-		var upload : Box[FileParamHolder] = Empty
+    def process() {}
 
-	    def processForm() = upload match {
-	      case Full(FileParamHolder(_, "application/zip", fileName, file)) =>
-	        println("%s of type %s is %d bytes long" format (
-	         fileName, "application/zip", file.length) )
-	        PhotoImporterBackend.doImport(file)
-	
-	      case Full(FileParamHolder(_, mime, _, _)) => logger.error("Invalid mime-type friendo")
-	      case _ => logger.warn("No file?")
-	    }
-	
-	    "#file" #> SHtml.fileUpload(f => upload = Full(f)) &
-	      "type=submit" #> SHtml.onSubmitUnit(processForm)
-	}
+    var upload: Box[FileParamHolder] = Empty
+
+    def processForm() = upload match {
+      case Full(FileParamHolder(_, "application/zip", fileName, file)) =>
+        println("%s of type %s is %d bytes long" format (
+          fileName, "application/zip", file.length))
+        PhotoImporterBackend.doImport(file)
+
+      case Full(FileParamHolder(_, mime, _, _)) => logger.error("Invalid mime-type friendo")
+      case _ => logger.warn("No file?")
+    }
+
+    "#file" #> SHtml.fileUpload(f => upload = Full(f)) &
+      "type=submit" #> SHtml.onSubmitUnit(processForm)
+  }
 
 }

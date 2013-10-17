@@ -50,8 +50,8 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
 
     private def update(arena: Arena, data: JValue): Boolean = {
       val serialized = compact(render(JObject(
-          JField("view", JString(state)) :: 
-          JField("arena", JInt(arena.id.get)) :: 
+        JField("view", JString(state)) ::
+          JField("arena", JInt(arena.id.get)) ::
           JField("payload", data) :: Nil)))
       val req = dispatch.url("http://" + url.get + "/api/update/text").POST.setBody(serialized).addHeader("Content-Type", "text/plain")
       Http(req).fold[Boolean](
@@ -62,7 +62,7 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
     def update(view: String, data: JValue): Boolean = {
       state = view;
       val serialized = compact(render(JObject(
-          JField("view", JString(state)) :: 
+        JField("view", JString(state)) ::
           JField("payload", data) :: Nil)))
       val req = dispatch.url("http://" + url.get + "/api/update/text").POST.setBody(serialized).addHeader("Content-Type", "text/plain")
       Http(req).fold[Boolean](

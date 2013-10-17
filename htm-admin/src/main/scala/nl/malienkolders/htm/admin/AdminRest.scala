@@ -106,12 +106,11 @@ object AdminRest extends RestHelper {
     case "api" :: "viewer" :: "update" :: Nil JsonPost json -> _ =>
       JBool(json match {
         case JObject(JField("view", JString(view)) :: JField("viewers", JArray(viewers)) :: JField("payload", payload) :: Nil) =>
-          	viewers.map(_ match {case JInt(id) => id.toLong case _ => -1}).filter(_ > -1).foreach { viewerId => 
-          		Viewer.findByKey(viewerId).foreach(viewer =>
-          		  	viewer.rest.update(view, payload)
-          		  )
-          	}
-	        true
+          viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
+            Viewer.findByKey(viewerId).foreach(viewer =>
+              viewer.rest.update(view, payload))
+          }
+          true
         case _ =>
           false
       })

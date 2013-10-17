@@ -7,24 +7,22 @@ import java.util.zip.ZipEntry
 
 object PhotoImporterBackend {
 
-  
-  
-  def doImport(file : Array[Byte]) = {
-    
+  def doImport(file: Array[Byte]) = {
+
     val stream = new ByteArrayInputStream(file);
-	val rootzip = new ZipInputStream(stream)
-	
-	import collection.JavaConverters._
-	
-	def handle(in: ZipInputStream) : Unit = in.getNextEntry() match {
-	  case e: ZipEntry =>
-	    println(e.getName())
-	    handle(in)
-	  case _ => in.close()
-	}
-	
-	handle(rootzip)
-	/*
+    val rootzip = new ZipInputStream(stream)
+
+    import collection.JavaConverters._
+
+    def handle(in: ZipInputStream): Unit = in.getNextEntry() match {
+      case e: ZipEntry =>
+        println(e.getName())
+        handle(in)
+      case _ => in.close()
+    }
+
+    handle(rootzip)
+    /*
 	var entry : ZipEntry = null;
 	while((entry = rootzip.getNextEntry()) != null)
 	{
