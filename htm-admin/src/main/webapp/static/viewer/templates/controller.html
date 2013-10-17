@@ -1,0 +1,19 @@
+<nav class="navbar navbar-default navbar-static-top">
+	<div class="navbar-header">
+		<span class="navbar-brand">Viewers</span>
+	</div>
+	<p class="navbar-text">
+		<div ng-repeat="viewer in viewers" class="checkbox">
+			<label>
+				<input type="checkbox" value="" ng-model="viewer.selected">
+				{{ viewer.alias }}
+			</label>
+		</div>
+	</p>
+</nav>
+
+<div class="container">
+	<div class="row">
+		<button class="btn btn-default" ng-click="update('empty', {message: ''})">Empty</button>
+	</div>
+</div>

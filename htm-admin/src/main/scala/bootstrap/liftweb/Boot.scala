@@ -52,6 +52,9 @@ class Boot {
     LiftRules.liftRequest.append {
       case Req("static" :: "battle" :: "templates" :: "fight" :: Nil, "html", _) => false
     }
+    LiftRules.liftRequest.append {
+      case Req("static" :: "viewer" :: "templates" :: "controller" :: Nil, "html", _) => false
+    }
 
     CountryImporter.doImport
 
@@ -72,6 +75,7 @@ class Boot {
       (Menu.i("Import") / "import") ::
       (Menu.i("Export") / "export") ::
       (Menu.i("Battle") / "battle") ::
+      (Menu.i("Controller") / "viewer") ::
       Nil
 
     // Build SiteMap

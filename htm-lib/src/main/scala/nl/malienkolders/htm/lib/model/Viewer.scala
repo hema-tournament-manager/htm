@@ -15,16 +15,21 @@ import ExecutionContext.Implicits.global
 
 case class ViewerMessage(message: String, duration: Long)
 
-case class Screen(id: String, width: Int, height: Int, fullscreenSupported: Boolean)
+case class MarshalledViewer(id: Long, alias: String, url: String, arenas: List[Long])
 
 class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with ManyToMany {
   def getSingleton = Viewer
 
   object alias extends MappedPoliteString(this, 32)
   object url extends MappedString(this, 255)
-  object screen extends MappedInt(this)
   object arenas extends MappedManyToMany(ArenaViewers, ArenaViewers.viewer, ArenaViewers.arena, Arena)
 
+  def toMarshalled = MarshalledViewer(
+      id.get,
+      alias.get,
+      url.get,
+      arenas.map(_.id.get).toList)
+  
   object rest {
     var state = "empty"
 
@@ -45,6 +50,14 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
 
     private def update(arena: Arena, data: String): Boolean = {
       val req = dispatch.url("http://" + url.get + "/api/update/text/" + (arena.id.get) + "/" + state).POST.setBody(data).addHeader("Content-Type", "text/plain")
+      Http(req).fold[Boolean](
+        _ => false,
+        resp => resp.getResponseBody().toBoolean).apply
+    }
+
+    def update(view: String, data: String): Boolean = {
+      state = view;
+      val req = dispatch.url("http://" + url.get + "/api/update/text/0/" + state).POST.setBody(data).addHeader("Content-Type", "text/plain")
       Http(req).fold[Boolean](
         _ => false,
         resp => resp.getResponseBody().toBoolean).apply

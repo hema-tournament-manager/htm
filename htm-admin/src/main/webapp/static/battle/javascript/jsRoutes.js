@@ -44,9 +44,19 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.round =
       }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.tournaments = 
-      function() {
-      return _wA({method:"GET", url:"/" + "api/tournaments"})
-      }
-   
+    function() {
+    return _wA({method:"GET", url:"/" + "api/tournaments"})
+    }
+ 
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.viewers = 
+    function() {
+    return _wA({method:"GET", url:"/" + "api/viewers"})
+    }
+ 
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.viewerUpdate = 
+    function() {
+    return _wA({method:"POST", url:"/" + "api/viewer/update"})
+    }
+ 
 })(jsRoutes)
           
