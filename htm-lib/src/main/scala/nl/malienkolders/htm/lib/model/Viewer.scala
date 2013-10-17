@@ -25,11 +25,11 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
   object arenas extends MappedManyToMany(ArenaViewers, ArenaViewers.viewer, ArenaViewers.arena, Arena)
 
   def toMarshalled = MarshalledViewer(
-      id.get,
-      alias.get,
-      url.get,
-      arenas.map(_.id.get).toList)
-  
+    id.get,
+    alias.get,
+    url.get,
+    arenas.map(_.id.get).toList)
+
   object rest {
     var state = "empty"
 

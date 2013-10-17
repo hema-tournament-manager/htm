@@ -99,10 +99,10 @@ object AdminRest extends RestHelper {
 
     case "api" :: "ping" :: Nil JsonGet _ =>
       JString("pong")
-      
+
     case "api" :: "viewers" :: Nil JsonGet _ =>
       Extraction.decompose(Viewer.findAll.map(_.toMarshalled).toList)
-      
+
     case "api" :: "viewer" :: "update" :: Nil JsonPost json -> _ =>
       JBool(json match {
         case JObject(JField("view", JString(view)) :: JField("viewers", JArray(viewers)) :: JField("payload", payload) :: Nil) =>
@@ -113,7 +113,7 @@ object AdminRest extends RestHelper {
           	}
 	        true
         case _ =>
-        	false
+          false
       })
   }
 
