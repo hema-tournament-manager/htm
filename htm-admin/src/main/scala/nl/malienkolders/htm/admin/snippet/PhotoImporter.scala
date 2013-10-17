@@ -11,6 +11,7 @@ import net.liftweb.common.Box
 import net.liftweb.common.Empty
 import net.liftweb.common.Loggable
 import nl.malienkolders.htm.admin.lib.PhotoImporterBackend
+import java.io.FileOutputStream
 
 object PhotoImporter extends Loggable {
 
@@ -23,13 +24,13 @@ object PhotoImporter extends Loggable {
     var upload: Box[FileParamHolder] = Empty
 
     def processForm() = upload match {
-      case Full(FileParamHolder(_, "application/zip", fileName, file)) =>
-        println("%s of type %s is %d bytes long" format (
-          fileName, "application/zip", file.length))
-        PhotoImporterBackend.doImport(file)
+      case Full(FileParamHolder(_, mime, fileName, file)) if mime.startsWith("application/") =>
+        val participantIds = Participant.findAll.map(_.externalId.get).toList
+        PhotoImporterBackend.doImport(file, i => new FileOutputStream(participantIds(i).toString + ".jpg"))
+        S.notice("Imported " + fileName)
 
-      case Full(FileParamHolder(_, mime, _, _)) => logger.error("Invalid mime-type friendo")
-      case _ => logger.warn("No file?")
+      case Full(FileParamHolder(_, mime, _, _)) => S.notice("Invalid mime-type: " + mime)
+      case _ => S.notice("No file?")
     }
 
     "#file" #> SHtml.fileUpload(f => upload = Full(f)) &
