@@ -4,7 +4,9 @@ import nl.htm.importer._
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import java.io.File
 
-object HeffacImporter extends Importer[EmptySettings] {
+case class HeffacSettings(excel: File)
+
+object HeffacImporter extends Importer[HeffacSettings] {
 
   val tournamentNames = List(
     "feder" -> "Feder",
@@ -19,8 +21,8 @@ object HeffacImporter extends Importer[EmptySettings] {
 
   val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name) }
 
-  def doImport(s: EmptySettings): EventData = {
-    val workbook = WorkbookFactory.create(new File("/home/jogchem/heffaf-inschrijvingen.xlsx"))
+  def doImport(s: HeffacSettings): EventData = {
+    val workbook = WorkbookFactory.create(s.excel)
 
     val sheet = workbook.getSheetAt(0)
 
