@@ -44,8 +44,8 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 		if (view == "overview/arena") {
 			$scope.message = state.message;
 			$scope.arena = state.arena;
-			$scope.pools = state.pools;
 			$scope.displayedPools = state.pools;
+			$scope.currentPool = $scope.displayedPools.shift();
 			$scope.poolBuffer = false;
 			nextPoolTimeout = $timeout($scope.nextPool, 10000);
 		}

@@ -17,14 +17,14 @@ angular.module("common.filters", []).
 	  }
   }}).
   
-  filter("hours", function() { return function(value) {
+  filter("hours", function() { return function(value, ticking) {
 	  var date = new Date(value);
 	  var hh = date.getHours();
 	  var mm = date.getMinutes();
 	  if (mm < 10)
 		  mm = "0" + mm;
 	  var sep = ":";
-	  if (date.getSeconds() % 2 == 0) {
+	  if (ticking && date.getSeconds() % 2 == 0) {
 		  sep = " ";
 	  }
 	  return hh + sep + mm;
