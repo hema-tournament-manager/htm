@@ -76,11 +76,13 @@ object ParticipantImporter {
 
     val noCountry = Country.find(By(Country.code2, "")).get
 
-    val data = Swordfish2013Importer.doImport(SwordfishSettings("http://www.ghfs.se/swordfish-attendee.php", Country.findAll.map(c => c.code2.get -> c.name.get)))
-    //HeffacImporter.doImport(new EmptySettings)
+    val data = //Swordfish2013Importer.doImport(SwordfishSettings("http://www.ghfs.se/swordfish-attendee.php", Country.findAll.map(c => c.code2.get -> c.name.get)))
+    	HeffacImporter.doImport(new EmptySettings)
 
-    for (i <- Arena.count to (data.arenas - 1)) {
-      Arena.create.name("Arena " + (i + 1)).save()
+    Arena.bulkDelete_!!()
+    // create as many arenas as are missing
+    for (i <- 1 to data.arenas) {
+      Arena.create.name("Arena " + i).save()
     }
 
     val tournaments = if (Tournament.count == 0) {
