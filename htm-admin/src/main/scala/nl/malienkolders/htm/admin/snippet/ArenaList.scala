@@ -8,6 +8,9 @@ import scala.xml.NodeSeq
 import nl.malienkolders.htm.lib.model._
 import java.text.SimpleDateFormat
 import java.util.Date
+import nl.malienkolders.htm.admin.lib.exporter.ScheduleExporter
+import net.liftweb.http.OutputStreamResponse
+import scala.xml.Text
 
 class ArenaList {
 
@@ -18,6 +21,7 @@ class ArenaList {
     ".arena" #> Arena.findAll.map(a =>
       ".arena [class+]" #> ("col-md-" + colspan) &
         ".arenaName" #> a.name.get &
+        ".download-schedule" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadSchedule(a)), Text("Download schedule")) &
         ".pool" #> a.pools.map { implicit p =>
           implicit val r = p.round.foreign.get
           implicit val t = r.tournament.foreign.get
@@ -43,5 +47,9 @@ class ArenaList {
     <a href={ "/tournaments/view/" + t.identifier.get }>
       { t.name.get }
     </a>
+
+  def downloadSchedule(a: Arena) = {
+    OutputStreamResponse(ScheduleExporter.doExport(a) _, List("content-disposition" -> ("inline; filename=\"schedule_arena_" + a.id.get + ".xls\"")))
+  }
 
 }

@@ -372,7 +372,7 @@ object TournamentView {
   }
 
   def downloadSchedule(tournament: Tournament) = {
-    OutputStreamResponse(ScheduleExporter.doExport(tournament) _, List("content-disposition" -> "inline; filename=\"schedule.xls\""))
+    OutputStreamResponse(ScheduleExporter.doExport(tournament) _, List("content-disposition" -> ("inline; filename=\"schedule_" + tournament.identifier.get + ".xls\"")))
   }
 
 }
