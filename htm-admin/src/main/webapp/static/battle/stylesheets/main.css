@@ -19,17 +19,17 @@
 	background: -ms-linear-gradient(left, rgba(200, 0, 0, 0.8), rgba(255, 255, 255, 0), rgba(0, 50, 200, 0.8));
 	/* Opera 11.10+ */
 	background: -o-linear-gradient(left, rgba(200, 0, 0, 0.8), rgba(255, 255, 255, 0), rgba(0, 50, 200, 0.8));
-	
-	h2 {
-		text-shadow: 0 0 4px white;
-		color: black;
-		font-weight: bolder;
-	}
-	
-	.scores {
-		font-weight: bold;
-		font-size: 150%;
-	}
+}
+
+.htm-current-fight-box h2 {
+	text-shadow: 0 0 4px white;
+	color: black;
+	font-weight: bolder;
+}
+
+.htm-current-fight-box .scores {
+	font-weight: bold;
+	font-size: 150%;
 }
 
 .htm-clickable {
@@ -41,16 +41,14 @@
 	position: absolute;
 }
 
-.htm-fight-buttons {
-	button {
-		display: block;
-		width: 100%;
-	}
+.htm-fight-buttons button {
+	display: block;
+	width: 100%;
+}
 	
-	.dropdown-menu {
-		margin-left: 30px;
-		margin-top: -20px;
-	}
+.htm-fight-buttons .dropdown-menu {
+	margin-left: 30px;
+	margin-top: -20px;
 }
 
 .htm-padding-top {
