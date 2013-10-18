@@ -4,11 +4,12 @@ import net.liftweb._
 import http._
 import rest._
 import json._
+import JsonDSL._
 import mapper._
 import util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.comet._
-import net.liftweb.json.JValue
+import net.liftweb.common.Full
 
 object AdminRest extends RestHelper {
 
@@ -106,11 +107,35 @@ object AdminRest extends RestHelper {
     case "api" :: "viewer" :: "update" :: Nil JsonPost json -> _ =>
       JBool(json match {
         case JObject(JField("view", JString(view)) :: JField("viewers", JArray(viewers)) :: JField("payload", payload) :: Nil) =>
-          viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
-            Viewer.findByKey(viewerId).foreach(viewer =>
-              viewer.rest.update(view, payload))
+          if (view == "overview/arena") {
+            payload match {
+              case p: JObject =>
+                (p \\ "arenaId") match {
+                  case JInt(arenaId) =>
+                    Arena.findByKey(arenaId.toLong) match {
+                      case Full(arena) =>
+                      	val pools = arena.pools.filterNot(_.finished_?).map(pool => Map("pool" -> pool.toMarshalledSummary, "fights" -> pool.fights.map(_.toMarshalledSummary)))
+                        val newPayload = p ~ ("pools" -> Extraction.decompose(pools))
+                        viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
+                          Viewer.findByKey(viewerId).foreach(viewer =>
+                            viewer.rest.update(view, newPayload))
+                        }
+                        true
+                      case _ => false
+                    }
+                  case _ => false
+                }
+              case _ =>
+                false
+            }
+
+          } else {
+            viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
+              Viewer.findByKey(viewerId).foreach(viewer =>
+                viewer.rest.update(view, payload))
+            }
+            true
           }
-          true
         case _ =>
           false
       })

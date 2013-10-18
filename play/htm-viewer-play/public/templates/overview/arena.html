@@ -1,5 +1,25 @@
 <header class="container">
 	<div class="page-header" data-ng-cloak>
-		<h1>{{arena}}</h1>
+		<h1>{{arena || "Arena"}} <span class="pull-right">{{currentTime | hours}}</span></h1>
 	</div>
 </header>
+
+<div class="container">
+	<table class="table">
+		<tbody ng-repeat="pool in displayedPools track by pool.pool.id" data-ng-animate="{enter: 'animated bounceInLeft', leave: 'animated bounceOutLeft'}">
+			<tr>
+				<td colspan="4">Pool {{ pool.pool.order }} :: {{ pool.pool.round.name }} :: {{ pool.pool.round.tournament.name }}</td>
+			</tr>
+			<tr ng-repeat="fight in pool.fights track by fight.id">
+				<td>{{fight.plannedTime | hours}}</td>
+				<td><span class="badge">{{fight.fighterA.externalId}}</span> {{fight.fighterA.name}}</td>
+				<td class="text-center">
+					<span ng-show="fight.timeStart &gt; 0 && fight.timeStop == 0">in progress</span>
+					<span ng-show="fight.timeStart == 0 && fight.timeStop == 0">vs</span>
+					<span ng-show="fight.timeStop &gt; 0">{{totalScore(fight).a}} ({{totalScore(fight).d}}) {{totalScore(fight).b}}</span>
+				</td>
+				<td><span class="badge">{{fight.fighterB.externalId}}</span> {{fight.fighterB.name}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
