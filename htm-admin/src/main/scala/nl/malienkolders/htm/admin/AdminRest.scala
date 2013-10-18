@@ -114,7 +114,7 @@ object AdminRest extends RestHelper {
                   case JInt(arenaId) =>
                     Arena.findByKey(arenaId.toLong) match {
                       case Full(arena) =>
-                      	val pools = arena.pools.filterNot(_.finished_?).map(pool => Map("pool" -> pool.toMarshalledSummary, "fights" -> pool.fights.map(_.toMarshalledSummary)))
+                        val pools = arena.pools.filterNot(_.finished_?).map(pool => Map("pool" -> pool.toMarshalledSummary, "fights" -> pool.fights.map(_.toMarshalledSummary)))
                         val newPayload = p ~ ("pools" -> Extraction.decompose(pools))
                         viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
                           Viewer.findByKey(viewerId).foreach(viewer =>
