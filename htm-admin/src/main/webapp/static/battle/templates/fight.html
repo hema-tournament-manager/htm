@@ -7,7 +7,7 @@
 			<table class="table table-condensed table-hover">
 				<tbody>
 					<tr>
-						<td colspan="8" class="text-center" data-ng-switch data-on="fightsBefore()">
+						<td colspan="7" class="text-center" data-ng-switch data-on="fightsBefore()">
 							<span data-ng-switch-when="true">
 								{{fights | orderBy:'order' | filter:beforeRangeFunction | size}} more
 							</span>
@@ -28,15 +28,9 @@
 						</td>
 						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().b}}</span></td>
 						<td class="text-right">{{fight.fighterB.name}} <span data-ng-show="fight.fighterB.clubCode">({{fight.fighterB.clubCode}})</span></td>
-						<td width="10%">
-							<div data-ng-show="fight.hover" data-ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}">
-								<a href="#" data-ng-show="fight.order &gt;= currentFight.order" title="Move down" class="glyphicon glyphicon-arrow-down"></a>
-								<a href="#" data-ng-show="fight.order &gt; currentFight.order && fight.order &gt; 1" title="Move up" class="glyphicon glyphicon-arrow-up"></a>
-							</div>
-						</td>
 					</tr>
 					<tr>
-						<td colspan="8" class="text-center" data-ng-switch data-on="fightsAfter()">
+						<td colspan="7" class="text-center" data-ng-switch data-on="fightsAfter()">
 							<span data-ng-switch-when="true">
 								{{fights | orderBy:'order' | filter:afterRangeFunction | size}} more
 							</span>
