@@ -15,6 +15,7 @@ import nl.htm.importer.heffac.HeffacImporter
 import nl.htm.importer.EmptySettings
 import nl.htm.importer.heffac.HeffacSettings
 import java.io.File
+import nl.htm.importer.EventData
 
 object ParticipantImporter {
 
@@ -74,12 +75,9 @@ object ParticipantImporter {
       ("", uppercased)
   }
 
-  def doImport = {
+  def doImport(data: EventData) = {
 
     val noCountry = Country.find(By(Country.code2, "")).get
-
-    val data = //Swordfish2013Importer.doImport(SwordfishSettings("http://www.ghfs.se/swordfish-attendee.php", Country.findAll.map(c => c.code2.get -> c.name.get)))
-      HeffacImporter.doImport(HeffacSettings(new File("/home/jogchem/Downloads/inschrijvingen.xlsx")))
 
     Arena.bulkDelete_!!()
     // create as many arenas as are missing

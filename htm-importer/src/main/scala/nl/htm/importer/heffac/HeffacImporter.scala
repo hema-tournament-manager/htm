@@ -2,9 +2,9 @@ package nl.htm.importer.heffac
 
 import nl.htm.importer._
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import java.io.File
+import java.io.InputStream
 
-case class HeffacSettings(excel: File)
+case class HeffacSettings(excel: InputStream)
 
 object HeffacImporter extends Importer[HeffacSettings] {
 

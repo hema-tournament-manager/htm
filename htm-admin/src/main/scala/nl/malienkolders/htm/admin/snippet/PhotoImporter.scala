@@ -16,11 +16,6 @@ import java.io.FileOutputStream
 object PhotoImporter extends Loggable {
 
   def render = {
-    var clear = false
-    var clearTournaments = false
-
-    def process() {}
-
     var upload: Box[FileParamHolder] = Empty
 
     def processForm() = upload match {
