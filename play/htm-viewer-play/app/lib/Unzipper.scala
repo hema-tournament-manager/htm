@@ -18,11 +18,9 @@ object Unzipper {
 
   def unzip(targetDir: File, in: ZipInputStream): Unit = in.getNextEntry() match {
     case entry: ZipEntry =>
-      println("entry: " + entry.getName())
       log.info("Unzipping " + entry.getName())
       val target = new File(targetDir, entry.getName())
       target.getParentFile().mkdirs()
-      println("File: " + target.getName())
       val out = new FileOutputStream(target)
       try {
         IOUtils.copy(in, out)
