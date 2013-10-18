@@ -26,9 +26,7 @@
 			<span class="name">{{fighterB.name}}</span>
 		</div>
 	</div>
-	<div class="message">
-		{{ message }}
-	</div>
+	<div class="message" ng-bind-html-unsafe="message"></div>
 	<div class="exchangeCount">
 		{{ totalScore.x }}
 	</div>

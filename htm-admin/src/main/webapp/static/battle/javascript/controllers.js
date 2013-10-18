@@ -1,6 +1,6 @@
 "use strict";
 
-var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playRoutes, appService) {
+var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filter, playRoutes, appService) {
 	if (!$rootScope.arena) {
 		$location.path("/");
 	} else {
@@ -257,8 +257,8 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     $scope.sendUpdate = function() {
     	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
     };
-    
-     $scope.startFight = function() {
+  
+    $scope.startFight = function() {
 		$scope.resetTimer();
     	
 		if ($scope.currentFight.globalOrder > -1) {
@@ -271,12 +271,24 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
 	    		$scope.timer.displayTime = $scope.timerValue();
 	    		
 	    		$scope.sendUpdate();
+	    		
+	    		var next = $scope.findNextFight();
+	    		if (next) {
+	    			$scope.defaultAnnouncements.nextup = "Next up: <span class=\"badge red\">" + next.fighterA.externalId + "</span> <b>" + next.fighterA.name  + "</b> vs <span class=\"badge blue\">" + next.fighterB.externalId + "</span> <b>" + next.fighterB.name + "</b> at " + $filter('hours')(next.plannedTime);
+	    		} else {
+	    			$scope.defaultAnnouncements.nextup = "";
+	    		}
+	    		$scope.defaultAnnouncement('nextup');
 	    	});
     	}
     };
     
     $scope.findCurrentFight = function() {
     	return _.find($scope.fights, function(fight) { return fight.timeStop == 0; });
+    };
+
+    $scope.findNextFight = function() {
+    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0 && fight.globalOrder > $scope.currentFight.globalOrder; });
     };
     
     $scope.confirmFight = function() {
@@ -294,7 +306,15 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     $scope.announce = function() {
     	$scope.announcement = $scope.announcementBuffer;
     	$scope.announcementBuffer = '';
-    }
+    };
+    
+    $scope.defaultAnnouncements = {
+    	nextup: ""	
+    };
+    
+    $scope.defaultAnnouncement = function(key) {
+    	$scope.announcement = $scope.defaultAnnouncements[key];
+    };
     
     $scope.$watch('currentFight', function(newValue, oldValue) {
 		$scope.fightsShowing[0] = Math.max($scope.currentFight.globalOrder - 2, 1);

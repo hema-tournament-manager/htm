@@ -134,7 +134,7 @@
 		</div>
 	</div>
 	<div class="col-md-4">
-		<div class="panel panel-default">
+		<div class="panel panel-default" style="display: none;">
 			<div class="panel-heading">
 				<h3 class="panel-title">Messages</h3>
 			</div>
@@ -151,18 +151,24 @@
 				<div class="form-group">
 					<div class="input-group">
 						<input type="text" class="form-control" id="announcement" placeholder="Announcement" ng-model="announcementBuffer"/>
-						<span class="input-group-btn">
+						<span class="input-group-btn btn-group">
 							<button class="btn btn-default" type="button" ng-click="announce()">Show</button>
+							 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="" ng-click="defaultAnnouncement('nextup')">Next up</a></li>
+							</ul>
 						</span>
 					</div>
 				</div>
 				<div class="form-group">
-					<label>Now showing</label>
-					<span class="form-control">{{announcement || '-- nothing --'}}</span>
+					<label>Last update</label>
+					<div class="well well-sm" ng-bind-html-unsafe="announcement || '-- nothing --'"></div>
 				</div>
    			</div>
    		</div>
-   		<div class="panel panel-default">
+   		<div class="panel panel-default" style="display: none;">
    			<div class="panel-heading">
    				<h3 class="panel-title">Support</h3>
   			</div>

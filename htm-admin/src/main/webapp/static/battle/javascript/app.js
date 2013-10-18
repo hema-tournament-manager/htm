@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('htm', ['common.playRoutes', 'common.filters', 'htm.services', 'ui.bootstrap']).
-controller('BattleCtrl', ['$rootScope', '$scope', '$timeout', '$modal', '$location', 'playRoutes', 'appService', BattleCtrl]).
+controller('BattleCtrl', ['$rootScope', '$scope', '$timeout', '$modal', '$location', '$filter', 'playRoutes', 'appService', BattleCtrl]).
 controller('PoolsCtrl', ['$rootScope', '$scope', '$timeout', '$location', 'playRoutes', 'appService', PoolsCtrl]).config(
 		[ '$routeProvider', function($routeProvider) {
 			$routeProvider.when('/arenas', {

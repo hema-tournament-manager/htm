@@ -40,7 +40,7 @@ angular.module('htm.services', [])
 		  "overview/arena": {
 			  "message": "",
 			  "arena": "",
-			  "fights": []
+			  "pools": []
 		  }
 	  };
 	  return {

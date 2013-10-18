@@ -4,7 +4,6 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 	var _ = window._;
 	$scope.message = stateService.get("overview/arena").message;
 	$scope.arena = stateService.get("overview/arena").arena;
-	$scope.fights = stateService.get("overview/arena").fights;
 	$scope.displayedPools = [];
 	$scope.poolBuffer = false;
 
