@@ -7,6 +7,8 @@ GET     /                           controllers.Application.index
 
 GET     /updateFeed				controllers.Application.updateFeed
 
+GET		/photo/:id/:side		controllers.Application.photo(id, side)
+
 GET     /api/ping				controllers.Application.ping
 
 POST    /api/update       controllers.Application.update

@@ -1,8 +1,11 @@
+<div class="fight">
 <img class="background" src="/assets/images/fight/background.png"/>
 <img class="background" src="/assets/images/fight/backdrops.png"/>
+<img class="picture red" ng-src="/photo/{{fighterA.externalId || 'placeholder'}}/l"/>
+<img class="picture blue" ng-src="/photo/{{fighterB.externalId || 'placeholder'}}/r"/>
 <img class="background" src="/assets/images/fight/header_footer.png"/>
 <img class="background" src="/assets/images/fight/points.png"/>
-<div class="background fight" ng-cloak>
+<div class="background" ng-cloak>
 	<div class="score-red">{{ totalScore.a }}</div>
 	<div class="score-blue">{{ totalScore.b }}</div>
 	<div class="score-double" ng-show="totalScore.d &lt;= 3">
@@ -44,4 +47,5 @@
 	<div class="pool">
 		Pool {{ poolSummary.order }}
 	</div>
+</div>
 </div>

@@ -55,6 +55,14 @@ object Application extends Controller {
     }
   }
 
+  def photo(id: String, side: String) = Action {
+    val photoFile = new File("Avatars/Generated/" + id + "_default_" + side + ".jpg")
+    if (photoFile.exists())
+      Ok.sendFile(photoFile)
+    else
+      Redirect(routes.Assets.at("images/placeholder_default_" + side + ".png"))
+  }
+
   def updateFeed = Action {
     Ok.chunked(updateOut &> EventSource()).as("text/event-stream")
   }
