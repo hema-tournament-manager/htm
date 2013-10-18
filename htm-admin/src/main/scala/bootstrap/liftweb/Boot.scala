@@ -44,16 +44,7 @@ class Boot {
     LiftRules.addToPackages("nl.malienkolders.htm.lib")
 
     LiftRules.liftRequest.append {
-      case Req("static" :: "battle" :: "templates" :: "arenas" :: Nil, "html", _) => false
-    }
-    LiftRules.liftRequest.append {
-      case Req("static" :: "battle" :: "templates" :: "exchangeList" :: Nil, "html", _) => false
-    }
-    LiftRules.liftRequest.append {
-      case Req("static" :: "battle" :: "templates" :: "fight" :: Nil, "html", _) => false
-    }
-    LiftRules.liftRequest.append {
-      case Req("static" :: "viewer" :: "templates" :: "controller" :: Nil, "html", _) => false
+      case Req("static" :: "battle" :: "templates" :: _ :: Nil, "html", _) => false
     }
 
     CountryImporter.doImport
