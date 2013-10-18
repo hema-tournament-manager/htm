@@ -45,6 +45,7 @@ class Boot {
 
     LiftRules.liftRequest.append {
       case Req("static" :: "battle" :: "templates" :: _ :: Nil, "html", _) => false
+      case Req("static" :: "viewer" :: "templates" :: _ :: Nil, "html", _) => false
     }
 
     CountryImporter.doImport
