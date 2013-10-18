@@ -144,6 +144,22 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     	$scope.sendUpdate();
     };
     
+    $scope.pushCorrection = function(correction) {
+    	$scope.currentFight.scores.push({
+    		timeInFight: correction.time,
+    		timeInWorld: Date.now(),
+    		diffA: correction.a,
+    		diffB: correction.b,
+    		diffAAfterblow: 0,
+    		diffBAfterblow: 0,
+    		diffDouble: correction.d,
+    		scoreType: 'correction',
+    		isSpecial: false,
+    		isExchange: false
+    	});
+    	$scope.sendUpdate();
+    };
+    
     $scope.hitButtonClicked = function(scoreType, side) {
     	$scope.scoreSide = side;
     	if (scoreType == "clean") {
@@ -203,6 +219,26 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     	      }
     	    });
     };
+    
+    $scope.correctScore = function() {
+    	var modalInstance = $modal.open({
+    		templateUrl: '/static/battle/templates/scoreCorrection.html',
+    	      controller: CorrectScoreCtrl,
+    	      resolve: {
+    	        score: function () {
+    	          return $scope.currentFight.totalScore();
+    	        }
+    	      }
+    	});
+    	
+    	modalInstance.result.then(function(correction) {
+    		correction.time = $scope.timerValue();
+    		$scope.pushCorrection(correction);
+    	}, function() {
+    		// modal cancelled, do nothing
+    	});
+    };
+    }
     
     $scope.exchangeLimitReached = function() {
     	return $scope.round != false && $scope.currentFight.started && $scope.round.exchangeLimit > 0 && $scope.currentFight.totalScore().x >= $scope.round.exchangeLimit;
@@ -295,8 +331,28 @@ var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
 	$scope.close = function() {
 		$modalInstance.dismiss('cancel');
 	};
-	}
 };
+
+var CorrectScoreCtrl = function($scope, $modalInstance, score) {
+	$scope.score = score;
+	$scope.correction = {a: 0, b: 0, d: 0};
+	
+	$scope.inc = function(field) {
+		$scope.correction[field] += 1;
+	}
+	
+	$scope.dec = function(field) {
+		$scope.correction[field] -= 1;
+	}
+	
+	$scope.confirm = function() {
+		$modalInstance.close($scope.correction);
+	};
+
+	$scope.cancel = function() {
+		$modalInstance.dismiss('cancel');
+	};
+}
 
 var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, appService) {
 	$rootScope.title = "HEFFAC 2013";
