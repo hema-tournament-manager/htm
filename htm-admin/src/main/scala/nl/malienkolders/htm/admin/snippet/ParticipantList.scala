@@ -44,7 +44,7 @@ object ParticipantList {
       }, "id" -> "countrySelectDropdown") &
       ".participant" #> (ps.map { p =>
         val c = p.country.obj.get
-        ".participant [class]" #> (if (p.isPresent.is) "present" else "not-present") &
+        ".participant [class]" #> (if (p.isPresent.is) "success" else "default") &
           ".id *" #> p.externalId.is &
           ".name *" #> p.name.is &
           ".shortName *" #> p.shortName.is &
