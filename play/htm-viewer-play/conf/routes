@@ -13,6 +13,8 @@ POST    /api/update       controllers.Application.update
 
 POST    /api/update/text       controllers.Application.updateText
 
+PUT     /api/push				controllers.Application.push
+
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 
 # Map static resources from the /public folder to the /assets URL path

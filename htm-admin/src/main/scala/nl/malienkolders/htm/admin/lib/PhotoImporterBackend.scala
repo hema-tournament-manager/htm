@@ -25,19 +25,15 @@ object PhotoImporterBackend {
   }
 
   def handlePhoto(baseName: String, in: ZipInputStream, entry: ZipEntry): Unit = {
-	  println("baseName: " + baseName)
-	  println("entry: " + entry.getName())
-    
+    println("baseName: " + baseName)
+    println("entry: " + entry.getName())
+
     val targetDir = new File("Avatars")
     targetDir.mkdir()
-    
-    val outFile = new File(targetDir, baseName + ".jpg")
-    val out = new FileOutputStream(outFile)
-    IOUtils.copy(in, out)
-    out.close()
 
-    val image = ImageIO.read(new FileInputStream(outFile))
-    
+    val image = ImageIO.read(in)
+    ImageIO.write(image, "jpg", new File(targetDir, baseName + ".jpg"))
+
     val generatedDir = new File(targetDir, "Generated")
     generatedDir.mkdir()
 
@@ -54,7 +50,7 @@ object PhotoImporterBackend {
 
   abstract class CropOption
   case object Mirror extends CropOption
-  
+
   def cropImage(image: BufferedImage, targetSize: (Int, Int), option: Option[CropOption] = None): BufferedImage = {
     val (imageWidth, imageHeight) = targetSize
     val ratio = imageWidth.toDouble / imageHeight.toDouble

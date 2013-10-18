@@ -12,6 +12,7 @@ import Http._
 import net.liftweb.json._
 import scala.concurrent._
 import ExecutionContext.Implicits.global
+import java.io.File
 
 case class ViewerMessage(message: String, duration: Long)
 
@@ -90,6 +91,8 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
           "action" -> action,
           "time" -> time))))
 
+    def push(file: File) =
+      Http(dispatch.url("http://" + url.get + "/api/push") <<< file)
   }
 }
 

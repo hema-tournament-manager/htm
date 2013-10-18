@@ -16,3 +16,6 @@ export.json
 *.sc
 *.log
 htm-admin/Avatars
+Avatars.zip
+play/Avatars
+test*.txt

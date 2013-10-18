@@ -8,6 +8,13 @@ import scala.xml.NodeSeq
 import nl.malienkolders.htm.lib.model._
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.io.File
+import java.util.zip.ZipOutputStream
+import java.io.FileOutputStream
+import java.util.zip.ZipEntry
+import org.apache.commons.io.IOUtils
+import org.apache.commons.io.FileUtils
+import java.io.FileInputStream
 
 class ViewerList {
 
@@ -29,7 +36,9 @@ class ViewerList {
           "*" #> arenaCheck(a, v)) &
         ".url *" #> v.url.get &
         ".status *" #> (if (status) "Up" else "Down") &
-        ".actions *" #> SHtml.submit("Delete", () => Viewer.findByKey(v.id.get).foreach(_.delete_!), "class" -> "btn btn-default btn-sm")
+        ".actions *" #> Seq(
+          SHtml.submit("Push photos", () => pushPhotos(v), "class" -> "btn btn-default btn-sm"),
+          SHtml.submit("Delete", () => v.delete_!, "class" -> "btn btn-default btn-sm"))
     } &
       "name=name" #> SHtml.onSubmit(name = _) &
       "name=url" #> SHtml.onSubmit(url = _) &
@@ -42,5 +51,17 @@ class ViewerList {
       v.save
       S.redirectTo("")
     }, "title" -> a.name.get)
+
+  def pushPhotos(v: Viewer): Unit = {
+    val zipFile = new File("Avatars.zip")
+    val out = new ZipOutputStream(new FileOutputStream(zipFile))
+    val generatedDir = new File("Avatars/Generated")
+    for (f <- generatedDir.listFiles()) {
+      out.putNextEntry(new ZipEntry("Avatars/Generated/" + f.getName()))
+      IOUtils.copy(new FileInputStream(f), out)
+    }
+    out.close()
+    v.rest.push(zipFile)
+  }
 
 }

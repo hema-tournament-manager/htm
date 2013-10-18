@@ -12,6 +12,10 @@ import nl.malienkolders.htm.lib.model._
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.EventSource
 import play.api.libs.json._
+import play.api.libs.Files
+import play.api.libs.Files._
+import _root_.lib.Unzipper
+import java.io.File
 
 object Application extends Controller {
 
@@ -40,6 +44,15 @@ object Application extends Controller {
 
   def updateText = Action(parse.text) { req =>
     updateImpl(Json.parse(req.body))
+  }
+
+  def push = Action(parse.temporaryFile) { req =>
+    req.body match {
+      case t: TemporaryFile =>
+        Unzipper.unzip(new File("."), t.file)
+        Ok
+      case _ => BadRequest("Could not receive")
+    }
   }
 
   def updateFeed = Action {
