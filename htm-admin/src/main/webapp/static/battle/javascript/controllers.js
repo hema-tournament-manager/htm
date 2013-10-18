@@ -15,6 +15,8 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     $scope.totalScore = {a: 0, b: 0, d: 0, x: 0};
     $scope.fightsShowing = [1, 5];
     $scope.round = false;
+    $scope.announcement = "";
+    $scope.announcementBuffer = "";
 	
 	playRoutes.controllers.AdminInterface.arena($scope.arena.id).get().success(function(data, status) {
 		$rootScope.title = data[0].round.tournament.name;
@@ -289,24 +291,49 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, playR
     	}
     };
     
+    $scope.announce = function() {
+    	$scope.announcement = $scope.announcementBuffer;
+    	$scope.announcementBuffer = '';
+    }
+    
     $scope.$watch('currentFight', function(newValue, oldValue) {
 		$scope.fightsShowing[0] = Math.max($scope.currentFight.globalOrder - 2, 1);
     	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
     	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
     });
     
+    $scope.$watch('announcement', function(newValue, oldValue) {
+    	playRoutes.controllers.AdminInterface.messageUpdate($scope.currentFight.id).post(JSON.stringify(newValue));
+    });
+    
+    $scope.editingAnnouncement = false;
+    
+    $('#announcement').focus(function(event) {
+    	$scope.$apply(function() {
+    		$scope.editingAnnouncement = true;
+    	});
+    });
+    
+    $('#announcement').blur(function(event) {
+		$scope.$apply(function() {
+			$scope.editingAnnouncement = true;
+		});
+    });
+    
     $(document).keypress(function(event) {
-    	// space
-		if (event.keyCode == 32) {
-			$scope.$apply(function() {
-				if ($scope.currentFight.started) {
-					$scope.toggleTimer();
-				} else {
-					$scope.startFight();
-				}
+    	if (event.keyCode == 32) {
+	    	$scope.$apply(function() {
+	    		if (!$scope.editingAnnouncement) {
+	    			// space
+					if ($scope.currentFight.started) {
+						$scope.toggleTimer();
+					} else {
+						$scope.startFight();
+					}
+					event.preventDefault();
+	    		}
 			});
-			event.preventDefault();
-		}
+    	}
 	});
     
     $(window).on("beforeunload", function() {

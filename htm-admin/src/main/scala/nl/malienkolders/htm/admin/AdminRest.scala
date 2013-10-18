@@ -98,6 +98,14 @@ object AdminRest extends RestHelper {
       FightServer ! TimerUpdate(id, timer)
       JBool(true)
 
+    case "api" :: "fight" :: "update" :: AsLong(id) :: "message" :: Nil JsonPost json -> _ =>
+      json match {
+        case JString(message) =>
+          FightServer ! MessageUpdate(id, message)
+          JBool(true)
+        case _ => JBool(false)
+      }
+
     case "api" :: "ping" :: Nil JsonGet _ =>
       JString("pong")
 

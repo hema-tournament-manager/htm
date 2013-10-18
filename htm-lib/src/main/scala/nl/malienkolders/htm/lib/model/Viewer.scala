@@ -71,7 +71,7 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
         resp => resp.getResponseBody().toBoolean).apply
     }
 
-    private def fightUpdate(arena: Arena, data: JValue): Boolean = {
+    def fightUpdate(arena: Arena, data: JValue): Boolean = {
       update(arena, "fight", data)
     }
 

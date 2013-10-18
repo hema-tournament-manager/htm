@@ -7,6 +7,8 @@ import actor._
 import util._
 import mapper._
 import Helpers._
+import json._
+import JsonDSL._
 import _root_.scala.xml.{ NodeSeq, Text }
 import _root_.java.util.Date
 import nl.malienkolders.htm.lib.model._
@@ -53,10 +55,19 @@ object FightServer extends LiftActor {
         viewer.rest.timerUpdate(arena, action, time)
       }
     }
+
+    case MessageUpdate(f, message) => {
+      val fight = Fight.findByKey(f).get
+      val arena = fight.pool.obj.get.arena.obj.get
+      arena.viewers.foreach { viewer =>
+        viewer.rest.fightUpdate(arena, "message" -> message)
+      }
+    }
   }
 
 }
 
+case class MessageUpdate(fightId: Long, msg: String)
 case class TimerMessage(action: String, time: Long)
 case class TimerUpdate(fightId: Long, msg: TimerMessage)
 case class PeekFight(pool: Pool)
