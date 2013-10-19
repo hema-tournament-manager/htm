@@ -1,10 +1,8 @@
 <div class="fight">
-<img class="background" src="/assets/images/fight/background.png"/>
-<img class="background" src="/assets/images/fight/backdrops.png"/>
+<img class="background" src="/assets/images/fight/HTM_HEFFAC_gamescreen_background.jpg"/>
 <img class="picture red" ng-src="/photo/{{fighterA.externalId || 'placeholder'}}/l"/>
 <img class="picture blue" ng-src="/photo/{{fighterB.externalId || 'placeholder'}}/r"/>
-<img class="background" src="/assets/images/fight/header_footer.png"/>
-<img class="background" src="/assets/images/fight/points.png"/>
+<img class="background" src="/assets/images/fight/HTM_HEFFAC_gamescreen_overlay.png"/>
 <div class="background" ng-cloak>
 	<div class="score-red">{{ totalScore.a }}</div>
 	<div class="score-blue">{{ totalScore.b }}</div>
@@ -15,8 +13,6 @@
 		{{ totalScore.d }}
 	</div>
 	<div class="fighter-bar">
-		<img src="/assets/images/fight/fighter_bar.png"/>
-
 		<div class="fighter red">
 			<img ng-src="/assets/images/fight/flags/{{fighterA.country}}red.png"/>
 			<span class="name">{{fighterA.name}}</span>
@@ -27,11 +23,8 @@
 		</div>
 	</div>
 	<div class="message" ng-bind-html-unsafe="message"></div>
-	<div class="exchangeCount">
-		{{ totalScore.x }}
-	</div>
-	<div class="exchangeLimit">
-		{{ poolSummary.round.exchangeLimit }}
+	<div class="exchangeCount" ng-show="poolSummary.round.exchangeLimit &gt; 0">
+		{{ totalScore.x }} of {{ poolSummary.round.exchangeLimit }}
 	</div>
 	<div class="timer">
 		{{ timer.displayTime | minutes }}
