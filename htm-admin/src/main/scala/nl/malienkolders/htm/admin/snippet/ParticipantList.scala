@@ -61,7 +61,7 @@ object ParticipantList {
                 Focus("countrySelectDropdown")
 
             }) &
-            ".actions *" #> <a href={ "/participants/register/" + p.externalId.is }>register</a>
+            ".actions *" #> <a href={ "/participants/register/" + p.externalId.is }>register</a><a href={ "/participants/swap/" + p.externalId.is }>swap</a>
       }) &
       ".totals" #> (
         ".people *" #> ps.size &

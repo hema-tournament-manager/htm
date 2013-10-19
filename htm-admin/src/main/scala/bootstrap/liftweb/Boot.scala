@@ -62,6 +62,7 @@ class Boot {
       FightEdit.menu ::
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::
+      ParticipantSwap.menu ::
       (Menu.i("Arenas") / "arenas" / "list") ::
       (Menu.i("Viewers") / "viewers" / "list") ::
       (Menu.i("Import") / "import") ::
