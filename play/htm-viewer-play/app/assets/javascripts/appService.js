@@ -16,7 +16,8 @@ angular.module('htm.services', [])
 		  "fight": {
 			  "message": "",
 			  "timer": {
-				  "time": 0
+				  "time": 0,
+				  "displayTime": 0
 			  },
 			  "poolSummary": {
 				  "order": 1,
