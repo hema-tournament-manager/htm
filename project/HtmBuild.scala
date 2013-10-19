@@ -24,43 +24,8 @@ object HtmBuild extends Build {
                "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
                "com.h2database" % "h2" % "1.2.147",
                "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion,
-							 "org.apache.poi" % "poi" % "3.9" ))
-		
-	lazy val battleSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
-		name := buildName + "-Battle",
-		port in container.Configuration := 8080,
-		libraryDependencies ++= Seq(
-			   "org.eclipse.jetty" % "jetty-webapp" % "8.0.4.v20111024" % "container",
-               "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
-               "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
-               "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
-               //"net.liftweb" %% "lift-textile" % liftVersion % "compile",
-               "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
-               "junit" % "junit" % "4.7" % "test",
-               "ch.qos.logback" % "logback-classic" % "0.9.26",
-               "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
-               "com.h2database" % "h2" % "1.2.147",
-               "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion))
-    
-	lazy val viewerJmeSettings = buildSettings ++ webSettings ++ Format.settings ++ Seq(
-		name := buildName + "-Viewer-JME",
-		port in container.Configuration := 8081,
-		libraryDependencies ++= Seq(
-		       "org.eclipse.jetty" % "jetty-webapp" % "8.0.4.v20111024" % "container",
-               "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
-               "net.liftweb" %% "lift-webkit" % liftVersion % "compile",
-               "net.liftweb" %% "lift-mapper" % liftVersion % "compile",
-               "net.liftweb" %% "lift-json" % liftVersion % "compile",
-               "org.mortbay.jetty" % "jetty" % "6.1.26" % "test",
-               "junit" % "junit" % "4.7" % "test",
-               "ch.qos.logback" % "logback-classic" % "0.9.26",
-               "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
-               "com.h2database" % "h2" % "1.2.147",
-               "com.jme3" % "jME3-core" % "3.0.0.20120512-SNAPSHOT",
-               "com.jme3" % "jME3-desktop" % "3.0.0.20120512-SNAPSHOT",
-               "com.jme3" % "jME3-lwjgl" % "3.0.0.20120512-SNAPSHOT",
-               "com.jme3" % "jME3-lwjgl-natives" % "3.0.0.20120512-SNAPSHOT",
-               "com.jme3" % "lwjgl" % "3.0.0.20120512-SNAPSHOT"))
+							 "org.apache.poi" % "poi" % "3.9",
+		"commons-io" % "commons-io" % "2.4" ))
 		
 	lazy val libSettings = buildSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Lib",
@@ -85,16 +50,6 @@ object HtmBuild extends Build {
 		id = "admin",
 		base = file("htm-admin"),
 		settings = adminSettings) dependsOn (lib, importer)
-		
-	lazy val battle = Project(
-		id = "battle",
-		base = file("htm-battle"),
-		settings = battleSettings) dependsOn (lib)
-		
-	lazy val viewerJme = Project(
-		id = "viewer-jme",
-		base = file("htm-viewer-jme"),
-		settings = viewerJmeSettings) dependsOn (lib)	
 		
 	lazy val lib = Project(
 		id = "lib",

@@ -26,8 +26,8 @@ class Boot {
       val vendor =
         new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
           Props.get("db.url") openOr
-            "jdbc:h2:mem:htm_admin",
-          Props.get("db.user"), Props.get("db.password"))
+            "jdbc:h2:htm_admin",
+          Props.get("db.user") or Full("sa"), Props.get("db.password") or Full("masterkey"))
 
       LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
 
@@ -37,18 +37,23 @@ class Boot {
     // Use Lift's Mapper ORM to populate the database
     // you don't need to use Mapper to use Lift... use
     // any ORM you want
-    Schemifier.schemify(true, Schemifier.infoF _, User, Country, Score, model.Tournament, TournamentParticipants, Round, Pool, PoolParticipants, Participant, Fight, ParticipantNameMapping)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Country, Score, model.Tournament, TournamentParticipants, Round, Pool, PoolParticipants, Participant, Fight, ParticipantNameMapping, Viewer, ArenaViewers, Arena)
 
     // where to search snippet
     LiftRules.addToPackages("nl.malienkolders.htm.admin")
     LiftRules.addToPackages("nl.malienkolders.htm.lib")
+
+    LiftRules.liftRequest.append {
+      case Req("static" :: "battle" :: "templates" :: _ :: Nil, "html", _) => false
+      case Req("static" :: "viewer" :: "templates" :: _ :: Nil, "html", _) => false
+    }
 
     CountryImporter.doImport
 
     RoundRobinTournament.register
     SwissTournament.register
     SwissSpecialHitsTournament.register
-
+    
     val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list") ::
       TournamentView.menu ::
@@ -57,8 +62,14 @@ class Boot {
       FightEdit.menu ::
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::
+      ParticipantSwap.menu ::
+      (Menu.i("Arenas") / "arenas" / "list") ::
+      (Menu.i("Viewers") / "viewers" / "list") ::
       (Menu.i("Import") / "import") ::
-      (Menu.i("Export") / "export") :: Nil
+      (Menu.i("Export") / "export") ::
+      (Menu.i("Battle") / "battle") ::
+      (Menu.i("Controller") / "viewer") ::
+      Nil
 
     // Build SiteMap
     def sitemap = SiteMap(entries: _*)
@@ -91,6 +102,10 @@ class Boot {
     // Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
+
+    // allow huge uploads for the photo import
+    LiftRules.maxMimeSize = 1024L * 1024L * 1024L
+    LiftRules.maxMimeFileSize = 1024L * 1024L * 1024L
 
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)

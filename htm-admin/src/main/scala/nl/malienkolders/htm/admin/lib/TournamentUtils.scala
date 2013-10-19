@@ -17,7 +17,7 @@ object TournamentUtils {
       who match {
         case Single(p) =>
           if (round.pools.isEmpty)
-            round.pools += Pool.create.order(1)
+            round.pools += Pool.create(round.tournament.obj.get).order(1)
           round.pools(0).participants += p
 
         case notSingle =>
@@ -35,7 +35,7 @@ object TournamentUtils {
           }
           participants.zipWithIndex.foreach {
             case (ps, i) =>
-              val newPool = Pool.create.order(i + 1)
+              val newPool = Pool.create(round.tournament.obj.get).order(i + 1)
               newPool.participants ++= ps
               round.pools += newPool
           }

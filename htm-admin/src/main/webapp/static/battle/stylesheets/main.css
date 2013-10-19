@@ -1,0 +1,61 @@
+/* fix for Angular UI Bootstrap */
+.nav, .pagination, .carousel a { cursor: pointer; }
+
+/* http://docs.angularjs.org/api/ng.directive:ngCloak */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+/* fix for https://github.com/angular-ui/bootstrap/issues/331 */
+.modal {display: block;height: 0;overflow: visible;}
+
+.htm-current-fight-box {
+	background: -webkit-gradient(linear, left top, right top, from(rgba(200, 0, 0, 0.8)), color-stop(0.05, rgba(255, 255, 255, 0)), color-stop(0.95, rgba(255, 255, 255, 0)), to(rgba(0, 50, 200, 0.8)));
+	/* Safari 5.1+, Chrome 10+ */
+	background: -webkit-linear-gradient(left, rgba(200, 0, 0, 0.8), rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(0, 50, 200, 0.8));
+	/* Firefox 3.6+ */
+	background: -moz-linear-gradient(left, rgba(200, 0, 0, 0.8), rgba(255, 255, 255, 0), rgba(0, 50, 200, 0.8));
+	/* IE 10 */
+	background: -ms-linear-gradient(left, rgba(200, 0, 0, 0.8), rgba(255, 255, 255, 0), rgba(0, 50, 200, 0.8));
+	/* Opera 11.10+ */
+	background: -o-linear-gradient(left, rgba(200, 0, 0, 0.8), rgba(255, 255, 255, 0), rgba(0, 50, 200, 0.8));
+}
+
+.htm-current-fight-box h2 {
+	text-shadow: 0 0 4px white;
+	color: black;
+	font-weight: bolder;
+}
+
+.htm-current-fight-box .scores {
+	font-weight: bold;
+	font-size: 150%;
+}
+
+.htm-clickable {
+	cursor: pointer;
+}
+	
+#score-options {
+	z-index: 1000;
+	position: absolute;
+}
+
+.htm-fight-buttons button {
+	display: block;
+	width: 100%;
+}
+	
+.htm-fight-buttons .dropdown-menu {
+	margin-left: 30px;
+	margin-top: -20px;
+}
+
+.htm-padding-top {
+	margin-top: 1em;
+}
+
+.htm-current-fight {
+	font-size: 110%;
+	font-weight: bold;
+}

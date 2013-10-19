@@ -4,16 +4,24 @@ import net.liftweb._
 import http._
 import rest._
 import json._
+import JsonDSL._
+import mapper._
 import util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.comet._
-import net.liftweb.json.JValue
+import net.liftweb.common.Full
 
 object AdminRest extends RestHelper {
 
   override implicit val formats = Serialization.formats(NoTypeHints)
 
   serve {
+    case "api" :: "arenas" :: Nil JsonGet _ =>
+      Extraction.decompose(Arena.findAll.map(_.toMarshalled))
+
+    case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
+      Extraction.decompose(Arena.findByKey(arenaId).map(_.pools.map(_.toMarshalledSummary)).getOrElse(false))
+
     case "api" :: "tournaments" :: Nil JsonGet _ =>
       Extraction.decompose(Tournament.findAll.map(_.toMarshalled))
 
@@ -31,6 +39,9 @@ object AdminRest extends RestHelper {
 
     case "api" :: "pool" :: AsLong(poolId) :: Nil JsonGet _ =>
       Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalled).getOrElse(false))
+
+    case "api" :: "pool" :: AsLong(poolId) :: "summary" :: Nil JsonGet _ =>
+      Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalledSummary).getOrElse(false))
 
     case "api" :: "pool" :: AsLong(poolId) :: "viewer" :: Nil JsonGet _ =>
       val p = Pool.findByKey(poolId)
@@ -52,6 +63,9 @@ object AdminRest extends RestHelper {
         case FightMsg(f) => Extraction.decompose(f.toMarshalled)
         case _ => JBool(false)
       }.getOrElse[JValue](JBool(false))
+
+    case "api" :: "pool" :: AsLong(poolId) :: "fight" :: AsLong(fightOrder) :: Nil JsonGet _ =>
+      Extraction.decompose(Fight.find(By(Fight.pool, poolId), By(Fight.order, fightOrder)).map(_.toMarshalledSummary).getOrElse(false))
 
     case "api" :: "pool" :: AsLong(poolId) :: "ranking" :: Nil JsonGet _ =>
       val res = Pool.findByKey(poolId).get.toMarshalledRanking
@@ -75,12 +89,64 @@ object AdminRest extends RestHelper {
       Fight.findByKey(id).map(f => Extraction.decompose(f.toMarshalled)).getOrElse[JValue](JBool(false))
 
     case "api" :: "fight" :: "update" :: Nil JsonPost json -> _ =>
-      val fight = Extraction.extract[MarshalledFight](json)
+      val fight = Extraction.extract[MarshalledFightSummary](json)
       FightServer ! FightUpdate(fight)
       JBool(true)
 
+    case "api" :: "fight" :: "update" :: AsLong(id) :: "timer" :: Nil JsonPost json -> _ =>
+      val timer = Extraction.extract[TimerMessage](json)
+      FightServer ! TimerUpdate(id, timer)
+      JBool(true)
+
+    case "api" :: "fight" :: "update" :: AsLong(id) :: "message" :: Nil JsonPost json -> _ =>
+      json match {
+        case JString(message) =>
+          FightServer ! MessageUpdate(id, message)
+          JBool(true)
+        case _ => JBool(false)
+      }
+
     case "api" :: "ping" :: Nil JsonGet _ =>
       JString("pong")
+
+    case "api" :: "viewers" :: Nil JsonGet _ =>
+      Extraction.decompose(Viewer.findAll.map(_.toMarshalled).toList)
+
+    case "api" :: "viewer" :: "update" :: Nil JsonPost json -> _ =>
+      JBool(json match {
+        case JObject(JField("view", JString(view)) :: JField("viewers", JArray(viewers)) :: JField("payload", payload) :: Nil) =>
+          if (view == "overview/arena") {
+            payload match {
+              case p: JObject =>
+                (p \\ "arenaId") match {
+                  case JInt(arenaId) =>
+                    Arena.findByKey(arenaId.toLong) match {
+                      case Full(arena) =>
+                        val pools = arena.pools.filterNot(_.finished_?).map(pool => Map("pool" -> pool.toMarshalledSummary, "fights" -> pool.fights.map(_.toMarshalledSummary)))
+                        val newPayload = p ~ ("pools" -> Extraction.decompose(pools))
+                        viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
+                          Viewer.findByKey(viewerId).foreach(viewer =>
+                            viewer.rest.update(view, newPayload))
+                        }
+                        true
+                      case _ => false
+                    }
+                  case _ => false
+                }
+              case _ =>
+                false
+            }
+
+          } else {
+            viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
+              Viewer.findByKey(viewerId).foreach(viewer =>
+                viewer.rest.update(view, payload))
+            }
+            true
+          }
+        case _ =>
+          false
+      })
   }
 
 }

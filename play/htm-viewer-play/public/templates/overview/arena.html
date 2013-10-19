@@ -1,0 +1,49 @@
+<div class="overview-arena">
+<header class="container">
+	<div class="page-header" data-ng-cloak>
+		<h1>{{arena || "Arena"}} <span class="pull-right">{{currentTime | hours:true}}</span></h1>
+	</div>
+</header>
+
+<div class="container">
+	<table class="table current-pool">
+		<thead>
+			<tr>
+				<th colspan="4">Pool {{ currentPool.pool.order }} :: {{ currentPool.pool.round.name }} :: {{ currentPool.pool.round.tournament.name }}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="fight in currentPool.fights track by fight.id">
+				<td class="time" width="8%">{{fight.plannedTime | hours}}</td>
+				<td class="fighter red" width="41%"><span class="badge">{{fight.fighterA.externalId}}</span> {{fight.fighterA.name}}</td>
+				<td class="score" width="10%" class="text-center">
+					<span ng-show="fight.timeStart &gt; 0 && fight.timeStop == 0">in progress</span>
+					<span ng-show="fight.timeStart == 0 && fight.timeStop == 0">vs</span>
+					<span ng-show="fight.timeStop &gt; 0">{{totalScore(fight).a}} ({{totalScore(fight).d}}) {{totalScore(fight).b}}</span>
+				</td>
+				<td class="fighter blue" width="41%"><span class="badge">{{fight.fighterB.externalId}}</span> {{fight.fighterB.name}}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table class="table pool" ng-repeat="pool in displayedPools track by pool.pool.id" data-ng-animate="{enter: 'animated bounceInLeft', leave: 'animated bounceOutLeft'}">
+		<thead>
+			<tr>
+				<th colspan="4">Pool {{ pool.pool.order }} :: {{ pool.pool.round.name }} :: {{ pool.pool.round.tournament.name }}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="fight in pool.fights track by fight.id">
+				<td class="time" width="8%">{{fight.plannedTime | hours}}</td>
+				<td class="fighter red" width="41%"><span class="badge">{{fight.fighterA.externalId}}</span> {{fight.fighterA.name}}</td>
+				<td class="score" width="10%" class="text-center">
+					<span ng-show="fight.timeStart &gt; 0 && fight.timeStop == 0">in progress</span>
+					<span ng-show="fight.timeStart == 0 && fight.timeStop == 0">vs</span>
+					<span ng-show="fight.timeStop &gt; 0">{{totalScore(fight).a}} ({{totalScore(fight).d}}) {{totalScore(fight).b}}</span>
+				</td>
+				<td class="fighter blue" width="41%"><span class="badge">{{fight.fighterB.externalId}}</span> {{fight.fighterB.name}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</div>

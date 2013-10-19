@@ -8,7 +8,8 @@ import util._
 import Helpers._
 import scala.xml._
 
-case class MarshalledFight(id: Long, pool: Long, round: Long, order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFight(id: Long, pool: Long, round: Long, order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, plannedTime: Long, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFightSummary(id: Long, poolId: Long, order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, plannedTime: Long, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
 case class MarshalledViewerFight(tournament: MarshalledTournamentSummary, roundName: String, order: Long, exchangeLimit: Int, timeLimit: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant)
 case class MarshalledViewerFightSummary(order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, started: Boolean, finished: Boolean, score: TotalScore)
 
@@ -51,8 +52,17 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
 
   def shortLabel = fighterA.obj.get.name + " vs " + fighterB.obj.get.name
 
-  def toMarshalled = MarshalledFight(id.is, pool.is, pool.obj.get.round.is, order.is, fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledFight(id.is, pool.is, pool.obj.get.round.is, order.is, fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, plannedStartTime, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalledSummary = MarshalledFightSummary(id.is, pool.is, order.is, fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, plannedStartTime, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
   def fromMarshalled(m: MarshalledFight) = {
+    timeStart(m.timeStart)
+    timeStop(m.timeStop)
+    netDuration(m.netDuration)
+    scores.clear
+    m.scores.foreach(s => scores += Score.create.fromMarshalled(s))
+    this
+  }
+  def fromMarshalledSummary(m: MarshalledFightSummary) = {
     timeStart(m.timeStart)
     timeStop(m.timeStop)
     netDuration(m.netDuration)

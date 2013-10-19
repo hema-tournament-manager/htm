@@ -7,6 +7,8 @@ import actor._
 import util._
 import mapper._
 import Helpers._
+import json._
+import JsonDSL._
 import _root_.scala.xml.{ NodeSeq, Text }
 import _root_.java.util.Date
 import nl.malienkolders.htm.lib.model._
@@ -38,15 +40,39 @@ object FightServer extends LiftActor {
       reply(if (fight.save) FightMsg(fight) else NoFightMsg)
     }
     case FightUpdate(f) => {
-      Fight.findByKey(f.id).get.fromMarshalled(f).inProgress(f.timeStop == 0).save
+      val fight = Fight.findByKey(f.id).get.fromMarshalledSummary(f)
+      fight.inProgress(f.timeStop == 0).save
+      val arena = fight.pool.obj.get.arena.obj.get
+      arena.viewers.foreach { viewer =>
+        viewer.rest.fightUpdate(arena, fight)
+      }
+    }
+
+    case TimerUpdate(f, TimerMessage(action, time)) => {
+      val fight = Fight.findByKey(f).get
+      val arena = fight.pool.obj.get.arena.obj.get
+      arena.viewers.foreach { viewer =>
+        viewer.rest.timerUpdate(arena, action, time)
+      }
+    }
+
+    case MessageUpdate(f, message) => {
+      val fight = Fight.findByKey(f).get
+      val arena = fight.pool.obj.get.arena.obj.get
+      arena.viewers.foreach { viewer =>
+        viewer.rest.fightUpdate(arena, "message" -> message)
+      }
     }
   }
 
 }
 
+case class MessageUpdate(fightId: Long, msg: String)
+case class TimerMessage(action: String, time: Long)
+case class TimerUpdate(fightId: Long, msg: TimerMessage)
 case class PeekFight(pool: Pool)
 case class PopFight(pool: Pool)
 case class FightMsg(fight: Fight)
 case class FightResult(fight: Fight, confirm: Boolean)
-case class FightUpdate(fight: MarshalledFight)
+case class FightUpdate(fight: MarshalledFightSummary)
 case object NoFightMsg

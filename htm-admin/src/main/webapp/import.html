@@ -8,9 +8,26 @@
 	<div id="main" class="lift:surround?with=default;at=content">
 		<h2>Import</h2>
 		<form class="lift:Importer?form=post">
-			<label><input id="clear"/>Delete existing participants</label><br/>
-			<label><input id="clearTournaments"/>Delete existing tournaments</label><br/>
-			<button id="doImport">Start import</button>
+			<label><input id="clear"/> Delete existing participants</label><br/>
+			<label><input id="clearTournaments"/>Delete existing tournaments</label>
+			<div class="form-group">
+				<label for="url">URL</label>
+				<input type="text" class="form-input" id="url"/>
+			</div>
+			<button id="doImportUrl" class="btn btn-default">Import from URL</button>
+			<div class="form-group">
+				<label for="file">File</label>
+				<input type="text" class="form-input" id="file"/>
+			</div>
+			<button id="doImportFile" class="btn btn-default">Import file</button>
+		</form>
+		
+		<h1>Photo import</h1>
+		<form data-lift="PhotoImporter?form=post;multipart=true">
+		   <label for="file">
+		     Select a file: <input id="file"/>
+		   </label>
+		   <input type="submit" value="Submit" class="btn btn-default"/>
 		</form>
 	</div>
 </body>

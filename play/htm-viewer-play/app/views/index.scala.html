@@ -1,0 +1,32 @@
+@()
+<!DOCTYPE html>
+<html data-ng-app="htm">
+<head>
+    <title>HTM Viewer</title>
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.ico")">
+    <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.css"))">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/cosmo.min.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/animate-custom.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+</head>
+<body>
+	<div id="main" ng-view></div>
+
+	<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>
+    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.core.js"))"></script>
+    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.position.js"))"></script>
+    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.js"))"></script>
+    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.js"))"></script>
+    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("ui-bootstrap-tpls.js"))"></script>
+    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular-cookies.js"))"></script>
+    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("underscore.js"))"></script>
+    <script src="@routes.Application.jsRoutes"></script>
+    <script src="@routes.Assets.at("javascripts/controllers/empty.js")"></script>
+    <script src="@routes.Assets.at("javascripts/controllers/fight.js")"></script>
+    <script src="@routes.Assets.at("javascripts/controllers/overview/arena.js")"></script>
+    <script src="@routes.Assets.at("javascripts/app.js")"></script>
+    <script src="@routes.Assets.at("javascripts/filters.js")"></script>
+    <script src="@routes.Assets.at("javascripts/playRoutes.js")"></script>
+    <script src="@routes.Assets.at("javascripts/appService.js")"></script>
+</body>
+</html>

@@ -37,14 +37,14 @@ object ParticipantList {
     }
 
     "#download" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), <span><span class="glyphicon glyphicon-download"></span> Download</span>, "class" -> "btn btn-default pull-right") &
-    "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
-      val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
-      selectedParticipant = Empty
-      cmd & Run("$('#countrySelect').hide();")
-    }, "id" -> "countrySelectDropdown") &
+      "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
+        val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
+        selectedParticipant = Empty
+        cmd & Run("$('#countrySelect').hide();")
+      }, "id" -> "countrySelectDropdown") &
       ".participant" #> (ps.map { p =>
         val c = p.country.obj.get
-        ".participant [class]" #> (if (p.isPresent.is) "present" else "not-present") &
+        ".participant [class]" #> (if (p.isPresent.is) "success" else "default") &
           ".id *" #> p.externalId.is &
           ".name *" #> p.name.is &
           ".shortName *" #> p.shortName.is &
@@ -61,7 +61,7 @@ object ParticipantList {
                 Focus("countrySelectDropdown")
 
             }) &
-            ".actions *" #> <a href={ "/participants/register/" + p.externalId.is }>register</a>
+            ".actions *" #> <a href={ "/participants/register/" + p.externalId.is }>register</a><a href={ "/participants/swap/" + p.externalId.is }>swap</a>
       }) &
       ".totals" #> (
         ".people *" #> ps.size &
@@ -69,7 +69,7 @@ object ParticipantList {
         ".clubs *" #> ps.groupBy(_.clubCode.is).size &
         ".actions *" #> SHtml.submit("register all", registerAll, "class" -> "btn btn-default"))
   }
-  
+
   def downloadParticipantList() = {
     OutputStreamResponse(ParticipantsExporter.doExport _, List("content-disposition" -> "inline; filename=\"participants.xls\""))
   }

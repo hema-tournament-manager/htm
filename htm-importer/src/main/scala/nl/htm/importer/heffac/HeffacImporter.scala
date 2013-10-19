@@ -2,9 +2,11 @@ package nl.htm.importer.heffac
 
 import nl.htm.importer._
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import java.io.File
+import java.io.InputStream
 
-object HeffacImporter extends Importer[EmptySettings] {
+case class HeffacSettings(excel: InputStream)
+
+object HeffacImporter extends Importer[HeffacSettings] {
 
   val tournamentNames = List(
     "feder" -> "Feder",
@@ -19,8 +21,8 @@ object HeffacImporter extends Importer[EmptySettings] {
 
   val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name) }
 
-  def doImport(s: EmptySettings): EventData = {
-    val workbook = WorkbookFactory.create(new File("/home/jogchem/heffaf-inschrijvingen.xlsx"))
+  def doImport(s: HeffacSettings): EventData = {
+    val workbook = WorkbookFactory.create(s.excel)
 
     val sheet = workbook.getSheetAt(0)
 
@@ -53,6 +55,7 @@ object HeffacImporter extends Importer[EmptySettings] {
     }).toList.filter(_._1.isDefined).map(t => (t._1.get, t._2))
 
     EventData(
+      2,
       participantSubscriptions.map(_._1),
       tournaments,
       tournaments.map(t => t -> participantSubscriptions.filter(_._2.contains(t)).map(_._1)).toMap)

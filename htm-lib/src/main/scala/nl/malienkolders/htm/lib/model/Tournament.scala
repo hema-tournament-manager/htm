@@ -16,6 +16,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   object identifier extends MappedString(this, 32)
   object participants extends MappedManyToMany(TournamentParticipants, TournamentParticipants.tournament, TournamentParticipants.participant, Participant)
   object rounds extends MappedOneToMany(Round, Round.tournament, OrderBy(Round.order, Ascending)) with Owned[Round] with Cascade[Round]
+  object defaultArena extends MappedLongForeignKey(this, Arena)
 
   def rapier_? = name.is.toLowerCase().contains("rapier")
 

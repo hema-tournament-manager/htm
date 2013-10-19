@@ -4,7 +4,7 @@ package model
 import net.liftweb._
 import mapper._
 
-case class MarshalledPoolSummary(id: Long, order: Long, round: MarshalledRoundSummary, fightCount: Long, participantsCount: Long)
+case class MarshalledPoolSummary(id: Long, order: Long, startTime: Long, finished: Boolean, round: MarshalledRoundSummary, fightCount: Long, participantsCount: Long)
 case class MarshalledPool(id: Long, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
 case class MarshalledViewerPool(summary: MarshalledPoolSummary, fights: List[MarshalledViewerFightSummary])
 case class MarshalledPoolRanking(poolInfo: MarshalledPoolSummary, ranked: List[MarshalledParticipant], points: List[swiss.ParticipantScores])
@@ -21,8 +21,11 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
   object round extends MappedLongForeignKey(this, Round)
   object fights extends MappedOneToMany(Fight, Fight.pool, OrderBy(Fight.order, Ascending)) with Owned[Fight] with Cascade[Fight]
   object participants extends MappedManyToMany(PoolParticipants, PoolParticipants.pool, PoolParticipants.participant, Participant)
+  object arena extends MappedLongForeignKey(this, Arena)
 
   def nextFight = fights.filter(f => f.inProgress == false && f.finished_? == false).headOption
+
+  def finished_? = fights.map(_.finished_?).toList.forall(_ == true)
 
   def addFight(a: Participant, b: Participant) = fights += Fight.create.fighterA(a).fighterB(b).inProgress(false).order(fights.size + 1)
 
@@ -31,6 +34,8 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
   def toMarshalledSummary = MarshalledPoolSummary(
     id.is,
     order.is,
+    startTime.is,
+    finished_?,
     round.obj.get.toMarshalledSummary,
     fights.size,
     participants.size)
@@ -44,7 +49,13 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
   }
 
 }
-object Pool extends Pool with LongKeyedMetaMapper[Pool]
+object Pool extends Pool with LongKeyedMetaMapper[Pool] {
+  def defaultArena(tournament: Tournament): Arena = {
+    tournament.defaultArena.foreign.getOrElse(Arena.findAll.head)
+  }
+
+  def create(t: Tournament) = super.create.arena(defaultArena(t)).startTime(System.currentTimeMillis())
+}
 
 class PoolParticipants extends LongKeyedMapper[PoolParticipants] with IdPK {
   def getSingleton = PoolParticipants

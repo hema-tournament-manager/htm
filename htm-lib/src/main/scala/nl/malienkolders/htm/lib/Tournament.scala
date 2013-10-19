@@ -45,11 +45,15 @@ abstract class Tournament {
 
   def possiblePoints: List[Int]
 
-  def renderRankedFighter(rank: Int, p: Participant) =
+  def renderRankedFighter(rank: Int, p: Participant, t: model.Tournament) =
     ".ranking *" #> rank &
       ".name *" #> p.name &
       ".club [title]" #> p.club &
-      ".club *" #> p.clubCode
+      ".club *" #> p.clubCode &
+      ".pool *" #> findPool(t, p).map(_.poolName).getOrElse("?")
+      
+  def findPool(tournament: model.Tournament, p: Participant) =  
+    tournament.rounds.head.pools.find(_.participants.contains(p))
 
 }
 
