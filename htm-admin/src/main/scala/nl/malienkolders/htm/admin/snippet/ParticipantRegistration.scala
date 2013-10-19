@@ -27,6 +27,7 @@ object ParticipantRegistration {
       "name=shortName" #> p.shortName.toForm &
       "name=club" #> p.club.toForm &
       "name=clubCode" #> p.clubCode.toForm &
+      "name=externalId" #> p.externalId.toForm &
       "name=present" #> p.isPresent.toForm &
       "name=equipmentCheck" #> p.isEquipmentChecked.toForm &
       "name=question1" #> p.isRankingCheck1.toForm &
