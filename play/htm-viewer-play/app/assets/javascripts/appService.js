@@ -49,7 +49,7 @@ angular.module('htm.services', [])
 			  console.log(view_);
 			  console.log(state[view]);
 			  state[view] = _.extend(state[view], update);
-			  callback(view, state[view]);
+			  callback(view, state[view], update);
 		  },
 		  get: function(view) {
 			  return state[view];
