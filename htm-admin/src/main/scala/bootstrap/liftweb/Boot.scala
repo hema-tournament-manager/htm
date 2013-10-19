@@ -53,7 +53,7 @@ class Boot {
     RoundRobinTournament.register
     SwissTournament.register
     SwissSpecialHitsTournament.register
-
+    
     val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list") ::
       TournamentView.menu ::
@@ -102,6 +102,10 @@ class Boot {
     // Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
+
+    // allow huge uploads for the photo import
+    LiftRules.maxMimeSize = 1024L * 1024L * 1024L
+    LiftRules.maxMimeFileSize = 1024L * 1024L * 1024L
 
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)
