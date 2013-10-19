@@ -340,7 +340,7 @@ object TournamentView {
                       "img [class]" #> ("star" + pt.id) &
                       "img [onclick]" #> SHtml.ajaxInvoke(() => toggleStar(pt)) &
                       ".participantName *" #> pt.name.is &
-                      ruleset.renderRankedFighter(i + 1, pt) &
+                      ruleset.renderRankedFighter(i + 1, pt, t) &
                       ".scores" #> ps.row &
                       ".hasFights *" #> (if (hasFights) "" else "Not fighting") &
                       (if (!hasFights)

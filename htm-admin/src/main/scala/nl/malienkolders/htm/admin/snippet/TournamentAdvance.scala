@@ -35,7 +35,7 @@ object TournamentAdvance {
       ".participant" #> allParticipants.sortWith((a, b) => ruleset.compare(a._2, b._2)).zipWithIndex.map {
         case ((p, s), i) =>
           ".selected *" #> SHtml.checkbox(false, b => if (b) selected = p :: selected) &
-            ruleset.renderRankedFighter(i + 1, p) &
+            ruleset.renderRankedFighter(i + 1, p, t) &
             ".scores" #> s.row
       } &
       ".prevRound" #> pr.name &
