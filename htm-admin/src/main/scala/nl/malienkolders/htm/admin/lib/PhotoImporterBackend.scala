@@ -20,7 +20,7 @@ object PhotoImporterBackend {
   def handle(in: ZipInputStream, baseNames: Iterator[String])(handler: (String, ZipInputStream, ZipEntry) => Unit): Unit = in.getNextEntry() match {
     case e: ZipEntry =>
       handler(baseNames.next, in, e)
-      handle(in, baseNames.drop(1))(handler)
+      handle(in, baseNames)(handler)
     case _ => in.close()
   }
 
