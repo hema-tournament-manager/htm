@@ -23,6 +23,12 @@
 		</div>
 	</div>
 	<div class="message" ng-bind-html-unsafe="message"></div>
+	<div class="labels">
+		<div class="exchanges">Exchanges</div>
+		<div class="points red">Points</div>
+		<div class="points blue">Points</div>
+		<div class="doubles">Double hits</div>
+	</div>
 	<div class="exchangeCount" ng-show="poolSummary.round.exchangeLimit &gt; 0">
 		{{ totalScore.x }} of {{ poolSummary.round.exchangeLimit }}
 	</div>
