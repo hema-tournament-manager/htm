@@ -59,3 +59,7 @@
 	font-size: 110%;
 	font-weight: bold;
 }
+
+.btn-default:hover {
+	background-color:#BDBDBD;
+}

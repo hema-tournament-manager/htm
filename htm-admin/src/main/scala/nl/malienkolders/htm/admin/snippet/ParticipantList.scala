@@ -35,13 +35,13 @@ object ParticipantList {
       ps foreach (_.isPresent(true).isEquipmentChecked(true).save)
       S.redirectTo("/participants/list")
     }
-    
+
     def createParticipant() = {
       Participant.create.externalId("new").country(Country.findAll().find(_.code2.is == "NL").get).save
-      
+
       S.redirectTo("/participants/register/new")
     }
-    
+
     def registerAllSubmit = SHtml.submit("register all", registerAll, "class" -> "btn btn-default")
 
     def createParticipantSubmit = SHtml.submit("create participant", createParticipant, "class" -> "btn btn-default")
@@ -79,8 +79,7 @@ object ParticipantList {
         ".clubs *" #> ps.groupBy(_.clubCode.is).size &
         ".actions *" #> Seq(createParticipantSubmit, registerAllSubmit))
   }
-  
-  
+
   def downloadParticipantList() = {
     OutputStreamResponse(ParticipantsExporter.doExport _, List("content-disposition" -> "inline; filename=\"participants.xls\""))
   }

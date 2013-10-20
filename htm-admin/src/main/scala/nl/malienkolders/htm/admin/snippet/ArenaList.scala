@@ -48,8 +48,8 @@ class ArenaList {
       { t.name.get }
     </a>
 
-  def downloadSchedule(a: Arena) = {
-    OutputStreamResponse(ScheduleExporter.doExport(a) _, List("content-disposition" -> ("inline; filename=\"schedule_arena_" + a.id.get + ".xls\"")))
+  def downloadSchedule(a: Arena, onlyUnfinishedPools: Boolean = true) = {
+    OutputStreamResponse(ScheduleExporter.doExport(a, onlyUnfinishedPools) _, List("content-disposition" -> ("inline; filename=\"schedule_arena_" + a.id.get + ".xls\"")))
   }
 
 }

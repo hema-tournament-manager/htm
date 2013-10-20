@@ -18,8 +18,8 @@ object ParticipantSwap {
   def render = {
     val p = Participant.find(By(Participant.externalId, ParticipantSwap.loc.currentValue.map(_.param).get)).get
     val others = Participant.findAll.filter(_.id.is != p.id.is).toList.sortBy(_.externalId.is.toLong)
-var otherId: Long = -1
-    
+    var otherId: Long = -1
+
     def process() = {
       val externalId = p.externalId.is
       val name = p.name.is
@@ -27,32 +27,32 @@ var otherId: Long = -1
       val club = p.club.is
       val clubCode = p.clubCode.is
       val country = p.country.is
-      
+
       Participant.findByKey(otherId) match {
         case Full(other) =>
           p.
-          	externalId(other.externalId.is).
-          	name(other.name.is).
-          	shortName(other.shortName.is).
-          	club(other.club.is).
-          	clubCode(other.clubCode.is).
-          	country(other.country.is)
-          	
+            externalId(other.externalId.is).
+            name(other.name.is).
+            shortName(other.shortName.is).
+            club(other.club.is).
+            clubCode(other.clubCode.is).
+            country(other.country.is)
+
           other.
-          externalId(externalId).
-          	name(name).
-          	shortName(shortName).
-          	club(club).
-          	clubCode(clubCode).
-          	country(country)
-          	
+            externalId(externalId).
+            name(name).
+            shortName(shortName).
+            club(club).
+            clubCode(clubCode).
+            country(country)
+
           p.save
           other.save
-          
+
           S.notice("Swapped " + p.externalId.is + " and " + other.externalId.is)
         case _ => S.notice("Fail")
       }
-      
+
       S.redirectTo("/participants/list")
     }
 
