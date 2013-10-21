@@ -36,6 +36,16 @@ object ParticipantList {
       S.redirectTo("/participants/list")
     }
 
+    def createParticipant() = {
+      Participant.create.externalId("new").country(Country.findAll().find(_.code2.is == "NL").get).save
+
+      S.redirectTo("/participants/register/new")
+    }
+
+    def registerAllSubmit = SHtml.submit("register all", registerAll, "class" -> "btn btn-default")
+
+    def createParticipantSubmit = SHtml.submit("create participant", createParticipant, "class" -> "btn btn-default")
+
     "#download" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), <span><span class="glyphicon glyphicon-download"></span> Download</span>, "class" -> "btn btn-default pull-right") &
       "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
         val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
@@ -43,7 +53,7 @@ object ParticipantList {
         cmd & Run("$('#countrySelect').hide();")
       }, "id" -> "countrySelectDropdown") &
       ".participant" #> (ps.map { p =>
-        val c = p.country.obj.get
+        val c = p.country.obj.getOrElse(Country.findAll.head)
         ".participant [class]" #> (if (p.isPresent.is) "success" else "default") &
           ".id *" #> p.externalId.is &
           ".name *" #> p.name.is &
@@ -61,13 +71,13 @@ object ParticipantList {
                 Focus("countrySelectDropdown")
 
             }) &
-            ".actions *" #> <a href={ "/participants/register/" + p.externalId.is }>register</a><a href={ "/participants/swap/" + p.externalId.is }>swap</a>
+            ".action" #> <a href={ "/participants/register/" + p.externalId.is } style="margin-right: 10px">register</a><a href={ "/participants/swap/" + p.externalId.is }>swap</a>
       }) &
       ".totals" #> (
         ".people *" #> ps.size &
         ".countries *" #> ps.groupBy(_.country.is).size &
         ".clubs *" #> ps.groupBy(_.clubCode.is).size &
-        ".actions *" #> SHtml.submit("register all", registerAll, "class" -> "btn btn-default"))
+        ".actions *" #> Seq(createParticipantSubmit, registerAllSubmit))
   }
 
   def downloadParticipantList() = {
