@@ -23,7 +23,7 @@ object ParticipantList {
 
     def changeCountry(p: Participant, c: Country) = {
       p.country(c).save
-      var cmd = "$('#flag" + p.id.is + "').attr('title', '" + c.name.is + "'); $('#flag" + p.id.is + "').attr('src', '/images/flags/" + (if (c.hasFlag) c.code2.toLowerCase() else "unknown") + ".png'); $('#flag" + p.id.is + "');"
+      var cmd = "$('#flag" + p.id.is + "').attr('title', '" + c.name.is + "'); $('#flag" + p.id.is + "').attr('src', '/images/flags/" + (if (c.hasFlag.get) c.code2.get.toLowerCase() else "unknown") + ".png'); $('#flag" + p.id.is + "');"
       if (c.hasViewerFlag.is)
         cmd += "$('#flag" + p.id.is + "').addClass('viewerFlagAvailable');"
       else
@@ -32,7 +32,7 @@ object ParticipantList {
     }
 
     def registerAll() = {
-      ps foreach (_.isPresent(true).isEquipmentChecked(true).save)
+      ps foreach (_.isPresent(true).save)
       S.redirectTo("/participants/list")
     }
 
@@ -61,7 +61,7 @@ object ParticipantList {
           ".club *" #> p.club.is &
           ".clubCode *" #> p.clubCode.is &
           ".flag" #> (
-            "img [src]" #> (if (c.hasFlag.is) "/images/flags/" + c.code2.toLowerCase() + ".png" else "/images/flags/unknown.png") &
+            "img [src]" #> (if (c.hasFlag.is) "/images/flags/" + c.code2.get.toLowerCase() + ".png" else "/images/flags/unknown.png") &
             "img [class]" #> (if (c.hasViewerFlag.is) "viewerFlagAvailable" else "") &
             "img [id]" #> ("flag" + p.id.is) &
             "img [title]" #> ("%s (click to change)" format c.name.is) &

@@ -35,7 +35,7 @@ object TournamentEdit {
 
     ".tournamentIdentifier *" #> t.identifier &
       ".tournamentNameOld *" #> t.name &
-      ".tournamentNameNew" #> (SHtml.text(t.name, t.name(_)) ++ SHtml.hidden { () =>
+      ".tournamentNameNew" #> (SHtml.text(t.name.get, t.name(_)) ++ SHtml.hidden { () =>
         t.save
         S.redirectTo("/tournaments/list")
       })

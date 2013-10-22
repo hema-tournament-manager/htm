@@ -6,7 +6,7 @@ import mapper._
 case class MarshalledTournamentSummary(id: Long, name: String, identifier: String, rapier: Boolean)
 case class MarshalledTournament(id: Long, name: String, identifier: String, participants: List[Long], rounds: List[Long])
 
-class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tournament] with ManyToMany with Ordered[Tournament] {
+class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tournament] with Ordered[Tournament] {
 
   def getSingleton = Tournament
 
@@ -14,9 +14,10 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   object id extends MappedLongIndex(this)
   object name extends MappedString(this, 32)
   object identifier extends MappedString(this, 32)
-  object participants extends MappedManyToMany(TournamentParticipants, TournamentParticipants.tournament, TournamentParticipants.participant, Participant)
   object rounds extends MappedOneToMany(Round, Round.tournament, OrderBy(Round.order, Ascending)) with Owned[Round] with Cascade[Round]
   object defaultArena extends MappedLongForeignKey(this, Arena)
+  object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.tournament, OrderBy(TournamentParticipants.fighterNumber, Ascending))
+  def participants = subscriptions.map(_.tournament.obj.get)
 
   def rapier_? = name.is.toLowerCase().contains("rapier")
 
@@ -35,5 +36,9 @@ class TournamentParticipants extends LongKeyedMapper[TournamentParticipants] wit
   def getSingleton = TournamentParticipants
   object tournament extends MappedLongForeignKey(this, Tournament)
   object participant extends MappedLongForeignKey(this, Participant)
+  object fighterNumber extends MappedInt(this)
+  object primary extends MappedBoolean(this)
+  object experience extends MappedInt(this)
+  object gearChecked extends MappedBoolean(this)
 }
 object TournamentParticipants extends TournamentParticipants with LongKeyedMetaMapper[TournamentParticipants]

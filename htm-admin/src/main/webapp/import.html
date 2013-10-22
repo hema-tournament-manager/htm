@@ -6,15 +6,18 @@
 </head>
 <body class="lift:content_id=main">
 	<div id="main" class="lift:surround?with=default;at=content">
-		<h2>Import</h2>
+		<h1>Participant import</h1>
+		<h2>Import from URL</h2>
 		<form class="lift:Importer?form=post">
-			<label><input id="clear"/> Delete existing participants</label><br/>
-			<label><input id="clearTournaments"/>Delete existing tournaments</label>
 			<div class="form-group">
 				<label for="url">URL</label>
 				<input type="text" class="form-input" id="url"/>
 			</div>
 			<button id="doImportUrl" class="btn btn-default">Import from URL</button>
+		</form>
+		
+		<h2>Import from File</h2>
+		<form class="lift:FileImporter?form=post;multipart=true">
 			<div class="form-group">
 				<label for="file">File</label>
 				<input type="text" class="form-input" id="file"/>

@@ -29,10 +29,6 @@ object ParticipantRegistration {
       "name=clubCode" #> p.clubCode.toForm &
       "name=externalId" #> p.externalId.toForm &
       "name=present" #> p.isPresent.toForm &
-      "name=equipmentCheck" #> p.isEquipmentChecked.toForm &
-      "name=question1" #> p.isRankingCheck1.toForm &
-      "name=question2" #> p.isRankingCheck2.toForm &
-      "name=question3" #> p.isRankingCheck3.toForm &
       "name=save" #> SHtml.submit("Save", process)
 
   }

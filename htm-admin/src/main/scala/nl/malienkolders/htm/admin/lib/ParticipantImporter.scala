@@ -9,11 +9,6 @@ import nl.malienkolders.htm.admin.model._
 import net.liftweb.mapper._
 import net.liftweb.util._
 import nl.htm.importer.DummyImporter
-import nl.htm.importer.swordfish.Swordfish2013Importer
-import nl.htm.importer.swordfish.SwordfishSettings
-import nl.htm.importer.heffac.HeffacImporter
-import nl.htm.importer.EmptySettings
-import nl.htm.importer.heffac.HeffacSettings
 import java.io.File
 import nl.htm.importer.EventData
 
@@ -51,10 +46,15 @@ object ParticipantImporter {
       t.save
     }
     data.subscriptions.foreach {
-      case (t, tps) =>
-        tournaments.find(_.identifier == t.id).foreach(t => t.participants ++= tps.map(p => ps.find(_.name == p.name).get))
+      case (t, subs) =>
+        tournaments.find(_.identifier == t.id).foreach(t =>
+          t.subscriptions ++= subs.map {
+            case (sub, p) =>
+              TournamentParticipants.create.participant(ps.find(_.externalId.get == p.sourceIds.head.id).get).fighterNumber(sub.number).primary(sub.primary).experience(sub.xp)
+          })
     }
     tournaments.foreach(_.save)
+
   }
 
 }

@@ -114,7 +114,7 @@ object SwissTournament extends nl.malienkolders.htm.lib.Tournament {
     val rs = Round.findAll(By(Round.tournament, t)).filter(_.order.is <= r.order.is)
     val ps = Pool.findAll(ByList(Pool.round, rs.map(_.id.is)))
     val fs = Fight.findAll(ByList(Fight.pool, ps.map(_.id.is))).filter(_.finished_?)
-    pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
+    pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
       case (ps @ ParticipantScores(i, c, w, t, l, hR, hD, sR, sD, aR, aD, d), f) =>
         if (f.inFight_?(pt)) {
           f.currentScore match {
