@@ -24,8 +24,8 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     implicit def cellToInt(cell: Cell): Int = cell.getNumericCellValue().toInt
 
     println(total.getLastRowNum())
-    
-        println("Importing participants")
+
+    println("Importing participants")
     val participants = for (rowIndex <- 1 to total.getLastRowNum()) yield {
       val row = total.getRow(rowIndex)
       val countryNameRaw = row.getCell(header("Country"))

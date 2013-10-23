@@ -264,7 +264,7 @@ object TournamentView {
       "name=downloadSchedule" #> SHtml.link("/download_schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Download Schedule"), "class" -> "btn btn-default") &
       "#tournamentParticipant" #> tournamentSubscriptions.map(sub =>
         "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
-        ".badge *" #> sub.fighterNumber.get &
+          ".badge *" #> sub.fighterNumber.get &
           ".name" #> (sub.participant.obj.get.name.get + " " + sub.experience.get) &
           "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, sub.participant.obj.get); refresh() }, "title" -> "Remove from Tournament")) &
       "#newRoundName" #> SHtml.text("", newRound, "placeholder" -> "New Round") &

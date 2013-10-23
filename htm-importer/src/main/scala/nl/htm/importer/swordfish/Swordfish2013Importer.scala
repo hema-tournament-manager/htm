@@ -26,9 +26,9 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
   lazy val countryReplacements = Map(readTuplesFromFile("countryreplacements"): _*)
 
   def parseSubscriptionString(s: String): (Boolean, Int) = {
-      val re = """X(p|s)(\**)""".r
-      val re(primary, xp) = s
-      (primary == "p", xp.length())
+    val re = """X(p|s)(\**)""".r
+    val re(primary, xp) = s
+    (primary == "p", xp.length())
   }
 
   def nameReplacements = Map("9" -> "F. v. d. Bussche-H.")
