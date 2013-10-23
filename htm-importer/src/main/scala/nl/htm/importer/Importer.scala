@@ -8,7 +8,7 @@ case class Tournament(id: String, name: String)
 
 case class SourceId(source: String, id: String)
 
-case class Subscription(primary: Boolean, number: Int, xp: Int)
+case class Subscription(primary: Boolean, number: Int, xp: Int, pool: Option[Int] = None)
 
 case class Participant(sourceIds: List[SourceId], name: String, shortName: String, club: String, clubCode: String, country: String, tshirt: String)
 

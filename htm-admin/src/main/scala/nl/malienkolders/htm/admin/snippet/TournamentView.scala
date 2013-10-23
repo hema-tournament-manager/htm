@@ -139,9 +139,8 @@ object TournamentView {
       if (finishedFights_?(round)) {
         S.notice("Cannot add a pool, because fights have been fought")
       } else {
-        val pool = Pool.create(t).order(round.pools.size + 1)
 
-        round.pools += pool
+        val pool = round.addPool
         round.save
 
         if (pool.order.get > 1)
@@ -265,7 +264,7 @@ object TournamentView {
       "#tournamentParticipant" #> tournamentSubscriptions.map(sub =>
         "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
           ".badge *" #> sub.fighterNumber.get &
-          ".name" #> (sub.participant.obj.get.name.get + " " + sub.experience.get) &
+          ".name *" #> (sub.participant.obj.get.name.get + " " + sub.experience.get) &
           "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, sub.participant.obj.get); refresh() }, "title" -> "Remove from Tournament")) &
       "#newRoundName" #> SHtml.text("", newRound, "placeholder" -> "New Round") &
       "#tournamentRound" #> t.rounds.map(r =>

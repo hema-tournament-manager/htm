@@ -5,6 +5,8 @@ import nl.htm.importer._
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import java.io.InputStream
 import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Sheet
 
 case class SwordfishExcelSettings(in: InputStream, countries: List[(String, String)])
 
@@ -46,11 +48,11 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
         println("Importing tournament " + name)
         val sheet = workbook.getSheet(name)
         if (sheet != null) {
-
+          val poolFighterNumbers = findPoolFighterNumbers(sheet)
           val subscriptions = for (rowIndex <- 2 to sheet.getLastRowNum() if sheet.getRow(rowIndex).getCell(5) != null) yield {
             val row = sheet.getRow(rowIndex)
             val (primary, xp) = Swordfish2013Importer.parseSubscriptionString(row.getCell(5))
-            row.getCell(1).getNumericCellValue().toInt.toString -> Subscription(primary, row.getCell(0), xp)
+            row.getCell(1).getNumericCellValue().toInt.toString -> Subscription(primary, row.getCell(0), xp, poolFighterNumbers.get(row.getCell(0).getNumericCellValue().toInt))
           }
           val myParticipants = subscriptions.flatMap {
             case (id, sub) =>
@@ -65,6 +67,35 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     }
 
     EventData(3, participants.toList, tournaments, subscriptions.toMap)
+  }
+
+  def getPoolNumberFromCell(cell: Cell): Option[Int] = cell match {
+    case c: Cell if c.getStringCellValue().startsWith("Pool ") =>
+      Some(c.getStringCellValue().dropWhile(!_.isDigit).toInt)
+    case _ => None
+  }
+
+  def findPoolColumns(row: Row, columnIndex: Int, acc: Map[Int, Int] = Map()): Map[Int, Int] = {
+    if (columnIndex > row.getLastCellNum()) {
+      acc
+    } else {
+      findPoolColumns(row, columnIndex + 1, getPoolNumberFromCell(row.getCell(columnIndex)).map(poolNr => acc + (poolNr -> columnIndex)).getOrElse(acc))
+    }
+  }
+
+  def findPoolFighterNumbers(sheet: Sheet): Map[Int, Int] = {
+    val poolColumns = findPoolColumns(sheet.getRow(0), 0)
+    poolColumns.flatMap {
+      case (poolNr, columnIndex) =>
+        val options = for (i <- 2 to sheet.getLastRowNum()) yield {
+          val row = sheet.getRow(i)
+          row.getCell(columnIndex) match {
+            case c: Cell => Some(c.getNumericCellValue().toInt -> poolNr)
+            case _ => None
+          }
+        }
+        options.flatten.toList
+    } toMap
   }
 
 }

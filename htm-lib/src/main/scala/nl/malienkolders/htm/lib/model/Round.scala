@@ -27,6 +27,12 @@ class Round extends LongKeyedMapper[Round] with OneToMany[Long, Round] {
 
   object pools extends MappedOneToMany(Pool, Pool.round, OrderBy(Pool.order, Ascending)) with Owned[Pool] with Cascade[Pool]
 
+  def addPool: Pool = {
+    val newPool = Pool.create(tournament.obj.get).order(pools.size + 1)
+    pools += newPool
+    newPool
+  }
+
   def previousRound = {
     Round.find(By(Round.order, order.is - 1), By(Round.tournament, tournament.is))
   }
