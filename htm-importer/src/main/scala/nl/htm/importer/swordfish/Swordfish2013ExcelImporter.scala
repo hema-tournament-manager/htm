@@ -12,6 +12,9 @@ case class SwordfishExcelSettings(in: InputStream, countries: List[(String, Stri
 
 object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
 
+  implicit def cellToString(cell: Cell): String = if (cell == null) "" else cell.getStringCellValue()
+  implicit def cellToInt(cell: Cell): Int = cell.getNumericCellValue().toInt
+
   def doImport(settings: SwordfishExcelSettings): EventData = {
     val workbook = WorkbookFactory.create(settings.in)
 
@@ -22,9 +25,6 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     val header = Map((for (i <- 0 to headerRow.getLastCellNum() - 1) yield (headerRow.getCell(i).getStringCellValue(), i)): _*)
 
     val tournaments = Swordfish2013Importer.tournamentNames.map { case (id, name) => Tournament(id, name) }
-    implicit def cellToString(cell: Cell): String = if (cell == null) "" else cell.getStringCellValue()
-    implicit def cellToInt(cell: Cell): Int = cell.getNumericCellValue().toInt
-
     println(total.getLastRowNum())
 
     println("Importing participants")
@@ -64,7 +64,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
         } else {
           None
         }
-    }
+    } :+ (tournaments.find(_.id == "wrestling").get -> findWrestlers(total, header, participants))
 
     EventData(3, participants.toList, tournaments, subscriptions.toMap)
   }
@@ -96,6 +96,22 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
         }
         options.flatten.toList
     } toMap
+  }
+
+  def findWrestlers(sheet: Sheet, header: Map[String, Int], participants: Seq[Participant]): List[(Subscription, Participant)] = {
+    val columnIndex = header("Wrestling")
+    var fighterNr = 0
+    val subs = for (i <- 1 to sheet.getLastRowNum() if sheet.getRow(i).getCell(columnIndex) != null) yield {
+      val row = sheet.getRow(i)
+      val id = row.getCell(header("ID")).getNumericCellValue().toInt.toString
+      val (primary, xp) = Swordfish2013Importer.parseSubscriptionString(row.getCell(columnIndex))
+      val p = participants.find(_.sourceIds.head.id == id)
+      p.map { p =>
+        fighterNr += 1
+        Subscription(primary, fighterNr, xp) -> p
+      }
+    }
+    subs.flatten.toList
   }
 
 }
