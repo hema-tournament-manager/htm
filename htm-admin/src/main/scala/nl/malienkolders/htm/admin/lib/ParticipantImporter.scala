@@ -8,72 +8,13 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.model._
 import net.liftweb.mapper._
 import net.liftweb.util._
+import TimeHelpers._
 import nl.htm.importer.DummyImporter
-import nl.htm.importer.swordfish.Swordfish2013Importer
-import nl.htm.importer.swordfish.SwordfishSettings
-import nl.htm.importer.heffac.HeffacImporter
-import nl.htm.importer.EmptySettings
-import nl.htm.importer.heffac.HeffacSettings
 import java.io.File
 import nl.htm.importer.EventData
+import nl.malienkolders.htm.lib.RoundRobinTournament
 
 object ParticipantImporter {
-
-  val tournamentNames = List(
-    "longsword_open" -> "Longsword Open",
-    "longsword_ladies" -> "Longsword Ladies",
-    "wrestling" -> "Wrestling",
-    "sabre" -> "Sabre",
-    "rapier_dagger" -> "Rapier & Dagger",
-    "sword_buckler" -> "Sword & Buckler")
-
-  def readTuplesFromFile(filename: String) = Source.fromInputStream(ParticipantImporter.getClass().getResourceAsStream(filename), "UTF-8").getLines().toList.map(line => line.split(" -> ") match {
-    case Array(code, name) => code -> name
-    case _ => "" -> ""
-  })
-
-  lazy val clubCode2Name = Map(readTuplesFromFile("clubcodes"): _*)
-
-  lazy val clubName2Code = clubCode2Name.map { case (c, n) => (n, c) }
-
-  lazy val replacements = Map(readTuplesFromFile("clubreplacements").map { case (o, r) => (o.toLowerCase(), r) }: _*)
-
-  def nameReplacements = Map(("9", "F. v. d. Bussche-H.") :: ParticipantNameMapping.findAll.map(pnm => (pnm.externalId.is -> pnm.shortName.is)).toList: _*)
-
-  def normalizeName(nameRaw: String) = {
-    def normalizePart(part: String) = {
-      val subparts = part.split("-")
-      subparts.map(sb => if (sb.length() > 3) sb.take(1).toUpperCase() + sb.drop(1).toLowerCase() else sb).mkString("-")
-    }
-    val name = nameRaw.replaceAll("\\s+", " ").trim()
-    val parts = name.split(" ").toList
-    parts.map(normalizePart _).mkString(" ")
-  }
-
-  def shortenName(name: String) = {
-    val allParts = name.split(" ")
-    val uppercasedParts = allParts.takeWhile(_.charAt(0).isUpper)
-    val initials = uppercasedParts.take(allParts.length - 1).map(_.charAt(0) + ".")
-    (initials.toList.mkString + " " + allParts.drop(initials.length).mkString(" ")).replace(" van ", " v. ").replace(" von dem ", " v.d. ").replace(" von ", " v. ")
-  }
-
-  def normalizeClub(clubRaw: String) = {
-    def uppercaseWord(word: String) = if (word.length() > 3 && !word.contains(".")) word.take(1).toUpperCase() + word.drop(1) else word
-    val club = clubRaw.replaceAll("\\s+", " ").trim()
-    println("club: " + club)
-    val replaced: String = replacements.getOrElse(club.toLowerCase(), club)
-    println("replaced: " + replaced)
-    val uppercased = replaced.split(" ").map(uppercaseWord _).mkString(" ")
-    println("uppercased: " + uppercased)
-    if (uppercased == "" || uppercased == "-")
-      ("", "")
-    else if (clubCode2Name.contains(uppercased))
-      (uppercased, clubCode2Name(uppercased))
-    else if (clubName2Code.contains(uppercased))
-      (clubName2Code(uppercased), uppercased)
-    else
-      ("", uppercased)
-  }
 
   def doImport(data: EventData) = {
 
@@ -107,10 +48,38 @@ object ParticipantImporter {
       t.save
     }
     data.subscriptions.foreach {
-      case (t, tps) =>
-        tournaments.find(_.identifier == t.id).foreach(t => t.participants ++= tps.map(p => ps.find(_.name == p.name).get))
+      case (t, subs) =>
+        tournaments.find(_.identifier == t.id).foreach { t =>
+          t.subscriptions ++= subs.map {
+            case (sub, p) =>
+              TournamentParticipants.create.participant(ps.find(_.externalId.get == p.sourceIds.head.id).get).fighterNumber(sub.number).primary(sub.primary).experience(sub.xp)
+          }
+          if (t.rounds.size == 0) {
+            t.rounds += Round.create.name("Round 1").
+              order(1).
+              ruleset(RoundRobinTournament.id).
+              timeLimitOfFight(180 seconds).
+              breakDuration(0).
+              breakInFightAt(0).
+              timeBetweenFights(120 seconds).
+              exchangeLimit(10)
+          }
+          val round = t.rounds.head
+          subs.foreach {
+            case (sub, p) =>
+              sub.pool foreach { poolNr =>
+                while (round.pools.size < poolNr)
+                  round.addPool
+                round.pools.find(_.order.get == poolNr).foreach { pool =>
+                  pool.participants += ps.find(_.externalId.get == p.sourceIds.head.id).get
+                }
+              }
+          }
+        }
+
     }
     tournaments.foreach(_.save)
+
   }
 
 }

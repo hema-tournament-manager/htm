@@ -89,7 +89,7 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
     val pool = this.pool.foreign.get;
     val round = pool.round.foreign.get;
 
-    val result = pool.startTime.get + (round.timeLimitOfFight.get + round.timeBetweenFights.get + round.breakDuration) * (order.get - 1)
+    val result = pool.startTime.get + (round.timeLimitOfFight.get + round.timeBetweenFights.get + round.breakDuration.get) * (order.get - 1)
 
     return result;
   }
@@ -98,7 +98,7 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
     val pool = this.pool.foreign.get;
     val round = pool.round.foreign.get;
 
-    return plannedStartTime + round.timeLimitOfFight.get;
+    return plannedStartTime + round.timeLimitOfFight.get + round.breakDuration.get;
   }
 }
 

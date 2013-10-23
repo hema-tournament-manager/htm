@@ -46,7 +46,7 @@ object TournamentView {
       }
     }
 
-    val tournamentParticipants = t.participants.sortBy(_.name.is)
+    val tournamentSubscriptions = t.subscriptions.sortBy(_.fighterNumber.is)
     val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.participants.toList
 
     var fighterA: Box[Participant] = Empty
@@ -58,7 +58,7 @@ object TournamentView {
 
     def addParticipant(tournament: Tournament, participantId: Long) {
       val participant = Participant.findByKey(participantId).get
-      tournament.participants += participant
+      //TODO: tournament.participants += participant
       tournament.save
       refresh()
     }
@@ -73,7 +73,7 @@ object TournamentView {
       round.pools += pool
       round.save
       if (round.order == 1) {
-        pool.participants ++= t.participants.filter(pt => pt.isPresent.is && pt.isEquipmentChecked.is)
+        pool.participants ++= t.subscriptions.map(_.participant.obj.get)
         pool.save
       }
     }
@@ -100,7 +100,7 @@ object TournamentView {
       if (finishedFights_?(round)) {
         S.notice("Cannot shuffle pools, because fights have been fought")
       } else {
-        val ranked = (round.pools.flatMap(_.participants).toList ++ extraParticipants).sortBy(_ => Random.nextDouble()).sortBy(_.initialRanking).reverse
+        val ranked = (round.pools.flatMap(_.participants).toList ++ extraParticipants).sortBy(_ => Random.nextDouble()).sortBy(_.initialRanking(round)).reverse
         val pools = round.pools.map(_ => ListBuffer[Participant]())
 
         ranked.zip(snake(pools.size, ranked.size)).foreach {
@@ -139,9 +139,8 @@ object TournamentView {
       if (finishedFights_?(round)) {
         S.notice("Cannot add a pool, because fights have been fought")
       } else {
-        val pool = Pool.create(t).order(round.pools.size + 1)
 
-        round.pools += pool
+        val pool = round.addPool
         round.save
 
         if (pool.order.get > 1)
@@ -196,7 +195,7 @@ object TournamentView {
       pool.save
     }
     def deleteParticipantFromTournament(tournament: Tournament, participant: Participant) {
-      tournament.participants -= participant
+      //TODO      tournament.subscriptions -= participant
       tournament.save
       S.notice("%s has been removed from this tournament" format participant.name.is)
     }
@@ -262,13 +261,11 @@ object TournamentView {
     "#tournamentName" #> t.name &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
       "name=downloadSchedule" #> SHtml.link("/download_schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Download Schedule"), "class" -> "btn btn-default") &
-      "#tournamentParticipant" #> tournamentParticipants.map(pt =>
-        "* [class]" #> (if (pt.isPresent.get && pt.isEquipmentChecked.get) "present" else if (!pt.isPresent.get) "not_present" else "not_checked") &
-          "img [src]" #> ("/images/" + (if (pt.isStarFighter.get) "star" else "star_gray") + ".png") &
-          "img [class]" #> ("star" + pt.id) &
-          "img [onclick]" #> SHtml.ajaxInvoke(() => toggleStar(pt)) &
-          "span" #> pt.name &
-          "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, pt); refresh() }, "title" -> "Remove from Tournament")) &
+      "#tournamentParticipant" #> tournamentSubscriptions.map(sub =>
+        "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
+          ".badge *" #> sub.fighterNumber.get &
+          ".name *" #> (sub.participant.obj.get.name.get + " " + sub.experience.get) &
+          "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, sub.participant.obj.get); refresh() }, "title" -> "Remove from Tournament")) &
       "#newRoundName" #> SHtml.text("", newRound, "placeholder" -> "New Round") &
       "#tournamentRound" #> t.rounds.map(r =>
         ".roundAnchor [name]" #> ("round" + r.id.get) &

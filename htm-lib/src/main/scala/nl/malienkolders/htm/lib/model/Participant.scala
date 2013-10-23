@@ -9,9 +9,9 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
-case class MarshalledParticipant(id: Long, externalId: String, name: String, shortName: String, club: String, clubCode: String, country: String, q1: Boolean, q2: Boolean, q3: Boolean)
+case class MarshalledParticipant(id: Long, externalId: String, name: String, shortName: String, club: String, clubCode: String, country: String, isPresent: Boolean, tshirt: String)
 
-class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with ManyToMany {
+class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with OneToMany[Long, Participant] {
   def getSingleton = Participant
 
   def primaryKeyField = id
@@ -24,16 +24,20 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   object country extends MappedLongForeignKey(this, Country)
   object isStarFighter extends MappedBoolean(this)
   object isPresent extends MappedBoolean(this)
-  object isEquipmentChecked extends MappedBoolean(this)
-  object isRankingCheck1 extends MappedBoolean(this)
-  object isRankingCheck2 extends MappedBoolean(this)
-  object isRankingCheck3 extends MappedBoolean(this)
+  object tshirt extends MappedPoliteString(this, 32)
 
-  object tournaments extends MappedManyToMany(TournamentParticipants, TournamentParticipants.participant, TournamentParticipants.tournament, Tournament)
+  def tournaments = subscriptions.map(_.tournament.obj.get)
+  object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.participant, OrderBy(TournamentParticipants.id, Ascending))
 
-  def initialRanking = List(isRankingCheck1.is, isRankingCheck2.is, isRankingCheck3.is).count(b => b)
+  def subscription(t: Tournament): Option[TournamentParticipants] = subscriptions.find(_.tournament.get == t.id.get)
+  def subscription(r: Round): Option[TournamentParticipants] = subscription(r.tournament.obj.get)
+  def subscription(p: Pool): Option[TournamentParticipants] = subscription(p.round.obj.get)
 
-  def toMarshalled = MarshalledParticipant(id.is, externalId.is, name.is, shortName.is, club.is, clubCode.is, country.obj.get.code2.is, isRankingCheck1.is, isRankingCheck2.is, isRankingCheck3.is)
+  def initialRanking(t: Tournament): Int = subscription(t).map(_.experience.get).getOrElse(-1)
+  def initialRanking(r: Round): Int = initialRanking(r.tournament.obj.get)
+  def initialRanking(p: Pool): Int = initialRanking(p.round.obj.get)
+
+  def toMarshalled = MarshalledParticipant(id.is, externalId.is, name.is, shortName.is, club.is, clubCode.is, country.obj.get.code2.is, isPresent.is, tshirt.is)
 }
 
 object Participant extends Participant with LongKeyedMetaMapper[Participant] with CRUDify[Long, Participant] {
