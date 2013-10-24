@@ -8,9 +8,9 @@ import net.liftweb.util.Helpers._
 import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds._
 import net.liftweb.mapper._
-import nl.malienkolders.htm.lib.{ Tournament => Rulesets }
+import nl.malienkolders.htm.lib.rulesets.Ruleset
 import nl.malienkolders.htm.lib.model._
-import nl.malienkolders.htm.lib.HtmHelpers._
+import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.admin.lib._
 import nl.malienkolders.htm.admin.lib.exporter._
 import nl.malienkolders.htm.admin.lib.TournamentUtils._
@@ -69,7 +69,7 @@ object TournamentView {
       t.save
       val pool = Pool.create(t).order(1)
       round.ruleset(
-        round.previousRound.map(_.ruleset.get).getOrElse((Rulesets.rulesets.head.id)))
+        round.previousRound.map(_.ruleset.get).getOrElse((Ruleset.rulesets.head._2.id)))
       round.pools += pool
       round.save
       if (round.order == 1) {
@@ -107,11 +107,11 @@ object TournamentView {
           case (p, i) => pools(i) += p
         }
 
-        while (pools.count(_.size.odd_?) > 1) {
-          val takeFrom = pools.reverse.find(_.size.odd_?).head
+        while (pools.count(_.size.isOdd) > 1) {
+          val takeFrom = pools.reverse.find(_.size.isOdd).head
           val p = takeFrom.last
           takeFrom -= p
-          val addTo = pools.find(_.size.odd_?).head
+          val addTo = pools.find(_.size.isOdd).head
           addTo += p
         }
 
@@ -131,7 +131,7 @@ object TournamentView {
         //      } else if (round.order.is != 1) {
         //        S.notice("Cannot plan this round, because it is not the first round")
       } else {
-        Rulesets.ruleset(round.ruleset.get).planning(round)
+        Ruleset.ruleset(round.ruleset.get).foreach(_.planning(round))
       }
     }
 
@@ -298,7 +298,7 @@ object TournamentView {
             plan(r)
             refresh()
           } &
-          "name=ruleset" #> SHtml.ajaxSelect(Rulesets.rulesets.map(r => r.id -> r.id), Full(r.ruleset.get), { ruleset => r.ruleset(ruleset); r.save; S.notice("Ruleset changed") }) &
+          "name=ruleset" #> SHtml.ajaxSelect(Ruleset.rulesets.toList.map(r => r._1 -> r._1), Full(r.ruleset.get), { ruleset => r.ruleset(ruleset); r.save; S.notice("Ruleset changed") }) &
           "name=timeLimit" #> SHtml.ajaxText((r.timeLimitOfFight.get / 1000).toString, { time => r.timeLimitOfFight(time.toLong seconds); r.save; S.notice("Time limit saved") }, "type" -> "number") &
           "name=fightBreak" #> SHtml.ajaxText((r.breakInFightAt.get / 1000).toString, { time => r.breakInFightAt(time.toLong seconds); r.save; S.notice("Break time saved") }, "type" -> "number") &
           "name=fightBreakDuration" #> SHtml.ajaxText((r.breakDuration.get / 1000).toString, { time => r.breakDuration(time.toLong seconds); r.save; S.notice("Break duration saved") }, "type" -> "number") &
@@ -306,7 +306,7 @@ object TournamentView {
           "name=timeBetweenFights" #> SHtml.ajaxText((r.timeBetweenFights.get / 1000).toString, { time => r.timeBetweenFights(time.toLong seconds); r.save; S.notice("Time between fights saved") }, "type" -> "number") &
           "#roundPool" #> r.pools.map { p =>
             val pptsAlphabetic = p.participants.sortBy(_.name.is)
-            val ruleset = Rulesets.ruleset(r.ruleset.get)
+            val ruleset = Ruleset.ruleset(r.ruleset.get).get
             val pptsRanking: List[(Participant, ruleset.Scores)] = ruleset.ranking(p)
             ".deletePool [onclick]" #> SHtml.ajaxInvoke { () =>
               deletePool(r, p)

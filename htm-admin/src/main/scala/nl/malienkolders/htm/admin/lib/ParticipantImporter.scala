@@ -48,8 +48,8 @@ object ParticipantImporter {
       t.save
     }
     data.subscriptions.foreach {
-      case (t, subs) =>
-        tournaments.find(_.identifier == t.id).foreach { t =>
+      case (tournament, subs) =>
+        tournaments.find(_.identifier == tournament.id).foreach { t =>
           t.subscriptions ++= subs.map {
             case (sub, p) =>
               TournamentParticipants.create.participant(ps.find(_.externalId.get == p.sourceIds.head.id).get).fighterNumber(sub.number).primary(sub.primary).experience(sub.xp)
@@ -57,7 +57,7 @@ object ParticipantImporter {
           if (t.rounds.size == 0) {
             t.rounds += Round.create.name("Round 1").
               order(1).
-              ruleset(RoundRobinTournament.id).
+              ruleset(tournament.ruleset).
               timeLimitOfFight(180 seconds).
               breakDuration(0).
               breakInFightAt(0).
