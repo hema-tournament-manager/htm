@@ -1,4 +1,4 @@
-@()
+@(resolution: Int)
 <!DOCTYPE html>
 <html data-ng-app="htm">
 <head>
@@ -7,7 +7,7 @@
     <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.css"))">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/cosmo.min.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/animate-custom.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at(s"stylesheets/main${resolution}.css")">
 </head>
 <body>
 	<div id="main" ng-view></div>

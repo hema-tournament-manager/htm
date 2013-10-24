@@ -27,8 +27,8 @@ object Application extends Controller {
 
   val (updateOut, updateChannel) = Concurrent.broadcast[JsValue]
 
-  def index = Action {
-    Ok(views.html.index())
+  def index(resolution: Int) = Action {
+    Ok(views.html.index(resolution))
   }
 
   def ping = Action { Ok("true") }
@@ -70,7 +70,7 @@ object Application extends Controller {
   def jsRoutes(varName: String = "jsRoutes") = Action { implicit request =>
     Ok(
       Routes.javascriptRouter(varName)(
-        routes.javascript.Application.index)).as(JAVASCRIPT)
+        routes.javascript.Application.updateFeed)).as(JAVASCRIPT)
   }
 
 }

@@ -1,3 +1,7 @@
+// default values
+@width: 1024px;
+@height: 768px;
+
 body {
 	background: black;
 	overflow: hidden;
@@ -13,8 +17,8 @@ body {
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 1024px;
-	height: 768px;
+	width: @width;
+	height: @height;
 	overflow: hidden;
 	
 	background: white;
@@ -24,9 +28,8 @@ body {
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: 1024px;
-		height: 768px;
-		
+		width: @width;
+		height: @height;
 		text-align: center;
 	}
 	
@@ -35,7 +38,7 @@ body {
 		text-align: center;
 		left: 0;
 		bottom: 10px;
-		width: 1024px;
+		width: @width;
 		font-size: 24pt;
 		
 		.badge {
@@ -122,7 +125,7 @@ body {
 			position: absolute;
 			left: 0;
 			top: 570px;
-			width: 1024px;
+			width: @width;
 			font-size: 25pt;
 			color: white;
 			
