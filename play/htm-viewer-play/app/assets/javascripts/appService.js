@@ -56,6 +56,10 @@ angular.module('htm.services', [])
 			  state[view] = _.extend(state[view], update);
 			  callback(view, state[view], update);
 		  },
+		  broadcast: function(update) {
+			  state[view] = _.extend(state[view], update);
+			  callback(view, state[view], update);
+		  },
 		  get: function(view) {
 			  return state[view];
 		  },

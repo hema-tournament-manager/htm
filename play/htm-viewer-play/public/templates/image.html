@@ -1,3 +1,5 @@
 <div class="image frame">
 	<img ng-src="/image/{{ resolution }}/{{image}}"/>
 </div>
+
+<div class="image message" ng-show="message" data-ng-animate="{show: 'animated bounceInUp', hide: 'animated bounceOutDown'}">{{message}}</div>

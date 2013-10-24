@@ -35,9 +35,14 @@ angular
 							$rootScope.updateView = function(updateMsg) {
 								var update = JSON.parse(updateMsg.data);
 								$rootScope.$apply(function() {
-									console.log("received update for view " + update.view + ": " + JSON.stringify(update.payload));
-									stateService.put(update.view, update.payload);
-									$location.path("/" + update.view); 
+									if (update.view) {
+										console.log("received update for view " + update.view + ": " + JSON.stringify(update.payload));
+										stateService.put(update.view, update.payload);
+										$location.path("/" + update.view);
+									} else {
+										console.log("received update for current view: " + JSON.stringify(update.payload));
+										stateService.broadcast(update.payload);
+									}
 								});
 							};
 							
