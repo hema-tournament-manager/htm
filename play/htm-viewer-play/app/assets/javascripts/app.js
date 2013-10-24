@@ -7,11 +7,15 @@ angular
 						'ui.bootstrap' ]).controller('EmptyCtrl',
 				[ '$scope', '$location', 'playRoutes', 'stateService', EmptyCtrl ]).controller(
 						'FightCtrl', [ '$scope', '$timeout', 'playRoutes', 'stateService', FightCtrl ]).controller(
-								'OverviewArenaCtrl', [ '$scope', '$timeout', 'stateService', OverviewArenaCtrl ]).config(
+								'OverviewArenaCtrl', [ '$scope', '$timeout', 'stateService', OverviewArenaCtrl ]).controller(
+										'ImageCtrl', [ '$scope', 'stateService', ImageCtrl ]).config(
 				[ '$routeProvider', function($routeProvider) {
 					$routeProvider.when('/empty', {
 						templateUrl : 'assets/templates/empty.html',
 						controller : 'EmptyCtrl'
+					}).when('/image', {
+						templateUrl : 'assets/templates/image.html',
+						controller : 'ImageCtrl'
 					}).when('/fight', {
 						templateUrl : 'assets/templates/fight.html',
 						controller : 'FightCtrl'

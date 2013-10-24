@@ -27,8 +27,8 @@ object Application extends Controller {
 
   val (updateOut, updateChannel) = Concurrent.broadcast[JsValue]
 
-  def index(resolution: Int) = Action {
-    Ok(views.html.index(resolution))
+  def index(resolution: String) = Action {
+    Ok(views.html.index(Resolution.fromString(resolution)))
   }
 
   def ping = Action { Ok("true") }
@@ -61,6 +61,14 @@ object Application extends Controller {
       Ok.sendFile(photoFile)
     else
       Redirect(routes.Assets.at("images/placeholder_default_" + side + ".png"))
+  }
+
+  def image(resolution: String, name: String) = Action {
+    val imageFile = new File(s"Images/$resolution/$name")
+    if (imageFile.exists())
+      Ok.sendFile(imageFile)
+    else
+      Redirect(routes.Assets.at("images/empty.png"))
   }
 
   def updateFeed = Action {

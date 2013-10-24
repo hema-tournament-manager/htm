@@ -66,7 +66,7 @@ object HtmBuild extends Build {
 object BuildSettings {
   val buildOrganization = "nl.malienkolders"
   val buildName = "HTM"
-  val buildVersion = "1.0.1-SNAPSHOT"
+  val buildVersion = "1.1-SNAPSHOT"
   val buildScalaVersion = "2.10.2"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(

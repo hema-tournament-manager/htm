@@ -5,12 +5,14 @@
 # Home page
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 
-GET     /                           controllers.Application.index(resolution: Int = 1024)
-GET     /:resolution             controllers.Application.index(resolution: Int)
+GET     /                           controllers.Application.index(resolution: String = "1024x768")
+GET     /:resolution             controllers.Application.index(resolution)
 
 GET     /updateFeed				controllers.Application.updateFeed
 
 GET		/photo/:id/:side		controllers.Application.photo(id, side)
+
+GET     /image/:resolution/:name			controllers.Application.image(resolution, name)
 
 GET     /api/ping				controllers.Application.ping
 

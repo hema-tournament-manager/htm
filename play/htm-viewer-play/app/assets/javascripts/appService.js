@@ -13,6 +13,10 @@ angular.module('htm.services', [])
 		  "empty": {
 			  "message": ""
 		  },
+		  "image": {
+			  "message": "",
+			  "image": "does_not_exist.jpg"
+		  },
 		  "fight": {
 			  "message": "",
 			  "timer": {
