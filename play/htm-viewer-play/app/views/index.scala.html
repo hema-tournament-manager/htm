@@ -1,38 +1,52 @@
-@(resolution: nl.malienkolders.htm.lib.model.Resolution)
+@()
 <!DOCTYPE html>
-<html data-ng-app="htm">
 <head>
     <title>HTM Viewer</title>
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.ico")">
-    <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.css"))">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/cosmo.min.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/cerulean.min.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/animate-custom.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at(s"stylesheets/main${resolution.toString}.css")">
+    <style>
+    .btn-1920 {
+    	width: 480px;
+    	height: 270px;
+    }
+    .btn-1280 {
+    	width: 320px;
+    	height: 180px;
+    }
+    .btn-1024 {
+    	width: 256px;
+    	height: 192px;
+    }
+    body {
+    	display:-webkit-box;
+		-webkit-box-pack:center;
+		-webkit-box-align:center;
+	}
+	
+	.container {
+		text-align: center;
+	}
+	
+	.container div {
+		margin: 10px;
+	}
+    </style>
 </head>
 <body>
-	<div id="main" ng-view></div>
-
-	<script>
-		var width = @resolution.width;
-		var height = @resolution.height;
-		var resolution = "@resolution.toString";
-	</script>
+	<div class="container">
+		<div class="page-header">
+			<h1>Pick your screen size</h1>
+		</div>
+		<div><a href="1024x768" class="btn btn-default btn-lg btn-1024">1024x768</a></div>
+		<div><a href="1920x1080" class="btn btn-default btn-lg btn-1920">1920x1080</a></div>
+		<div><a href="1280x720" class="btn btn-default btn-lg btn-1280">1280x720</a></div>
+	</div>
 	<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.core.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.position.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("ui-bootstrap-tpls.js"))"></script>
-    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular-cookies.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("underscore.js"))"></script>
-    <script src="@routes.Application.jsRoutes"></script>
-    <script src="@routes.Assets.at("javascripts/controllers/empty.js")"></script>
-    <script src="@routes.Assets.at("javascripts/controllers/image.js")"></script>
-    <script src="@routes.Assets.at("javascripts/controllers/fight.js")"></script>
-    <script src="@routes.Assets.at("javascripts/controllers/overview/arena.js")"></script>
-    <script src="@routes.Assets.at("javascripts/app.js")"></script>
-    <script src="@routes.Assets.at("javascripts/filters.js")"></script>
-    <script src="@routes.Assets.at("javascripts/playRoutes.js")"></script>
-    <script src="@routes.Assets.at("javascripts/appService.js")"></script>
 </body>
 </html>

@@ -19,8 +19,8 @@ POST    /api/update/text       controllers.Application.updateText
 
 PUT     /api/push				controllers.Application.push
 
-GET     /                        controllers.Application.index(resolution: String = "1024x768")
-GET     /:resolution             controllers.Application.index(resolution)
+GET     /                        controllers.Application.index
+GET     /:resolution             controllers.Application.view(resolution)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -27,8 +27,12 @@ object Application extends Controller {
 
   val (updateOut, updateChannel) = Concurrent.broadcast[JsValue]
 
-  def index(resolution: String) = Action {
-    Ok(views.html.index(Resolution.fromString(resolution)))
+  def index = Action {
+    Ok(views.html.index())
+  }
+
+  def view(resolution: String) = Action {
+    Ok(views.html.view(Resolution.fromString(resolution)))
   }
 
   def ping = Action { Ok("true") }
