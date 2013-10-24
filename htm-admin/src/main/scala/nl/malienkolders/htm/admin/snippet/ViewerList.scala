@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.io.FileUtils
 import java.io.FileInputStream
 
-class ViewerList {
+object ViewerList {
 
   def render = {
     var name = ""

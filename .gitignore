@@ -16,6 +16,8 @@ export.json
 *.sc
 *.log
 htm-admin/Avatars
+htm-admin/Images
+htm-admin/Thumbs
 Avatars.zip
 play/Avatars
 test*.txt
