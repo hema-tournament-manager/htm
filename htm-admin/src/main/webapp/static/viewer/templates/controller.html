@@ -55,8 +55,7 @@
 	  						Choose <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu" role="menu">
-    						<li><a href="">sponsor 1</a></li>
-    						<li><a href="">sponsor 2</a></li>
+    						<li ng-repeat="image in images | orderBy:'name'"><a href="" ng-click="update('Image ' + image.name, 'image', {message: '', image: image.filename})"><img ng-repeat="resolution in image.resolutions" ng-src="/image/{{resolution}}/{{image.name}}" title="{{resolution}}"/> {{ image.name }}</a></li>
 						</ul>
 					</div>
 				</div>

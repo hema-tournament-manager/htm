@@ -143,6 +143,9 @@ object AdminRest extends RestHelper {
         case _ =>
           false
       })
+
+    case "api" :: "images" :: Nil JsonGet _ =>
+      Extraction.decompose(Image.findAll.map(_.toMarshalled).toList)
   }
 
 }

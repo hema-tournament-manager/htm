@@ -9,6 +9,8 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
+case class MarshalledImage(name: String, filename: String, resolutions: List[String])
+
 class Image extends LongKeyedMapper[Image] with IdPK with CreatedUpdated with OneToMany[Long, Image] {
   def getSingleton = Image
 
@@ -26,6 +28,8 @@ class Image extends LongKeyedMapper[Image] with IdPK with CreatedUpdated with On
     newRes
   }
   def hasResolution(res: Resolution) = findResolution(res).isDefined
+
+  def toMarshalled = MarshalledImage(name.get, name.get + "." + extension.get, scaledImages.map(_.resolution.get).toList)
 }
 
 object Image extends Image with LongKeyedMetaMapper[Image] {

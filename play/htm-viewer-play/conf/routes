@@ -5,9 +5,6 @@
 # Home page
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 
-GET     /                           controllers.Application.index(resolution: String = "1024x768")
-GET     /:resolution             controllers.Application.index(resolution)
-
 GET     /updateFeed				controllers.Application.updateFeed
 
 GET		/photo/:id/:side		controllers.Application.photo(id, side)
@@ -21,6 +18,9 @@ POST    /api/update       controllers.Application.update
 POST    /api/update/text       controllers.Application.updateText
 
 PUT     /api/push				controllers.Application.push
+
+GET     /                        controllers.Application.index(resolution: String = "1024x768")
+GET     /:resolution             controllers.Application.index(resolution)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -69,7 +69,7 @@ object ImageList {
       ".resolution" #> Resolution.supported.map(res =>
         <th>{ res.toString }</th>)) &
       ".image" #> Image.findAll.map(i =>
-        "tr [class+]" #> (if (i.hasAllResolutions) "" else "danger") &
+        "tr [class+]" #> (if (i.hasAllResolutions) "" else "warning") &
           ".name *" #> i.name.get &
           ".mimetype *" #> i.mimeType.get &
           ".resolution" #> Resolution.supported.map(res =>

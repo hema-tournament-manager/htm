@@ -3,6 +3,7 @@
 var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, playRoutes) {
 	$scope.viewers = new Array();
 	$scope.arenas = false;
+	$scope.images = false;
 	
 	$scope.hasViewers = function() {
 		return _.findWhere($scope.viewers, {selected: true}) != undefined;
@@ -14,6 +15,10 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	
 	playRoutes.controllers.AdminInterface.arenas().get().success(function(data, status) {
 		$scope.arenas = data;
+	});
+	
+	playRoutes.controllers.AdminInterface.images().get().success(function(data, status) {
+		$scope.images = data;
 	});
 	
 	$scope.update = function(friendlyLabel, view, payload) {
