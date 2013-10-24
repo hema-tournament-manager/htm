@@ -16,8 +16,9 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 		$scope.arenas = data;
 	});
 	
-	$scope.update = function(view, payload) {
+	$scope.update = function(friendlyLabel, view, payload) {
 		var viewers = _.pluck(_.where($scope.viewers, {selected: true}), 'id');
+		_.each($scope.viewers, function(viewer) { if (viewer.selected) viewer.lastUpdate = friendlyLabel; });
 		var data = {"view": view, "viewers": viewers, "payload": payload};
 		console.log("Sending " + JSON.stringify(data));
 		playRoutes.controllers.AdminInterface.viewerUpdate().post(data);
