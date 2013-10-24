@@ -1,9 +1,10 @@
 // default values
 @width: 1024px;
 @height: 768px;
+@bgcolor: black;
 
 body {
-	background: black;
+	background: @bgcolor;
 	overflow: hidden;
 	font-family: sans-serif;
 }
@@ -11,6 +12,15 @@ body {
 @-webkit-keyframes spin {
 	from { -webkit-transform: rotateY(0deg); }
 	to { -webkit-transform: rotateY(90deg); }
+}
+
+.frame {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: @width;
+	height: @height;
+	text-align: center;
 }
 
 #main {
@@ -21,7 +31,6 @@ body {
 	height: @height;
 	overflow: hidden;
 	
-	background: white;
 	color: black;
 	
 	.background {

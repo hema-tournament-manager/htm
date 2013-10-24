@@ -3,7 +3,7 @@
 <img class="picture red" ng-src="/photo/{{fighterA.externalId || 'placeholder'}}/l"/>
 <img class="picture blue" ng-src="/photo/{{fighterB.externalId || 'placeholder'}}/r"/>
 <img class="background" src="/assets/images/fight/HTM_HEFFAC_gamescreen_overlay.png"/>
-<div class="background" ng-cloak>
+<div class="frame" ng-cloak>
 	<div class="score-red">{{ totalScore.a }}</div>
 	<div class="score-blue">{{ totalScore.b }}</div>
 	<div class="score-double" ng-show="totalScore.d &lt;= 3">
