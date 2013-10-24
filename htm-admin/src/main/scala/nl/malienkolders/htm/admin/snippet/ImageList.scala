@@ -39,20 +39,24 @@ object ImageList {
         }
         if (format.isDefined) {
           val extension = upload.get.fileName.reverse.takeWhile(_ != '.').reverse
-          val bitmap = ImageIO.read(upload.get.fileStream)
-          val dir = new File(s"Images/$resolution/")
-          dir.mkdirs()
-          ImageIO.write(bitmap, format.get, new File(dir, name + "." + extension))
-          val thumb = new BufferedImage(bitmap.getWidth() / 20, bitmap.getHeight() / 20, bitmap.getType())
-          val g = thumb.createGraphics()
-          g.drawImage(bitmap, 0, 0, thumb.getWidth(), thumb.getHeight(), 0, 0, bitmap.getWidth(), bitmap.getHeight(), null)
-          g.dispose
-          val thumbDir = new File(s"Thumbs/$resolution/")
-          thumbDir.mkdirs()
-          ImageIO.write(thumb, format.get, new File(thumbDir, name + "." + extension))
-          val img = Image.find(By(Image.name, name)).getOrElse(Image.create.name(name))
-          img.setResolution(resolution, upload.get.mimeType, extension)
-          img.save()
+          val img = Image.find(By(Image.name, name)).getOrElse(Image.create.name(name).mimeType(upload.get.mimeType).extension(extension))
+          if (img.mimeType.get == upload.get.mimeType) {
+            val bitmap = ImageIO.read(upload.get.fileStream)
+            val dir = new File(s"Images/$resolution/")
+            dir.mkdirs()
+            ImageIO.write(bitmap, format.get, new File(dir, name + "." + extension))
+            val thumb = new BufferedImage(bitmap.getWidth() / 20, bitmap.getHeight() / 20, bitmap.getType())
+            val g = thumb.createGraphics()
+            g.drawImage(bitmap, 0, 0, thumb.getWidth(), thumb.getHeight(), 0, 0, bitmap.getWidth(), bitmap.getHeight(), null)
+            g.dispose
+            val thumbDir = new File(s"Thumbs/$resolution/")
+            thumbDir.mkdirs()
+            ImageIO.write(thumb, format.get, new File(thumbDir, name + "." + extension))
+            img.addResolution(resolution)
+            img.save()
+          } else {
+            S.notice("Image must be of type " + img.mimeType.get)
+          }
         } else {
           S.notice("Unsupported file format " + upload.get.mimeType)
         }
@@ -66,6 +70,7 @@ object ImageList {
         <th>{ res.toString }</th>)) &
       ".image" #> Image.findAll.map(i =>
         ".name *" #> i.name.get &
+          ".mimetype *" #> i.mimeType.get &
           ".resolution" #> Resolution.supported.map(res =>
             <td>{ if (i.hasResolution(res)) <img src={ "/image/" + res.toString + "/" + i.name }/> else "missing" }</td>)) &
       "name=name" #> SHtml.text(name, name = _, "class" -> "form-control") &
@@ -77,10 +82,9 @@ object ImageList {
   def image(resolution: String, name: String): Box[LiftResponse] = {
     for {
       i <- Image.find(By(Image.name, name))
-      si <- i.findResolution(Resolution.fromString(resolution))
     } yield {
-      val bytes = FileUtils.readFileToByteArray(new File(s"Thumbs/$resolution/${name}.${si.extension.get}"))
-      InMemoryResponse(bytes, ("Content-Type" -> si.mimeType.get) :: Nil, Nil, 200)
+      val bytes = FileUtils.readFileToByteArray(new File(s"Thumbs/$resolution/${name}.${i.extension.get}"))
+      InMemoryResponse(bytes, ("Content-Type" -> i.mimeType.get) :: Nil, Nil, 200)
     }
 
   }

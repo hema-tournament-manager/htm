@@ -15,15 +15,14 @@ class Image extends LongKeyedMapper[Image] with IdPK with CreatedUpdated with On
   object name extends MappedString(this, 128)
   object scaledImages extends MappedOneToMany(ScaledImage, ScaledImage.image, OrderBy(ScaledImage.resolution, Ascending))
 
+  object mimeType extends MappedString(this, 64)
+  object extension extends MappedString(this, 4)
+
   def findResolution(res: Resolution): Box[ScaledImage] = scaledImages.find(_.resolution.get == res.toString)
-  def setResolution(res: Resolution, mimeType: String, extension: String): ScaledImage = {
-    val img = findResolution(res).getOrElse {
-      val newRes = ScaledImage.create.resolution(res.toString)
-      scaledImages += newRes
-      newRes
-    }
-    img.mimeType(mimeType).extension(extension)
-    img
+  def addResolution(res: Resolution): ScaledImage = findResolution(res).getOrElse {
+    val newRes = ScaledImage.create.resolution(res.toString)
+    scaledImages += newRes
+    newRes
   }
   def hasResolution(res: Resolution) = findResolution(res).isDefined
 }
@@ -38,8 +37,6 @@ class ScaledImage extends LongKeyedMapper[ScaledImage] with IdPK {
 
   object image extends MappedLongForeignKey(this, Image)
   object resolution extends MappedString(this, 16)
-  object mimeType extends MappedString(this, 64)
-  object extension extends MappedString(this, 4)
 }
 
 object ScaledImage extends ScaledImage with LongKeyedMetaMapper[ScaledImage] {
