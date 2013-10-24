@@ -10,11 +10,4 @@ object HtmHelpers {
     "%d:%02d" format (minutes, seconds)
   }
 
-  case class HtmInt(val i: Int) {
-    def odd_? = i % 2 == 1
-    def even_? = !odd_?
-  }
-
-  implicit def int2HtmIntPromotion(i: Int) = HtmInt(i)
-
 }

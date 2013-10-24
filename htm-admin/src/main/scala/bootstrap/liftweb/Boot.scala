@@ -14,7 +14,7 @@ import nl.malienkolders.htm.lib._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.snippet.TournamentView
 import nl.malienkolders.htm.admin.AdminRest
-import nl.malienkolders.htm.lib.RoundRobinTournament
+import nl.malienkolders.htm.lib.rulesets.swordfish2013._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -50,9 +50,8 @@ class Boot {
 
     CountryImporter.doImport
 
-    RoundRobinTournament.register
-    SwissTournament.register
-    SwissSpecialHitsTournament.register
+    DefaultRuleset.register
+    RapierRuleset.register
 
     val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list") ::

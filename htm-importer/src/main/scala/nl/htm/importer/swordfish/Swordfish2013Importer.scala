@@ -71,7 +71,7 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
   override def doImport(s: SwordfishSettings = SwordfishSettings("http://www.ghfs.se/swordfish-attendee.php", List())): EventData = {
     val noCountry = ""
 
-    val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name) }
+    val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
 
     val data = Source.fromURL(new URL(s.url), "UTF-8").getLines.mkString.replaceAll("[\n\t\r]+", "")
 

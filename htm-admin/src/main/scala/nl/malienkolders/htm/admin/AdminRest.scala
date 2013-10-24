@@ -67,10 +67,6 @@ object AdminRest extends RestHelper {
     case "api" :: "pool" :: AsLong(poolId) :: "fight" :: AsLong(fightOrder) :: Nil JsonGet _ =>
       Extraction.decompose(Fight.find(By(Fight.pool, poolId), By(Fight.order, fightOrder)).map(_.toMarshalledSummary).getOrElse(false))
 
-    case "api" :: "pool" :: AsLong(poolId) :: "ranking" :: Nil JsonGet _ =>
-      val res = Pool.findByKey(poolId).get.toMarshalledRanking
-      Extraction.decompose(res)
-
     case "api" :: "fight" :: "confirm" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledFight](json)
       JBool((FightServer !! FightResult(Fight.findByKey(m.id).get.fromMarshalled(m), true)).map {

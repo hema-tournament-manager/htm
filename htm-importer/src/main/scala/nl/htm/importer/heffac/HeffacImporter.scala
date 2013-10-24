@@ -17,7 +17,7 @@ object HeffacImporter extends Importer[InputStreamSettings] {
 
   lazy val replacements = Map(readTuplesFromFile("clubreplacements").map { case (o, r) => (o.toLowerCase(), r) }: _*)
 
-  val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name) }
+  val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name, "heffac-2013-default") }
 
   def doImport(s: InputStreamSettings): EventData = {
     val workbook = WorkbookFactory.create(s.in)

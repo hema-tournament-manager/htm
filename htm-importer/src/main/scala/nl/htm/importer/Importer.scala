@@ -4,7 +4,7 @@ import scala.util.Random
 import scala.io.Source
 import java.io.InputStream
 
-case class Tournament(id: String, name: String)
+case class Tournament(id: String, name: String, ruleset: String)
 
 case class SourceId(source: String, id: String)
 
@@ -33,7 +33,7 @@ object DummyImporter extends Importer[EmptySettings] {
   override def doImport(s: EmptySettings = EmptySettings()): EventData = {
     val r = new Random(1)
     val ps = List("Bas van Meel", "Jogchem Dijkstra", "Maarten Kamphuis", "Mattias Ryrlen", "Pieter Peeters", "Tim de Jager", "Youval Kuipers") map (p => Participant(List("dummy" -> p.toLowerCase().replaceAll("[^a-z]", "").take(8)), p, p, "Orde der Noorderwind", "nw", "NL", ""))
-    val ts = List(Tournament("longsword_open", "Open Longsword"), Tournament("rapier_dagger", "Rapier & Dagger"))
+    val ts = List(Tournament("longsword_open", "Open Longsword", ""), Tournament("rapier_dagger", "Rapier & Dagger", ""))
     EventData(2, ps, ts, Map(ts.map(t => t -> (ps filter (_ => r.nextDouble < 0.75) map (p => (Subscription(true, p.sourceIds.head.id.toInt, 0) -> p)))): _*))
   }
 }
