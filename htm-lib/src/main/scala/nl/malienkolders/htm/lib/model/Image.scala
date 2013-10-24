@@ -18,6 +18,7 @@ class Image extends LongKeyedMapper[Image] with IdPK with CreatedUpdated with On
   object mimeType extends MappedString(this, 64)
   object extension extends MappedString(this, 4)
 
+  def hasAllResolutions = Resolution.supported.forall(res => hasResolution(res))
   def findResolution(res: Resolution): Box[ScaledImage] = scaledImages.find(_.resolution.get == res.toString)
   def addResolution(res: Resolution): ScaledImage = findResolution(res).getOrElse {
     val newRes = ScaledImage.create.resolution(res.toString)

@@ -69,10 +69,11 @@ object ImageList {
       ".resolution" #> Resolution.supported.map(res =>
         <th>{ res.toString }</th>)) &
       ".image" #> Image.findAll.map(i =>
-        ".name *" #> i.name.get &
+        "tr [class+]" #> (if (i.hasAllResolutions) "" else "danger") &
+          ".name *" #> i.name.get &
           ".mimetype *" #> i.mimeType.get &
           ".resolution" #> Resolution.supported.map(res =>
-            <td>{ if (i.hasResolution(res)) <img src={ "/image/" + res.toString + "/" + i.name }/> else "missing" }</td>)) &
+            <td>{ if (i.hasResolution(res)) <img src={ "/image/" + res.toString + "/" + i.name }/> else <em>missing</em> }</td>)) &
       "name=name" #> SHtml.text(name, name = _, "class" -> "form-control") &
       "name=upload" #> SHtml.fileUpload(f => upload = Full(f)) &
       "name=resolution" #> selectResolution &
