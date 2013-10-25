@@ -6,9 +6,14 @@ if [ ! -d "$PWD/../play" ]; then
 fi
 
 project="htm-viewer-play"
-viewers[0]="9001"
-viewers[1]="9002"
-viewers[2]="9003"
+
+if [ $1 ]; then
+	viewers[0]="$1"
+else
+	viewers[0]="9001"
+	viewers[1]="9002"
+	viewers[2]="9003"
+fi
 
 function viewer_status {
 	local _ret=0
