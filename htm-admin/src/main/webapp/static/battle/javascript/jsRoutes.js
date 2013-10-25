@@ -63,5 +63,10 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.viewerUpdate
     return _wA({method:"POST", url:"/" + "api/viewer/update"})
     }
  
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.images = 
+    function() {
+    return _wA({method:"GET", url:"/" + "api/images"})
+    }
+ 
 })(jsRoutes)
           

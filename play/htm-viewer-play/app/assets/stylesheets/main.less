@@ -1,5 +1,10 @@
+// default values
+@width: 1024px;
+@height: 768px;
+@bgcolor: black;
+
 body {
-	background: black;
+	background: @bgcolor;
 	overflow: hidden;
 	font-family: sans-serif;
 }
@@ -9,24 +14,31 @@ body {
 	to { -webkit-transform: rotateY(90deg); }
 }
 
+.frame {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: @width;
+	height: @height;
+	text-align: center;
+}
+
 #main {
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 1024px;
-	height: 768px;
+	width: @width;
+	height: @height;
 	overflow: hidden;
 	
-	background: white;
 	color: black;
 	
 	.background {
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: 1024px;
-		height: 768px;
-		
+		width: @width;
+		height: @height;
 		text-align: center;
 	}
 	
@@ -35,7 +47,7 @@ body {
 		text-align: center;
 		left: 0;
 		bottom: 10px;
-		width: 1024px;
+		width: @width;
 		font-size: 24pt;
 		
 		.badge {
@@ -60,6 +72,19 @@ body {
 			-webkit-animation-iteration-count: infinite;
 			-webkit-animation-direction: alternate;
 		}
+	}
+	
+	.image {
+		display:-webkit-box;
+		-webkit-box-pack:center;
+		-webkit-box-align:center;
+		
+	}
+	
+	.image.message {
+		bottom: 0;
+		height: 50px;
+		background: white;
 	}
 	
 	.fight {
@@ -122,7 +147,7 @@ body {
 			position: absolute;
 			left: 0;
 			top: 570px;
-			width: 1024px;
+			width: @width;
 			font-size: 25pt;
 			color: white;
 			

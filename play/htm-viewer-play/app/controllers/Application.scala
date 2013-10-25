@@ -31,6 +31,10 @@ object Application extends Controller {
     Ok(views.html.index())
   }
 
+  def view(resolution: String) = Action {
+    Ok(views.html.view(Resolution.fromString(resolution)))
+  }
+
   def ping = Action { Ok("true") }
 
   def updateImpl(msg: JsValue) = {
@@ -63,6 +67,14 @@ object Application extends Controller {
       Redirect(routes.Assets.at("images/placeholder_default_" + side + ".png"))
   }
 
+  def image(resolution: String, name: String) = Action {
+    val imageFile = new File(s"Images/$resolution/$name")
+    if (imageFile.exists())
+      Ok.sendFile(imageFile)
+    else
+      Redirect(routes.Assets.at("images/empty.png"))
+  }
+
   def updateFeed = Action {
     Ok.chunked(updateOut &> EventSource()).as("text/event-stream")
   }
@@ -70,7 +82,7 @@ object Application extends Controller {
   def jsRoutes(varName: String = "jsRoutes") = Action { implicit request =>
     Ok(
       Routes.javascriptRouter(varName)(
-        routes.javascript.Application.index)).as(JAVASCRIPT)
+        routes.javascript.Application.updateFeed)).as(JAVASCRIPT)
   }
 
 }

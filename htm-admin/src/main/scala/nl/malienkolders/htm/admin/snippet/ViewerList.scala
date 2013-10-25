@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.io.FileUtils
 import java.io.FileInputStream
 
-class ViewerList {
+object ViewerList {
 
   def render = {
     var name = ""
@@ -36,8 +36,9 @@ class ViewerList {
           "*" #> arenaCheck(a, v)) &
         ".url *" #> v.url.get &
         ".status *" #> (if (status) "Up" else "Down") &
-        ".actions *" #> Seq(
+        ".action" #> Seq(
           SHtml.submit("Push photos", () => pushPhotos(v), "class" -> "btn btn-default btn-sm"),
+          SHtml.submit("Push images", () => pushImages(v), "class" -> "btn btn-default btn-sm"),
           SHtml.submit("Delete", () => v.delete_!, "class" -> "btn btn-default btn-sm"))
     } &
       "name=name" #> SHtml.onSubmit(name = _) &
@@ -59,6 +60,26 @@ class ViewerList {
     for (f <- generatedDir.listFiles()) {
       out.putNextEntry(new ZipEntry("Avatars/Generated/" + f.getName()))
       IOUtils.copy(new FileInputStream(f), out)
+    }
+    out.close()
+    v.rest.push(zipFile)
+  }
+
+  def pushImages(v: Viewer): Unit = {
+    val zipFile = new File("Images.zip")
+    val out = new ZipOutputStream(new FileOutputStream(zipFile))
+    val rootDir = new File("Images")
+
+    if (rootDir.exists()) {
+      Resolution.supported foreach { res =>
+        val resDir = new File(rootDir, res.toString)
+        if (resDir.exists()) {
+          for (f <- resDir.listFiles()) {
+            out.putNextEntry(new ZipEntry("Images/" + res.toString + "/" + f.getName()))
+            IOUtils.copy(new FileInputStream(f), out)
+          }
+        }
+      }
     }
     out.close()
     v.rest.push(zipFile)

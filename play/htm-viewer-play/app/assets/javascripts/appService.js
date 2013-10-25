@@ -13,6 +13,10 @@ angular.module('htm.services', [])
 		  "empty": {
 			  "message": ""
 		  },
+		  "image": {
+			  "message": "",
+			  "image": "does_not_exist.jpg"
+		  },
 		  "fight": {
 			  "message": "",
 			  "timer": {
@@ -49,6 +53,10 @@ angular.module('htm.services', [])
 			  view = view_;
 			  console.log(view_);
 			  console.log(state[view]);
+			  state[view] = _.extend(state[view], update);
+			  callback(view, state[view], update);
+		  },
+		  broadcast: function(update) {
 			  state[view] = _.extend(state[view], update);
 			  callback(view, state[view], update);
 		  },

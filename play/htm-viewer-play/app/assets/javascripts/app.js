@@ -7,11 +7,15 @@ angular
 						'ui.bootstrap' ]).controller('EmptyCtrl',
 				[ '$scope', '$location', 'playRoutes', 'stateService', EmptyCtrl ]).controller(
 						'FightCtrl', [ '$scope', '$timeout', 'playRoutes', 'stateService', FightCtrl ]).controller(
-								'OverviewArenaCtrl', [ '$scope', '$timeout', 'stateService', OverviewArenaCtrl ]).config(
+								'OverviewArenaCtrl', [ '$scope', '$timeout', 'stateService', OverviewArenaCtrl ]).controller(
+										'ImageCtrl', [ '$scope', 'stateService', ImageCtrl ]).config(
 				[ '$routeProvider', function($routeProvider) {
 					$routeProvider.when('/empty', {
 						templateUrl : 'assets/templates/empty.html',
 						controller : 'EmptyCtrl'
+					}).when('/image', {
+						templateUrl : 'assets/templates/image.html',
+						controller : 'ImageCtrl'
 					}).when('/fight', {
 						templateUrl : 'assets/templates/fight.html',
 						controller : 'FightCtrl'
@@ -31,9 +35,14 @@ angular
 							$rootScope.updateView = function(updateMsg) {
 								var update = JSON.parse(updateMsg.data);
 								$rootScope.$apply(function() {
-									console.log("received update for view " + update.view + ": " + JSON.stringify(update.payload));
-									stateService.put(update.view, update.payload);
-									$location.path("/" + update.view); 
+									if (update.view) {
+										console.log("received update for view " + update.view + ": " + JSON.stringify(update.payload));
+										stateService.put(update.view, update.payload);
+										$location.path("/" + update.view);
+									} else {
+										console.log("received update for current view: " + JSON.stringify(update.payload));
+										stateService.broadcast(update.payload);
+									}
 								});
 							};
 							
