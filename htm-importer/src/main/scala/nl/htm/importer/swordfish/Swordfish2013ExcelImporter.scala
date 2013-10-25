@@ -12,6 +12,8 @@ case class SwordfishExcelSettings(in: InputStream, countries: List[(String, Stri
 
 object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
 
+  import Swordfish2013Importer._
+  
   implicit def cellToString(cell: Cell): String = if (cell == null) "" else cell.getStringCellValue()
   implicit def cellToInt(cell: Cell): Int = cell.getNumericCellValue().toInt
 
@@ -27,18 +29,22 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     val tournaments = Swordfish2013Importer.tournamentNames.map { case (id, name) => Tournament(id, name, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
     println(total.getLastRowNum())
 
+    println(settings.countries)
+      
     println("Importing participants")
     val participants = for (rowIndex <- 1 to total.getLastRowNum()) yield {
       val row = total.getRow(rowIndex)
-      val countryNameRaw = row.getCell(header("Country"))
-      val countryName = Swordfish2013Importer.countryReplacements.get(countryNameRaw).getOrElse(countryNameRaw)
+      val countryNameRaw = row.getCell(header("Country")).getStringCellValue()
+      val countryName = Swordfish2013Importer.countryReplacements.getOrElse(countryNameRaw, countryNameRaw)
+      println(countryName)
       val country = settings.countries.find { case (_, name) => countryName == name }.map(_._1).getOrElse("")
+      val (clubCode, clubName) = normalizeClub(row.getCell(header("Club")))
       Participant(
         List(SourceId("swordfish2013", row.getCell(header("ID")).getNumericCellValue().toInt.toString)),
-        row.getCell(header("Name")),
-        row.getCell(header("Name")),
-        row.getCell(header("Club")),
-        "",
+        normalizeName(row.getCell(header("Name"))),
+        shortenName(normalizeName(row.getCell(header("Name")))),
+        clubName,
+        clubCode,
         country,
         row.getCell(header("T-Shirt")))
     }
