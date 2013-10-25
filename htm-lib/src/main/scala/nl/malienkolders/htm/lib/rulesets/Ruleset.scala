@@ -64,6 +64,8 @@ object Ruleset {
     _rulesets = _rulesets + (t.id -> t)
   }
 
+  def apply(id: String) = rulesets.get(id).get
+
   def ruleset(id: String): Option[Ruleset] = rulesets.get(id)
 
   def rulesets = _rulesets
