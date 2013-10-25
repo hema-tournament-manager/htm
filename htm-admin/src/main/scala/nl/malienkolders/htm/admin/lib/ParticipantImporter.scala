@@ -12,7 +12,6 @@ import TimeHelpers._
 import nl.htm.importer.DummyImporter
 import java.io.File
 import nl.htm.importer.EventData
-import nl.malienkolders.htm.lib.RoundRobinTournament
 
 object ParticipantImporter {
 
