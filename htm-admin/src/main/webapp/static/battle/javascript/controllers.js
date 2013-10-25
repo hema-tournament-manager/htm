@@ -336,7 +336,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     
     $('#announcement').blur(function(event) {
 		$scope.$apply(function() {
-			$scope.editingAnnouncement = true;
+			$scope.editingAnnouncement = false;
 		});
     });
     
