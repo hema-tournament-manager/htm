@@ -47,7 +47,7 @@ object TournamentView {
     }
 
     val tournamentSubscriptions = t.subscriptions.sortBy(_.fighterNumber.is)
-    val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.participants.toList
+    val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.subscriptions.map(_.participant.obj.get).toList
 
     var fighterA: Box[Participant] = Empty
     var fighterB: Box[Participant] = Empty
@@ -58,7 +58,11 @@ object TournamentView {
 
     def addParticipant(tournament: Tournament, participantId: Long) {
       val participant = Participant.findByKey(participantId).get
-      //TODO: tournament.participants += participant
+      tournament.subscriptions += TournamentParticipants.create.
+        participant(participant).
+        experience(0).
+        gearChecked(true).
+        fighterNumber(tournament.nextFighterNumber)
       tournament.save
       refresh()
     }
@@ -263,6 +267,7 @@ object TournamentView {
       "name=downloadSchedule" #> SHtml.link("/download_schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Download Schedule"), "class" -> "btn btn-default") &
       "#tournamentParticipant" #> tournamentSubscriptions.map(sub =>
         "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
+          "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
           ".badge *" #> sub.fighterNumber.get &
           ".name *" #> (sub.participant.obj.get.name.get + " " + sub.experience.get) &
           "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, sub.participant.obj.get); refresh() }, "title" -> "Remove from Tournament")) &
@@ -355,7 +360,7 @@ object TournamentView {
                 "#planParticipantB" #> (SHtml.select(("-1", "-- Select Blue --") :: pptsAlphabetic.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => fighterB = Participant.findByKey(id.toLong)) ++
                   SHtml.submit("Plan", () => addFight(p)))
           }) &
-      "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong)) &
+      "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control") &
       ".navbar-nav" #> (
         ".dropdown" #> t.rounds.map(r =>
           ".dropdown-toggle [href]" #> ("#round" + r.id.get) &

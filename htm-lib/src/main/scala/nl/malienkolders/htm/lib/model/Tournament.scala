@@ -21,6 +21,10 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
 
   def rapier_? = name.is.toLowerCase().contains("rapier")
 
+  def nextFighterNumber: Int = {
+    subscriptions.map(_.fighterNumber.get).max + 1
+  }
+
   def toMarshalled = MarshalledTournament(id.is, name.is, identifier.is, participants.map(_.id.is).toList, rounds.map(_.id.is).toList)
   def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, identifier.is, rapier_?)
 

@@ -13,7 +13,7 @@ case class SwordfishExcelSettings(in: InputStream, countries: List[(String, Stri
 object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
 
   import Swordfish2013Importer._
-  
+
   implicit def cellToString(cell: Cell): String = if (cell == null) "" else cell.getStringCellValue()
   implicit def cellToInt(cell: Cell): Int = cell.getNumericCellValue().toInt
 
@@ -30,7 +30,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     println(total.getLastRowNum())
 
     println(settings.countries)
-      
+
     println("Importing participants")
     val participants = for (rowIndex <- 1 to total.getLastRowNum()) yield {
       val row = total.getRow(rowIndex)
