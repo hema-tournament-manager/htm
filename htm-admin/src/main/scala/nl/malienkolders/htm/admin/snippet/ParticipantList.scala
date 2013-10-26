@@ -32,7 +32,7 @@ object ParticipantList {
     }
 
     def registerAll() = {
-      ps foreach {p =>
+      ps foreach { p =>
         p.isPresent(true)
         p.subscriptions foreach (_.gearChecked(true))
         p.save
