@@ -93,7 +93,7 @@ object CountryImporter {
       Country.create.code2("GA").code3("GAB").name("Gabon").hasFlag(true).hasViewerFlag(false).save
       Country.create.code2("GM").code3("GMB").name("Gambia").hasFlag(true).hasViewerFlag(false).save
       Country.create.code2("GE").code3("GEO").name("Georgia").hasFlag(true).hasViewerFlag(false).save
-      Country.create.code2("DE").code3("DEU").name("Germany").hasFlag(true).hasViewerFlag(false).save
+      Country.create.code2("DE").code3("DEU").name("Germany").hasFlag(true).hasViewerFlag(true).save
       Country.create.code2("GH").code3("GHA").name("Ghana").hasFlag(true).hasViewerFlag(false).save
       Country.create.code2("GI").code3("GIB").name("Gibraltar").hasFlag(true).hasViewerFlag(false).save
       Country.create.code2("GR").code3("GRC").name("Greece").hasFlag(true).hasViewerFlag(true).save
