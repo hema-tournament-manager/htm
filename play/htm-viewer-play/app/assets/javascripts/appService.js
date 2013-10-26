@@ -35,11 +35,13 @@ angular.module('htm.services', [])
 			  },
 			  "fighterA": {
 				  "name": "Rood",
-				  "country": "NL"
+				  "country": "",
+				  "club": "Academie voor Middeleeuwse Krijgskunst"
 			  },
 			  "fighterB": {
 				  "name": "Blauw",
-				  "country": "NL"
+				  "country": "NL",
+				  "club": "Stockholmspolisens Idrottsförening Fäktning"
 			  }
 		  },
 		  "overview/arena": {

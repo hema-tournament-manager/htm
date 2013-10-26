@@ -14,12 +14,14 @@
 	</div>
 	<div class="fighter-bar">
 		<div class="fighter red">
-			<img ng-src="/assets/images/fight/flags/{{fighterA.country}}red.png"/>
-			<span class="name">{{fighterA.name}}</span>
+			<img ng-show="fighterA.country" ng-src="/assets/images/fight/flags/{{fighterA.country}}red.png"/>
+			<div class="name">{{fighterA.name}}</div>
+			<div class="club">{{fighterA.club}}</div>
 		</div>
 		<div class="fighter blue">
-			<img ng-src="/assets/images/fight/flags/{{fighterB.country}}blue.png"/>
-			<span class="name">{{fighterB.name}}</span>
+			<img ng-show="fighterB.country" ng-src="/assets/images/fight/flags/{{fighterB.country}}blue.png"/>
+			<div class="name">{{fighterB.name}}</div>
+			<div class="club">{{fighterB.club}}</div>
 		</div>
 	</div>
 	<div class="message" ng-show="message" ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}"><div ng-bind-html-unsafe="message"></div></div>
