@@ -32,7 +32,11 @@ object ParticipantList {
     }
 
     def registerAll() = {
-      ps foreach (_.isPresent(true).save)
+      ps foreach {p =>
+        p.isPresent(true)
+        p.subscriptions foreach (_.gearChecked(true))
+        p.save
+      }
       S.redirectTo("/participants/list")
     }
 
