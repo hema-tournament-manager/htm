@@ -13,6 +13,7 @@ import net.liftweb.json._
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import java.io.File
+import java.nio.charset.Charset
 
 case class ViewerMessage(message: String, duration: Long)
 
@@ -54,7 +55,10 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
         JField("view", JString(state)) ::
           JField("arena", JInt(arena.id.get)) ::
           JField("payload", data) :: Nil)))
-      val req = dispatch.url("http://" + url.get + "/api/update/text").POST.setBody(serialized).addHeader("Content-Type", "text/plain")
+      println("Sending update: " + serialized)
+      val req = dispatch.url("http://" + url.get + "/api/update/text").POST.
+        setBody(serialized.getBytes(Charset.forName("UTF-8"))).
+        addHeader("Content-Type", "text/plain; charset=utf-8")
       Http(req).fold[Boolean](
         _ => false,
         resp => resp.getResponseBody().toBoolean).apply
@@ -65,7 +69,11 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
       val serialized = compact(render(JObject(
         JField("view", JString(state)) ::
           JField("payload", data) :: Nil)))
-      val req = dispatch.url("http://" + url.get + "/api/update/text").POST.setBody(serialized).addHeader("Content-Type", "text/plain")
+      println("Sending update: " + serialized)
+      val req = dispatch.url("http://" + url.get + "/api/update/text").POST.
+        setBody(serialized.getBytes(Charset.forName("UTF-8"))).
+        addHeader("Content-Type", "text/plain; charset=utf-8")
+
       Http(req).fold[Boolean](
         _ => false,
         resp => resp.getResponseBody().toBoolean).apply
