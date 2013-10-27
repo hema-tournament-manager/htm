@@ -34,7 +34,10 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     println("Importing participants")
     val participants = for (rowIndex <- 1 to total.getLastRowNum()) yield {
       val row = total.getRow(rowIndex)
-      val countryNameRaw = row.getCell(header("Country")).getStringCellValue()
+      val countryNameRaw = row.getCell(header("Country")) match {
+        case cell: Cell => cell.getStringCellValue()
+        case _ => ""
+      }
       val countryName = Swordfish2013Importer.countryReplacements.getOrElse(countryNameRaw, countryNameRaw)
       println(countryName)
       val country = settings.countries.find { case (_, name) => countryName == name }.map(_._1).getOrElse("")
