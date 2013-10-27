@@ -30,23 +30,21 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
   def finished_? = timeStop.is > 0
   def grossDuration = timeStop.is - timeStart.is
 
-  def currentScore = scores.foldLeft(TotalScore(0, 0, 0, 0, 0, 0, 0, 0)) { (sum, score) =>
+  def currentScore = scores.foldLeft(TotalScore(0, 0, 0, 0, 0, 0)) { (sum, score) =>
     TotalScore(
-      sum.a + score.diffA.get,
-      sum.aAfter + score.diffAAfterblow.get,
-      sum.b + score.diffB.get,
-      sum.bAfter + score.diffBAfterblow.get,
-      sum.double + score.diffDouble.get,
-      sum.specialHitsA + (if (score.isSpecial.get && (score.diffA.get > 0 || score.diffDouble.get > 0)) 1 else 0),
-      sum.specialHitsB + (if (score.isSpecial.get && (score.diffB.get > 0 || score.diffDouble.get > 0)) 1 else 0),
+      sum.a + score.pointsRed.get,
+      sum.aAfter + score.afterblowsRed.get,
+      sum.b + score.pointsBlue.get,
+      sum.bAfter + score.afterblowsBlue.get,
+      sum.double + score.doubles.get,
       sum.exchangeCount + (if (score.isExchange.get) 1 else 0))
   }
 
   def inFight_?(p: Participant) = fighterA.is == p.id.is || fighterB.is == p.id.is
 
   def winner = currentScore match {
-    case TotalScore(a, _, b, _, _, _, _, _) if a > b => Full(fighterA.obj.get)
-    case TotalScore(a, _, b, _, _, _, _, _) if a < b => Full(fighterB.obj.get)
+    case TotalScore(a, _, b, _,  _, _) if a > b => Full(fighterA.obj.get)
+    case TotalScore(a, _, b, _,  _, _) if a < b => Full(fighterB.obj.get)
     case _ => Empty
   }
 

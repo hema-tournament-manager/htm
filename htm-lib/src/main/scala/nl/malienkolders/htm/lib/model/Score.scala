@@ -9,15 +9,19 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
-case class MarshalledScore(timeInFight: Long, timeInWorld: Long, diffA: Int, diffB: Int, diffAAfterblow: Int, diffBAfterblow: Int, diffDouble: Int, scoreType: String, isSpecial: Boolean, isExchange: Boolean)
+case class MarshalledScore(timeInFight: Long, timeInWorld: Long, 
+						    pointsRed: Int, pointsBlue: Int,
+						    afterblowsRed: Int, afterblowsBlue : Int,
+						    cleanHitsRed: Int, cleanHitsBlue: Int, 
+						    doubles: Int, isExchange: Boolean)
+
+
 case class TotalScore(
   a: Int,
   aAfter: Int,
   b: Int,
   bAfter: Int,
   double: Int,
-  specialHitsA: Int,
-  specialHitsB: Int,
   exchangeCount: Int)
 
 class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Ordered[Score] {
@@ -26,14 +30,14 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
   object fight extends MappedLongForeignKey(this, Fight)
   object timeInFight extends MappedLong(this)
   object timeInWorld extends MappedLong(this)
-  object diffA extends MappedInt(this)
-  object diffB extends MappedInt(this)
-  object diffAAfterblow extends MappedInt(this)
-  object diffBAfterblow extends MappedInt(this)
-  object diffDouble extends MappedInt(this)
-  object isSpecial extends MappedBoolean(this)
+  object pointsRed extends MappedInt(this)
+  object pointsBlue extends MappedInt(this)
+  object cleanHitsRed extends MappedInt(this)
+  object cleanHitsBlue extends MappedInt(this)
+  object afterblowsRed extends MappedInt(this)
+  object afterblowsBlue extends MappedInt(this)
+  object doubles extends MappedInt(this)
   object isExchange extends MappedBoolean(this)
-  object scoreType extends MappedString(this, 64)
 
   def compare(that: Score) = (this.timeInFight.is - that.timeInFight.is) match {
     case d if d > 0 => 1
@@ -41,17 +45,20 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
     case _ => 0
   }
 
-  def toMarshalled = MarshalledScore(timeInFight.is, timeInWorld.is, diffA.is, diffB.is, diffAAfterblow.is, diffBAfterblow.is, diffDouble.is, scoreType.is, isSpecial.is, isExchange.is)
+  def toMarshalled = 
+    MarshalledScore(timeInFight.is, timeInWorld.is, pointsRed.is, pointsBlue.is, 
+      cleanHitsRed.is, cleanHitsBlue.is, afterblowsRed.is, afterblowsBlue.is, 
+      doubles.is, isExchange.is)
+  
   def fromMarshalled(m: MarshalledScore) = {
     timeInFight(m.timeInFight)
     timeInWorld(m.timeInWorld)
-    diffA(m.diffA)
-    diffB(m.diffB)
-    diffAAfterblow(m.diffAAfterblow)
-    diffBAfterblow(m.diffBAfterblow)
-    diffDouble(m.diffDouble)
-    scoreType(m.scoreType)
-    isSpecial(m.isSpecial)
+    pointsRed(m.pointsRed)
+    pointsBlue(m.pointsBlue)
+    cleanHitsRed(m.cleanHitsRed)
+    cleanHitsBlue(m.cleanHitsBlue)
+    afterblowsRed(m.afterblowsRed)
+    afterblowsBlue(m.afterblowsBlue)
     isExchange(m.isExchange)
     this
   }

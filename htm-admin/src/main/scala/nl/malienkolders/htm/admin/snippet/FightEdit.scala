@@ -22,8 +22,8 @@ object FightEdit {
     val totalScore = f.currentScore
 
     val score = Score.create
-    score.diffA(totalScore.a)
-    score.diffB(totalScore.b)
+    score.pointsRed(totalScore.a)
+    score.pointsBlue(totalScore.b)
 
     val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
@@ -48,8 +48,8 @@ object FightEdit {
         ".name *" #> f.fighterB.obj.get.name.is &
         ".club [title]" #> f.fighterB.obj.get.club.is &
         ".club *" #> f.fighterB.obj.get.clubCode.is) &
-        "name=scoreRed" #> SHtml.text(totalScore.a.toString, s => score.diffA(s.toInt)) &
-        "name=scoreBlue" #> SHtml.text(totalScore.b.toString, s => score.diffB(s.toInt)) &
+        "name=scoreRed" #> SHtml.text(totalScore.a.toString, s => score.pointsRed(s.toInt)) &
+        "name=scoreBlue" #> SHtml.text(totalScore.b.toString, s => score.pointsBlue(s.toInt)) &
         "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart.get)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker") &
         "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop.get)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker") &
         "#doEdit" #> SHtml.onSubmitUnit(process)
