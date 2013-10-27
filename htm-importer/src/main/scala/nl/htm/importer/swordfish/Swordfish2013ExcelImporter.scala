@@ -26,7 +26,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
 
     val header = Map((for (i <- 0 to headerRow.getLastCellNum() - 1) yield (headerRow.getCell(i).getStringCellValue(), i)): _*)
 
-    val tournaments = Swordfish2013Importer.tournamentNames.map { case (id, name) => Tournament(id, name, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
+    val tournaments = Swordfish2013Importer.tournamentNames.map { case (id, (name, mnemonic)) => Tournament(id, name, mnemonic, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
     println(total.getLastRowNum())
 
     println(settings.countries)
@@ -50,7 +50,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     }
 
     val subscriptions = tournaments.flatMap {
-      case t @ Tournament(_, name, _) =>
+      case t @ Tournament(_, name, _, _) =>
         println("Importing tournament " + name)
         val sheet = workbook.getSheet(name)
         if (sheet != null) {

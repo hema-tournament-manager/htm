@@ -13,6 +13,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   def primaryKeyField = id
   object id extends MappedLongIndex(this)
   object name extends MappedString(this, 32)
+  object mnemonic extends MappedString(this, 8)
   object identifier extends MappedString(this, 32)
   object rounds extends MappedOneToMany(Round, Round.tournament, OrderBy(Round.order, Ascending)) with Owned[Round] with Cascade[Round]
   object defaultArena extends MappedLongForeignKey(this, Arena)
