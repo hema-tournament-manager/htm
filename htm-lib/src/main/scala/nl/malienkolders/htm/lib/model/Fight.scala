@@ -63,11 +63,12 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
     this
   }
   def fromMarshalledSummary(m: MarshalledFightSummary) = {
-    timeStart(m.timeStart)
+    if (timeStart.get == 0) {
+    	timeStart(m.timeStart)
+    }
     timeStop(m.timeStop)
     netDuration(m.netDuration)
-    scores.clear
-    m.scores.foreach(s => scores += Score.create.fromMarshalled(s))
+    m.scores.drop(scores.size).foreach(s => scores += Score.create.fromMarshalled(s))
     this
   }
   def toViewer = {
