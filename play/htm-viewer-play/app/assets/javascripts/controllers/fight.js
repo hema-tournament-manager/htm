@@ -16,8 +16,6 @@ var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
 	
 	$scope.updateScore();
 	
-	$scope.timer = {running: false, lastStart: -1, time: 0, displayTime: 0};
-    
     $scope.timerValue = function() {
     	var result = $scope.timer.time;
     	if ($scope.timer.running) {
@@ -42,6 +40,13 @@ var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
     		$timeout($scope.tick, 500);
     	}
     };
+
+    if ($scope.timer.action == "start") {
+    	$scope.startTimer();
+    }
+    else {
+    	$scope.stopTimer();    	
+    }
     
 	stateService.change(function(view, state, update) {
 		if (view == "fight") {
