@@ -26,7 +26,7 @@ object ParticipantImporter {
     }
 
     val tournaments = if (Tournament.count == 0) {
-      data.tournaments.map { case t => Tournament.create.name(t.name).identifier(t.id).saveMe }
+      data.tournaments.map { case t => Tournament.create.name(t.name).identifier(t.id).mnemonic(t.mnemonic).saveMe }
     } else {
       Tournament.findAll(OrderBy(Tournament.id, Ascending))
     }
