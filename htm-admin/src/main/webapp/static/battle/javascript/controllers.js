@@ -336,7 +336,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     
     $('#announcement').blur(function(event) {
 		$scope.$apply(function() {
-			$scope.editingAnnouncement = true;
+			$scope.editingAnnouncement = false;
 		});
     });
     
@@ -402,7 +402,7 @@ var CorrectScoreCtrl = function($scope, $modalInstance, score) {
 }
 
 var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, appService) {
-	$rootScope.title = "HEFFAC 2013";
+	$rootScope.title = "Sowrdfish 2013";
 	$rootScope.subtitle = "";
 	
 	$scope.arenas = new Array();
