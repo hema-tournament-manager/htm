@@ -10,12 +10,16 @@ import util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.comet._
 import net.liftweb.common.Full
+import nl.malienkolders.htm.admin.lib.exporter.JsonFightExporter
 
 object AdminRest extends RestHelper {
 
   override implicit val formats = Serialization.formats(NoTypeHints)
 
   serve {
+    case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>
+      JsonFightExporter.createExport
+    
     case "api" :: "arenas" :: Nil JsonGet _ =>
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 

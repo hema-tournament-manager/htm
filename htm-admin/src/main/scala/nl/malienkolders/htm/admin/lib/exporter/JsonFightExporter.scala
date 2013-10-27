@@ -42,17 +42,18 @@ object JsonFightExporter extends FightExporter {
 
   def fightStatus(f: Fight): String = if (f.finished_?) "finished" else if (f.started_?) "fighting" else "pending"
 
-  def doExport: Unit = {
-    val tree: JValue = "Event" -> (
+  def createExport: JValue =
+    "Event" -> (
       ("Title" -> "Swordfish 2013") ~
       ("Updated" -> (System.currentTimeMillis() / 1000L).toString) ~
       ("Contestants" -> Participant.findAll) ~
       ("Tournament" -> Tournament.findAll))
-
-    val output = render(tree)
+    
+  def doExport: Unit = {
+    val output = createExport
 
     val out = new PrintWriter("export.json")
-    out.println(pretty(render(tree)))
+    out.println(pretty(render(output)))
     out.close()
   }
 
