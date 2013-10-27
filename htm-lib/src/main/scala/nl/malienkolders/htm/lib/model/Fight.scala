@@ -64,7 +64,7 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
   }
   def fromMarshalledSummary(m: MarshalledFightSummary) = {
     if (timeStart.get == 0) {
-    	timeStart(m.timeStart)
+      timeStart(m.timeStart)
     }
     timeStop(m.timeStop)
     netDuration(m.netDuration)

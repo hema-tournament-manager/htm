@@ -48,7 +48,7 @@ object JsonFightExporter extends FightExporter {
       ("Updated" -> (System.currentTimeMillis() / 1000L).toString) ~
       ("Contestants" -> Participant.findAll.filter(_.subscriptions.exists(_.gearChecked.get))) ~
       ("Tournament" -> Tournament.findAll))
-    
+
   def doExport: Unit = {
     val output = createExport
 
