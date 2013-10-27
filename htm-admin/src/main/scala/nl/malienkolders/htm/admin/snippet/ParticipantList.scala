@@ -61,7 +61,7 @@ object ParticipantList {
         val c = p.country.obj.getOrElse(Country.findAll.head)
         ".participant [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo("/participants/register/" + p.externalId.is)) &
         ".participant [class]" #> (if (p.isPresent.is) "success" else "default") &
-        ".photo [class+]" #> (if (p.hasAvatar) "glyphicon-check" else "glyphicon-unchecked") &
+        ".photo [class+]" #> (if (p.subscriptions.size > 0) (if (p.hasAvatar) "glyphicon-check" else "glyphicon-unchecked") else "") &
           ".id *" #> p.externalId.is &
           ".name *" #> p.name.is &
           ".shortName *" #> p.shortName.is &
