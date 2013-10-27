@@ -37,7 +37,8 @@ object ParticipantRegistration {
       S.redirectTo("/participants/list")
     }
 
-    "name=name" #> p.name.toForm &
+    ".photo [src]" #> s"/photo/${p.externalId.get}/r" &
+      "name=name" #> p.name.toForm &
       "name=shortName" #> p.shortName.toForm &
       "name=club" #> p.club.toForm &
       "name=clubCode" #> p.clubCode.toForm &

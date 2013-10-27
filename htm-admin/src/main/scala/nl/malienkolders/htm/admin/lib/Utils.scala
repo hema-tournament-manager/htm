@@ -2,6 +2,10 @@ package nl.malienkolders.htm.admin.lib
 
 import nl.malienkolders.htm.lib.model.Participant
 import java.io.File
+import net.liftweb.common._
+import net.liftweb.http._
+import net.liftweb.mapper._
+import org.apache.commons.io.FileUtils
 
 object Utils {
 
@@ -17,4 +21,14 @@ object Utils {
     def hasAvatar = avatarOriginalFile.exists
   }
 
+  def photo(pariticipantExternalId: String, side: String): Box[LiftResponse] = {
+    for {
+      p <- Participant.find(By(Participant.externalId, pariticipantExternalId))
+    } yield {
+      val bytes = FileUtils.readFileToByteArray(if (side == "l") p.avatarLeftFile else p.avatarRightFile)
+      InMemoryResponse(bytes, ("Content-Type" -> "image/jpeg") :: Nil, Nil, 200)
+    }
+
+  }
+  
 }
