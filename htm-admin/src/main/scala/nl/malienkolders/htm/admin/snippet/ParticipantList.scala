@@ -11,6 +11,7 @@ import mapper._
 import js._
 import JsCmds._
 import nl.malienkolders.htm.admin.lib.exporter.ParticipantsExporter
+import nl.malienkolders.htm.admin.lib.Utils.PimpedParticipant
 import scala.xml.Text
 
 object ParticipantList {
@@ -58,7 +59,9 @@ object ParticipantList {
       }, "id" -> "countrySelectDropdown") &
       ".participant" #> (ps.map { p =>
         val c = p.country.obj.getOrElse(Country.findAll.head)
+        ".participant [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo("/participants/register/" + p.externalId.is)) &
         ".participant [class]" #> (if (p.isPresent.is) "success" else "default") &
+        ".photo [class+]" #> (if (p.subscriptions.size > 0) (if (p.hasAvatar) "glyphicon-check" else "glyphicon-unchecked") else "") &
           ".id *" #> p.externalId.is &
           ".name *" #> p.name.is &
           ".shortName *" #> p.shortName.is &

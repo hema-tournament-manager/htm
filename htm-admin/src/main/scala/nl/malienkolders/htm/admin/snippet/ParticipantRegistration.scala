@@ -8,6 +8,7 @@ import mapper._
 import sitemap._
 import util.Helpers._
 import nl.malienkolders.htm.lib.model._
+import nl.malienkolders.htm.admin.lib.PhotoImporterBackend
 
 object ParticipantRegistration {
 
@@ -32,12 +33,18 @@ object ParticipantRegistration {
   def render = {
     val p = Participant.find(By(Participant.externalId, ParticipantRegistration.loc.currentValue.map(_.param).get)).get
 
+    var upload: Box[FileParamHolder] = Empty
+    
     def process() = {
+      for (fph <- upload) {
+        PhotoImporterBackend.handlePhoto(p, fph.fileStream)
+      }
       p.save
       S.redirectTo("/participants/list")
     }
 
-    "name=name" #> p.name.toForm &
+    ".photo [src]" #> s"/photo/${p.externalId.get}/l" &
+      "name=name" #> p.name.toForm &
       "name=shortName" #> p.shortName.toForm &
       "name=club" #> p.club.toForm &
       "name=clubCode" #> p.clubCode.toForm &
@@ -50,6 +57,7 @@ object ParticipantRegistration {
           ".fighterNumber *" #> sub.fighterNumber.asHtml &
           ".experience" #> sub.experience.toForm &
           ".gear" #> sub.gearChecked.toForm) &
+      "name=photo" #> SHtml.fileUpload(fph => upload = Full(fph), "accept" -> "image/*;capture=camera") &
       "name=save" #> SHtml.submit("Save", process, "class" -> "btn btn-primary")
 
   }
