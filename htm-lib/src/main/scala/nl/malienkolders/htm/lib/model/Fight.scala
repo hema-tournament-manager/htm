@@ -32,10 +32,10 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
 
   def currentScore = scores.foldLeft(TotalScore(0, 0, 0, 0, 0, 0)) { (sum, score) =>
     TotalScore(
-      sum.a + score.pointsRed.get,
-      sum.aAfter + score.afterblowsRed.get,
-      sum.b + score.pointsBlue.get,
-      sum.bAfter + score.afterblowsBlue.get,
+      sum.red + score.pointsRed.get,
+      sum.redAfter + score.afterblowsRed.get,
+      sum.blue + score.pointsBlue.get,
+      sum.blueAfter + score.afterblowsBlue.get,
       sum.double + score.doubles.get,
       sum.exchangeCount + (if (score.isExchange.get) 1 else 0))
   }
@@ -43,8 +43,8 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
   def inFight_?(p: Participant) = fighterA.is == p.id.is || fighterB.is == p.id.is
 
   def winner = currentScore match {
-    case TotalScore(a, _, b, _,  _, _) if a > b => Full(fighterA.obj.get)
-    case TotalScore(a, _, b, _,  _, _) if a < b => Full(fighterB.obj.get)
+    case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterA.obj.get)
+    case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterB.obj.get)
     case _ => Empty
   }
 

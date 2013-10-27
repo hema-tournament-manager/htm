@@ -120,19 +120,19 @@ object DefaultRuleset extends Ruleset {
       case (ps @ ParticipantScores(i, c, w, t, l, hR, hD, aR, aD, d), f) =>
         if (f.inFight_?(pt)) {
           f.currentScore match {
-            case TotalScore(a, aafter, b, bafter, double,  _) if double >= 3 && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterA.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
             case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterB.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
             case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double,  _) if a == b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double,  _) if a > b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double,  _) if a > b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double,  _) if a < b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
             case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)

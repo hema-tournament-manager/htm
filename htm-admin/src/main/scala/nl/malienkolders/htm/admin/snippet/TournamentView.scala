@@ -225,7 +225,7 @@ object TournamentView {
         Text("in progress")
       } else if (f.finished_?) {
         val s = f.currentScore
-        <span><b title={ "%d points, %d afterblows against" format (s.a, s.aAfter) }>{ s.a }</b> (<span title={ "%d double hits" format s.double }>{ s.double }</span>) <b title={ "%d points, %d afterblows against" format (s.b, s.bAfter) }>{ s.b }</b></span>
+        <span><b title={ "%d points, %d afterblows against" format (s.red, s.redAfter) }>{ s.red }</b> (<span title={ "%d double hits" format s.double }>{ s.double }</span>) <b title={ "%d points, %d afterblows against" format (s.blue, s.blueAfter) }>{ s.blue }</b></span>
       } else {
         Text("vs")
       }

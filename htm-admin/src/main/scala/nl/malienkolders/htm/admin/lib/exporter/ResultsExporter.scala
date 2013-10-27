@@ -101,9 +101,9 @@ object ResultsExporter extends ExcelExporter {
       "fighterB.id" -> f.fighterB.obj.get.externalId.get.toInt,
       "fighterB.name" -> f.fighterB.obj.get.name.get,
       "fighterB.club" -> f.fighterB.obj.get.clubCode.get,
-      "points.a" -> f.currentScore.a,
+      "points.a" -> f.currentScore.red,
       "points.doubles" -> f.currentScore.double,
-      "points.b" -> f.currentScore.b,
+      "points.b" -> f.currentScore.blue,
       "time.planned" -> new Date(f.plannedStartTime),
       "time.start" -> new Date(f.timeStart.get),
       "time.duration" -> f.netDuration.get / 1000))

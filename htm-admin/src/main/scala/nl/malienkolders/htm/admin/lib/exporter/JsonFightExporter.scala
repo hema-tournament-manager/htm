@@ -35,8 +35,8 @@ object JsonFightExporter extends FightExporter {
   implicit def renderFight(f: Fight): JValue =
     ("Fighter_1" -> f.fighterA.foreign.get.externalId.get) ~
       ("Fighter_2" -> f.fighterB.foreign.get.externalId.get) ~
-      ("Score_1" -> f.currentScore.a.toString) ~
-      ("Score_2" -> f.currentScore.b.toString) ~
+      ("Score_1" -> f.currentScore.red.toString) ~
+      ("Score_2" -> f.currentScore.blue.toString) ~
       ("Doubles" -> f.currentScore.double.toString) ~
       ("Status" -> fightStatus(f))
 
@@ -48,7 +48,7 @@ object JsonFightExporter extends FightExporter {
       ("Updated" -> (System.currentTimeMillis() / 1000L).toString) ~
       ("Contestants" -> Participant.findAll.filter(_.subscriptions.exists(_.gearChecked.get))) ~
       ("Tournament" -> Tournament.findAll))
-    
+
   def doExport: Unit = {
     val output = createExport
 

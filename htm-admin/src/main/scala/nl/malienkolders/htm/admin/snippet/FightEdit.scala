@@ -21,17 +21,25 @@ object FightEdit {
     val f = Fight.findByKey(FightEdit.loc.currentValue.map(_.param).get.toLong).get
     val totalScore = f.currentScore
 
-    val score = Score.create
-    score.pointsRed(totalScore.a)
-    score.pointsBlue(totalScore.b)
+    //val score = Score.create
+    
+    //score.pointsRed(totalScore.red)
+    //score.pointsBlue(totalScore.blue)
 
     val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     def process() {
-      f.scores.clear()
-      f.scores += score
+      //f.scores.clear()
+      //f.scores += score
       f.save()
       S.redirectTo("/tournaments/view/" + f.pool.foreign.get.round.foreign.get.tournament.is)
+    }
+    
+    def addScoreLine() {
+      //f.scores.clear()
+      f.scores += Score.create
+      f.save()
+      S.redirectTo("/fights/edit/" + f.id.get)
     }
 
     val dateFormatStr = "yy-mm-dd";
@@ -48,10 +56,19 @@ object FightEdit {
         ".name *" #> f.fighterB.obj.get.name.is &
         ".club [title]" #> f.fighterB.obj.get.club.is &
         ".club *" #> f.fighterB.obj.get.clubCode.is) &
-        "name=scoreRed" #> SHtml.text(totalScore.a.toString, s => score.pointsRed(s.toInt)) &
-        "name=scoreBlue" #> SHtml.text(totalScore.b.toString, s => score.pointsBlue(s.toInt)) &
+        "#scoreRed" #> totalScore.red &
+        "#scoreBlue" #> totalScore.blue &
+        "#doAdd" #>  SHtml.onSubmitUnit(addScoreLine) &
         "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart.get)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker") &
         "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop.get)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker") &
+        ".score" #> f.scores.map(score =>
+          "name=pointsRed" #> score.pointsRed.toForm &
+            "name=pointsBlue" #> score.pointsBlue.toForm &
+            "name=cleanHitsRed" #> score.cleanHitsRed.toForm &
+            "name=cleanHitsBlue" #> score.cleanHitsBlue.toForm &
+            "name=afterblowsRed" #> score.afterblowsRed.toForm &
+            "name=afterblowsBlue" #> score.afterblowsBlue.toForm &
+            "name=isExchange" #> score.isExchange.toForm) &
         "#doEdit" #> SHtml.onSubmitUnit(process)
 
   }

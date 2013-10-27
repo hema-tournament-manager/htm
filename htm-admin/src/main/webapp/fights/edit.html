@@ -23,13 +23,51 @@
 				 <span class="blue"><span class="name" style="color:blue">Blue</span> (<span class="club">Team Blue</span>)</span>
 			</h3>
 
-			Score Red: <input name="scoreRed"/><br/>
-			Score Blue: <input name="scoreBlue"/><br/> <br />
+			Total score Red: <span id="scoreRed"> Score red</span><br/>
+			Total Score Blue: <span id="scoreBlue"> Score blue</span><br/> <br />
 			
 			Time start: <input name="timeStart"/><br/>
 			Time stop: <input name="timeStop"/><br/>
+			
+			<button id="doAdd" name="add">Add Score</button>
+			
+			<div class="score">  
+				<fieldset>
+				<h3>Score line:</h3>
+				
+				<div style="float: left;">
+					<label>Points Red: <input name="pointsRed" /></label>
+				</div>
+				<div style="float: left;">
+					<label>Points Blue: <input name="pointsBlue" /></label>
+				</div>
+				
+				<div style="clear: left; float: left;">
+					<label>Clean hits Red: <input name="cleanHitsRed" /></label>
+				</div>
+				<div style="float: left;">
+					<label>Clean hits Blue: <input name="cleanHitsBlue" /></label>
+				</div>
+				
+				<div style="clear: left; float: left;">
+					<label>Afterblows Red: <input name="afterblowsRed" /></label>
+				</div>
+				<div style="float: left;">
+					<label>Afterblows Blue: <input name="afterblowsBlue" /></label>
+				</div>
+				
+				<div style="clear: left; float: left;">
+					<label>Doubles: <input name="doubles" /></label>
+				</div>
+				<div style="float: left; clear:left;">
+					<label>Is an exchange: <input name="isExchange" /></label>
+				</div>
+				
+				</fieldset>
+			</div>
+			
 
-			<button id="doEdit">Save</button>
+			<button syle="clear:left;" id="doEdit">Save</button>
 		</form>
 	</div>
 </body>
