@@ -46,7 +46,7 @@ object JsonFightExporter extends FightExporter {
     "Event" -> (
       ("Title" -> "Swordfish 2013") ~
       ("Updated" -> (System.currentTimeMillis() / 1000L).toString) ~
-      ("Contestants" -> Participant.findAll) ~
+      ("Contestants" -> Participant.findAll.filter(_.subscriptions.size > 0)) ~
       ("Tournament" -> Tournament.findAll))
     
   def doExport: Unit = {
