@@ -9,7 +9,7 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
-case class MarshalledScore(timeInFight: Long, timeInWorld: Long, diffA: Int, diffB: Int, diffAAfterblow: Int, diffBAfterblow: Int, diffDouble: Int, scoreType: String, isSpecial: Boolean, isExchange: Boolean)
+case class MarshalledScore(timeInFight: Long, timeInWorld: Long, diffA: Int, diffB: Int, diffAAfterblow: Int, diffBAfterblow: Int, diffDouble: Int, scoreType: String, isSpecial: Boolean, diffExchange: Int)
 case class TotalScore(
   a: Int,
   aAfter: Int,
@@ -32,7 +32,7 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
   object diffBAfterblow extends MappedInt(this)
   object diffDouble extends MappedInt(this)
   object isSpecial extends MappedBoolean(this)
-  object isExchange extends MappedBoolean(this)
+  object diffExchange extends MappedInt(this)
   object scoreType extends MappedString(this, 64)
 
   def compare(that: Score) = (this.timeInFight.is - that.timeInFight.is) match {
@@ -41,7 +41,7 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
     case _ => 0
   }
 
-  def toMarshalled = MarshalledScore(timeInFight.is, timeInWorld.is, diffA.is, diffB.is, diffAAfterblow.is, diffBAfterblow.is, diffDouble.is, scoreType.is, isSpecial.is, isExchange.is)
+  def toMarshalled = MarshalledScore(timeInFight.is, timeInWorld.is, diffA.is, diffB.is, diffAAfterblow.is, diffBAfterblow.is, diffDouble.is, scoreType.is, isSpecial.is, diffExchange.is)
   def fromMarshalled(m: MarshalledScore) = {
     timeInFight(m.timeInFight)
     timeInWorld(m.timeInWorld)
@@ -52,7 +52,7 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
     diffDouble(m.diffDouble)
     scoreType(m.scoreType)
     isSpecial(m.isSpecial)
-    isExchange(m.isExchange)
+    diffExchange(m.diffExchange)
     this
   }
 }

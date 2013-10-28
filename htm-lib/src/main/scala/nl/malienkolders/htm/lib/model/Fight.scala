@@ -39,7 +39,7 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
       sum.double + score.diffDouble.get,
       sum.specialHitsA + (if (score.isSpecial.get && (score.diffA.get > 0 || score.diffDouble.get > 0)) 1 else 0),
       sum.specialHitsB + (if (score.isSpecial.get && (score.diffB.get > 0 || score.diffDouble.get > 0)) 1 else 0),
-      sum.exchangeCount + (if (score.isExchange.get) 1 else 0))
+      sum.exchangeCount + score.diffExchange.get)
   }
 
   def inFight_?(p: Participant) = fighterA.is == p.id.is || fighterB.is == p.id.is

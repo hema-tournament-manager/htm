@@ -31,7 +31,7 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 			memo.a += score.diffA;
 			memo.b += score.diffB;
 			memo.d += score.diffDouble;
-			memo.x += score.isExchange ? 1 : 0;
+			memo.x += score.diffExchange;
 			return memo;
 		}, {a: 0, b: 0, d: 0, x: 0});
 	};

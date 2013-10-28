@@ -35,9 +35,24 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     						memo.a += score.diffA;
     						memo.b += score.diffB;
     						memo.d += score.diffDouble;
-    						memo.x += score.isExchange ? 1 : 0;
+    						memo.x += score.diffExchange;
     						return memo;
     					}, {a: 0, b: 0, d: 0, x: 0});
+    				};
+    				fight['lastScore'] = function() {
+    					var result = _.reduceRight(this.scores, function(memo, score) {
+    						if (!memo.score) {
+    							if (score.scoreType == "undo") {
+    								memo.undos += 1;
+    							} else if (memo.undos == 0) {
+    								memo.score = score;
+    							} else {
+    								memo.undos -= 1;
+    							}
+    						}
+    						return memo;
+    					}, {undos: 0, score: false});
+    					return result.score;
     				};
 					$scope.fights[fight.globalOrder - 1] = fight;
 					if (($scope.currentFight.globalOrder == -1 || fight.globalOrder < $scope.currentFight.globalOrder) && fight.timeStop == 0) {
@@ -49,7 +64,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	});
 	
     $scope.pendingOperation = false;
-    $scope.redoScore = false;
     
     $scope.timer = {running: false, lastStart: -1, currentTime: 0, displayTime: 0};
     
@@ -119,15 +133,35 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	$('#score-options').hide();
     };
     
+    $scope.invertScore = function(score) {
+    	console.log("Inverting: " + JSON.stringify(score));
+    	return {
+    		timeInFight: $scope.timerValue(),
+    		timeInWorld: Date.now(),
+    		diffA: score.diffA * -1,
+    		diffB: -score.diffB,
+    		diffAAfterblow: -score.diffAAfterblow,
+    		diffBAfterblow: -score.diffBAfterblow,
+    		diffDouble: -score.diffDouble,
+    		isSpecial: false,
+    		diffExchange: -score.diffExchange 
+    	};
+    };
+    
     $scope.undoClicked = function () {
-    	$scope.redoScore = $scope.currentFight.scores.pop();
-    	$scope.sendUpdate();
+    	var lastScore = $scope.currentFight.lastScore();
+    	if (lastScore) {
+    		$scope.currentFight.scores.push(_.extend($scope.invertScore(lastScore), {scoreType: "undo"}));
+    		$scope.sendUpdate();
+    	}
     };
     
     $scope.redoClicked = function () {
-    	$scope.currentFight.scores.push($scope.redoScore);
-    	$scope.redoScore = false;
-    	$scope.sendUpdate();
+    	var lastScore = _.last($scope.currentFight.scores);
+    	if (lastScore.scoreType == "undo") {
+    		$scope.currentFight.scores.push(_.extend($scope.invertScore(lastScore), {scoreType: "redo"}));
+    		$scope.sendUpdate();
+    	}
     };
     
     $scope.pushExchange = function(exchange) {
@@ -141,7 +175,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     		diffDouble: exchange.d,
     		scoreType: exchange.type,
     		isSpecial: false,
-    		isExchange: true
+    		diffExchange: 1
     	});
     	$scope.sendUpdate();
     };
@@ -155,9 +189,9 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     		diffAAfterblow: 0,
     		diffBAfterblow: 0,
     		diffDouble: correction.d,
-    		scoreType: 'correction',
+    		scoreType: 'Correction',
     		isSpecial: false,
-    		isExchange: false
+    		diffExchange: 0
     	});
     	$scope.sendUpdate();
     };
@@ -366,10 +400,11 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 
 var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
 	$scope.exchanges = exchanges;
-	var exchangeCounter = 1;
+	var exchangeCounter = 0;
 	_.each($scope.exchanges, function(score) {
-		if (score.isExchange) {
-			score.exchangeId = exchangeCounter++;
+		if (score.diffExchange != 0) {
+			exchangeCounter += score.diffExchange;
+			score.exchangeId = exchangeCounter;
 		} else {
 			score.exchangeId = "-";
 		}
