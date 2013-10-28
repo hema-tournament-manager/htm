@@ -14,6 +14,7 @@ import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.admin.lib._
 import nl.malienkolders.htm.admin.lib.exporter._
 import nl.malienkolders.htm.admin.lib.TournamentUtils._
+import nl.malienkolders.htm.admin.lib.Utils.TimeRenderHelper
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.sitemap.LocPath.stringToLocPath
 import net.liftweb.util.IterableConst.itBindable
@@ -258,9 +259,9 @@ object TournamentView {
 
     def renderFightFighter(f: Participant) =
       if (f.clubCode.is == "")
-        <span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span>
+        <span><span class="pull-left badge">{ f.subscription(t).get.fighterNumber.get }</span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span></span>
       else
-        <span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span><span style="float:right" title={ f.club.is }>{ f.clubCode.is }</span></span>
+        <span><span class="pull-left badge">{ f.subscription(t).get.fighterNumber.get }</span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span><span class="pull-right" title={ f.club.is }>{ f.clubCode.is }</span></span>
 
     "#tournamentName" #> t.name &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
@@ -321,7 +322,9 @@ object TournamentView {
               "name=poolStartTime" #> SHtml.ajaxText(df.format(new Date(p.startTime.get)), { s => p.startTime(df.parse(s).getTime()); p.save; S.notice("Pool start-time saved") }) &
               "name=poolArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), Full(p.arena.get.toString), { arena => p.arena(arena.toLong); p.save; S.notice("Arena changed") }) &
               "#poolFight *" #> p.fights.map(f => {
-                ".fightOrder *" #> f.order.is &
+                ".plannedTime [title]" #> (f.plannedStartTime as "yyyy-MM-dd HH:mm") &
+                ".plannedTime *" #> (f.plannedStartTime as "HH:mm") &
+                  ".fightOrder *" #> f.order.is &
                   ".red *" #> renderFightFighter(f.fighterA.obj.get) &
                   ".results *" #> renderResults(f) &
                   ".blue *" #> renderFightFighter(f.fighterB.obj.get) &

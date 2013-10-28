@@ -6,6 +6,8 @@ import net.liftweb.common._
 import net.liftweb.http._
 import net.liftweb.mapper._
 import org.apache.commons.io.FileUtils
+import java.text.SimpleDateFormat
+import java.util.Date
 
 object Utils {
 
@@ -29,6 +31,10 @@ object Utils {
       InMemoryResponse(bytes, ("Content-Type" -> "image/jpeg") :: Nil, Nil, 200)
     }
 
+  }
+  
+  implicit class TimeRenderHelper(time: Long) {
+    def as(format: String) = new SimpleDateFormat(format).format(new Date(time))
   }
   
 }
