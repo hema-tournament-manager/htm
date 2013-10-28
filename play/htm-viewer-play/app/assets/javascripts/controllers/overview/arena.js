@@ -2,9 +2,9 @@
 
 var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 	var _ = window._;
-	$scope.message = stateService.get("overview/arena").message;
-	$scope.arena = stateService.get("overview/arena").arena;
-	$scope.displayedPools = [];
+	_.extend($scope, stateService.get("overview/arena"));
+	$scope.displayedPools = $scope.pools;
+	$scope.currentPool = $scope.displayedPools.shift();
 	$scope.poolBuffer = false;
 
 	$scope.currentTime = Date.now();
@@ -17,7 +17,7 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 	
 	var nextPoolTimeout = false;
 	$scope.nextPool = function() {
-		if ($scope.displayedPools.length > 1) {
+		if ($scope.displayedPools.length > 2) {
 			if ($scope.poolBuffer) {
 				$scope.displayedPools.push($scope.poolBuffer);
 			}
@@ -25,6 +25,7 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 		}
 		nextPoolTimeout = $timeout($scope.nextPool, 10000);
 	}
+	nextPoolTimeout = $timeout($scope.nextPool, 10000);
 	
 	$scope.totalScore = function(fight) {
 		return _.reduce(fight.scores, function(memo, score) {
@@ -42,8 +43,7 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 		}
 
 		if (view == "overview/arena") {
-			$scope.message = state.message;
-			$scope.arena = state.arena;
+			_.extend($scope, state);
 			$scope.displayedPools = state.pools;
 			$scope.currentPool = $scope.displayedPools.shift();
 			$scope.poolBuffer = false;

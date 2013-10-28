@@ -48,7 +48,10 @@ object Application extends Controller {
       timer = TimerInfo(battleTime = (payload \ "timer" \ "time").as[Long], viewerTime = System.currentTimeMillis(), action = (payload \ "timer" \ "action").as[String]);
     }
     if (payload.keys.contains("fight")) {
-      timer = TimerInfo(battleTime = (payload \ "fight" \ "timer" \ "time").as[Long], viewerTime = System.currentTimeMillis(), action = (payload \ "fight" \ "action").as[String]);
+      val fight = (payload \ "fight").asInstanceOf[JsObject]
+      if (fight.keys.contains("timer")) {
+        timer = TimerInfo(battleTime = (fight \ "timer" \ "time").as[Long], viewerTime = System.currentTimeMillis(), action = (fight \ "action").as[String]);
+      }
     }
 
     val viewState = (clientState \ view).asInstanceOf[JsObject] ++ payload;

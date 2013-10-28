@@ -256,6 +256,44 @@ body {
 	}
 	
 	.overview-arena {
+		background-color: white;
+	
+		.panel-heading {
+			border-top-right-radius: 0;
+			border-top-left-radius: 0;
+		}
+		
+		@fontSize: 220%;
+		@titleSize: 100%;
+		@badgeSize: 95%;
+		
+		
+		.current-pool {
+			font-size: @fontSize;
+			
+			.panel-title {
+				font-size: @titleSize;
+			}
+			
+			.badge {
+				font-size: @badgeSize;
+			}
+		}
+		
+		@poolSizeFactor: .9;
+		
+		.pool {
+			font-size: @fontSize * @poolSizeFactor;
+			
+			.panel-title {
+				font-size: @titleSize * @poolSizeFactor;
+			}
+			
+			.badge {
+				font-size: @badgeSize * @poolSizeFactor;
+			}
+		}
+	
 		.time {
 			font-size: 90%;
 		}
@@ -267,28 +305,6 @@ body {
 		.fighter.blue .badge {
 			background-color: blue;
 		}
-	
-		.current-pool {
-			color: black;
-			font-size: 24pt;
-			border: solid 1px black;
-			
-			.fighter {
-				.badge {
-					font-size: 16pt;
-				}
-			}
-		}
 		
-		.pool {
-			color: black;
-			font-size: 22pt;
-			border: solid 1px black;
-			.fighter {
-				.badge {
-					font-size: 14pt;
-				}
-			}
-		}
 	}
 }
