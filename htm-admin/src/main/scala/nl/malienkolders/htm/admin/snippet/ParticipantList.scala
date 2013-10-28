@@ -13,6 +13,7 @@ import JsCmds._
 import nl.malienkolders.htm.admin.lib.exporter.ParticipantsExporter
 import nl.malienkolders.htm.admin.lib.Utils.PimpedParticipant
 import scala.xml.Text
+import nl.malienkolders.htm.admin.lib.exporter.ClubsExporter
 
 object ParticipantList {
 
@@ -52,6 +53,7 @@ object ParticipantList {
     def createParticipantSubmit = SHtml.submit("create participant", createParticipant, "class" -> "btn btn-default")
 
     "#download" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), <span><span class="glyphicon glyphicon-download"></span> Download</span>, "class" -> "btn btn-default pull-right") &
+    "#downloadClubs" #> SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), <span><span class="glyphicon glyphicon-download"></span> Clubs</span>, "class" -> "btn btn-default pull-right") &
       "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
         val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
         selectedParticipant = Empty
@@ -92,6 +94,10 @@ object ParticipantList {
 
   def downloadParticipantList() = {
     OutputStreamResponse(ParticipantsExporter.doExport _, List("content-disposition" -> "inline; filename=\"participants.xls\""))
+  }
+
+  def downloadClubsList() = {
+    OutputStreamResponse(ClubsExporter.doExport _, List("content-disposition" -> "inline; filename=\"clubs.xls\""))
   }
 
 }
