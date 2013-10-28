@@ -269,6 +269,7 @@ object TournamentView {
           "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
           "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))
       ) &
+      "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
       "#tournamentParticipant" #> tournamentSubscriptions.map(sub =>
         "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
           "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
