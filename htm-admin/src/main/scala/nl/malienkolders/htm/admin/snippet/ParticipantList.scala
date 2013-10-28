@@ -69,9 +69,9 @@ object ParticipantList {
           ".shortName *" #> p.shortName.is &
           ".club *" #> p.club.is &
           ".clubCode *" #> p.clubCode.is &
-          ".tournament" #> p.subscriptions.sortBy(_.primary.get).reverse.map(_.tournament.foreign.get).map(
-            tournament =>
-              <span class={"label "+tournament.identifier.get} title={ tournament.name.get }>{ tournament.mnemonic.get }</span>) &
+          ".tournament" #> p.subscriptions.sortBy(_.primary.get).reverse.map { sub =>
+              val tournament = sub.tournament.foreign.get
+              <span class={"label "+tournament.identifier.get} title={ tournament.name.get }>{ tournament.mnemonic.get + " " + sub.fighterNumber.get }</span>} &
             ".flag" #> (
               "img [src]" #> (if (c.hasFlag.is) "/images/flags/" + c.code2.get.toLowerCase() + ".png" else "/images/flags/unknown.png") &
               "img [class]" #> (if (c.hasViewerFlag.is) "viewerFlagAvailable" else "") &
