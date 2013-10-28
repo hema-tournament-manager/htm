@@ -308,7 +308,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	    		
 	    		var next = $scope.findNextFight();
 	    		if (next) {
-	    			$scope.defaultAnnouncements.nextup = "Next up: <span class=\"badge red\">" + next.fighterA.externalId + "</span> <b>" + next.fighterA.name  + "</b> vs <span class=\"badge blue\">" + next.fighterB.externalId + "</span> <b>" + next.fighterB.name + "</b> at " + $filter('hours')(next.plannedTime);
+	    			$scope.defaultAnnouncements.nextup = "Next up: <span class=\"badge red\">" + next.fighterA.externalId + "</span> <b>" + next.fighterA.shortName  + "</b> vs <span class=\"badge blue\">" + next.fighterB.externalId + "</span> <b>" + next.fighterB.shortName + "</b> at " + $filter('hours')(next.plannedTime);
 	    		} else {
 	    			$scope.defaultAnnouncements.nextup = "";
 	    		}
