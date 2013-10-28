@@ -33,7 +33,17 @@
 			</style>
 		</head>
 		<div class="lift:ParticipantList">
-		<h2>Participants <button id="download"></button> <button id="downloadClubs"></button></h2>
+		<h2>
+			Participants 
+			<div class="btn-group pull-right" title="Download">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					<span class="glyphicon glyphicon-download"></span> Download <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li class="downloadButton"><a href="#">Action</a></li>
+				</ul>
+			</div>
+		</h2>
 		<div id="countrySelect"><select><option>Netherlands</option></select></div>
 		<table class="table table-condensed table-hover">
 			<tbody>
