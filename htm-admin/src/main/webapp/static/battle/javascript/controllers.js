@@ -395,7 +395,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     });
     
     $('#score-options').hide();
-	
 };
 
 var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
