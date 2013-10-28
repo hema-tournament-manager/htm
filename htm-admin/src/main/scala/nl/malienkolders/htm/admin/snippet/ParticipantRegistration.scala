@@ -34,7 +34,7 @@ object ParticipantRegistration {
     val p = Participant.find(By(Participant.externalId, ParticipantRegistration.loc.currentValue.map(_.param).get)).get
 
     var upload: Box[FileParamHolder] = Empty
-    
+
     def process() = {
       for (fph <- upload) {
         PhotoImporterBackend.handlePhoto(p, fph.fileStream)

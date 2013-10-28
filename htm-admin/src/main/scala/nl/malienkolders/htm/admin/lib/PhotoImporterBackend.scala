@@ -33,7 +33,7 @@ object PhotoImporterBackend {
 
     val image = ImageIO.read(in)
     ImageIO.write(image, "jpg", participant.avatarOriginalFile)
-    
+
     val generatedDir = new File(targetDir, "Generated")
     generatedDir.mkdir()
 

@@ -32,9 +32,9 @@ object Utils {
     }
 
   }
-  
+
   implicit class TimeRenderHelper(time: Long) {
     def as(format: String) = new SimpleDateFormat(format).format(new Date(time))
   }
-  
+
 }

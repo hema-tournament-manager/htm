@@ -16,15 +16,15 @@ object PoolsExporter extends ExcelExporter {
     val workbook = loadWorkbook("pools");
 
     val sheet = workbook.getSheetAt(0);
-    
+
     sheet.getOrCreateRow(0).getOrCreateCell(0).setCellValue("Pools " + tournament.name.get)
 
     var i = 2;
 
     for (pool <- tournament.rounds.head.pools) {
-        i = i + 1;
-        val poolRow = sheet.getOrCreateRow(i);
-        poolRow.getOrCreateCell(0).setCellValue(pool.poolName)
+      i = i + 1;
+      val poolRow = sheet.getOrCreateRow(i);
+      poolRow.getOrCreateCell(0).setCellValue(pool.poolName)
 
       for (p <- pool.participants) {
 

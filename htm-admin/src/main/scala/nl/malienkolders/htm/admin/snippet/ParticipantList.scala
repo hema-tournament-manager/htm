@@ -53,8 +53,8 @@ object ParticipantList {
     def createParticipantSubmit = SHtml.submit("create participant", createParticipant, "class" -> "btn btn-default")
 
     ".downloadButton *" #> Seq(
-        SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), Text("Participants")),
-        SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), Text("Clubs"))) &
+      SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), Text("Participants")),
+      SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), Text("Clubs"))) &
       "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
         val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
         selectedParticipant = Empty
@@ -63,28 +63,29 @@ object ParticipantList {
       ".participant" #> (ps.map { p =>
         val c = p.country.obj.getOrElse(Country.findAll.head)
         ".participant [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo("/participants/register/" + p.externalId.is)) &
-        ".participant [class]" #> (if (p.isPresent.is) "success" else "default") &
-        ".photo [class+]" #> (if (p.subscriptions.size > 0) (if (p.hasAvatar) "glyphicon-check" else "glyphicon-unchecked") else "") &
+          ".participant [class]" #> (if (p.isPresent.is) "success" else "default") &
+          ".photo [class+]" #> (if (p.subscriptions.size > 0) (if (p.hasAvatar) "glyphicon-check" else "glyphicon-unchecked") else "") &
           ".id *" #> p.externalId.is &
           ".name *" #> p.name.is &
           ".shortName *" #> p.shortName.is &
           ".club *" #> p.club.is &
           ".clubCode *" #> p.clubCode.is &
           ".tournament" #> p.subscriptions.sortBy(_.primary.get).reverse.map { sub =>
-              val tournament = sub.tournament.foreign.get
-              <span class={"label "+tournament.identifier.get} title={ tournament.name.get }>{ tournament.mnemonic.get + " " + sub.fighterNumber.get }</span>} &
-            ".flag" #> (
-              "img [src]" #> (if (c.hasFlag.is) "/images/flags/" + c.code2.get.toLowerCase() + ".png" else "/images/flags/unknown.png") &
-              "img [class]" #> (if (c.hasViewerFlag.is) "viewerFlagAvailable" else "") &
-              "img [id]" #> ("flag" + p.id.is) &
-              "img [title]" #> ("%s (click to change)" format c.name.is) &
-              "img [onclick]" #> SHtml.ajaxInvoke { () =>
-                selectedParticipant = Full(p)
-                Run("document.getElementById('countrySelectDropdown').selectedIndex = 0;$('#countrySelect').show();$('#countrySelect').offset($('#flag" + p.id.is + "').offset());") &
-                  Focus("countrySelectDropdown")
+            val tournament = sub.tournament.foreign.get
+            <span class={ "label " + tournament.identifier.get } title={ tournament.name.get }>{ tournament.mnemonic.get + " " + sub.fighterNumber.get }</span>
+          } &
+          ".flag" #> (
+            "img [src]" #> (if (c.hasFlag.is) "/images/flags/" + c.code2.get.toLowerCase() + ".png" else "/images/flags/unknown.png") &
+            "img [class]" #> (if (c.hasViewerFlag.is) "viewerFlagAvailable" else "") &
+            "img [id]" #> ("flag" + p.id.is) &
+            "img [title]" #> ("%s (click to change)" format c.name.is) &
+            "img [onclick]" #> SHtml.ajaxInvoke { () =>
+              selectedParticipant = Full(p)
+              Run("document.getElementById('countrySelectDropdown').selectedIndex = 0;$('#countrySelect').show();$('#countrySelect').offset($('#flag" + p.id.is + "').offset());") &
+                Focus("countrySelectDropdown")
 
-              }) &
-              ".action" #> <a href={ "/participants/register/" + p.externalId.is } style="margin-right: 10px">register</a>
+            }) &
+            ".action" #> <a href={ "/participants/register/" + p.externalId.is } style="margin-right: 10px">register</a>
       }) &
       ".totals" #> (
         ".people *" #> ps.size &

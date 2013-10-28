@@ -14,12 +14,12 @@ object ClubsExporter extends ExcelExporter {
 
     val allClubs = Participant.findAll.map(p => p.clubCode.get -> p.club.get).toSet
     val relevantClubs = allClubs.filterNot(_._1.contains("/")).filterNot(_._1.isEmpty())
-    
+
     for ((clubCode, clubName) <- relevantClubs.toList.sortBy(_._1)) {
-        i = i + 1;
-        val row = sheet.getOrCreateRow(i);
-        row.getOrCreateCell(0).setCellValue(clubCode)
-        row.getOrCreateCell(1).setCellValue(clubName)
+      i = i + 1;
+      val row = sheet.getOrCreateRow(i);
+      row.getOrCreateCell(0).setCellValue(clubCode)
+      row.getOrCreateCell(1).setCellValue(clubName)
     }
 
     workbook.write(outputStream);
