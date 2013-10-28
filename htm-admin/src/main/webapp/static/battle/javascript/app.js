@@ -25,6 +25,7 @@ controller('PoolsCtrl', ['$rootScope', '$scope', '$timeout', '$location', 'playR
 						this.closed = !this.closed;
 						if (!this.closed) {
 							this.unread = 0;
+							$("#chatbox input").focus();
 						}
 					},
 					messages: new Array(),
@@ -40,7 +41,7 @@ controller('PoolsCtrl', ['$rootScope', '$scope', '$timeout', '$location', 'playR
 		    	$rootScope.$apply(function() {
 		    		$rootScope.chat.addMessage(data);
 		    	});
-		    	$("#chatbox .messages").animate({ scrollTop: $('#chatbox .messages')[0].scrollHeight}, 1000);
+		    	$("#chatbox .messages").animate({ scrollTop: $('#chatbox .messages')[0].scrollHeight}, 350);
 		    }).on('initial-chat-messages', function(event, data) {
 		      //We do this to get the array as one var.
 		      var messages =  Array.prototype.slice.call(arguments, 1);

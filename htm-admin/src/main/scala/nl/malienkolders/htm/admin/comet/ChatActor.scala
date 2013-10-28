@@ -34,25 +34,25 @@ class ChatActor extends CometActor with CometListener with Loggable {
     NodeSeq.Empty
   }
 
-  private[this] def sendListOrLastMessage(v: Vector[String]) = {
+  private[this] def sendListOrLastMessage(v: Vector[(Long, String)]) = {
     if ( ( v.length - msgs.v.length ) > 1 ) {
       this ! InitialRender
     } else {
-      partialUpdate(NewMessageNg(v.last))
+      partialUpdate(NewMessage(v.last._1, v.last._2))
     }
   }
 }
 
-case class NewMessageNg(message: String) extends JsCmd {
+case class NewMessage(time: Long, message: String) extends JsCmd {
   implicit val formats = DefaultFormats.lossless
-  val json: JValue = ("message" -> message)
+  val json: JValue = ("time" -> time) ~ ("message" -> message)
   override val toJsCmd = JE.JsRaw(""" $(document).trigger('new-chat-message', %s)""".format(compact(render(json)))).toJsCmd
 }
 
-case class InitialMessages(messages: Vector[String]) extends JsCmd {
+case class InitialMessages(messages: Vector[(Long, String)]) extends JsCmd {
   implicit val formats = DefaultFormats.lossless
-  val json: JValue = messages.map{ m =>
-    ("message" -> m)
+  val json: JValue = messages.map{ case (time, message) =>
+    ("time" -> time) ~ ("message" -> message)
   }
   override val toJsCmd = JE.JsRaw(""" $(document).trigger('initial-chat-messages', %s)""".format(compact(render(json)))).toJsCmd
 }

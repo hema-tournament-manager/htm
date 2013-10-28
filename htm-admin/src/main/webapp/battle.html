@@ -27,6 +27,7 @@
 			<div class="messages">
 				<ul class="list-group">
 					<li class="list-group-item" ng-repeat="message in chat.messages">
+						<h6 class="list-group-item-heading">{{ message.time | hours }}</h6>
 						<span ng-bind="message.message">Sample message</span>
 					</li>
 				</ul>
