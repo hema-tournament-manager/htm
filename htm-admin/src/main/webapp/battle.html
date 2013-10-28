@@ -16,6 +16,34 @@
     </header>
 
 	<div id="main" class="container" ng-view></div>
+	<div id="chatbox" class="panel panel-default" ng-class="chat.state()">
+		<div class="panel-heading" ng-click="chat.toggle()">
+			<h3 class="panel-title">
+				Chat
+				<span class="badge" ng-show="chat.unread"  ng-animate="{show: 'animated flash', hide: 'animated hinge'}">{{ chat.unread }}</span>
+			</h3>
+		</div>
+		<div class="lift:comet?type=ChatActor">
+			<div class="messages">
+				<ul class="list-group">
+					<li class="list-group-item" ng-repeat="message in chat.messages">
+						<h6 class="list-group-item-heading">{{ message.time | hours }}</h6>
+						<span ng-bind="message.message">Sample message</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="input">
+			<form data-lift="form.ajax?class=navbar-form">
+				<div class="input-group">
+					<input type="text" class="lift:ChatIn form-control" id="chat_in">
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-primary">Send</button>
+					</span>
+				</div>
+			</form>
+		</div>
+	</div>
 
 	<script src="/static/javascript/lib/jquery-1.10.2.js"></script>
     <script src="/static/javascript/lib/jquery-ui-1.10.3.js"></script>
