@@ -4,8 +4,8 @@ package model
 import net.liftweb._
 import mapper._
 
-case class MarshalledPoolSummary(id: Long, order: Long, startTime: Long, finished: Boolean, round: MarshalledRoundSummary, fightCount: Long, participantsCount: Long)
-case class MarshalledPool(id: Long, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
+case class MarshalledPoolSummary(id: Long, name: String, order: Long, startTime: Long, finished: Boolean, round: MarshalledRoundSummary, fightCount: Long, participantsCount: Long)
+case class MarshalledPool(id: Long, name: String, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
 case class MarshalledViewerPool(summary: MarshalledPoolSummary, fights: List[MarshalledViewerFightSummary])
 
 class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToMany {
@@ -28,10 +28,11 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   def addFight(a: Participant, b: Participant) = fights += Fight.create.fighterA(a).fighterB(b).inProgress(false).order(fights.size + 1)
 
-  def toMarshalled = MarshalledPool(id.is, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledPool(id.is, poolName, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
   def toViewer = MarshalledViewerPool(toMarshalledSummary, fights.map(_.toViewerSummary).toList)
   def toMarshalledSummary = MarshalledPoolSummary(
     id.is,
+    poolName,
     order.is,
     startTime.is,
     finished_?,
