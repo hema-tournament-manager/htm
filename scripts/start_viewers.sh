@@ -7,7 +7,7 @@ fi
 
 project="htm-viewer-play"
 if [ $2 ]; then
-	viewers[0]="$1"
+	viewers[0]="$2"
 else
 	viewers[0]="9001"
 	viewers[1]="9002"
