@@ -265,7 +265,10 @@ object TournamentView {
 
     "#tournamentName" #> t.name &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
-      "name=downloadSchedule" #> SHtml.link("/download_schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Download Schedule"), "class" -> "btn btn-default") &
+      ".downloadButton" #> Seq(
+          "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
+          "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))
+      ) &
       "#tournamentParticipant" #> tournamentSubscriptions.map(sub =>
         "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
           "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
@@ -378,6 +381,10 @@ object TournamentView {
 
   def downloadSchedule(tournament: Tournament) = {
     OutputStreamResponse(ScheduleExporter.doExport(tournament) _, List("content-disposition" -> ("inline; filename=\"schedule_" + tournament.identifier.get + ".xls\"")))
+  }
+
+  def downloadPools(tournament: Tournament) = {
+    OutputStreamResponse(PoolsExporter.doExport(tournament) _, List("content-disposition" -> ("inline; filename=\"pools_" + tournament.identifier.get + ".xls\"")))
   }
 
 }

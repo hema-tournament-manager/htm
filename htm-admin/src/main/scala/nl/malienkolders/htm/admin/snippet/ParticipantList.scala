@@ -52,7 +52,7 @@ object ParticipantList {
 
     def createParticipantSubmit = SHtml.submit("create participant", createParticipant, "class" -> "btn btn-default")
 
-    "#download" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), <span><span class="glyphicon glyphicon-download"></span> Download</span>, "class" -> "btn btn-default pull-right") &
+    "#download" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), <span><span class="glyphicon glyphicon-download"></span> Participants</span>, "class" -> "btn btn-default pull-right") &
     "#downloadClubs" #> SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), <span><span class="glyphicon glyphicon-download"></span> Clubs</span>, "class" -> "btn btn-default pull-right") &
       "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
         val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)

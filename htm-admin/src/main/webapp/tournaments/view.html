@@ -26,7 +26,17 @@ body {
 }
 </style>
 			</head>
-			<h2><span id="tournamentName">Tournament</span> <button name="downloadSchedule" class="pull-right">Download schedule</button></h2>
+			<h2>
+				<span id="tournamentName">Tournament</span>
+				<div class="btn-group pull-right">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						Download <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu">
+						<li class="downloadButton"><a href="#">Action</a></li>
+					</ul>
+				</div>
+			</h2>
 			<p>
 				Default arena: <select name="tournamentArena"></select>
 			</p>
