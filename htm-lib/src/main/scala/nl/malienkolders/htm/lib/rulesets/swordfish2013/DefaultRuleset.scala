@@ -87,15 +87,22 @@ abstract class SwordfishRuleset extends Ruleset {
   }
 
   def planning(round: Round): List[Pool] = {
-    val previous = round.previousRounds
+    val previousRounds = round.previousRounds
     round.pools.map { pool =>
-      val pairings = roundRobinPairing(pool.participants.size, previous.size)
-      pairings.foreach {
-        case (a, b) if a != -1 && b != -1 =>
-          pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
-        case _ => // do nothing
+      val maxNumberOfRounds = pool.participants.size - (if (pool.participants.size.isEven) 1 else 0)
+
+      // don't generate fights after all fighters have faced each other
+      // with 4 fighters everyone has to fight 3 times, so you need 3 rounds
+      // with 5 fighters everyone has to fight 4 times, but every round one person cannot fight, so you need 5 rounds
+      if (previousRounds.size < maxNumberOfRounds) {
+        val pairings = roundRobinPairing(pool.participants.size, previousRounds.size)
+        pairings.foreach {
+          case (a, b) if a != -1 && b != -1 =>
+            pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
+          case _ => // do nothing
+        }
+        pool.save
       }
-      pool.save
       pool
     }.toList
   }
