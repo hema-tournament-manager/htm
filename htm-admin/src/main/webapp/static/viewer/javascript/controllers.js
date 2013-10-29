@@ -42,8 +42,8 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 		$scope.announcementBuffer = '';
 	};
 	
-	$scope.showFooter = function() {
-		$scope.footer.participant = $scope.footer.participantBuffer;
+	$scope.showFooter = function(participant) {
+		$scope.footer.participant = _.pick(participant, "name", "club", "country");
 		$scope.footer.participantBuffer = {name: "", club: "", country: ""};
 	};
 	

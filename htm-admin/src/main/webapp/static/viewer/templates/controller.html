@@ -84,7 +84,7 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-3">
 			<div class="panel panel-default">
 	   			<div class="panel-heading">
 					<h3 class="panel-title">Footer</h3>
@@ -103,7 +103,15 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<button class="btn btn-primary" type="button" ng-click="showFooter()" ng-disabled="!hasViewers()">Show</button>
+					<div class="btn-group">
+						<button type="button" class="btn btn-primary" ng-click="showFooter(footer.participantBuffer)" ng-disabled="!hasViewers()">Show</button>
+						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" ng-disabled="!hasViewers()">
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							<li ng-repeat="participant in participants"><a href="" ng-click="showFooter(participant)">{{ participant.name }} ({{ participant.clubCode }})</a></li>
+						</ul>
+					</div>
 					</div>
 					<div class="form-group">
 						<label>Last update</label>
