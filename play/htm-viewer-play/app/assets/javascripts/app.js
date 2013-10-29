@@ -9,7 +9,8 @@ angular
 						'FightCtrl', [ '$scope', '$timeout', 'playRoutes', 'stateService', FightCtrl ]).controller(
 								'OverviewArenaCtrl', [ '$scope', '$timeout', 'stateService', OverviewArenaCtrl ]).controller(
 										'ImageCtrl', [ '$scope', 'stateService', ImageCtrl ]).controller(
-												'ParticipantFooterCtrl', [ '$scope', 'stateService', ParticipantFooterCtrl ]).config(
+												'ParticipantFooterCtrl', [ '$scope', 'stateService', ParticipantFooterCtrl ]).controller(
+														'ParticipantBioCtrl', [ '$scope', 'stateService', ParticipantBioCtrl ]).config(
 				[ '$routeProvider', function($routeProvider) {
 					$routeProvider.when('/empty', {
 						templateUrl : 'assets/templates/empty.html',
@@ -26,6 +27,9 @@ angular
 					}).when('/participant/footer', {
 						templateUrl : 'assets/templates/participant/footer.html',
 						controller : 'ParticipantFooterCtrl'
+					}).when('/participant/bio', {
+						templateUrl : 'assets/templates/participant/bio.html',
+						controller : 'ParticipantBioCtrl'
 					}).otherwise({
 						redirectTo : '/empty'
 					});

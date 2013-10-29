@@ -29,7 +29,12 @@ object Application extends Controller {
     "image" -> Json.obj(),
     "fight" -> Json.obj(),
     "overview/arena" -> Json.obj(),
-    "participant/footer" -> Json.obj());
+    "participant/footer" -> Json.obj(),
+    "participant/bio" -> Json.obj(
+      "side" -> "left",
+      "participant" -> Json.obj(
+        "name" -> "Name",
+        "club" -> "Club")));
 
   case class TimerInfo(battleTime: Long, viewerTime: Long, action: String);
 
