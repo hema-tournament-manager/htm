@@ -109,7 +109,7 @@
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu" role="menu">
-							<li ng-repeat="participant in participants"><a href="" ng-click="showFooter(participant)">{{ participant.name }} ({{ participant.clubCode }})</a></li>
+							<li ng-repeat="participant in participants | orderBy:'name'"><a href="" ng-click="showFooter(participant)">{{ participant.name }} ({{ participant.clubCode }})</a></li>
 						</ul>
 					</div>
 					</div>
