@@ -12,8 +12,8 @@ import comet.ChatServer
 object ChatIn {
   def render = SHtml.onSubmit(s => {
     if (s != "") {
-	    ChatServer ! s
-	    SetValById("chat_in", "")
+      ChatServer ! s
+      SetValById("chat_in", "")
     }
   })
 }

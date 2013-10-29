@@ -98,7 +98,7 @@
 					</div>
 					<div class="form-group">
 						<select class="form-control" ng-model="footer.participantBuffer.country">
-							<option value="">None</option>
+							<option value="">Don't show country</option>
 							<option ng-repeat="country in countries" value="{{ country.code2 }}">{{ country.name }}</option>
 						</select>
 					</div>
@@ -119,6 +119,13 @@
 					</div>
 	   			</div>
 	   		</div>
+		</div>
+		<div class="col-md-9">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					Tournament
+				</div>
+			</div>
 		</div>
 	</div>
 	

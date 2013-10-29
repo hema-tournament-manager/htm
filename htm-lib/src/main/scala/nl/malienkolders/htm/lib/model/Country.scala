@@ -25,7 +25,7 @@ class Country extends LongKeyedMapper[Country] with IdPK with CreatedUpdated wit
       1
     else
       this.name.is.compareTo(that.name.is)
-      
+
   def toMarshalled = MarshalledCountry(code2.get, name.get)
 }
 
