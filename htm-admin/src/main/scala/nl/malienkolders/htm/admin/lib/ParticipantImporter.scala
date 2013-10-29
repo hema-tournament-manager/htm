@@ -145,7 +145,7 @@ object ParticipantImporter {
           subs.foreach {
             case (sub, p) =>
               sub.pool foreach { poolNr =>
-                while (round.pools.size < poolNr)
+                while (round.pools.size < poolNr && !(t.identifier.get == "ladies_longsword" && round.pools.size >= 3))
                   round.addPool
                 round.pools.find(_.order.get == poolNr).foreach { pool =>
                   pool.participants += ps.find(_.externalId.get == p.sourceIds.head.id).get
