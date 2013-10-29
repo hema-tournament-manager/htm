@@ -26,7 +26,7 @@
 		<div class="lift:comet?type=ChatActor">
 			<div class="messages">
 				<ul class="list-group">
-					<li class="list-group-item" ng-repeat="message in chat.messages">
+					<li class="list-group-item" ng-repeat="message in chat.messages" ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
 						<h6 class="list-group-item-heading">{{ message.time | hours }}</h6>
 						<span ng-bind="message.message">Sample message</span>
 					</li>
