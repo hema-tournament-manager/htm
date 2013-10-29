@@ -67,6 +67,16 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.images =
     function() {
     return _wA({method:"GET", url:"/" + "api/images"})
     }
+
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.participants = 
+    function() {
+    return _wA({method:"GET", url:"/" + "api/participants"})
+    }
+
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.countries = 
+    function() {
+    return _wA({method:"GET", url:"/" + "api/countries"})
+    }
  
 })(jsRoutes)
           

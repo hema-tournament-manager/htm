@@ -24,7 +24,12 @@ object Application extends Controller {
 
   val (updateOut, updateChannel) = Concurrent.broadcast[JsValue]
 
-  var clientState = Json.obj("empty" -> Json.obj(), "image" -> Json.obj(), "fight" -> Json.obj(), "overview/arena" -> Json.obj());
+  var clientState = Json.obj(
+    "empty" -> Json.obj(),
+    "image" -> Json.obj(),
+    "fight" -> Json.obj(),
+    "overview/arena" -> Json.obj(),
+    "participant/footer" -> Json.obj());
 
   case class TimerInfo(battleTime: Long, viewerTime: Long, action: String);
 

@@ -9,6 +9,8 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
+case class MarshalledCountry(code2: String, name: String)
+
 class Country extends LongKeyedMapper[Country] with IdPK with CreatedUpdated with Ordered[Country] {
   def getSingleton = Country
 
@@ -23,6 +25,8 @@ class Country extends LongKeyedMapper[Country] with IdPK with CreatedUpdated wit
       1
     else
       this.name.is.compareTo(that.name.is)
+      
+  def toMarshalled = MarshalledCountry(code2.get, name.get)
 }
 
 object Country extends Country with LongKeyedMetaMapper[Country] {

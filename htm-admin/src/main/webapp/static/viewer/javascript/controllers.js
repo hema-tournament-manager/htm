@@ -6,6 +6,12 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	$scope.images = false;
 	$scope.announcement = "";
 	$scope.announcementBuffer = "";
+	$scope.participants = new Array();
+	$scope.countries = new Array();
+	$scope.footer = {
+		participant: {name: "", club: "", country: ""},
+		participantBuffer: {name: "", club: "", country: ""}
+	};
 	
 	$scope.hasViewers = function() {
 		return _.findWhere($scope.viewers, {selected: true}) != undefined;
@@ -23,9 +29,22 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 		$scope.images = data;
 	});
 	
+	playRoutes.controllers.AdminInterface.participants().get().success(function(data, status) {
+		$scope.participants = data;
+	});
+	
+	playRoutes.controllers.AdminInterface.countries().get().success(function(data, status) {
+		$scope.countries = data;
+	});
+	
 	$scope.announce = function() {
 		$scope.announcement = $scope.announcementBuffer;
 		$scope.announcementBuffer = '';
+	};
+	
+	$scope.showFooter = function() {
+		$scope.footer.participant = $scope.footer.participantBuffer;
+		$scope.footer.participantBuffer = {name: "", club: "", country: ""};
 	};
 	
 	$scope.update = function(friendlyLabel, view, payload) {
@@ -38,5 +57,9 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	
 	$scope.$watch('announcement', function(newValue, oldValue) {
 		$scope.update("Message", "", {message: newValue});
+    });
+	
+	$scope.$watch('footer.participant', function(newValue, oldValue) {
+		$scope.update("Footer: " + newValue.name, "participant/footer", {participant: newValue});
     });
 };

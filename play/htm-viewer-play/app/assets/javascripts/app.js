@@ -8,7 +8,8 @@ angular
 				[ '$scope', '$location', 'playRoutes', 'stateService', EmptyCtrl ]).controller(
 						'FightCtrl', [ '$scope', '$timeout', 'playRoutes', 'stateService', FightCtrl ]).controller(
 								'OverviewArenaCtrl', [ '$scope', '$timeout', 'stateService', OverviewArenaCtrl ]).controller(
-										'ImageCtrl', [ '$scope', 'stateService', ImageCtrl ]).config(
+										'ImageCtrl', [ '$scope', 'stateService', ImageCtrl ]).controller(
+												'ParticipantFooterCtrl', [ '$scope', 'stateService', ParticipantFooterCtrl ]).config(
 				[ '$routeProvider', function($routeProvider) {
 					$routeProvider.when('/empty', {
 						templateUrl : 'assets/templates/empty.html',
@@ -22,6 +23,9 @@ angular
 					}).when('/overview/arena', {
 						templateUrl : 'assets/templates/overview/arena.html',
 						controller : 'OverviewArenaCtrl'
+					}).when('/participant/footer', {
+						templateUrl : 'assets/templates/participant/footer.html',
+						controller : 'ParticipantFooterCtrl'
 					}).otherwise({
 						redirectTo : '/empty'
 					});

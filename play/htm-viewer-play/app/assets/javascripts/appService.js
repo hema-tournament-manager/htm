@@ -48,6 +48,13 @@ angular.module('htm.services', [])
 			  "message": "",
 			  "arena": "",
 			  "pools": []
+		  },
+		  "participant/footer": {
+			  "participant": {
+				  "name": "Een of andere Deelnemer",
+				  "club": "Een Of Andere Vereniging",
+				  "country": "SE"
+			  }
 		  }
 	  };
 	  
