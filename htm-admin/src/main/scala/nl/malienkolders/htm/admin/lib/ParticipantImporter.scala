@@ -17,8 +17,24 @@ import java.io.File
 import nl.htm.importer.EventData
 import java.text.SimpleDateFormat
 import java.util.Date
+import nl.malienkolders.htm.lib.model.Tournament
 
 object ParticipantImporter {
+
+  import nl.malienkolders.htm.admin.lib.Utils.Constants._
+  
+  val eliminationSizes = Map(
+    "longsword_open" -> 32,
+    "longsword_ladies" -> 8,
+    "rapier" -> 8,
+    "sabre" -> 16)
+
+  val finalsNames = Map(
+    32 -> "16th Finals",
+    16 -> "8th Finals",
+    8 -> "Quarter Finals",
+    4 -> "Semi Finals",
+    2 -> ROUND_NAME_FINAL)
 
   val timesAndArenas: Map[String, (String, Map[Int, (Int, String)])] = Map(
     "longsword_open" ->
@@ -205,8 +221,42 @@ object ParticipantImporter {
       }
     }
 
+    for {
+      tournament <- tournaments
+      size <- eliminationSizes.get(tournament.identifier.get)
+    } {
+      generateEliminationRound(tournament, size)
+    }
+
     tournaments.foreach(_.save)
 
+  }
+
+  def generateEliminationRound(tournament: Tournament, size: Int): Unit = if (size >= 2) {
+    if (size == 2) {
+      tournament.rounds += Round.create.
+        order(tournament.rounds.size + 1).
+        name(ROUND_NAME_THIRD_PLACE).
+        timeLimitOfFight(360).
+        breakInFightAt(180).
+        exchangeLimit(0).
+        breakDuration(60).
+        timeBetweenFights(0).
+        ruleset(Ruleset().id)
+    }
+
+    tournament.rounds += Round.create.
+      order(tournament.rounds.size + 1).
+      name(finalsNames(size)).
+      timeLimitOfFight(if (size == 2) 360 else 180).
+      breakInFightAt(if (size == 2) 180 else 0).
+      exchangeLimit(if (size == 2) 0 else 10).
+      breakDuration(if (size == 2) 60 else 0).
+      timeBetweenFights(0).
+      ruleset(Ruleset().id)
+
+    object pools
+    generateEliminationRound(tournament, size / 2)
   }
 
 }

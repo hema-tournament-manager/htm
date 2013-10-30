@@ -10,18 +10,18 @@ import scala.xml._
 import net.liftweb.json._
 
 case class MarshalledParticipant(
-    id: Long,
-    externalId: String,
-    name: String,
-    shortName: String,
-    club: String,
-    clubCode: String,
-    country: String,
-    isPresent: Boolean,
-    tshirt: String,
-    age: Int,
-    height: Int,
-    weight: Int)
+  id: Long,
+  externalId: String,
+  name: String,
+  shortName: String,
+  club: String,
+  clubCode: String,
+  country: String,
+  isPresent: Boolean,
+  tshirt: String,
+  age: Int,
+  height: Int,
+  weight: Int)
 
 class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with OneToMany[Long, Participant] {
   def getSingleton = Participant
@@ -54,18 +54,18 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   def initialRanking(p: Pool): Int = initialRanking(p.round.obj.get)
 
   def toMarshalled = MarshalledParticipant(
-      id.is,
-      externalId.is,
-      name.is,
-      shortName.is,
-      club.is,
-      clubCode.is,
-      country.obj.get.code2.is,
-      isPresent.is,
-      tshirt.is,
-      age.is,
-      height.is,
-      weight.is)
+    id.is,
+    externalId.is,
+    name.is,
+    shortName.is,
+    club.is,
+    clubCode.is,
+    country.obj.get.code2.is,
+    isPresent.is,
+    tshirt.is,
+    age.is,
+    height.is,
+    weight.is)
 }
 
 object Participant extends Participant with LongKeyedMetaMapper[Participant] with CRUDify[Long, Participant] {

@@ -37,7 +37,7 @@ abstract class Ruleset {
 
   def ranking(r: Round): List[(Pool, List[(Participant, Scores)])]
 
-  def register = Ruleset.registerRuleset(this)
+  def register(default: Boolean = false) = Ruleset.registerRuleset(this, default)
 
   def compare(s1: Scores, s2: Scores)(implicit random: scala.util.Random): Boolean
 
@@ -59,11 +59,18 @@ abstract class Ruleset {
 
 object Ruleset {
   private var _rulesets = Map[String, Ruleset]()
+  
+  private var _defaultRuleset: Ruleset = _
 
-  def registerRuleset(t: Ruleset): Unit = {
+  def registerRuleset(t: Ruleset, default: Boolean = false): Unit = {
     _rulesets = _rulesets + (t.id -> t)
+    if (default) {
+      _defaultRuleset = t
+    }
   }
 
+  def apply() = _defaultRuleset
+  
   def apply(id: String) = rulesets.get(id).get
 
   def ruleset(id: String): Option[Ruleset] = rulesets.get(id)
