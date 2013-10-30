@@ -29,6 +29,7 @@ object Application extends Controller {
   case class TimerInfo(battleTime: Long, viewerTime: Long, action: String);
 
   var timer = TimerInfo(0, System.currentTimeMillis(), "stop");
+  var currentView = "empty"
 
   def index = Action {
     Ok(views.html.index())
@@ -41,7 +42,10 @@ object Application extends Controller {
   def ping = Action { Ok("true") }
 
   private def updateImpl(msg: JsValue) = {
-    val view = (msg \ "view").as[String]
+    val newView = (msg \ "view").as[String]
+
+    currentView = if (newView.isEmpty()) currentView else newView;
+
     val payload = (msg \ "payload").asInstanceOf[JsObject]
 
     if (payload.keys.contains("timer")) {
@@ -54,9 +58,12 @@ object Application extends Controller {
       }
     }
 
-    val viewState = (clientState \ view).asInstanceOf[JsObject] ++ payload;
+    println(clientState.toString());
+    println("currentView: " + currentView);
 
-    val replacePayload = (__ \ view).json.put(viewState)
+    val viewState = (clientState \ currentView).asInstanceOf[JsObject] ++ payload;
+
+    val replacePayload = (__ \ currentView).json.put(viewState)
 
     clientState = clientState ++ clientState.transform(replacePayload).get
 
