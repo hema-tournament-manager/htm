@@ -40,6 +40,21 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	
 	playRoutes.controllers.AdminInterface.tournaments().get().success(function(data, status) {
 		$scope.tournaments = data;
+		_.each($scope.tournaments, function(tournament) {
+			tournament.unfinishedRounds = new Array();
+			_.each(tournament.rounds, function(round) {
+				if (!round.finished) {
+					playRoutes.controllers.AdminInterface.round(round.id).get().success(function(data, status) {
+						var newRound = {id: round.id, name: data.name};
+						playRoutes.controllers.AdminInterface.roundFight(round.id).get().success(function(data, status) {
+							newRound.fight = data;
+							tournament.unfinishedRounds.push(newRound);
+						});
+					});
+				}
+			});
+		});
+		
 	});
 	
 	$scope.announce = function() {

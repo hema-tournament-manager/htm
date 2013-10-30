@@ -126,8 +126,12 @@
 					{{ tournament.name }}
 				</div>
 				<table class="table">
-					<tr ng-repeat="round in tournament.rounds | filter:{finished: true}">
-						<td>{{ round.id }}</td>
+					<tr ng-repeat="round in tournament.unfinishedRounds | orderBy:'id'">
+						<td>{{ round.name }}</td>
+						<td><button class="btn btn-danger form-control" ng-click="update('Bio ' + round.fight.fighterA.name, 'participant/bio', {side: 'right', tournament: tournament.name, round: round.name, participant: round.fight.fighterA})" ng-disabled="!hasViewers()">{{ round.fight.fighterA.name }}</button></td>
+						<td><button class="btn btn-default" ng-disabled="!hasViewers()">Tree</button></td>
+						<td class="text-right"><button class="btn btn-default" ng-disabled="!hasViewers()">Tree</button></td>
+						<td><button class="btn btn-primary form-control" ng-click="update('Bio ' + round.fight.fighterB.name, 'participant/bio', {side: 'left', tournament: tournament.name, round: round.name, participant: round.fight.fighterB})" ng-disabled="!hasViewers()">{{ round.fight.fighterB.name }}</button></td>
 					</tr>
 				</table>
 			</div>

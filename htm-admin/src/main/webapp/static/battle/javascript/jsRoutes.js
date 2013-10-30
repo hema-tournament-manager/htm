@@ -44,10 +44,15 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.poolFight =
       }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.round = 
-      function(id) {
-      return _wA({method:"GET", url:"/" + "api/round/" + (function(k,v) {return v})("id", id)})
-      }
-   
+    function(id) {
+    return _wA({method:"GET", url:"/" + "api/round/" + (function(k,v) {return v})("id", id)})
+    }
+ 
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.roundFight = 
+    function(id) {
+    return _wA({method:"GET", url:"/" + "api/round/" + (function(k,v) {return v})("id", id) + "/fight"})
+    }
+ 
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.tournaments = 
     function() {
     return _wA({method:"GET", url:"/" + "api/tournaments"})

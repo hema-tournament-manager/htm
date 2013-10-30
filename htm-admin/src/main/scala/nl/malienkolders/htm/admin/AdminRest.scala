@@ -47,6 +47,16 @@ object AdminRest extends RestHelper {
     case "api" :: "round" :: AsLong(roundId) :: "pools" :: Nil JsonGet _ =>
       Extraction.decompose(Round.findByKey(roundId).map(_.pools.map(_.toMarshalled)).getOrElse(false))
 
+    case "api" :: "round" :: AsLong(roundId) :: "fight" :: Nil JsonGet _ =>
+      val fight = for {
+        round <- Round.findByKey(roundId)
+        pool <- round.pools.find(!_.finished_?)
+        fight <- pool.fights.find(!_.finished_?)
+      } yield {
+        fight.toMarshalledSummary
+      }
+      Extraction.decompose(fight.getOrElse(false))
+
     case "api" :: "pool" :: AsLong(poolId) :: Nil JsonGet _ =>
       Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalled).getOrElse(false))
 
