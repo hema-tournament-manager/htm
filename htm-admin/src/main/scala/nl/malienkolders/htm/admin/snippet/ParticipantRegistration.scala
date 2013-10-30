@@ -48,6 +48,9 @@ object ParticipantRegistration {
       "name=shortName" #> p.shortName.toForm &
       "name=club" #> p.club.toForm &
       "name=clubCode" #> p.clubCode.toForm &
+      "name=age" #> p.age.toForm &
+      "name=height" #> p.height.toForm &
+      "name=weight" #> p.weight.toForm &
       "name=externalId" #> p.externalId.toForm &
       "name=present" #> p.isPresent.toForm &
       ".subscription" #> p.subscriptions.sortBy(!_.primary.get).map(sub =>

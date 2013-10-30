@@ -25,6 +25,9 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   object isStarFighter extends MappedBoolean(this)
   object isPresent extends MappedBoolean(this)
   object tshirt extends MappedPoliteString(this, 32)
+  object age extends MappedInt(this)
+  object height extends MappedInt(this)
+  object weight extends MappedInt(this)
 
   def tournaments = subscriptions.map(_.tournament.obj.get)
   object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.participant, OrderBy(TournamentParticipants.id, Ascending))
