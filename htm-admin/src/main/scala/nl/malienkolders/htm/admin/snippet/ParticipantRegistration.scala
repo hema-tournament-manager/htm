@@ -51,6 +51,7 @@ object ParticipantRegistration {
       "name=age" #> p.age.toForm &
       "name=height" #> p.height.toForm &
       "name=weight" #> p.weight.toForm &
+      "name=previousWins" #> p.previousWins.toForm &
       "name=externalId" #> p.externalId.toForm &
       "name=present" #> p.isPresent.toForm &
       ".subscription" #> p.subscriptions.sortBy(!_.primary.get).map(sub =>

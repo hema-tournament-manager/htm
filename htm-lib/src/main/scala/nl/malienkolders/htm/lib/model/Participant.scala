@@ -40,6 +40,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   object age extends MappedInt(this)
   object height extends MappedInt(this)
   object weight extends MappedInt(this)
+  object previousWins extends MappedTextarea(this, 1024)
 
   def tournaments = subscriptions.map(_.tournament.obj.get)
   object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.participant, OrderBy(TournamentParticipants.id, Ascending))
