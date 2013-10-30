@@ -3,7 +3,16 @@
 	<div class="round">{{ round }}</div>
 	<div class="name">{{ participant.name }}</div>
 	<div class="club">{{ participant.club }}</div>
-	<div class="age" ng-show="participant.age">{{ participant.age }}</div>
-	<div class="height" ng-show="participant.height">{{ participant.height }} m</div>
-	<div class="weight" ng-show="participant.weight">{{ participant.weight }} kg</div>
+	<div class="detail age" ng-show="participant.age">
+		<div class="lbl">Age</div>
+		<div class="value">{{ participant.age }}</div>
+	</div>
+	<div class="detail height" ng-show="participant.height">
+		<div class="lbl">Height</div>
+		<div class="value">{{ participant.height }}&nbsp;cm</div>
+	</div>
+	<div class="detail weight" ng-show="participant.weight">
+		<div class="lbl">Weight</div>
+		<div class="value">{{ participant.weight }}&nbsp;kg</div>
+	</div>
 </div>
