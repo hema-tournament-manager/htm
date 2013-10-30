@@ -57,5 +57,9 @@ angular
 							$rootScope.updateFeed = new EventSource("/updateFeed");
 							$rootScope.updateFeed.addEventListener("message",
 									$rootScope.updateView, false);
+							
+							$('#main').click(function() {
+								window.document.getElementById("main").webkitRequestFullScreen();
+							});
 						} ]);
 ;
