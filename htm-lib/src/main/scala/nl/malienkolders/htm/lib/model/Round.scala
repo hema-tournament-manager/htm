@@ -28,6 +28,9 @@ class Round extends LongKeyedMapper[Round] with OneToMany[Long, Round] {
 
   object pools extends MappedOneToMany(Pool, Pool.round, OrderBy(Pool.order, Ascending)) with Owned[Pool] with Cascade[Pool]
 
+  // the round is finished when all pools are finished
+  def finished_? = pools.map(_.finished_?).forall(x => x)
+  
   def addPool: Pool = {
     val newPool = Pool.create(tournament.obj.get).order(pools.size + 1)
     pools += newPool

@@ -121,10 +121,15 @@
 	   		</div>
 		</div>
 		<div class="col-md-9">
-			<div class="panel panel-default">
+			<div class="panel panel-default" ng-repeat="tournament in tournaments">
 				<div class="panel-body">
-					Tournament
+					{{ tournament.name }}
 				</div>
+				<table class="table">
+					<tr ng-repeat="round in tournament.rounds | filter:{finished: true}">
+						<td>{{ round.id }}</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 	</div>

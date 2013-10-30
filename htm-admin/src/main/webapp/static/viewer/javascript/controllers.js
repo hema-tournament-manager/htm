@@ -8,6 +8,7 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	$scope.announcementBuffer = "";
 	$scope.participants = new Array();
 	$scope.countries = new Array();
+	$scope.tournaments = new Array();
 	$scope.footer = {
 		participant: {name: "", club: "", country: ""},
 		participantBuffer: {name: "", club: "", country: ""}
@@ -35,6 +36,10 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	
 	playRoutes.controllers.AdminInterface.countries().get().success(function(data, status) {
 		$scope.countries = data;
+	});
+	
+	playRoutes.controllers.AdminInterface.tournaments().get().success(function(data, status) {
+		$scope.tournaments = data;
 	});
 	
 	$scope.announce = function() {
