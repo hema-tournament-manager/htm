@@ -28,11 +28,11 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   }
 
   def toMarshalled = MarshalledTournament(
-      id.is, 
-      name.is,
-      identifier.is,
-      participants.map(_.id.is).toList,
-      rounds.map(r => MarshalledTournamentRound(r.id.is, r.finished_?)).toList)
+    id.is,
+    name.is,
+    identifier.is,
+    participants.map(_.id.is).toList,
+    rounds.map(r => MarshalledTournamentRound(r.id.is, r.finished_?)).toList)
   def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, identifier.is, rapier_?)
 
   def compare(that: Tournament) = (this.id.is - that.id.is) match {
