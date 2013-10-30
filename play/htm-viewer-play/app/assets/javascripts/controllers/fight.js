@@ -6,10 +6,10 @@ var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
 	
 	$scope.updateScore = function() {
 		$scope.totalScore = _.reduce($scope.scores, function(memo, score) {
-			memo.a += score.diffA;
-			memo.b += score.diffB;
-			memo.d += score.diffDouble;
-			memo.x += score.diffExchange;
+			memo.a += score.pointsRed;
+			memo.b += score.pointsBlue;
+			memo.d += score.doubles;
+			memo.x += score.exchanges;
 			return memo;
 		}, {a: 0, b: 0, d: 0, x: 0});
 	}

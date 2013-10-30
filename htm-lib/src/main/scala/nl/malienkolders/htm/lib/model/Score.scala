@@ -9,11 +9,18 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
-case class MarshalledScore(timeInFight: Long, timeInWorld: Long,
-                           pointsRed: Int, pointsBlue: Int,
-                           afterblowsRed: Int, afterblowsBlue: Int,
-                           cleanHitsRed: Int, cleanHitsBlue: Int,
-                           doubles: Int, exchanges: Int, scoreType: String)
+case class MarshalledScore(
+  timeInFight: Long,
+  timeInWorld: Long,
+  pointsRed: Int,
+  pointsBlue: Int,
+  afterblowsRed: Int,
+  afterblowsBlue: Int,
+  cleanHitsRed: Int,
+  cleanHitsBlue: Int,
+  doubles: Int,
+  exchanges: Int,
+  scoreType: String)
 
 case class TotalScore(
   red: Int,
@@ -59,6 +66,7 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
     cleanHitsBlue(m.cleanHitsBlue)
     afterblowsRed(m.afterblowsRed)
     afterblowsBlue(m.afterblowsBlue)
+    doubles(m.doubles)
     exchanges(m.exchanges)
     scoreType(m.scoreType)
     this

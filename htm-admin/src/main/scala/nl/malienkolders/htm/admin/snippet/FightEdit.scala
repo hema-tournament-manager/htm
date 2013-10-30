@@ -22,7 +22,7 @@ object FightEdit {
     val totalScore = f.currentScore
 
     //val score = Score.create
-    
+
     //score.pointsRed(totalScore.red)
     //score.pointsBlue(totalScore.blue)
 
@@ -34,7 +34,7 @@ object FightEdit {
       f.save()
       S.redirectTo("/tournaments/view/" + f.pool.foreign.get.round.foreign.get.tournament.is)
     }
-    
+
     def addScoreLine() {
       //f.scores.clear()
       f.scores += Score.create
@@ -58,7 +58,7 @@ object FightEdit {
         ".club *" #> f.fighterB.obj.get.clubCode.is) &
         "#scoreRed" #> totalScore.red &
         "#scoreBlue" #> totalScore.blue &
-        "#doAdd" #>  SHtml.onSubmitUnit(addScoreLine) &
+        "#doAdd" #> SHtml.onSubmitUnit(addScoreLine) &
         "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart.get)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker") &
         "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop.get)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker") &
         ".score" #> f.scores.map(score =>
@@ -68,7 +68,9 @@ object FightEdit {
             "name=cleanHitsBlue" #> score.cleanHitsBlue.toForm &
             "name=afterblowsRed" #> score.afterblowsRed.toForm &
             "name=afterblowsBlue" #> score.afterblowsBlue.toForm &
-            "name=isExchange" #> score.isExchange.toForm) &
+            "name=doubles" #> score.doubles.toForm &
+            "name=isExchange" #> score.exchanges.toForm &
+            "name=scoreType" #> score.scoreType.toForm) &
         "#doEdit" #> SHtml.onSubmitUnit(process)
 
   }
