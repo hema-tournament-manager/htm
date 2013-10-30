@@ -7,15 +7,17 @@ GET     /jsroutes.js            controllers.Application.jsRoutes()
 
 GET     /updateFeed				controllers.Application.updateFeed
 
+GET		/initialState			controllers.Application.initialState
+
 GET		/photo/:id/:side		controllers.Application.photo(id, side)
 
 GET     /image/:resolution/:name			controllers.Application.image(resolution, name)
 
 GET     /api/ping				controllers.Application.ping
 
-POST    /api/update       controllers.Application.update
+POST    /api/update       		controllers.Application.update
 
-POST    /api/update/text       controllers.Application.updateText
+POST    /api/update/text       	controllers.Application.updateText
 
 PUT     /api/push				controllers.Application.push
 

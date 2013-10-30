@@ -26,7 +26,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
 
     val header = Map((for (i <- 0 to headerRow.getLastCellNum() - 1) yield (headerRow.getCell(i).getStringCellValue(), i)): _*)
 
-    val tournaments = Swordfish2013Importer.tournamentNames.map { case (id, name) => Tournament(id, name, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
+    val tournaments = Swordfish2013Importer.tournamentNames.map { case (id, (name, mnemonic)) => Tournament(id, name, mnemonic, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
     println(total.getLastRowNum())
 
     println(settings.countries)
@@ -34,7 +34,10 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     println("Importing participants")
     val participants = for (rowIndex <- 1 to total.getLastRowNum()) yield {
       val row = total.getRow(rowIndex)
-      val countryNameRaw = row.getCell(header("Country")).getStringCellValue()
+      val countryNameRaw = row.getCell(header("Country")) match {
+        case cell: Cell => cell.getStringCellValue()
+        case _ => ""
+      }
       val countryName = Swordfish2013Importer.countryReplacements.getOrElse(countryNameRaw, countryNameRaw)
       println(countryName)
       val country = settings.countries.find { case (_, name) => countryName == name }.map(_._1).getOrElse("")
@@ -50,7 +53,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     }
 
     val subscriptions = tournaments.flatMap {
-      case t @ Tournament(_, name, _) =>
+      case t @ Tournament(_, name, _, _) =>
         println("Importing tournament " + name)
         val sheet = workbook.getSheet(name)
         if (sheet != null) {
@@ -90,7 +93,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
   }
 
   def findPoolFighterNumbers(sheet: Sheet): Map[Int, Int] = {
-    val poolColumns = findPoolColumns(sheet.getRow(0), 0)
+    val poolColumns = findPoolColumns(sheet.getRow(0), 0).dropRight(if (sheet.getSheetName() == "Longsword - Ladies") 1 else 0)
     poolColumns.flatMap {
       case (poolNr, columnIndex) =>
         val options = for (i <- 2 to sheet.getLastRowNum()) yield {

@@ -13,7 +13,7 @@ case class MarshalledScore(timeInFight: Long, timeInWorld: Long,
                            pointsRed: Int, pointsBlue: Int,
                            afterblowsRed: Int, afterblowsBlue: Int,
                            cleanHitsRed: Int, cleanHitsBlue: Int,
-                           doubles: Int, isExchange: Boolean)
+                           doubles: Int, exchanges: Int, scoreType: String)
 
 case class TotalScore(
   red: Int,
@@ -36,7 +36,8 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
   object afterblowsRed extends MappedInt(this)
   object afterblowsBlue extends MappedInt(this)
   object doubles extends MappedInt(this)
-  object isExchange extends MappedBoolean(this)
+  object exchanges extends MappedInt(this)
+  object scoreType extends MappedString(this, 64)
 
   def compare(that: Score) = (this.timeInFight.is - that.timeInFight.is) match {
     case d if d > 0 => 1
@@ -47,7 +48,7 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
   def toMarshalled =
     MarshalledScore(timeInFight.is, timeInWorld.is, pointsRed.is, pointsBlue.is,
       cleanHitsRed.is, cleanHitsBlue.is, afterblowsRed.is, afterblowsBlue.is,
-      doubles.is, isExchange.is)
+      doubles.is, exchanges.is, scoreType.is)
 
   def fromMarshalled(m: MarshalledScore) = {
     timeInFight(m.timeInFight)
@@ -58,7 +59,8 @@ class Score extends LongKeyedMapper[Score] with IdPK with CreatedUpdated with Or
     cleanHitsBlue(m.cleanHitsBlue)
     afterblowsRed(m.afterblowsRed)
     afterblowsBlue(m.afterblowsBlue)
-    isExchange(m.isExchange)
+    exchanges(m.exchanges)
+    scoreType(m.scoreType)
     this
   }
 }

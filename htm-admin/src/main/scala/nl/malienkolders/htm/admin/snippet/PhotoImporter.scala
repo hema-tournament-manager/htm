@@ -20,9 +20,9 @@ object PhotoImporter extends Loggable {
 
     def processForm() = upload match {
       case Full(FileParamHolder(_, mime, fileName, file)) if mime.startsWith("application/") =>
-        val participantIds = Participant.findAll.sortBy(_.externalId.get.toInt).map(_.externalId.get).toList
+        val participants = Participant.findAll.sortBy(_.externalId.get.toInt).toList
 
-        PhotoImporterBackend.doImport(file, participantIds.toIterator)
+        PhotoImporterBackend.doImport(file, participants.toIterator)
         S.notice("Imported " + fileName)
 
       case Full(FileParamHolder(_, mime, _, _)) => S.notice("Invalid mime-type: " + mime)

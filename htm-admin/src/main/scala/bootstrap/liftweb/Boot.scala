@@ -50,6 +50,8 @@ class Boot {
 
     LiftRules.dispatch.append {
       case Req("image" :: resolution :: name :: Nil, _, _) => (() => ImageList.image(resolution, name))
+      case Req("photo" :: pariticipantExternalId :: side :: Nil, _, _) if Set("l", "r").contains(side) =>
+        (() => nl.malienkolders.htm.admin.lib.Utils.photo(pariticipantExternalId, side))
     }
 
     CountryImporter.doImport
@@ -65,7 +67,6 @@ class Boot {
       FightEdit.menu ::
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::
-      ParticipantSwap.menu ::
       (Menu.i("Arenas") / "arenas" / "list") ::
       (Menu.i("Viewers") / "viewers" / "list") ::
       (Menu.i("Images") / "images" / "list") ::

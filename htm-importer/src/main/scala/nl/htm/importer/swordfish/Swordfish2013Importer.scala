@@ -11,11 +11,11 @@ case class SwordfishSettings(url: String, countries: List[(String, String)])
 object Swordfish2013Importer extends Importer[SwordfishSettings] {
 
   val tournamentNames = List(
-    "longsword_open" -> "Longsword - Open",
-    "longsword_ladies" -> "Longsword - Ladies",
-    "wrestling" -> "Wrestling",
-    "sabre" -> "Sabre",
-    "rapier" -> "Rapier")
+    "longsword_open" -> ("Longsword - Open", "LS"),
+    "longsword_ladies" -> ("Longsword - Ladies", "LSL"),
+    "wrestling" -> ("Wrestling", "WRS"),
+    "sabre" -> ("Sabre", "SAB"),
+    "rapier" -> ("Rapier", "RAP"))
 
   lazy val clubCode2Name = Map(readTuplesFromFile("clubcodes"): _*)
 
@@ -71,7 +71,7 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
   override def doImport(s: SwordfishSettings = SwordfishSettings("http://www.ghfs.se/swordfish-attendee.php", List())): EventData = {
     val noCountry = ""
 
-    val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
+    val tournaments = tournamentNames.map { case (id, (name, mnemonic)) => Tournament(id, name, mnemonic, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
 
     val data = Source.fromURL(new URL(s.url), "UTF-8").getLines.mkString.replaceAll("[\n\t\r]+", "")
 

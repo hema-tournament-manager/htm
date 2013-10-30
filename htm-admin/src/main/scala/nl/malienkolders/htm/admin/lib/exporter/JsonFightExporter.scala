@@ -15,7 +15,7 @@ object JsonFightExporter extends FightExporter {
 
   implicit def renderParticipant(p: Participant): JValue =
     ("ID" -> p.externalId.get) ~
-      ("Name" -> p.name.get) ~
+      ("Name" -> p.shortName.get) ~
       ("Club" -> p.clubCode.get)
 
   implicit def renderTournament(t: Tournament): JValue =
@@ -46,7 +46,7 @@ object JsonFightExporter extends FightExporter {
     "Event" -> (
       ("Title" -> "Swordfish 2013") ~
       ("Updated" -> (System.currentTimeMillis() / 1000L).toString) ~
-      ("Contestants" -> Participant.findAll.filter(_.subscriptions.exists(_.gearChecked.get))) ~
+      ("Contestants" -> Participant.findAll.filter(_.subscriptions.size > 0)) ~
       ("Tournament" -> Tournament.findAll))
 
   def doExport: Unit = {

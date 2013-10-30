@@ -1,3 +1,4 @@
+AAD -> Academia Artis Dimicatoriae
 ABW -> Akademia Broni Warszawa
 AC -> Artes Certaminis
 AE -> Ars Ensis
@@ -29,15 +30,16 @@ GUGREG -> Guggidengler Regensburg
 GW -> Grieswartt
 HABA -> Hallebardiers
 HABO -> Hammaborg
-HaHFS -> Halmstad Historiska Fäktskola
+HHFS -> Halmstads Historiska Fäktskola
 HKDF -> Hamar KDF
 IDC -> Iron Door Collective
 ICKDF -> Iron Crown KdF
 IFHA -> Institute For Historical Arts
+IGMH -> IG Meisterhauw
 INDES -> INDES Salzburg
-JF -> JianFa.se
+JIANFA -> JianFa.se
 KDF -> Kunst des Fechtens
-KHF -> Københavns Historiske Fægteklub
+KHFK -> Københavns Historiske Fægteklub
 KS -> Krieg School
 KS/GHFS -> Krieg School/GHFS
 KuHFS -> Kungshamns Historiska Fäktskola
@@ -47,6 +49,7 @@ LLA -> London Longsword Academy
 MBLADES -> MBlades
 MHFS -> Malmö Historiska Fäktskola
 MKDF -> Maryland Kunst des Fechtens
+MKDF/CKDF -> MKDF/CKDF
 MnHFS -> Mn Historiska Fäktskola
 MSK -> MSK
 NW -> Orde der Noorderwind
@@ -55,7 +58,10 @@ OKDF -> Oslo Kunst des Fechtens
 OCHS -> Ochs München
 OCHS/GHFS -> Ochs München / Göteborgs HFS
 ÖFHF -> Örebro HEMA
+ÖHEMA/GHFS -> ÖHEMA/GHFS
 OMS -> Oulun Miekkailuseura
+PATR -> Patronus S.O.S.
+PRETO -> PretoMA
 PTKH -> Pekiti Tirsia Kali Halmstad
 PW -> Punta Warsaw
 RFC -> Redlands Fencing Center
@@ -66,7 +72,7 @@ SFS -> Selohaar Fechtschule
 SG -> Scola Gladiatoria
 SHF -> Stigmännen
 SHSM -> Stockholms Stigmän
-SkHFS -> Sk Historiska Fäktskola
+SkHFS -> Skaraborgs Historiska Fäktskola
 SOTS -> School of the Sword
 SPC -> Schola Pugnatoria Celeiana
 SPIFF -> Stockholmspolisens Idrottsförening Fäktning
@@ -75,7 +81,8 @@ SWARTA -> SwArta
 THMS -> THMS
 TREM -> Tremonia
 TSC -> Trnavský Šermiarsky
-TSF -> Toruńska Szkoła Fechtunku
+TSF -> TSF Budowlani Toruń
+TUSGWH -> TuS Grün-Weiss Holten
 UHFS -> Uppsala Historiska Fäktskola
 VAMI -> Vasa Fäktare
 VM -> Vaasan Miekkailijat
