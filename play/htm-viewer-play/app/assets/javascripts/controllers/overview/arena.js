@@ -29,10 +29,10 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 	
 	$scope.totalScore = function(fight) {
 		return _.reduce(fight.scores, function(memo, score) {
-			memo.a += score.diffA;
-			memo.b += score.diffB;
-			memo.d += score.diffDouble;
-			memo.x += score.diffExchange;
+			memo.a += score.pointsRed;
+			memo.b += score.pointsBlue;
+			memo.d += score.doubles;
+			memo.x += score.exchanges;
 			return memo;
 		}, {a: 0, b: 0, d: 0, x: 0});
 	};

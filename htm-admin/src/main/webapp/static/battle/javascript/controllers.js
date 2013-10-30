@@ -32,10 +32,10 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 					fight.loading = false;
     				fight['totalScore'] = function() {
     					return _.reduce(this.scores, function(memo, score) {
-    						memo.a += score.diffA;
-    						memo.b += score.diffB;
-    						memo.d += score.diffDouble;
-    						memo.x += score.diffExchange;
+    						memo.a += score.pointsRed;
+    						memo.b += score.pointsBlue;
+    						memo.d += score.doubles;
+    						memo.x += score.exchanges;
     						return memo;
     					}, {a: 0, b: 0, d: 0, x: 0});
     				};
@@ -138,13 +138,14 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	return {
     		timeInFight: $scope.timerValue(),
     		timeInWorld: Date.now(),
-    		diffA: score.diffA * -1,
-    		diffB: -score.diffB,
-    		diffAAfterblow: -score.diffAAfterblow,
-    		diffBAfterblow: -score.diffBAfterblow,
-    		diffDouble: -score.diffDouble,
-    		isSpecial: false,
-    		diffExchange: -score.diffExchange 
+    		pointsRed: -score.pointsRed,
+    		pointsBlue: -score.pointsBlue,
+    		afterblowsRed: -score.afterblowsRed,
+    		afterblowsBlue: -score.afterblowsBlue,
+    		cleanHitsRed: -cleanHitsRed,
+    		cleanHitsBlue: -cleanHitsBlue,
+    		doubles: -score.doubles,
+    		exchanges: -score.exchanges 
     	};
     };
     
@@ -168,14 +169,15 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	$scope.currentFight.scores.push({
     		timeInFight: exchange.time,
     		timeInWorld: Date.now(),
-    		diffA: exchange.a,
-    		diffB: exchange.b,
-    		diffAAfterblow: 0,
-    		diffBAfterblow: 0,
-    		diffDouble: exchange.d,
+    		pointsRed: exchange.a,
+    		pointsBlue: exchange.b,
+    		afterblowsRed: exchange.aA,
+    		afterblowsBlue: exchange.aB,
+    		cleanHitsRed: exchange.cA,
+    		cleanHitsBlue: exchange.cB,
+    		doubles: exchange.d,
     		scoreType: exchange.type,
-    		isSpecial: false,
-    		diffExchange: 1
+    		exchanges: 1
     	});
     	$scope.sendUpdate();
     };
@@ -184,14 +186,15 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	$scope.currentFight.scores.push({
     		timeInFight: correction.time,
     		timeInWorld: Date.now(),
-    		diffA: correction.a,
-    		diffB: correction.b,
-    		diffAAfterblow: 0,
-    		diffBAfterblow: 0,
-    		diffDouble: correction.d,
-    		scoreType: 'Correction',
-    		isSpecial: false,
-    		diffExchange: 0
+    		pointsRed: correction.a,
+    		pointsBlue: correction.b,
+    		afterblowsRed: 0,
+    		afterblowsBlue: 0,
+    		cleanHitsRed: 0,
+    		cleanHitsBlue: 0,
+    		doubles: correction.d,
+    		scoreType: 'correction',
+    		exchanges: 0
     	});
     	$scope.sendUpdate();
     };
@@ -203,7 +206,11 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	    		$scope.pushExchange({
 		    			time: $scope.timerValue(),
 		    			a: side == "red" ? score : 0, 
-		    			b: side == "blue" ? score : 0, 
+		    			b: side == "blue" ? score : 0,
+		    			cA: side == "red" ? 1 : 0,
+		    			cB: side == "blue" ? 1 : 0,
+		    			aA: 0,
+		    			aB: 0,
 		    			type: scoreType, 
 		    			d: 0});
 	    		$('#score-options').hide();
@@ -217,6 +224,10 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	    			time: $scope.timerValue(), 
     	    			a: side == "red" ? firstScore : score, 
     	    			b: side == "blue" ? firstScore : score, 
+    	    			cA: 0,
+    	    			cB: 0,
+    	    			aA: side == "red" ? 1 : 0,
+    	    			aB: side == "blue" ? 1 : 0,
     	    			type: scoreType, 
     	    			d: 0});
     	    		$('#score-options').hide();
@@ -231,6 +242,10 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 			time: $scope.timerValue(), 
 			a: 0, 
 			b: 0, 
+			cA: 0,
+			cB: 0,
+			aA: 0,
+			aB: 0,
 			type: "double", 
 			d: 1});
     };
@@ -240,6 +255,10 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 			time: $scope.timerValue(), 
 			a: 0, 
 			b: 0, 
+			cA: 0,
+			cB: 0,
+			aA: 0,
+			aB: 0,
 			type: "none", 
 			d: 0});
     };
@@ -401,8 +420,8 @@ var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
 	$scope.exchanges = exchanges;
 	var exchangeCounter = 0;
 	_.each($scope.exchanges, function(score) {
-		if (score.diffExchange != 0) {
-			exchangeCounter += score.diffExchange;
+		if (score.exchanges != 0) {
+			exchangeCounter += score.exchanges;
 			score.exchangeId = exchangeCounter;
 		} else {
 			score.exchangeId = "-";
