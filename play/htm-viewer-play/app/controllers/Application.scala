@@ -15,6 +15,8 @@ import play.api.libs.Files
 import play.api.libs.Files._
 import _root_.lib.Unzipper
 import java.io.File
+import javax.imageio.ImageIO
+import play.api.Play.current
 
 object Application extends Controller {
 
@@ -93,20 +95,71 @@ object Application extends Controller {
     }
   }
 
+  private def generateThresholded(filename: String): String = {
+    val newFilename = filename.replace(".png", "-thresholded.png");
+
+    if (new File(newFilename).exists()) {
+      return newFilename;
+    }
+
+    val image = ImageIO.read(new File(filename))
+
+    val alpha = image.getAlphaRaster()
+
+    for {
+      x <- 0 to image.getWidth() - 1
+      y <- 0 to image.getHeight() - 1
+    } {
+      val pixel = Array[Int](0)
+      alpha.getPixel(x, y, pixel);
+
+      if (pixel(0) > 127) {
+        pixel.update(0, 255)
+      } else {
+        pixel.update(0, 0)
+      }
+
+      alpha.setPixel(x, y, pixel)
+    }
+
+    ImageIO.write(image, "png", new File(newFilename))
+
+    return newFilename;
+
+  }
+
   def photo(id: String, side: String) = Action {
     val photoFile = new File("Avatars/Generated/" + id + "_default_" + side + ".jpg")
-    if (photoFile.exists())
+    if (photoFile.exists()) {
       Ok.sendFile(photoFile)
-    else
+    } else
       Redirect(routes.Assets.at("images/placeholder_default_" + side + ".png"))
   }
 
   def image(resolution: String, name: String) = Action {
     val imageFile = new File(s"Images/$resolution/$name")
-    if (imageFile.exists())
+
+    if (imageFile.exists()) {
+
+      if (resolution != "1024x768") {
+        Ok.sendFile(new File(generateThresholded(imageFile.toString())));
+      }
       Ok.sendFile(imageFile)
-    else
+    } else
       Redirect(routes.Assets.at("images/empty.png"))
+  }
+
+  def publicImage(name: String) = Action { request =>
+
+    val imageFile = new File(current.path.getAbsolutePath + s"/public/images/$name")
+
+    println(request.getQueryString("thresholding"))
+
+    if (request.getQueryString("thresholding").map(_ == "yes").getOrElse(false)) {
+      Ok.sendFile(new File(generateThresholded(imageFile.toString())));
+    } else {
+      Ok.sendFile(imageFile);
+    }
   }
 
   def updateFeed = Action {
