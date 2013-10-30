@@ -93,7 +93,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
   }
 
   def findPoolFighterNumbers(sheet: Sheet): Map[Int, Int] = {
-    val poolColumns = findPoolColumns(sheet.getRow(0), 0)
+    val poolColumns = findPoolColumns(sheet.getRow(0), 0).dropRight(if (sheet.getSheetName() == "Longsword - Ladies") 1 else 0)
     poolColumns.flatMap {
       case (poolNr, columnIndex) =>
         val options = for (i <- 2 to sheet.getLastRowNum()) yield {

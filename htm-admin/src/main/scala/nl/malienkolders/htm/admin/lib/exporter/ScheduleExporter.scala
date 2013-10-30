@@ -37,7 +37,7 @@ object ScheduleExporter extends ExcelExporter {
         val headerRow = sheet.getOrCreateRow(i);
         val r = pool.round.obj.get
         val t = r.tournament.obj.get
-        headerRow.getOrCreateCell(0).setCellValue(t.name.get + " / " + r.name.get + " / " + pool.poolName)
+        headerRow.getOrCreateCell(0).setCellValue(s"${t.name.get} / Pool ${pool.poolName} / ${r.name.get}")
         i = i + 1;
       }
 
