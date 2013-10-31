@@ -68,6 +68,7 @@ object FightEdit {
             "name=cleanHitsBlue" #> score.cleanHitsBlue.toForm &
             "name=afterblowsRed" #> score.afterblowsRed.toForm &
             "name=afterblowsBlue" #> score.afterblowsBlue.toForm &
+            "name=doubles" #> score.doubles.toForm &
             "name=isExchange" #> score.isExchange.toForm) &
         "#doEdit" #> SHtml.onSubmitUnit(process)
 
