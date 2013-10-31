@@ -142,8 +142,8 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     		pointsBlue: -score.pointsBlue,
     		afterblowsRed: -score.afterblowsRed,
     		afterblowsBlue: -score.afterblowsBlue,
-    		cleanHitsRed: -cleanHitsRed,
-    		cleanHitsBlue: -cleanHitsBlue,
+    		cleanHitsRed: -score.cleanHitsRed,
+    		cleanHitsBlue: -score.cleanHitsBlue,
     		doubles: -score.doubles,
     		exchanges: -score.exchanges 
     	};
