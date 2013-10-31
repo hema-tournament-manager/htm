@@ -1,6 +1,7 @@
 package nl.malienkolders.htm.admin.lib
 
 import java.io.File
+import java.io.InputStream
 import java.io.ByteArrayInputStream
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipEntry
@@ -10,42 +11,34 @@ import javax.imageio.ImageIO
 import java.awt.RenderingHints
 import java.io.OutputStream
 import org.apache.commons.io.IOUtils
-import java.io.FileOutputStream
-import java.io.FileInputStream
+import nl.malienkolders.htm.admin.lib.Utils.PimpedParticipant
 
 object PhotoImporterBackend {
 
   val imageSize = (308, 462)
 
-  def handle(in: ZipInputStream, baseNames: Iterator[String])(handler: (String, ZipInputStream, ZipEntry) => Unit): Unit = in.getNextEntry() match {
+  def handle(in: ZipInputStream, participants: Iterator[Participant])(handler: (Participant, ZipInputStream) => Unit): Unit = in.getNextEntry() match {
     case e: ZipEntry =>
-      handler(baseNames.next, in, e)
-      handle(in, baseNames)(handler)
+      println("entry: " + e.getName())
+      handler(participants.next, in)
+      handle(in, participants)(handler)
     case _ => in.close()
   }
 
-  def handlePhoto(baseName: String, in: ZipInputStream, entry: ZipEntry): Unit = {
-    println("baseName: " + baseName)
-    println("entry: " + entry.getName())
+  def handlePhoto(participant: Participant, in: InputStream): Unit = {
+    println("participant: " + participant.externalId.get)
 
     val targetDir = new File("Avatars")
     targetDir.mkdir()
 
     val image = ImageIO.read(in)
-    ImageIO.write(image, "jpg", new File(targetDir, baseName + ".jpg"))
+    ImageIO.write(image, "jpg", participant.avatarOriginalFile)
 
     val generatedDir = new File(targetDir, "Generated")
     generatedDir.mkdir()
 
-    val outFileLeft = new File(generatedDir, baseName + "_default_l.jpg")
-    val outLeft = new FileOutputStream(outFileLeft)
-    ImageIO.write(cropImage(image, imageSize), "jpg", outFileLeft)
-    outLeft.close()
-
-    val outFileRight = new File(generatedDir, baseName + "_default_r.jpg")
-    val outRight = new FileOutputStream(outFileRight)
-    ImageIO.write(cropImage(image, imageSize, Some(Mirror)), "jpg", outFileRight)
-    outRight.close()
+    ImageIO.write(cropImage(image, imageSize), "jpg", participant.avatarLeftFile)
+    ImageIO.write(cropImage(image, imageSize, Some(Mirror)), "jpg", participant.avatarRightFile)
   }
 
   abstract class CropOption
@@ -68,13 +61,13 @@ object PhotoImporterBackend {
     cropped
   }
 
-  def doImport(file: Array[Byte], baseNames: Iterator[String]) = {
+  def doImport(file: Array[Byte], participants: Iterator[Participant]) = {
 
     val stream = new ByteArrayInputStream(file);
     val rootzip = new ZipInputStream(stream)
 
     import collection.JavaConverters._
 
-    handle(rootzip, baseNames)(handlePhoto _)
+    handle(rootzip, participants)(handlePhoto _)
   }
 }

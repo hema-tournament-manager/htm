@@ -7,9 +7,9 @@ import java.io.InputStream
 object HeffacImporter extends Importer[InputStreamSettings] {
 
   val tournamentNames = List(
-    "feder" -> "Feder",
-    "nylon" -> "Langzwaard Nylon",
-    "melee" -> "Melee Games")
+    "feder" -> ("Feder", "FED"),
+    "nylon" -> ("Langzwaard Nylon", "LN"),
+    "melee" -> ("Melee Games", "MEL"))
 
   lazy val clubCode2Name = Map(readTuplesFromFile("clubcodes"): _*)
 
@@ -17,7 +17,7 @@ object HeffacImporter extends Importer[InputStreamSettings] {
 
   lazy val replacements = Map(readTuplesFromFile("clubreplacements").map { case (o, r) => (o.toLowerCase(), r) }: _*)
 
-  val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name, "heffac-2013-default") }
+  val tournaments = tournamentNames.map { case (id, (name, mnemonic)) => Tournament(id, name, mnemonic, "heffac-2013-default") }
 
   def doImport(s: InputStreamSettings): EventData = {
     val workbook = WorkbookFactory.create(s.in)

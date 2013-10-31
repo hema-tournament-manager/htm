@@ -7,7 +7,6 @@ import akka.actor.Actor
 import akka.actor.Props
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
-import net.liftweb.json._
 import nl.malienkolders.htm.lib.model._
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.EventSource
@@ -21,11 +20,16 @@ object Application extends Controller {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
-  implicit val formats = Serialization.formats(NoTypeHints)
-
   implicit val timeout = Timeout(10000)
 
   val (updateOut, updateChannel) = Concurrent.broadcast[JsValue]
+
+  var clientState = Json.obj("empty" -> Json.obj(), "image" -> Json.obj(), "fight" -> Json.obj(), "overview/arena" -> Json.obj());
+
+  case class TimerInfo(battleTime: Long, viewerTime: Long, action: String);
+
+  var timer = TimerInfo(0, System.currentTimeMillis(), "stop");
+  var currentView = "empty"
 
   def index = Action {
     Ok(views.html.index())
@@ -37,7 +41,34 @@ object Application extends Controller {
 
   def ping = Action { Ok("true") }
 
-  def updateImpl(msg: JsValue) = {
+  private def updateImpl(msg: JsValue) = {
+    val newView = (msg \ "view").as[String]
+
+    currentView = if (newView.isEmpty()) currentView else newView;
+
+    val payload = (msg \ "payload").asInstanceOf[JsObject]
+
+    if (payload.keys.contains("timer")) {
+      timer = TimerInfo(battleTime = (payload \ "timer" \ "time").as[Long], viewerTime = System.currentTimeMillis(), action = (payload \ "timer" \ "action").as[String]);
+    }
+    if (payload.keys.contains("fight")) {
+      val fight = (payload \ "fight").asInstanceOf[JsObject]
+      if (fight.keys.contains("timer")) {
+        timer = TimerInfo(battleTime = (fight \ "timer" \ "time").as[Long], viewerTime = System.currentTimeMillis(), action = (fight \ "action").as[String]);
+      }
+    }
+
+    println(clientState.toString());
+    println("currentView: " + currentView);
+
+    val viewState = (clientState \ currentView).asInstanceOf[JsObject] ++ payload;
+
+    val replacePayload = (__ \ currentView).json.put(viewState)
+
+    clientState = clientState ++ clientState.transform(replacePayload).get
+
+    println(clientState.toString());
+
     updateChannel.push(msg)
     Ok("true")
   }
@@ -77,6 +108,21 @@ object Application extends Controller {
 
   def updateFeed = Action {
     Ok.chunked(updateOut &> EventSource()).as("text/event-stream")
+  }
+
+  def initialState = Action {
+    val timerPart =
+      Json.obj(
+        "timer" -> Json.obj(
+          "action" -> timer.action,
+          "time" -> (if (timer.action.equals("stop")) timer.battleTime else (timer.battleTime + (System.currentTimeMillis() - timer.viewerTime)))))
+    val result = clientState ++
+      Json.obj(
+        "fight"
+          ->
+          ((clientState \ "fight").asInstanceOf[JsObject] ++ timerPart))
+
+    Ok(result)
   }
 
   def jsRoutes(varName: String = "jsRoutes") = Action { implicit request =>

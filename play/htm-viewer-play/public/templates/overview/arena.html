@@ -6,44 +6,52 @@
 </header>
 
 <div class="container">
-	<table class="table current-pool">
-		<thead>
-			<tr>
-				<th colspan="4">Pool {{ currentPool.pool.order }} :: {{ currentPool.pool.round.name }} :: {{ currentPool.pool.round.tournament.name }}</th>
-			</tr>
-		</thead>
-		<tbody>
+	<div class="panel panel-primary current-pool">
+		<div class="panel-heading">
+			<h2 class="panel-title">
+				Pool {{ currentPool.pool.name }}
+				::
+				{{ currentPool.pool.round.name }}
+				::
+				{{ currentPool.pool.round.tournament.name }}
+			</h2>
+		</div>
+		<table class="table">
 			<tr ng-repeat="fight in currentPool.fights track by fight.id">
 				<td class="time" width="8%">{{fight.plannedTime | hours}}</td>
-				<td class="fighter red" width="41%"><span class="badge">{{fight.fighterA.externalId}}</span> {{fight.fighterA.name}}</td>
+				<td class="fighter red" width="41%"><span class="badge">{{fight.fighterA.externalId}}</span> {{fight.fighterA.shortName}}</td>
 				<td class="score" width="10%" class="text-center">
 					<span ng-show="fight.timeStart &gt; 0 && fight.timeStop == 0">in progress</span>
 					<span ng-show="fight.timeStart == 0 && fight.timeStop == 0">vs</span>
 					<span ng-show="fight.timeStop &gt; 0">{{totalScore(fight).a}} ({{totalScore(fight).d}}) {{totalScore(fight).b}}</span>
 				</td>
-				<td class="fighter blue" width="41%"><span class="badge">{{fight.fighterB.externalId}}</span> {{fight.fighterB.name}}</td>
+				<td class="fighter blue" width="41%"><span class="badge">{{fight.fighterB.externalId}}</span> {{fight.fighterB.shortName}}</td>
 			</tr>
-		</tbody>
-	</table>
+		</table>
+	</div>
 
-	<table class="table pool" ng-repeat="pool in displayedPools track by pool.pool.id" data-ng-animate="{enter: 'animated bounceInLeft', leave: 'animated bounceOutLeft'}">
-		<thead>
-			<tr>
-				<th colspan="4">Pool {{ pool.pool.order }} :: {{ pool.pool.round.name }} :: {{ pool.pool.round.tournament.name }}</th>
-			</tr>
-		</thead>
-		<tbody>
+	<div class="panel panel-default pool" ng-repeat="pool in displayedPools track by pool.pool.id" data-ng-animate="{enter: 'animated bounceInLeft', leave: 'animated bounceOutLeft'}">
+		<div class="panel-heading">
+			<h2 class="panel-title">
+				Pool {{ pool.pool.name }}
+				::
+				{{ pool.pool.round.name }}
+				::
+				{{ pool.pool.round.tournament.name }}
+			</h2>
+		</div>
+		<table class="table">
 			<tr ng-repeat="fight in pool.fights track by fight.id">
 				<td class="time" width="8%">{{fight.plannedTime | hours}}</td>
-				<td class="fighter red" width="41%"><span class="badge">{{fight.fighterA.externalId}}</span> {{fight.fighterA.name}}</td>
+				<td class="fighter red" width="41%"><span class="badge">{{fight.fighterA.externalId}}</span> {{fight.fighterA.shortName}}</td>
 				<td class="score" width="10%" class="text-center">
 					<span ng-show="fight.timeStart &gt; 0 && fight.timeStop == 0">in progress</span>
 					<span ng-show="fight.timeStart == 0 && fight.timeStop == 0">vs</span>
 					<span ng-show="fight.timeStop &gt; 0">{{totalScore(fight).a}} ({{totalScore(fight).d}}) {{totalScore(fight).b}}</span>
 				</td>
-				<td class="fighter blue" width="41%"><span class="badge">{{fight.fighterB.externalId}}</span> {{fight.fighterB.name}}</td>
+				<td class="fighter blue" width="41%"><span class="badge">{{fight.fighterB.externalId}}</span> {{fight.fighterB.shortName}}</td>
 			</tr>
-		</tbody>
-	</table>
+		</table>
+	</div>
 </div>
 </div>

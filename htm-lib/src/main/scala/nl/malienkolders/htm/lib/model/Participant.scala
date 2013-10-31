@@ -20,7 +20,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   object name extends MappedPoliteString(this, 128)
   object shortName extends MappedPoliteString(this, 64)
   object club extends MappedPoliteString(this, 128)
-  object clubCode extends MappedPoliteString(this, 6)
+  object clubCode extends MappedPoliteString(this, 16)
   object country extends MappedLongForeignKey(this, Country)
   object isStarFighter extends MappedBoolean(this)
   object isPresent extends MappedBoolean(this)

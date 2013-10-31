@@ -26,27 +26,38 @@
 			.flag img.viewerFlagAvailable {
 				border-color: green;
 			}
-			tr.present:nth-child(even), tr.present:nth-child(even) td {
-				background: #ada !important;
-			}
-			tr.present, tr.present td{
-				background: #beb !important;
+			tr.participant {
+				cursor: pointer;
 			}
 			/* ]]> */
 			</style>
 		</head>
 		<div class="lift:ParticipantList">
-		<h2>Participants <button id="download"></button></h2>
+		<h2>
+			Participants 
+			<div class="btn-group pull-right" title="Download">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					<span class="glyphicon glyphicon-download"></span> Download <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li class="downloadButton"><a href="#">Action</a></li>
+				</ul>
+			</div>
+		</h2>
 		<div id="countrySelect"><select><option>Netherlands</option></select></div>
-		<table class="table table-condensed">
+		<table class="table table-condensed table-hover">
 			<tbody>
 				<tr class="participant">
+					<td title="Photo?"><span class="photo glyphicon"></span></td>
 					<td class="id" title="Swordfish ID">1</td>
 					<td class="flag"><img src="/images/flags/ad.png"/></td>
 					<td class="name" title="Name">Naampje</td>
 					<td class="shortName" title="Short Name">Nmpje</td>
 					<td class="club" title="Club">Nmpje</td>
 					<td class="clubCode" title="Club Code">Nmpje</td>
+					<td class="tournaments" title="Tournaments">
+						<span class="tournament">MNEMONIC</span>
+					</td>
 					<td><a class="action"></a></td>
 				</tr>
 			</tbody>

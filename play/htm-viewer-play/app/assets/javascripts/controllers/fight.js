@@ -6,18 +6,16 @@ var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
 	
 	$scope.updateScore = function() {
 		$scope.totalScore = _.reduce($scope.scores, function(memo, score) {
-			memo.a += score.diffA;
-			memo.b += score.diffB;
-			memo.d += score.diffDouble;
-			memo.x += score.isExchange ? 1 : 0;
+			memo.a += score.pointsRed;
+			memo.b += score.pointsBlue;
+			memo.d += score.doubles;
+			memo.x += score.exchanges;
 			return memo;
 		}, {a: 0, b: 0, d: 0, x: 0});
 	}
 	
 	$scope.updateScore();
 	
-	$scope.timer = {running: false, lastStart: -1, time: 0, displayTime: 0};
-    
     $scope.timerValue = function() {
     	var result = $scope.timer.time;
     	if ($scope.timer.running) {
@@ -42,6 +40,13 @@ var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
     		$timeout($scope.tick, 500);
     	}
     };
+
+    if ($scope.timer.action == "start") {
+    	$scope.startTimer();
+    }
+    else {
+    	$scope.stopTimer();    	
+    }
     
 	stateService.change(function(view, state, update) {
 		if (view == "fight") {

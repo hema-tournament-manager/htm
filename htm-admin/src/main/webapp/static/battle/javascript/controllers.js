@@ -32,12 +32,27 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 					fight.loading = false;
     				fight['totalScore'] = function() {
     					return _.reduce(this.scores, function(memo, score) {
-    						memo.a += score.diffA;
-    						memo.b += score.diffB;
-    						memo.d += score.diffDouble;
-    						memo.x += score.isExchange ? 1 : 0;
+    						memo.a += score.pointsRed;
+    						memo.b += score.pointsBlue;
+    						memo.d += score.doubles;
+    						memo.x += score.exchanges;
     						return memo;
     					}, {a: 0, b: 0, d: 0, x: 0});
+    				};
+    				fight['lastScore'] = function() {
+    					var result = _.reduceRight(this.scores, function(memo, score) {
+    						if (!memo.score) {
+    							if (score.scoreType == "undo") {
+    								memo.undos += 1;
+    							} else if (memo.undos == 0) {
+    								memo.score = score;
+    							} else {
+    								memo.undos -= 1;
+    							}
+    						}
+    						return memo;
+    					}, {undos: 0, score: false});
+    					return result.score;
     				};
 					$scope.fights[fight.globalOrder - 1] = fight;
 					if (($scope.currentFight.globalOrder == -1 || fight.globalOrder < $scope.currentFight.globalOrder) && fight.timeStop == 0) {
@@ -49,7 +64,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	});
 	
     $scope.pendingOperation = false;
-    $scope.redoScore = false;
     
     $scope.timer = {running: false, lastStart: -1, currentTime: 0, displayTime: 0};
     
@@ -119,29 +133,51 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	$('#score-options').hide();
     };
     
+    $scope.invertScore = function(score) {
+    	console.log("Inverting: " + JSON.stringify(score));
+    	return {
+    		timeInFight: $scope.timerValue(),
+    		timeInWorld: Date.now(),
+    		pointsRed: -score.pointsRed,
+    		pointsBlue: -score.pointsBlue,
+    		afterblowsRed: -score.afterblowsRed,
+    		afterblowsBlue: -score.afterblowsBlue,
+    		cleanHitsRed: -cleanHitsRed,
+    		cleanHitsBlue: -cleanHitsBlue,
+    		doubles: -score.doubles,
+    		exchanges: -score.exchanges 
+    	};
+    };
+    
     $scope.undoClicked = function () {
-    	$scope.redoScore = $scope.currentFight.scores.pop();
-    	$scope.sendUpdate();
+    	var lastScore = $scope.currentFight.lastScore();
+    	if (lastScore) {
+    		$scope.currentFight.scores.push(_.extend($scope.invertScore(lastScore), {scoreType: "undo"}));
+    		$scope.sendUpdate();
+    	}
     };
     
     $scope.redoClicked = function () {
-    	$scope.currentFight.scores.push($scope.redoScore);
-    	$scope.redoScore = false;
-    	$scope.sendUpdate();
+    	var lastScore = _.last($scope.currentFight.scores);
+    	if (lastScore.scoreType == "undo") {
+    		$scope.currentFight.scores.push(_.extend($scope.invertScore(lastScore), {scoreType: "redo"}));
+    		$scope.sendUpdate();
+    	}
     };
     
     $scope.pushExchange = function(exchange) {
     	$scope.currentFight.scores.push({
     		timeInFight: exchange.time,
     		timeInWorld: Date.now(),
-    		diffA: exchange.a,
-    		diffB: exchange.b,
-    		diffAAfterblow: 0,
-    		diffBAfterblow: 0,
-    		diffDouble: exchange.d,
+    		pointsRed: exchange.a,
+    		pointsBlue: exchange.b,
+    		afterblowsRed: exchange.aA,
+    		afterblowsBlue: exchange.aB,
+    		cleanHitsRed: exchange.cA,
+    		cleanHitsBlue: exchange.cB,
+    		doubles: exchange.d,
     		scoreType: exchange.type,
-    		isSpecial: false,
-    		isExchange: true
+    		exchanges: 1
     	});
     	$scope.sendUpdate();
     };
@@ -150,14 +186,15 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	$scope.currentFight.scores.push({
     		timeInFight: correction.time,
     		timeInWorld: Date.now(),
-    		diffA: correction.a,
-    		diffB: correction.b,
-    		diffAAfterblow: 0,
-    		diffBAfterblow: 0,
-    		diffDouble: correction.d,
+    		pointsRed: correction.a,
+    		pointsBlue: correction.b,
+    		afterblowsRed: 0,
+    		afterblowsBlue: 0,
+    		cleanHitsRed: 0,
+    		cleanHitsBlue: 0,
+    		doubles: correction.d,
     		scoreType: 'correction',
-    		isSpecial: false,
-    		isExchange: false
+    		exchanges: 0
     	});
     	$scope.sendUpdate();
     };
@@ -169,7 +206,11 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	    		$scope.pushExchange({
 		    			time: $scope.timerValue(),
 		    			a: side == "red" ? score : 0, 
-		    			b: side == "blue" ? score : 0, 
+		    			b: side == "blue" ? score : 0,
+		    			cA: side == "red" ? 1 : 0,
+		    			cB: side == "blue" ? 1 : 0,
+		    			aA: 0,
+		    			aB: 0,
 		    			type: scoreType, 
 		    			d: 0});
 	    		$('#score-options').hide();
@@ -183,6 +224,10 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	    			time: $scope.timerValue(), 
     	    			a: side == "red" ? firstScore : score, 
     	    			b: side == "blue" ? firstScore : score, 
+    	    			cA: 0,
+    	    			cB: 0,
+    	    			aA: side == "red" ? 1 : 0,
+    	    			aB: side == "blue" ? 1 : 0,
     	    			type: scoreType, 
     	    			d: 0});
     	    		$('#score-options').hide();
@@ -197,6 +242,10 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 			time: $scope.timerValue(), 
 			a: 0, 
 			b: 0, 
+			cA: 0,
+			cB: 0,
+			aA: 0,
+			aB: 0,
 			type: "double", 
 			d: 1});
     };
@@ -206,6 +255,10 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 			time: $scope.timerValue(), 
 			a: 0, 
 			b: 0, 
+			cA: 0,
+			cB: 0,
+			aA: 0,
+			aB: 0,
 			type: "none", 
 			d: 0});
     };
@@ -274,7 +327,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	    		
 	    		var next = $scope.findNextFight();
 	    		if (next) {
-	    			$scope.defaultAnnouncements.nextup = "Next up: <span class=\"badge red\">" + next.fighterA.externalId + "</span> <b>" + next.fighterA.name  + "</b> vs <span class=\"badge blue\">" + next.fighterB.externalId + "</span> <b>" + next.fighterB.name + "</b> at " + $filter('hours')(next.plannedTime);
+	    			$scope.defaultAnnouncements.nextup = "Next up: <span class=\"badge red\">" + next.fighterA.externalId + "</span> <b>" + next.fighterA.shortName  + "</b> vs <span class=\"badge blue\">" + next.fighterB.externalId + "</span> <b>" + next.fighterB.shortName + "</b> at " + $filter('hours')(next.plannedTime);
 	    		} else {
 	    			$scope.defaultAnnouncements.nextup = "";
 	    		}
@@ -361,15 +414,15 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     });
     
     $('#score-options').hide();
-	
 };
 
 var ExchangeListCtrl = function($scope, $modalInstance, exchanges) {
 	$scope.exchanges = exchanges;
-	var exchangeCounter = 1;
+	var exchangeCounter = 0;
 	_.each($scope.exchanges, function(score) {
-		if (score.isExchange) {
-			score.exchangeId = exchangeCounter++;
+		if (score.exchanges != 0) {
+			exchangeCounter += score.exchanges;
+			score.exchangeId = exchangeCounter;
 		} else {
 			score.exchangeId = "-";
 		}

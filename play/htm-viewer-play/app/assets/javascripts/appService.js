@@ -50,6 +50,11 @@ angular.module('htm.services', [])
 			  "pools": []
 		  }
 	  };
+	  
+	  $.getJSON("/initialState").done(function( json ) {
+		  state = json;
+	  })
+	  
 	  return {
 		  put: function(view_, update) {
 			  view = view_;
