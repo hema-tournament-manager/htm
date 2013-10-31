@@ -11,6 +11,11 @@ import java.util.Date
 
 object Utils {
 
+  object Constants {
+    val ROUND_NAME_FINAL = "Final"
+    val ROUND_NAME_THIRD_PLACE = "3rd Place"
+  }
+
   implicit class PimpedParticipant(p: Participant) {
     private def zeroPad(id: String) = ("0" * (4 - id.length)) + id
 

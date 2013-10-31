@@ -26,6 +26,12 @@ object AdminRest extends RestHelper {
     case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
       Extraction.decompose(Arena.findByKey(arenaId).map(_.pools.map(_.toMarshalledSummary)).getOrElse(false))
 
+    case "api" :: "participants" :: Nil JsonGet _ =>
+      Extraction.decompose(Participant.findAll.map(_.toMarshalled))
+
+    case "api" :: "countries" :: Nil JsonGet _ =>
+      Extraction.decompose(Country.findAll(By(Country.hasViewerFlag, true)).map(_.toMarshalled))
+
     case "api" :: "tournaments" :: Nil JsonGet _ =>
       Extraction.decompose(Tournament.findAll.map(_.toMarshalled))
 
@@ -40,6 +46,16 @@ object AdminRest extends RestHelper {
 
     case "api" :: "round" :: AsLong(roundId) :: "pools" :: Nil JsonGet _ =>
       Extraction.decompose(Round.findByKey(roundId).map(_.pools.map(_.toMarshalled)).getOrElse(false))
+
+    case "api" :: "round" :: AsLong(roundId) :: "fight" :: Nil JsonGet _ =>
+      val fight = for {
+        round <- Round.findByKey(roundId)
+        pool <- round.pools.find(!_.finished_?)
+        fight <- pool.fights.find(!_.finished_?)
+      } yield {
+        fight.toMarshalledSummary
+      }
+      Extraction.decompose(fight.getOrElse(false))
 
     case "api" :: "pool" :: AsLong(poolId) :: Nil JsonGet _ =>
       Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalled).getOrElse(false))
