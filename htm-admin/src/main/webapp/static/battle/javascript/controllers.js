@@ -379,36 +379,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	playRoutes.controllers.AdminInterface.messageUpdate($scope.currentFight.id).post(JSON.stringify(newValue));
     });
     
-    $scope.editingAnnouncement = false;
-    
-    $('#announcement').focus(function(event) {
-    	$scope.$apply(function() {
-    		$scope.editingAnnouncement = true;
-    	});
-    });
-    
-    $('#announcement').blur(function(event) {
-		$scope.$apply(function() {
-			$scope.editingAnnouncement = false;
-		});
-    });
-    
-    $(document).keypress(function(event) {
-    	if (event.keyCode == 32) {
-	    	$scope.$apply(function() {
-	    		if (!$scope.editingAnnouncement) {
-	    			// space
-					if ($scope.currentFight.started) {
-						$scope.toggleTimer();
-					} else {
-						$scope.startFight();
-					}
-					event.preventDefault();
-	    		}
-			});
-    	}
-	});
-    
     $(window).on("beforeunload", function() {
     	return "You might lose some information by doing this!";
     });
