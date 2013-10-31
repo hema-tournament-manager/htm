@@ -53,7 +53,6 @@
 						<ul class="dropdown-menu" role="menu" aria-labelledby="fight-menu">
 							<li><a href="" data-ng-click="correctScore()">Score correction...</a></li>
 							 <li class="divider"></li>
-							<li><a href="" data-ng-click="cancelFight()">Cancel fight</a></li>
 							<li><a href="" data-ng-click="confirmFight()">Confirm fight</a></li>
 						</ul>
 					</div>
@@ -97,15 +96,15 @@
 				<div class="htm-padding-top">
 					<div data-ng-show="exchangeLimitReached()" class="alert alert-warning">
 						<span class="glyphicon glyphicon-list"></span>
-						<strong>Limit reached!</strong> The <em>exchange limit</em> has been reached, <a href="#" class="alert-link" data-ng-click="confirmFight()">confirm this fight</a>
+						<strong>Limit reached!</strong> The <em>exchange limit</em> has been reached, confirm this fight
 					</div>
 					<div data-ng-show="timeLimitReached()" class="alert alert-warning">
 						<span class="glyphicon glyphicon-time"></span>
-						<strong>Limit reached!</strong> The <em>time limit</em> has been reached, <a href="#" class="alert-link" data-ng-click="confirmFight()">confirm this fight</a>
+						<strong>Limit reached!</strong> The <em>time limit</em> has been reached, confirm this fight
 					</div>
 					<div data-ng-show="doubleHitLimitReached()" class="alert alert-warning">
 						<span class="glyphicon glyphicon-transfer"></span>
-						<strong>Limit reached!</strong> The <em>double hit limit</em> has been reached, <a href="#" class="alert-link" data-ng-click="confirmFight()">confirm this fight</a>
+						<strong>Limit reached!</strong> The <em>double hit limit</em> has been reached, confirm this fight
 					</div>
 				</div>
 				<div class="row htm-fight-buttons htm-padding-top">
