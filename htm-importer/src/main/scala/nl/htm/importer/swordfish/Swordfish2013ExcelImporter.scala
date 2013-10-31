@@ -32,7 +32,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
     println(settings.countries)
 
     println("Importing participants")
-    val participants = for (rowIndex <- 1 to total.getLastRowNum()) yield {
+    val participants = for (rowIndex <- 1 to total.getLastRowNum() if total.getRow(rowIndex).getCell(0) != null) yield {
       val row = total.getRow(rowIndex)
       val countryNameRaw = row.getCell(header("Country")) match {
         case cell: Cell => cell.getStringCellValue()
@@ -58,7 +58,7 @@ object Swordfish2013ExcelImporter extends Importer[SwordfishExcelSettings] {
         val sheet = workbook.getSheet(name)
         if (sheet != null) {
           val poolFighterNumbers = findPoolFighterNumbers(sheet)
-          val subscriptions = for (rowIndex <- 2 to sheet.getLastRowNum() if sheet.getRow(rowIndex).getCell(5) != null) yield {
+          val subscriptions = for (rowIndex <- 2 to sheet.getLastRowNum() if sheet.getRow(rowIndex).getCell(0) != null && sheet.getRow(rowIndex).getCell(1) != null && sheet.getRow(rowIndex).getCell(5) != null) yield {
             val row = sheet.getRow(rowIndex)
             val (primary, xp) = Swordfish2013Importer.parseSubscriptionString(row.getCell(5))
             row.getCell(1).getNumericCellValue().toInt.toString -> Subscription(primary, row.getCell(0), xp, poolFighterNumbers.get(row.getCell(0).getNumericCellValue().toInt))
