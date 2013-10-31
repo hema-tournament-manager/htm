@@ -22,21 +22,51 @@
 				<span class="red"><span class="name" style="color:red">Red</span> (<span class="club">Red Team</span>)</span> vs
 				 <span class="blue"><span class="name" style="color:blue">Blue</span> (<span class="club">Team Blue</span>)</span>
 			</h3>
-
-			Total score Red: <span id="scoreRed"> Score red</span><br/>
-			Total Score Blue: <span id="scoreBlue"> Score blue</span><br/> <br />
+			<br />
+			
+			<h4 style="margin:3px;">Total Score Red: <b><span id="scoreRed"> Score red</span></b> </h4>
+			<h4 style="margin:3px;">Total Score Blue: <b><span id="scoreBlue"> Score blue</span></b> </h4><br/> <br />
 			
 			Time start: <input name="timeStart"/><br/>
 			Time stop: <input name="timeStop"/><br/>
 			
+			<br />
 			<button id="doAdd" name="add">Add Score</button>
+			<br />
+			<br />
 			
+			<table border="1" style="text-align:center; border-collapse:collapse; border-spacing:5px;">
+			<tr>
+				<th style="color: #fff; background-color: #777; padding:4px;">Exchanges </th>
+				<th style="color: #fff; background-color: #777; padding:4px;">Points Red</th>
+				<th style="color: #fff; background-color: #777; padding:4px;">Points Blue</th>
+				<th style="color: #fff; background-color: #777; padding:4px;">Clean Hits Red</th>
+				<th style="color: #fff; background-color: #777; padding:4px;">Clean Hits Blue</th>
+				<th style="color: #fff; background-color: #777; padding:4px;">Afterblows Red</th>
+				<th style="color: #fff; background-color: #777; padding:4px;">Afterblows Blue</th>
+				<th style="color: #fff; background-color: #777; padding:4px;">Doubles</th>
+				<th style="color: #fff; background-color: #777; padding:4px;">Score Type</th>
+			</tr>
+			<tr class="score">
+				<td><input style="text-align:center" size="3" name="exchanges" /></td>
+				<td><input style="text-align:center" size="3" name="pointsRed" /></td>
+				<td><input style="text-align:center" size="3" name="pointsBlue" /></td>
+				<td><input style="text-align:center" size="3" name="cleanHitsRed" /></td>
+				<td><input style="text-align:center" size="3" name="cleanHitsBlue" /></td>
+				<td><input style="text-align:center" size="3" name="afterblowsRed" /></td>
+				<td><input style="text-align:center" size="3" name="afterblowsBlue" /></td>
+				<td><input style="text-align:center" size="3" name="doubles" /></td>
+				<td><input style="text-align:center" size="5" name="scoreType" /></td>
+				
+			</tr>
+			</table>
+			<!--  
 			<div class="score">  
 				<fieldset>
 				<h3>Score line:</h3>
 				
 				<div style="float: left;">
-					<label>Points Red: <input name="pointsRed" /></label>
+					<label>Points Red: </label>
 				</div>
 				<div style="float: left;">
 					<label>Points Blue: <input name="pointsBlue" /></label>
@@ -69,8 +99,9 @@
 				
 				</fieldset>
 			</div>
-			
+			-->
 
+			<br />
 			<button syle="clear:left;" id="doEdit">Save</button>
 		</form>
 	</div>
