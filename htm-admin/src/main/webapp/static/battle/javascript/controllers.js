@@ -325,7 +325,9 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	    		
 	    		$scope.sendUpdate();
 	    		
-	    		var next = $scope.findNextFight();
+	        	playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
+
+	        	var next = $scope.findNextFight();
 	    		if (next) {
 	    			$scope.defaultAnnouncements.nextup = "Next up: <span class=\"badge red\">" + next.fighterA.externalId + "</span> <b>" + next.fighterA.shortName  + "</b> vs <span class=\"badge blue\">" + next.fighterB.externalId + "</span> <b>" + next.fighterB.shortName + "</b> at " + $filter('hours')(next.plannedTime);
 	    		} else {
