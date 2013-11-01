@@ -5,7 +5,7 @@ save_dir="/tmp/htm_json"
 remote_user="root"
 remote_host="www.ghfs.se"
 remote_path="/var/www/ghfs.se/html/api/v1"
-remote_name="htm-dev.json"
+remote_name="htm.json"
 
 ret=0
 
