@@ -21,7 +21,7 @@ object JsonFightExporter extends FightExporter {
   implicit def renderTournament(t: Tournament): JValue =
     ("Type" -> t.name.get) ~
       ("ID" -> t.id.get.toString) ~
-      ("StartTime" -> "0") ~
+      ("StartTime" -> t.startTime.toString) ~
       ("Delay" -> "0") ~
       ("Round" -> t.rounds.toList)
 
