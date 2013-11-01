@@ -29,6 +29,7 @@ object ResultsExporter extends ExcelExporter {
         case "firstRow" => readConfig(rows, acc.copy(startRow = row.getCell(1).getNumericCellValue().toInt))
         case "tournaments" => readConfig(rows, acc.copy(tournaments = row.getCell(1).getStringCellValue() match {
           case "all" => Tournament.findAll(OrderBy(Tournament.id, Ascending)).filter(_.identifier.get != "melee")
+          case s: String => Tournament.find(By(Tournament.identifier, s)).get :: Nil
           case _ => Nil
         }))
         case "columns" => readConfig(rows, acc.copy(columns = Map(readRow(row, 1, List()).zipWithIndex: _*)))
@@ -83,7 +84,7 @@ object ResultsExporter extends ExcelExporter {
     workbook.write(out)
   }
 
-  def isPoolPhaseRound(r: Round): Boolean = r.name.get.startsWith("Ronde ")
+  def isPoolPhaseRound(r: Round): Boolean = r.name.get.startsWith("Round ")
 
   def printTournament(tournament: Tournament)(implicit sheet: Sheet, rowIndex: Int, config: Config) =
     printRow(Map("tournament.name" -> tournament.name.get))
