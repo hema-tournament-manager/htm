@@ -425,7 +425,7 @@ var CorrectScoreCtrl = function($scope, $modalInstance, score) {
 }
 
 var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, appService) {
-	$rootScope.title = "Sowrdfish 2013";
+	$rootScope.title = "Swordfish 2013";
 	$rootScope.subtitle = "";
 	
 	$scope.arenas = new Array();
