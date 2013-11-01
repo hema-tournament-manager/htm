@@ -33,10 +33,10 @@ object ParticipantList {
       Run(cmd)
     }
 
-    def registerAll() = {
+    def registerAll(register: Boolean) = {
       ps foreach { p =>
-        p.isPresent(true)
-        p.subscriptions foreach (_.gearChecked(true))
+        p.isPresent(register)
+        p.subscriptions foreach (_.gearChecked(register))
         p.save
       }
       S.redirectTo("/participants/list")
@@ -48,7 +48,9 @@ object ParticipantList {
       S.redirectTo("/participants/register/new")
     }
 
-    def registerAllSubmit = SHtml.submit("register all", registerAll, "class" -> "btn btn-default")
+    def registerAllSubmit = SHtml.submit("register all", () => registerAll(true), "class" -> "btn btn-default")
+
+    def unregisterAllSubmit = SHtml.submit("unregister all", () => registerAll(false), "class" -> "btn btn-default")
 
     def createParticipantSubmit = SHtml.submit("create participant", createParticipant, "class" -> "btn btn-default")
 
@@ -91,7 +93,7 @@ object ParticipantList {
         ".people *" #> ps.size &
         ".countries *" #> ps.groupBy(_.country.is).size &
         ".clubs *" #> ps.groupBy(_.clubCode.is).size &
-        ".actions *" #> Seq(createParticipantSubmit, registerAllSubmit))
+        ".actions *" #> Seq(createParticipantSubmit, registerAllSubmit, unregisterAllSubmit))
   }
 
   def downloadParticipantList() = {
