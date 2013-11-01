@@ -6,17 +6,17 @@ import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.mapper._
 
 case class ParticipantScores(
-    initialRanking: Int,
-    fights: Int,
-    wins: Int,
-    ties: Int,
-    losses: Int,
-    lossesByDoubles: Int,
-    cleanHitsReceived: Int,
-    cleanHitsDealt: Int,
-    afterblowsReceived: Int,
-    afterblowsDealt: Int,
-    doubleHits: Int) extends Scores {
+  initialRanking: Int,
+  fights: Int,
+  wins: Int,
+  ties: Int,
+  losses: Int,
+  lossesByDoubles: Int,
+  cleanHitsReceived: Int,
+  cleanHitsDealt: Int,
+  afterblowsReceived: Int,
+  afterblowsDealt: Int,
+  doubleHits: Int) extends Scores {
   def points = wins * 3 + ties * 1 + lossesByDoubles * -1
   def group = if (fights > 0) points else -10 + initialRanking
   def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
@@ -71,7 +71,11 @@ abstract class SwordfishRuleset extends Ruleset {
   def roundRobinPairing(nrOfPeople: Int, iteration: Int): List[(Int, Int)] = {
     val pin = 1
     val (topRow: List[Int], bottomRow: List[Int]) = rotate(topRowForCount(nrOfPeople), bottomRowForCount(nrOfPeople), iteration)
-    (pin +: topRow).zip(bottomRow.reverse)
+    val result = (pin +: topRow).zip(bottomRow.reverse)
+    if (nrOfPeople == 5 && (iteration == 3 || iteration == 4))
+      result.reverse
+    else
+      result
   }
 
   def topRowForCount(nrOfPeople: Int): List[Int] = (2 to ((nrOfPeople + 1) / 2)).toList
