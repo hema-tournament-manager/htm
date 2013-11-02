@@ -217,6 +217,22 @@ object TournamentView {
       S.notice("Unlocked fight " + fight.shortLabel)
     }
 
+    def deleteAllFights {
+      val allFights = for {
+        r <- t.rounds
+        p <- r.pools
+        f <- p.fights
+      } yield f
+
+      if (!allFights.exists(f => f.started_? || f.finished_?)) {
+        allFights foreach (_.delete_!)
+
+        S.notice("All fights have been deleted for this tournament")
+      } else {
+        S.notice("Cannot delete fights because there are results")
+      }
+    }
+
     def edit(fight: Fight) {
       S.redirectTo("/fights/edit/" + fight.id.is)
     }
@@ -264,6 +280,7 @@ object TournamentView {
         <span><span class="pull-left badge">{ f.subscription(t).get.fighterNumber.get }</span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span><span class="pull-right" title={ f.club.is }>{ f.clubCode.is }</span></span>
 
     "#tournamentName" #> t.name &
+      "#deleteAllFights" #> SHtml.button(Text("Delete all fights"), () => deleteAllFights) &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
       ".downloadButton" #> Seq(
         "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
