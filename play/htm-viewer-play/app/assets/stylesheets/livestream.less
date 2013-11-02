@@ -1,10 +1,16 @@
 @import "main.less";
 @bgcolor: rgb(0, 255, 0);
 
-.background {
+.background, .picture, .exchanges, .points, .doubles, .pool, .exchangeCount {
 	display: none;
 }
 
 #main {
 	background-color: @bgcolor;
+	
+	.fight {
+		.message {
+			display: none;
+		}
+	}
 }
