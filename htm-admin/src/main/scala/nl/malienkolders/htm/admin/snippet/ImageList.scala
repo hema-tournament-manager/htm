@@ -27,9 +27,7 @@ object ImageList {
     var resolution = Resolution.supported.head
 
     def process() = {
-      if (name.isEmpty()) {
-        S.notice("Name must not be empty")
-      } else if (upload.isEmpty) {
+      if (upload.isEmpty) {
         S.notice("Choose an image to upload")
       } else {
         val format = upload.get.mimeType match {
@@ -38,6 +36,10 @@ object ImageList {
           case _ => None
         }
         if (format.isDefined) {
+          if (name == "") {
+            name = upload.get.fileName.reverse.dropWhile(_ != '.').drop(1).reverse
+          }
+          name = name.replaceAll("""(\s|\.)+""", "_")
           val extension = upload.get.fileName.reverse.takeWhile(_ != '.').reverse
           val img = Image.find(By(Image.name, name)).getOrElse(Image.create.name(name).mimeType(upload.get.mimeType).extension(extension))
           if (img.mimeType.get == upload.get.mimeType) {
