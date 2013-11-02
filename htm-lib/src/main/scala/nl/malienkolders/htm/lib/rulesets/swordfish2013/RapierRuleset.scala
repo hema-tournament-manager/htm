@@ -152,13 +152,17 @@ object RapierRuleset extends Ruleset {
             // Double hits are removed from the remaining winning points
             case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p + calculateFightPoints(a, b, double))
+            // The loser receives no points
             case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p + calculateFightPoints(b, a, double))
+              ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p)
             // The loser receives no points
             case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, a)
+              ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p)
+            // If the winner has more than 6 points, the winner’s score will first be reduced to 6
+            // The loser’s points will be then deducted from the winner’s 
+            // Double hits are removed from the remaining winning points
             case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, b)
+              ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p + calculateFightPoints(b, a, double))
             case _ => ps
           }
         } else {
@@ -168,7 +172,7 @@ object RapierRuleset extends Ruleset {
   }
   
   def calculateFightPoints(pointsWinner: Int, pointsLoser: Int, doubles: Int): Int = 
-    (pointsWinner.max(6) - pointsLoser) - doubles
+    (pointsWinner.min(6) - pointsLoser) - doubles
     
   def ranking(r: Round): List[(Pool, List[(Participant, ParticipantScores)])] = {
     r.pools.toList.map { p =>
