@@ -12,7 +12,10 @@
 	<div class="detail weight" ng-show="participant.weight">
 		{{ participant.weight }}&nbsp;kg
 	</div>
-	<div class="detail" ng-show="participant.previousWins">
-		{{ participant.previousWins }}
+	<div ng-repeat="win in participant.previousWins" ng-class="'previousWin previousWin' + ($index + 1)">
+		{{ win }}
+	</div>
+	<div class="country" ng-show="participant.country">
+		<img ng-src="/assets/images/fight/flags/{{participant.country}}blue.png"/>
 	</div>
 </div>

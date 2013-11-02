@@ -2,23 +2,88 @@
 @width: 1280px;
 @height: 720px;
 
+.participant-bio {
+	.tournament, .round {
+		font-size: 22pt;
+	}
+	
+	.round {
+		margin-top: 20px;
+	}
+	
+	.name {
+		top: 240px;
+		font-size: 24pt;
+	}
+	
+	.club {
+		top: 275px;
+		font-size: 18pt;
+	}	
+
+	.detail {
+		font-size: 16pt;
+	}
+	
+	.age {
+		top: 410px;
+	}
+	
+	.height {
+		top: 450px;
+	}
+	
+	.weight {
+		top: 490px;
+	}
+	
+	.previousWin {
+		font-size: 15pt;
+	}
+	
+	.previousWin1 {
+		top: 548px;
+	}
+
+	.previousWin2 {
+		top: 588px;
+	}
+
+	.previousWin3 {
+		top: 628px;
+	}
+	
+	.country {
+		-webkit-transform: scale(1.5);
+		top: 426px;
+	}
+}
+
 .participant-bio.left {
-	background-image: url(/assets/images/participant/bio/1280x720/left.png?thresholding=yes);
+	background-image: url(/assets/images/participant/bio/LS_playerbio_L_720p.png?thresholding=yes);
 	
 	.tournament, .round {
-		left: 240px;
+		left: 220px;
 	}
 
 	.name, .club {
-		right: 1004px;
+		left: 70px;
 	}
 	
 	.detail {
-		left: 80px;
+		right: 1005px;
+	}
+	
+	.previousWin {
+		right: 785px;
+	}
+
+	.country {
+		right: 804px;
 	}
 }
 .participant-bio.right {
-	background-image: url(/assets/images/participant/bio/1280x720/right.png?thresholding=yes);
+	background-image: url(/assets/images/participant/bio/LS_playerbio_R_720p.png?thresholding=yes);
 
 	.tournament, .round {
 		left: 900px;
@@ -31,4 +96,85 @@
 	.detail {
 		right: 296px;
 	}
+	
+	.previousWin {
+		right: 80px;
+	}
+
+	.country {
+		right: 95px;
+	}
+}
+
+#main .fight {
+	.frame {
+		background-image: url(/assets/images/fight/LS_fightscreen_720p.png?thresholding=yes);
+		color: white;
+		
+		.timer {
+			right: 723px;
+			top: 11px;
+			font-size: 32pt;
+		}
+		
+		.score-red, .score-blue {
+			top: 621px;
+			font-size: 56pt;
+		}
+		
+		.score-red {
+			text-align: right;
+			right: 814px !important;
+		}
+
+		.score-blue {
+			text-align: left;
+			left: 814px !important;
+		}
+		
+		.tournament {
+			top: 18px;
+			left: 24px;
+			font-size: 20pt;
+		}
+		
+		.round {
+			top: 45px;
+			left: 24px;
+			font-size: 18pt;
+		}
+		
+		.fighter-bar {
+			top: 615px;
+			
+			img {
+				-webkit-transform: scale(0.8);
+			}
+			
+			.name {
+				top: 2px;
+			}
+			
+			.club {
+				top: 41px;
+			}
+			
+			.red {
+				left: 9px;
+				
+				.name, .club {
+					left: 20px;
+				}
+			}
+			
+			.blue {
+				right: 9px;
+				
+				.name, .club {
+					right: 20px;
+				}
+			}
+		}
+	}
+	
 }
