@@ -1,3 +1,58 @@
 @import "livestream.less";
 @width: 1920px;
 @height: 1080px;
+
+.participant-bio {
+	.tournament, .round {
+		font-size: 40pt;
+	}
+	
+	.round {
+		margin-top: 20px;
+	}
+	
+	.name {
+		top: 350px;
+		font-size: 42pt;
+	}
+	
+	.club {
+		top: 423px;
+		font-size: 32pt;
+	}	
+}
+
+.participant-bio.left {
+	background-image: url(/assets/images/participant/bio/1920x1080/left.png?thresholding=yes);
+	
+	.tournament, .round {
+		left: 240px;
+	}
+
+	.name, .club {
+		right: 1004px;
+	}
+	
+	.detail {
+		left: 80px;
+	}
+
+	.detail {
+		font-size: 28pt;
+	}
+}
+.participant-bio.right {
+	background-image: url(/assets/images/participant/bio/1920x1080/right.png?thresholding=yes);
+
+	.tournament, .round {
+		left: 1300px;
+	}
+
+	.name, .club {
+		left: 1170px;
+	}
+	
+	.detail {
+		right: 440px;
+	}
+}
