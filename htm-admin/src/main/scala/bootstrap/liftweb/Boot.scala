@@ -57,7 +57,7 @@ class Boot {
     CountryImporter.doImport
 
     DefaultRuleset.register(true)
-    RapierRuleset.register()
+    rapier.RapierRuleset.register()
 
     val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list") ::
