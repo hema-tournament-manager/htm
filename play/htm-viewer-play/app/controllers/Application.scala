@@ -136,7 +136,8 @@ object Application extends Controller {
   }
 
   def photo(id: String, side: String) = Action {
-    val photoFile = new File("Avatars/Generated/" + id + "_default_" + side + ".jpg")
+    val paddedId = ("0" * (4 - id.length)) + id
+    val photoFile = new File("Avatars/Generated/" + paddedId + "_default_" + side + ".jpg")
     if (photoFile.exists()) {
       Ok.sendFile(photoFile)
     } else

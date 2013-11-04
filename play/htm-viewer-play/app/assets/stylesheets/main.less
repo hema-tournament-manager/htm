@@ -132,10 +132,7 @@ body {
 	
 		.timer {
 			text-align: center;
-			top: 30px;
 			width: 400px;
-			right: 77px;
-			font-size: 60pt;
 		}
 		
 		.picture {
@@ -207,10 +204,6 @@ body {
 			top: 226px;
 			font-size: 50pt;
 			font-weight: bold;
-		}
-		
-		.score-red {
-			left: 38px;
 		}
 		
 		.score-blue {
@@ -314,37 +307,42 @@ body {
 		
 	}
 	
-	.participant-footer {
-		position: absolute;
-		bottom: 20px;
-		left: (@width - 800px) / 2;
-		width: 800px;
-		height: 78px;
-		background-color: white;
-		border: solid 2px gray;
-		overflow: hidden;
+	.frame.footer {
+		background: url("/assets/images/footer/LS_name_bar_720p.png?thresholding=yes");
 		
-		.country {
+		.participant-footer {
+			color: white;
 			position: absolute;
-			top: 0;
-			left: -1px;
-		}
-		
-		.name {
-			position: absolute;
-			top: 1px;
-			left: 20px;
-			font-size: 24pt;
-			font-weight: bold;
-		}
-		
-		.club {
-			position: absolute;
-			bottom: 5px;
-			left: 20px;
-			font-size: 18pt;
+			bottom: 18px;
+			height: 66px;
+			left: 0;
+			width: @width;
+			
+			overflow: hidden;
+			
+			.country {
+				position: absolute;
+				top: 0;
+				right: -1px;
+			}
+			
+			.name {
+				position: absolute;
+				top: -3px;
+				left: 123px;
+				font-size: 25pt;
+				font-weight: bold;
+			}
+			
+			.club {
+				position: absolute;
+				bottom: 0px;
+				left: 123px;
+				font-size: 18pt;
+			}
 		}
 	}
+	
 	
 	.participant-bio {
 		position: absolute;
@@ -358,10 +356,6 @@ body {
 			position: absolute;
 		}
 		
-		.tournament, .round {
-			font-size: 22pt;
-		}
-		
 		.tournament {
 			top: 80px;
 		}
@@ -370,39 +364,22 @@ body {
 			top: 120px;
 		}
 		
-		.name {
-			top: 270px;
-			font-size: 24pt;
-		}
-		
 		.club {
-			top: 305px;
-			font-size: 18pt;
 			color: #ddd;
 		}
 		
 		.detail {
-			font-size: 16pt;
-			
-			.lbl {
-				color: #ddd;
-			}
-			
-			.value {
-				left: 100px;
-			}
+			text-align: right;
 		}
 		
-		.age {
-			top: 410px;
+		.previousWin {
+			position: absolute;
+			text-align: right;
+			display: none;
 		}
 		
-		.height {
-			top: 450px;
-		}
-		
-		.weight {
-			top: 490px;
+		.previousWin1, .previousWin2, .previousWin3 {
+			display: block;
 		}
 	}
 }

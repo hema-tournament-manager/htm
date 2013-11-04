@@ -21,7 +21,8 @@ case class MarshalledParticipant(
   tshirt: String,
   age: Int,
   height: Int,
-  weight: Int)
+  weight: Int,
+  previousWins: List[String])
 
 class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with OneToMany[Long, Participant] {
   def getSingleton = Participant
@@ -65,7 +66,8 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
     tshirt.is,
     age.is,
     height.is,
-    weight.is)
+    weight.is,
+    previousWins.is.split("""(\n|\r)+""").toList)
 }
 
 object Participant extends Participant with LongKeyedMetaMapper[Participant] with CRUDify[Long, Participant] {

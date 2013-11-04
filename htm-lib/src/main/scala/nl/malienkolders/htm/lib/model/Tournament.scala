@@ -19,7 +19,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   object rounds extends MappedOneToMany(Round, Round.tournament, OrderBy(Round.order, Ascending)) with Owned[Round] with Cascade[Round]
   object defaultArena extends MappedLongForeignKey(this, Arena)
   object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.tournament, OrderBy(TournamentParticipants.fighterNumber, Ascending))
-  def participants = subscriptions.map(_.tournament.obj.get)
+  def participants = subscriptions.map(_.participant.obj.get)
 
   def rapier_? = name.is.toLowerCase().contains("rapier")
 

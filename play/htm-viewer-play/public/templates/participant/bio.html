@@ -4,15 +4,18 @@
 	<div class="name">{{ participant.name }}</div>
 	<div class="club">{{ participant.club }}</div>
 	<div class="detail age" ng-show="participant.age">
-		<div class="lbl">Age</div>
-		<div class="value">{{ participant.age }}</div>
+		{{ participant.age }}
 	</div>
 	<div class="detail height" ng-show="participant.height">
-		<div class="lbl">Height</div>
-		<div class="value">{{ participant.height }}&nbsp;cm</div>
+		{{ participant.height }}&nbsp;cm
 	</div>
 	<div class="detail weight" ng-show="participant.weight">
-		<div class="lbl">Weight</div>
-		<div class="value">{{ participant.weight }}&nbsp;kg</div>
+		{{ participant.weight }}&nbsp;kg
+	</div>
+	<div ng-repeat="win in participant.previousWins" ng-class="'previousWin previousWin' + ($index + 1)">
+		{{ win }}
+	</div>
+	<div class="country" ng-show="participant.country">
+		<img ng-src="/assets/images/fight/flags/{{participant.country}}blue.png"/>
 	</div>
 </div>
