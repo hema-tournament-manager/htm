@@ -6,13 +6,14 @@ remote_user="root"
 remote_host="www.ghfs.se"
 remote_path="/var/www/ghfs.se/html/api/v1"
 remote_name="htm.json"
+default_host="192.168.2.2"
 
 ret=0
 
 if [ $1 ]; then
 	url="$1"
 else
-	url="http://localhost:$admin_port/api/v1/status/all"
+	url="http://$default_host:$admin_port/api/v1/status/all"
 fi
 
 if [ ! -d "$save_dir" ]; then
