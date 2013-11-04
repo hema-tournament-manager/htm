@@ -9,7 +9,7 @@ import js._
 import JsCmds._
 import mapper._
 import nl.malienkolders.htm.lib.model._
-import nl.malienkolders.htm.lib.{ Tournament => Rulesets }
+import nl.malienkolders.htm.lib.rulesets.Ruleset
 import nl.malienkolders.htm.admin.lib.TournamentUtils._
 import scala.util.Random
 
@@ -23,7 +23,7 @@ object TournamentAdvance {
     val cr = Round.findByKey(TournamentAdvance.loc.currentValue.map(_.param).get.toLong).get
     val t = cr.tournament.obj.get
     val pr = cr.previousRound.get
-    val ruleset = Rulesets.ruleset(cr.ruleset.get)
+    val ruleset = cr.rulesetImpl
 
     var selected: List[Participant] = List()
 

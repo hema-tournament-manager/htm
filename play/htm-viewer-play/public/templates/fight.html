@@ -3,7 +3,7 @@
 <img class="picture red" ng-src="/photo/{{fighterA.externalId || 'placeholder'}}/l"/>
 <img class="picture blue" ng-src="/photo/{{fighterB.externalId || 'placeholder'}}/r"/>
 <img class="background" src="/assets/images/fight/HTM_HEFFAC_gamescreen_overlay.png"/>
-<div class="background" ng-cloak>
+<div class="frame" ng-cloak>
 	<div class="score-red">{{ totalScore.a }}</div>
 	<div class="score-blue">{{ totalScore.b }}</div>
 	<div class="score-double" ng-show="totalScore.d &lt;= 3">
@@ -14,15 +14,17 @@
 	</div>
 	<div class="fighter-bar">
 		<div class="fighter red">
-			<img ng-src="/assets/images/fight/flags/{{fighterA.country}}red.png"/>
-			<span class="name">{{fighterA.name}}</span>
+			<img ng-show="fighterA.country" ng-src="/assets/images/fight/flags/{{fighterA.country}}red.png"/>
+			<div class="name">{{fighterA.name}}</div>
+			<div class="club">{{fighterA.club}}</div>
 		</div>
 		<div class="fighter blue">
-			<img ng-src="/assets/images/fight/flags/{{fighterB.country}}blue.png"/>
-			<span class="name">{{fighterB.name}}</span>
+			<img ng-show="fighterB.country" ng-src="/assets/images/fight/flags/{{fighterB.country}}blue.png"/>
+			<div class="name">{{fighterB.name}}</div>
+			<div class="club">{{fighterB.club}}</div>
 		</div>
 	</div>
-	<div class="message" ng-bind-html-unsafe="message"></div>
+	<div class="message" ng-show="message" ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}"><div ng-bind-html-unsafe="message"></div></div>
 	<div class="labels">
 		<div class="exchanges">Exchanges</div>
 		<div class="points red">Points</div>
@@ -42,7 +44,7 @@
 		{{ poolSummary.round.name }}
 	</div>
 	<div class="pool">
-		Pool {{ poolSummary.order }}
+		Pool {{ poolSummary.name }}
 	</div>
 </div>
 </div>

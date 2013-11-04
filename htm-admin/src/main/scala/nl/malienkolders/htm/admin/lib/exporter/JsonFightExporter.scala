@@ -15,13 +15,13 @@ object JsonFightExporter extends FightExporter {
 
   implicit def renderParticipant(p: Participant): JValue =
     ("ID" -> p.externalId.get) ~
-      ("Name" -> p.name.get) ~
+      ("Name" -> p.shortName.get) ~
       ("Club" -> p.clubCode.get)
 
   implicit def renderTournament(t: Tournament): JValue =
     ("Type" -> t.name.get) ~
       ("ID" -> t.id.get.toString) ~
-      ("StartTime" -> "0") ~
+      ("StartTime" -> t.startTime.toString) ~
       ("Delay" -> "0") ~
       ("Round" -> t.rounds.toList)
 
@@ -35,24 +35,25 @@ object JsonFightExporter extends FightExporter {
   implicit def renderFight(f: Fight): JValue =
     ("Fighter_1" -> f.fighterA.foreign.get.externalId.get) ~
       ("Fighter_2" -> f.fighterB.foreign.get.externalId.get) ~
-      ("Score_1" -> f.currentScore.a.toString) ~
-      ("Score_2" -> f.currentScore.b.toString) ~
+      ("Score_1" -> f.currentScore.red.toString) ~
+      ("Score_2" -> f.currentScore.blue.toString) ~
       ("Doubles" -> f.currentScore.double.toString) ~
       ("Status" -> fightStatus(f))
 
   def fightStatus(f: Fight): String = if (f.finished_?) "finished" else if (f.started_?) "fighting" else "pending"
 
-  def doExport: Unit = {
-    val tree: JValue = "Event" -> (
+  def createExport: JValue =
+    "Event" -> (
       ("Title" -> "Swordfish 2013") ~
       ("Updated" -> (System.currentTimeMillis() / 1000L).toString) ~
-      ("Contestants" -> Participant.findAll) ~
+      ("Contestants" -> Participant.findAll.filter(_.subscriptions.size > 0)) ~
       ("Tournament" -> Tournament.findAll))
 
-    val output = render(tree)
+  def doExport: Unit = {
+    val output = createExport
 
     val out = new PrintWriter("export.json")
-    out.println(pretty(render(tree)))
+    out.println(pretty(render(output)))
     out.close()
   }
 

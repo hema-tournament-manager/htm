@@ -25,6 +25,7 @@ object HtmBuild extends Build {
                "com.h2database" % "h2" % "1.2.147",
                "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion,
 							 "org.apache.poi" % "poi" % "3.9",
+							 "org.apache.poi" % "poi-ooxml" % "3.9",
 		"commons-io" % "commons-io" % "2.4" ))
 		
 	lazy val libSettings = buildSettings ++ Format.settings ++ Seq(
@@ -65,7 +66,7 @@ object HtmBuild extends Build {
 object BuildSettings {
   val buildOrganization = "nl.malienkolders"
   val buildName = "HTM"
-  val buildVersion = "1.0.1-SNAPSHOT"
+  val buildVersion = "1.1-SNAPSHOT"
   val buildScalaVersion = "2.10.2"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(

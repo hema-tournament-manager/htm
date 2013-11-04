@@ -10,17 +10,27 @@ import util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.comet._
 import net.liftweb.common.Full
+import nl.malienkolders.htm.admin.lib.exporter.JsonFightExporter
 
 object AdminRest extends RestHelper {
 
   override implicit val formats = Serialization.formats(NoTypeHints)
 
   serve {
+    case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>
+      JsonFightExporter.createExport
+
     case "api" :: "arenas" :: Nil JsonGet _ =>
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 
     case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
       Extraction.decompose(Arena.findByKey(arenaId).map(_.pools.map(_.toMarshalledSummary)).getOrElse(false))
+
+    case "api" :: "participants" :: Nil JsonGet _ =>
+      Extraction.decompose(Participant.findAll.map(_.toMarshalled))
+
+    case "api" :: "countries" :: Nil JsonGet _ =>
+      Extraction.decompose(Country.findAll(By(Country.hasViewerFlag, true)).map(_.toMarshalled))
 
     case "api" :: "tournaments" :: Nil JsonGet _ =>
       Extraction.decompose(Tournament.findAll.map(_.toMarshalled))
@@ -36,6 +46,16 @@ object AdminRest extends RestHelper {
 
     case "api" :: "round" :: AsLong(roundId) :: "pools" :: Nil JsonGet _ =>
       Extraction.decompose(Round.findByKey(roundId).map(_.pools.map(_.toMarshalled)).getOrElse(false))
+
+    case "api" :: "round" :: AsLong(roundId) :: "fight" :: Nil JsonGet _ =>
+      val fight = for {
+        round <- Round.findByKey(roundId)
+        pool <- round.pools.find(!_.finished_?)
+        fight <- pool.fights.find(!_.finished_?)
+      } yield {
+        fight.toMarshalledSummary
+      }
+      Extraction.decompose(fight.getOrElse(false))
 
     case "api" :: "pool" :: AsLong(poolId) :: Nil JsonGet _ =>
       Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalled).getOrElse(false))
@@ -66,10 +86,6 @@ object AdminRest extends RestHelper {
 
     case "api" :: "pool" :: AsLong(poolId) :: "fight" :: AsLong(fightOrder) :: Nil JsonGet _ =>
       Extraction.decompose(Fight.find(By(Fight.pool, poolId), By(Fight.order, fightOrder)).map(_.toMarshalledSummary).getOrElse(false))
-
-    case "api" :: "pool" :: AsLong(poolId) :: "ranking" :: Nil JsonGet _ =>
-      val res = Pool.findByKey(poolId).get.toMarshalledRanking
-      Extraction.decompose(res)
 
     case "api" :: "fight" :: "confirm" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledFight](json)
@@ -147,6 +163,9 @@ object AdminRest extends RestHelper {
         case _ =>
           false
       })
+
+    case "api" :: "images" :: Nil JsonGet _ =>
+      Extraction.decompose(Image.findAll.map(_.toMarshalled).toList)
   }
 
 }

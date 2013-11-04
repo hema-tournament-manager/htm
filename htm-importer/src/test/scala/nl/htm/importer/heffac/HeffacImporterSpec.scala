@@ -9,7 +9,7 @@ class HeffacImporterSpec extends Specification {
 
   "HeffacImporter" should {
     "import countries correctly" in {
-      HeffacImporter.doImport(HeffacSettings(new FileInputStream("/home/jogchem/heffaf_inschrijvingen.xlsx"))).participants.groupBy(_.country).size must beEqualTo(2)
+      HeffacImporter.doImport(InputStreamSettings(new FileInputStream("/home/jogchem/heffaf_inschrijvingen.xlsx"))).participants.groupBy(_.country).size must beEqualTo(2)
     }
   }
 

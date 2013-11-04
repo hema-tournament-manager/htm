@@ -1,0 +1,21 @@
+<div class="participant-bio" ng-class="side">
+	<div class="tournament">{{ tournament }}</div>
+	<div class="round">{{ round }}</div>
+	<div class="name">{{ participant.name }}</div>
+	<div class="club">{{ participant.club }}</div>
+	<div class="detail age" ng-show="participant.age">
+		{{ participant.age }}
+	</div>
+	<div class="detail height" ng-show="participant.height">
+		{{ participant.height }}&nbsp;cm
+	</div>
+	<div class="detail weight" ng-show="participant.weight">
+		{{ participant.weight }}&nbsp;kg
+	</div>
+	<div ng-repeat="win in participant.previousWins" ng-class="'previousWin previousWin' + ($index + 1)">
+		{{ win }}
+	</div>
+	<div class="country" ng-show="participant.country">
+		<img ng-src="/assets/images/fight/flags/{{participant.country}}blue.png"/>
+	</div>
+</div>

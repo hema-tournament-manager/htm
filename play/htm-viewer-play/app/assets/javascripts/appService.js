@@ -13,6 +13,10 @@ angular.module('htm.services', [])
 		  "empty": {
 			  "message": ""
 		  },
+		  "image": {
+			  "message": "",
+			  "image": "does_not_exist.jpg"
+		  },
 		  "fight": {
 			  "message": "",
 			  "timer": {
@@ -31,24 +35,42 @@ angular.module('htm.services', [])
 			  },
 			  "fighterA": {
 				  "name": "Rood",
-				  "country": "NL"
+				  "country": "",
+				  "club": "Academie voor Middeleeuwse Krijgskunst"
 			  },
 			  "fighterB": {
 				  "name": "Blauw",
-				  "country": "NL"
+				  "country": "NL",
+				  "club": "Stockholmspolisens Idrottsförening Fäktning"
 			  }
 		  },
 		  "overview/arena": {
 			  "message": "",
 			  "arena": "",
 			  "pools": []
+		  },
+		  "participant/footer": {
+			  "participant": {
+				  "name": "Een of andere Deelnemer",
+				  "club": "Een Of Andere Vereniging",
+				  "country": "SE"
+			  }
 		  }
 	  };
+	  
+	  $.getJSON("/initialState").done(function( json ) {
+		  state = json;
+	  })
+	  
 	  return {
 		  put: function(view_, update) {
 			  view = view_;
 			  console.log(view_);
 			  console.log(state[view]);
+			  state[view] = _.extend(state[view], update);
+			  callback(view, state[view], update);
+		  },
+		  broadcast: function(update) {
 			  state[view] = _.extend(state[view], update);
 			  callback(view, state[view], update);
 		  },

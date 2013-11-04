@@ -1,5 +1,10 @@
+// default values
+@width: 1024px;
+@height: 768px;
+@bgcolor: black;
+
 body {
-	background: black;
+	background: @bgcolor;
 	overflow: hidden;
 	font-family: sans-serif;
 }
@@ -9,24 +14,33 @@ body {
 	to { -webkit-transform: rotateY(90deg); }
 }
 
-#main {
+.frame {
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 1024px;
-	height: 768px;
+	width: @width;
+	height: @height;
+	text-align: center;
+}
+
+#main {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: @width;
+	height: @height;
+	margin-left: -@width / 2;
+	margin-top: -@height / 2;
 	overflow: hidden;
 	
-	background: white;
 	color: black;
 	
 	.background {
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: 1024px;
-		height: 768px;
-		
+		width: @width;
+		height: @height;
 		text-align: center;
 	}
 	
@@ -35,7 +49,7 @@ body {
 		text-align: center;
 		left: 0;
 		bottom: 10px;
-		width: 1024px;
+		width: @width;
 		font-size: 24pt;
 		
 		.badge {
@@ -60,6 +74,25 @@ body {
 			-webkit-animation-iteration-count: infinite;
 			-webkit-animation-direction: alternate;
 		}
+		
+		.message {
+			bottom: @height * 0.1;
+		}		
+		
+	
+	}
+	
+	.image {
+		display:-webkit-box;
+		-webkit-box-pack:center;
+		-webkit-box-align:center;
+		
+	}
+	
+	.image.message {
+		bottom: 0;
+		height: 50px;
+		background: white;
 	}
 	
 	.fight {
@@ -99,10 +132,7 @@ body {
 	
 		.timer {
 			text-align: center;
-			top: 30px;
 			width: 400px;
-			right: 77px;
-			font-size: 60pt;
 		}
 		
 		.picture {
@@ -122,7 +152,7 @@ body {
 			position: absolute;
 			left: 0;
 			top: 570px;
-			width: 1024px;
+			width: @width;
 			font-size: 25pt;
 			color: white;
 			
@@ -132,9 +162,19 @@ body {
 				width: 512px;
 				font-weight: bold;
 				
-				.name {
+				text-shadow: 2px 2px 3px black;
+				
+				.name, .club {
 					position: absolute;
-					top: 10px;
+				}
+				
+				.name {
+					top: 5px;
+				}
+				
+				.club {
+					font-size: 16pt;
+					top: 45px;
 				}
 			}
 			
@@ -142,7 +182,7 @@ body {
 				left: 0;
 				text-align: left;
 				
-				.name {
+				.name, .club {
 					left: 40px;
 				}
 			}
@@ -151,7 +191,7 @@ body {
 				right: 0;
 				text-align: right;
 				
-				.name {
+				.name, .club {
 					right: 40px;
 				}
 			}
@@ -166,10 +206,6 @@ body {
 			font-weight: bold;
 		}
 		
-		.score-red {
-			left: 38px;
-		}
-		
 		.score-blue {
 			left: 866px;
 		}
@@ -179,7 +215,7 @@ body {
 			width: 96px;
 			height: 46px;
 			left: 462px;
-			top: 268px;
+			top: 262px;
 			font-size: 30pt;
 			padding-top: 2px;
 		}
@@ -219,6 +255,44 @@ body {
 	}
 	
 	.overview-arena {
+		background-color: white;
+	
+		.panel-heading {
+			border-top-right-radius: 0;
+			border-top-left-radius: 0;
+		}
+		
+		@fontSize: 220%;
+		@titleSize: 100%;
+		@badgeSize: 95%;
+		
+		
+		.current-pool {
+			font-size: @fontSize;
+			
+			.panel-title {
+				font-size: @titleSize;
+			}
+			
+			.badge {
+				font-size: @badgeSize;
+			}
+		}
+		
+		@poolSizeFactor: .9;
+		
+		.pool {
+			font-size: @fontSize * @poolSizeFactor;
+			
+			.panel-title {
+				font-size: @titleSize * @poolSizeFactor;
+			}
+			
+			.badge {
+				font-size: @badgeSize * @poolSizeFactor;
+			}
+		}
+	
 		.time {
 			font-size: 90%;
 		}
@@ -230,28 +304,82 @@ body {
 		.fighter.blue .badge {
 			background-color: blue;
 		}
+		
+	}
 	
-		.current-pool {
-			color: black;
-			font-size: 24pt;
-			border: solid 1px black;
+	.frame.footer {
+		background: url("/assets/images/footer/LS_name_bar_720p.png?thresholding=yes");
+		
+		.participant-footer {
+			color: white;
+			position: absolute;
+			bottom: 18px;
+			height: 66px;
+			left: 0;
+			width: @width;
 			
-			.fighter {
-				.badge {
-					font-size: 16pt;
-				}
+			overflow: hidden;
+			
+			.country {
+				position: absolute;
+				top: 0;
+				right: -1px;
+			}
+			
+			.name {
+				position: absolute;
+				top: -3px;
+				left: 123px;
+				font-size: 25pt;
+				font-weight: bold;
+			}
+			
+			.club {
+				position: absolute;
+				bottom: 0px;
+				left: 123px;
+				font-size: 18pt;
 			}
 		}
+	}
+	
+	
+	.participant-bio {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: @width;
+		height: @height;
+		color: white;
 		
-		.pool {
-			color: black;
-			font-size: 22pt;
-			border: solid 1px black;
-			.fighter {
-				.badge {
-					font-size: 14pt;
-				}
-			}
+		div {
+			position: absolute;
+		}
+		
+		.tournament {
+			top: 80px;
+		}
+		
+		.round {
+			top: 120px;
+		}
+		
+		.club {
+			color: #ddd;
+		}
+		
+		.detail {
+			text-align: right;
+		}
+		
+		.previousWin {
+			position: absolute;
+			text-align: right;
+			display: none;
+		}
+		
+		.previousWin1, .previousWin2, .previousWin3 {
+			display: block;
 		}
 	}
 }

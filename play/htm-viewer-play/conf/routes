@@ -3,23 +3,32 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /jsroutes.js            controllers.Application.jsRoutes()
 
 GET     /updateFeed				controllers.Application.updateFeed
 
+GET		/initialState			controllers.Application.initialState
+
 GET		/photo/:id/:side		controllers.Application.photo(id, side)
+
+GET     /image/:resolution/:name			controllers.Application.image(resolution, name)
 
 GET     /api/ping				controllers.Application.ping
 
-POST    /api/update       controllers.Application.update
+POST    /api/update       		controllers.Application.update
 
-POST    /api/update/text       controllers.Application.updateText
+POST    /api/update/text       	controllers.Application.updateText
 
 PUT     /api/push				controllers.Application.push
 
-GET     /jsroutes.js            controllers.Application.jsRoutes()
+GET     /                        controllers.Application.index
+GET     /:resolution             controllers.Application.view(resolution)
+
+GET     /assets/images/*file        controllers.Application.publicImage(file)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+
 
 GET     /webjars/*file          controllers.WebJarAssets.at(file)

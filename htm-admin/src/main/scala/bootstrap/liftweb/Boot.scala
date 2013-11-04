@@ -14,7 +14,7 @@ import nl.malienkolders.htm.lib._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.snippet.TournamentView
 import nl.malienkolders.htm.admin.AdminRest
-import nl.malienkolders.htm.lib.RoundRobinTournament
+import nl.malienkolders.htm.lib.rulesets.swordfish2013._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -37,7 +37,7 @@ class Boot {
     // Use Lift's Mapper ORM to populate the database
     // you don't need to use Mapper to use Lift... use
     // any ORM you want
-    Schemifier.schemify(true, Schemifier.infoF _, User, Country, Score, model.Tournament, TournamentParticipants, Round, Pool, PoolParticipants, Participant, Fight, ParticipantNameMapping, Viewer, ArenaViewers, Arena)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Country, Score, model.Tournament, TournamentParticipants, Round, Pool, PoolParticipants, Participant, Fight, ParticipantNameMapping, Viewer, ArenaViewers, Arena, Image, ScaledImage)
 
     // where to search snippet
     LiftRules.addToPackages("nl.malienkolders.htm.admin")
@@ -48,11 +48,16 @@ class Boot {
       case Req("static" :: "viewer" :: "templates" :: _ :: Nil, "html", _) => false
     }
 
+    LiftRules.dispatch.append {
+      case Req("image" :: resolution :: name :: Nil, _, _) => (() => ImageList.image(resolution, name))
+      case Req("photo" :: pariticipantExternalId :: side :: Nil, _, _) if Set("l", "r").contains(side) =>
+        (() => nl.malienkolders.htm.admin.lib.Utils.photo(pariticipantExternalId, side))
+    }
+
     CountryImporter.doImport
 
-    RoundRobinTournament.register
-    SwissTournament.register
-    SwissSpecialHitsTournament.register
+    DefaultRuleset.register(true)
+    rapier.RapierRuleset.register()
 
     val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list") ::
@@ -62,9 +67,9 @@ class Boot {
       FightEdit.menu ::
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::
-      ParticipantSwap.menu ::
       (Menu.i("Arenas") / "arenas" / "list") ::
       (Menu.i("Viewers") / "viewers" / "list") ::
+      (Menu.i("Images") / "images" / "list") ::
       (Menu.i("Import") / "import") ::
       (Menu.i("Export") / "export") ::
       (Menu.i("Battle") / "battle") ::

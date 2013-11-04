@@ -2,42 +2,140 @@
 	<div class="navbar-header">
 		<a href="/viewers/list" class="navbar-brand">Back to admin</a>
 	</div>
+	<form class="form-inline">
+		<div class="navbar-text navbar-right" ng-repeat="viewer in viewers">
+			<label class="checkbox">
+				<input type="checkbox" ng-model="viewer.selected">
+				{{ viewer.alias }}
+				({{ viewer.lastUpdate }})
+			</label>
+		</div>
+	</form>
 </nav>
 <div class="container">
 	<div class="row">
-		<div class="col-md-3">
-			<div class="panel" ng-class="{true: 'panel-default', false: 'panel-danger'}[hasViewers()]">
-				<div class="panel-heading">
-					<h3 class="panel-title">Viewers</h3>
-				</div>
-				<ul class="list-group">
-					<li class="list-group-item" ng-repeat="viewer in viewers">
-						<label>
-							<input type="checkbox" ng-model="viewer.selected">
-							{{ viewer.alias }}
-						</label>
-					</li>
-				</ul>
-			</div>
-		</div>			
 		<div class="col-md-3">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">View switch</h3>
 				</div>
 				<div class="panel-body">
-					<button class="btn btn-default" ng-click="update('empty', {message: ''})" ng-disabled="!hasViewers()">Empty</button>
-					<button class="btn btn-default" ng-click="update('fight', {message: ''})" ng-disabled="!hasViewers()">Fight</button>
+					<button class="btn btn-primary" ng-click="update('Empty', 'empty', {message: ''})" ng-disabled="!hasViewers()">Empty</button>
+					<button class="btn btn-primary" ng-click="update('Current Fight', 'fight', {message: ''})" ng-disabled="!hasViewers()">Fight</button>
 					<div class="btn-group" ng-show="arenas">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-disabled="!hasViewers()">
+						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" ng-disabled="!hasViewers()">
 	  						Arena overview <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu" role="menu">
-    						<li ng-repeat="arena in arenas"><a href="" ng-click="update('overview/arena', {message: '', arena: arena.name, arenaId: arena.id})">{{arena.name}}</a></li>
+    						<li ng-repeat="arena in arenas"><a href="" ng-click="update('Overview ' + arena.name, 'overview/arena', {message: '', arena: arena.name, arenaId: arena.id})">{{arena.name}}</a></li>
 						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div class="col-md-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Tournament overview</h3>
+				</div>
+				<div class="panel-body">
+					<button type="button" class="btn btn-primary" ng-disabled="!hasViewers()">With names</button>
+					<button type="button" class="btn btn-primary" ng-disabled="!hasViewers()">No names</button>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-2">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Image</h3>
+				</div>
+				<div class="panel-body">
+					<div class="btn-group">
+						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" ng-disabled="!hasViewers()">
+	  						Choose <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+    						<li ng-repeat="image in images | orderBy:'name'"><a href="" ng-click="update('Image ' + image.name, 'image', {message: '', image: image.filename})"><img ng-repeat="resolution in image.resolutions" ng-src="/image/{{resolution}}/{{image.name}}" title="{{resolution}}"/> {{ image.name }}</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+	   			<div class="panel-heading">
+					<h3 class="panel-title">Announcement</h3>
+				</div>
+	   			<div class="panel-body">
+					<div class="form-group">
+						<div class="input-group">
+							<input type="text" class="form-control" id="announcement" placeholder="Announcement" ng-model="announcementBuffer"/>
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="button" ng-click="announce()" ng-disabled="!hasViewers()">Show</button>
+							</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label>Last update</label>
+						<div class="well well-sm" ng-bind-html-unsafe="announcement || '-- nothing --'"></div>
+					</div>
+	   			</div>
+	   		</div>
+		</div>
 	</div>
+	<div class="row">
+		<div class="col-md-3">
+			<div class="panel panel-default">
+	   			<div class="panel-heading">
+					<h3 class="panel-title">Footer</h3>
+				</div>
+	   			<div class="panel-body form">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Name" ng-model="footer.participantBuffer.name"/>
+					</div>
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Club" ng-model="footer.participantBuffer.club"/>
+					</div>
+					<div class="form-group">
+						<select class="form-control" ng-model="footer.participantBuffer.country">
+							<option value="">Don't show country</option>
+							<option ng-repeat="country in countries" value="{{ country.code2 }}">{{ country.name }}</option>
+						</select>
+					</div>
+					<div class="form-group">
+					<div class="btn-group">
+						<button type="button" class="btn btn-primary" ng-click="showFooter(footer.participantBuffer)" ng-disabled="!hasViewers()">Show</button>
+						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" ng-disabled="!hasViewers()">
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							<li ng-repeat="participant in participants | orderBy:'name'"><a href="" ng-click="showFooter(participant)">{{ participant.name }} ({{ participant.clubCode }})</a></li>
+						</ul>
+					</div>
+					</div>
+					<div class="form-group">
+						<label>Last update</label>
+						<div class="well well-sm" ng-bind="footer.participant | json"></div>
+					</div>
+	   			</div>
+	   		</div>
+		</div>
+		<div class="col-md-9">
+			<div class="panel panel-default" ng-repeat="tournament in tournaments">
+				<div class="panel-body">
+					{{ tournament.name }}
+				</div>
+				<table class="table">
+					<tr ng-repeat="round in tournament.unfinishedRounds | orderBy:'id'">
+						<td>{{ round.name }}</td>
+						<td><button class="btn btn-danger form-control" ng-click="update('Bio ' + round.fight.fighterA.name, 'participant/bio', {side: 'right', tournament: tournament.name, round: round.name, participant: round.fight.fighterA})" ng-disabled="!hasViewers()">{{ round.fight.fighterA.name }}</button></td>
+						<td><button class="btn btn-default" ng-disabled="!hasViewers()">Tree</button></td>
+						<td class="text-right"><button class="btn btn-default" ng-disabled="!hasViewers()">Tree</button></td>
+						<td><button class="btn btn-primary form-control" ng-click="update('Bio ' + round.fight.fighterB.name, 'participant/bio', {side: 'left', tournament: tournament.name, round: round.name, participant: round.fight.fighterB})" ng-disabled="!hasViewers()">{{ round.fight.fighterB.name }}</button></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
 </div>

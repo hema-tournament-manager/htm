@@ -44,10 +44,15 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.poolFight =
       }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.round = 
-      function(id) {
-      return _wA({method:"GET", url:"/" + "api/round/" + (function(k,v) {return v})("id", id)})
-      }
-   
+    function(id) {
+    return _wA({method:"GET", url:"/" + "api/round/" + (function(k,v) {return v})("id", id)})
+    }
+ 
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.roundFight = 
+    function(id) {
+    return _wA({method:"GET", url:"/" + "api/round/" + (function(k,v) {return v})("id", id) + "/fight"})
+    }
+ 
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.tournaments = 
     function() {
     return _wA({method:"GET", url:"/" + "api/tournaments"})
@@ -61,6 +66,21 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.viewers =
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.viewerUpdate = 
     function() {
     return _wA({method:"POST", url:"/" + "api/viewer/update"})
+    }
+ 
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.images = 
+    function() {
+    return _wA({method:"GET", url:"/" + "api/images"})
+    }
+
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.participants = 
+    function() {
+    return _wA({method:"GET", url:"/" + "api/participants"})
+    }
+
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.countries = 
+    function() {
+    return _wA({method:"GET", url:"/" + "api/countries"})
     }
  
 })(jsRoutes)

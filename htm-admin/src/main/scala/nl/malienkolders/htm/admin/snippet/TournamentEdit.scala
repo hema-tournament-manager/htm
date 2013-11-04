@@ -9,7 +9,6 @@ import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds._
 import net.liftweb.mapper._
 import nl.malienkolders.htm.lib.model._
-import nl.malienkolders.htm.lib.HtmHelpers._
 import nl.malienkolders.htm.admin.lib._
 import nl.malienkolders.htm.admin.lib.TournamentUtils._
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
@@ -23,7 +22,6 @@ import scala.xml.EntityRef
 import scala.xml.EntityRef
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
-import nl.malienkolders.htm.lib.SwissTournament
 
 object TournamentEdit {
   val menu = Menu.param[ParamInfo]("Edit Tournament", "Edit Tournament", s => Full(ParamInfo(s)),
@@ -35,7 +33,7 @@ object TournamentEdit {
 
     ".tournamentIdentifier *" #> t.identifier &
       ".tournamentNameOld *" #> t.name &
-      ".tournamentNameNew" #> (SHtml.text(t.name, t.name(_)) ++ SHtml.hidden { () =>
+      ".tournamentNameNew" #> (SHtml.text(t.name.get, t.name(_)) ++ SHtml.hidden { () =>
         t.save
         S.redirectTo("/tournaments/list")
       })

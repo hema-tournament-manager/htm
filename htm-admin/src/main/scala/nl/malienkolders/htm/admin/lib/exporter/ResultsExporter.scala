@@ -29,6 +29,7 @@ object ResultsExporter extends ExcelExporter {
         case "firstRow" => readConfig(rows, acc.copy(startRow = row.getCell(1).getNumericCellValue().toInt))
         case "tournaments" => readConfig(rows, acc.copy(tournaments = row.getCell(1).getStringCellValue() match {
           case "all" => Tournament.findAll(OrderBy(Tournament.id, Ascending)).filter(_.identifier.get != "melee")
+          case s: String => Tournament.find(By(Tournament.identifier, s)).get :: Nil
           case _ => Nil
         }))
         case "columns" => readConfig(rows, acc.copy(columns = Map(readRow(row, 1, List()).zipWithIndex: _*)))
@@ -83,7 +84,7 @@ object ResultsExporter extends ExcelExporter {
     workbook.write(out)
   }
 
-  def isPoolPhaseRound(r: Round): Boolean = r.name.get.startsWith("Ronde ")
+  def isPoolPhaseRound(r: Round): Boolean = r.name.get.startsWith("Round ")
 
   def printTournament(tournament: Tournament)(implicit sheet: Sheet, rowIndex: Int, config: Config) =
     printRow(Map("tournament.name" -> tournament.name.get))
@@ -101,9 +102,9 @@ object ResultsExporter extends ExcelExporter {
       "fighterB.id" -> f.fighterB.obj.get.externalId.get.toInt,
       "fighterB.name" -> f.fighterB.obj.get.name.get,
       "fighterB.club" -> f.fighterB.obj.get.clubCode.get,
-      "points.a" -> f.currentScore.a,
+      "points.a" -> f.currentScore.red,
       "points.doubles" -> f.currentScore.double,
-      "points.b" -> f.currentScore.b,
+      "points.b" -> f.currentScore.blue,
       "time.planned" -> new Date(f.plannedStartTime),
       "time.start" -> new Date(f.timeStart.get),
       "time.duration" -> f.netDuration.get / 1000))

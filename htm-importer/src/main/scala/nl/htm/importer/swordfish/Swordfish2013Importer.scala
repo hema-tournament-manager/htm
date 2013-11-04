@@ -11,11 +11,11 @@ case class SwordfishSettings(url: String, countries: List[(String, String)])
 object Swordfish2013Importer extends Importer[SwordfishSettings] {
 
   val tournamentNames = List(
-    "longsword_open" -> "Longsword Open",
-    "longsword_ladies" -> "Longsword Ladies",
-    "wrestling" -> "Wrestling",
-    "sabre" -> "Sabre",
-    "rapier_dagger" -> "Rapier & Dagger")
+    "longsword_open" -> ("Longsword - Open", "LS"),
+    "longsword_ladies" -> ("Longsword - Ladies", "LSL"),
+    "wrestling" -> ("Wrestling", "WRS"),
+    "sabre" -> ("Sabre", "SAB"),
+    "rapier" -> ("Rapier", "RAP"))
 
   lazy val clubCode2Name = Map(readTuplesFromFile("clubcodes"): _*)
 
@@ -24,6 +24,12 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
   lazy val replacements = Map(readTuplesFromFile("clubreplacements").map { case (o, r) => (o.toLowerCase(), r) }: _*)
 
   lazy val countryReplacements = Map(readTuplesFromFile("countryreplacements"): _*)
+
+  def parseSubscriptionString(s: String): (Boolean, Int) = {
+    val re = """X(p|s)(\**)""".r
+    val re(primary, xp) = s
+    (primary == "p", xp.length())
+  }
 
   def nameReplacements = Map("9" -> "F. v. d. Bussche-H.")
 
@@ -65,7 +71,7 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
   override def doImport(s: SwordfishSettings = SwordfishSettings("http://www.ghfs.se/swordfish-attendee.php", List())): EventData = {
     val noCountry = ""
 
-    val tournaments = tournamentNames.map { case (id, name) => Tournament(id, name) }
+    val tournaments = tournamentNames.map { case (id, (name, mnemonic)) => Tournament(id, name, mnemonic, "swordfish-2013-" + (if (id == "rapier") "rapier" else "default")) }
 
     val data = Source.fromURL(new URL(s.url), "UTF-8").getLines.mkString.replaceAll("[\n\t\r]+", "")
 
@@ -94,7 +100,8 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
         nameReplacements.get(id).getOrElse(shortenName(normalizeName(name))),
         clubName,
         clubCode,
-        country)
+        country,
+        shirt)
       (p, List(longsword, longswordLadies, wrestling, sabre, rapier))
     }).toList
 
@@ -109,9 +116,9 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
     }
 
     // group the registrations together by Tournament and collect the participants in a list
-    val registrationsGrouped: Map[Tournament, List[Participant]] = registrations.groupBy(_._1).map {
+    val registrationsGrouped: Map[Tournament, List[(Subscription, Participant)]] = registrations.groupBy(_._1).map {
       case (t, ps) =>
-        (t, ps.map(p => p._2))
+        (t, ps.map(p => Subscription(true, p._2.sourceIds.head.id.toInt, 0) -> p._2))
     }
 
     EventData(3, entries.map(_._1), tournaments, registrationsGrouped)

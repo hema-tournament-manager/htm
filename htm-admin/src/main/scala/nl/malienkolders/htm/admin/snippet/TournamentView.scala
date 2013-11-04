@@ -8,12 +8,13 @@ import net.liftweb.util.Helpers._
 import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds._
 import net.liftweb.mapper._
-import nl.malienkolders.htm.lib.{ Tournament => Rulesets }
+import nl.malienkolders.htm.lib.rulesets.Ruleset
 import nl.malienkolders.htm.lib.model._
-import nl.malienkolders.htm.lib.HtmHelpers._
+import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.admin.lib._
 import nl.malienkolders.htm.admin.lib.exporter._
 import nl.malienkolders.htm.admin.lib.TournamentUtils._
+import nl.malienkolders.htm.admin.lib.Utils.TimeRenderHelper
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.sitemap.LocPath.stringToLocPath
 import net.liftweb.util.IterableConst.itBindable
@@ -46,8 +47,8 @@ object TournamentView {
       }
     }
 
-    val tournamentParticipants = t.participants.sortBy(_.name.is)
-    val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.participants.toList
+    val tournamentSubscriptions = t.subscriptions.sortBy(_.fighterNumber.is)
+    val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.subscriptions.map(_.participant.obj.get).toList
 
     var fighterA: Box[Participant] = Empty
     var fighterB: Box[Participant] = Empty
@@ -58,7 +59,11 @@ object TournamentView {
 
     def addParticipant(tournament: Tournament, participantId: Long) {
       val participant = Participant.findByKey(participantId).get
-      tournament.participants += participant
+      tournament.subscriptions += TournamentParticipants.create.
+        participant(participant).
+        experience(0).
+        gearChecked(true).
+        fighterNumber(tournament.nextFighterNumber)
       tournament.save
       refresh()
     }
@@ -69,11 +74,11 @@ object TournamentView {
       t.save
       val pool = Pool.create(t).order(1)
       round.ruleset(
-        round.previousRound.map(_.ruleset.get).getOrElse((Rulesets.rulesets.head.id)))
+        round.previousRound.map(_.ruleset.get).getOrElse((Ruleset.rulesets.head._2.id)))
       round.pools += pool
       round.save
       if (round.order == 1) {
-        pool.participants ++= t.participants.filter(pt => pt.isPresent.is && pt.isEquipmentChecked.is)
+        pool.participants ++= t.subscriptions.map(_.participant.obj.get)
         pool.save
       }
     }
@@ -100,18 +105,18 @@ object TournamentView {
       if (finishedFights_?(round)) {
         S.notice("Cannot shuffle pools, because fights have been fought")
       } else {
-        val ranked = (round.pools.flatMap(_.participants).toList ++ extraParticipants).sortBy(_ => Random.nextDouble()).sortBy(_.initialRanking).reverse
+        val ranked = (round.pools.flatMap(_.participants).toList ++ extraParticipants).sortBy(_ => Random.nextDouble()).sortBy(_.initialRanking(round)).reverse
         val pools = round.pools.map(_ => ListBuffer[Participant]())
 
         ranked.zip(snake(pools.size, ranked.size)).foreach {
           case (p, i) => pools(i) += p
         }
 
-        while (pools.count(_.size.odd_?) > 1) {
-          val takeFrom = pools.reverse.find(_.size.odd_?).head
+        while (pools.count(_.size.isOdd) > 1) {
+          val takeFrom = pools.reverse.find(_.size.isOdd).head
           val p = takeFrom.last
           takeFrom -= p
-          val addTo = pools.find(_.size.odd_?).head
+          val addTo = pools.find(_.size.isOdd).head
           addTo += p
         }
 
@@ -131,7 +136,7 @@ object TournamentView {
         //      } else if (round.order.is != 1) {
         //        S.notice("Cannot plan this round, because it is not the first round")
       } else {
-        Rulesets.ruleset(round.ruleset.get).planning(round)
+        Ruleset.ruleset(round.ruleset.get).foreach(_.planning(round))
       }
     }
 
@@ -139,9 +144,8 @@ object TournamentView {
       if (finishedFights_?(round)) {
         S.notice("Cannot add a pool, because fights have been fought")
       } else {
-        val pool = Pool.create(t).order(round.pools.size + 1)
 
-        round.pools += pool
+        val pool = round.addPool
         round.save
 
         if (pool.order.get > 1)
@@ -196,7 +200,7 @@ object TournamentView {
       pool.save
     }
     def deleteParticipantFromTournament(tournament: Tournament, participant: Participant) {
-      tournament.participants -= participant
+      //TODO      tournament.subscriptions -= participant
       tournament.save
       S.notice("%s has been removed from this tournament" format participant.name.is)
     }
@@ -213,6 +217,22 @@ object TournamentView {
       S.notice("Unlocked fight " + fight.shortLabel)
     }
 
+    def deleteAllFights {
+      val allFights = for {
+        r <- t.rounds
+        p <- r.pools
+        f <- p.fights
+      } yield f
+
+      if (!allFights.exists(f => f.started_? || f.finished_?)) {
+        allFights foreach (_.delete_!)
+
+        S.notice("All fights have been deleted for this tournament")
+      } else {
+        S.notice("Cannot delete fights because there are results")
+      }
+    }
+
     def edit(fight: Fight) {
       S.redirectTo("/fights/edit/" + fight.id.is)
     }
@@ -222,7 +242,7 @@ object TournamentView {
         Text("in progress")
       } else if (f.finished_?) {
         val s = f.currentScore
-        <span><b title={ "%d points, %d afterblows against" format (s.a, s.aAfter) }>{ s.a }</b> (<span title={ "%d double hits" format s.double }>{ s.double }</span>) <b title={ "%d points, %d afterblows against" format (s.b, s.bAfter) }>{ s.b }</b></span>
+        <span><b title={ "%d points, %d afterblows against" format (s.red, s.redAfter) }>{ s.red }</b> (<span title={ "%d double hits" format s.double }>{ s.double }</span>) <b title={ "%d points, %d afterblows against" format (s.blue, s.blueAfter) }>{ s.blue }</b></span>
       } else {
         Text("vs")
       }
@@ -255,124 +275,132 @@ object TournamentView {
 
     def renderFightFighter(f: Participant) =
       if (f.clubCode.is == "")
-        <span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span>
+        <span><span class="pull-left badge">{ f.subscription(t).get.fighterNumber.get }</span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span></span>
       else
-        <span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span><span style="float:right" title={ f.club.is }>{ f.clubCode.is }</span></span>
+        <span><span class="pull-left badge">{ f.subscription(t).get.fighterNumber.get }</span><span style="font-weight:bold" title={ f.name.is }>{ f.shortName.is }</span><span class="pull-right" title={ f.club.is }>{ f.clubCode.is }</span></span>
 
     "#tournamentName" #> t.name &
+      "#deleteAllFights" #> SHtml.button(Text("Delete all fights"), () => deleteAllFights) &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
-      "name=downloadSchedule" #> SHtml.link("/download_schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Download Schedule"), "class" -> "btn btn-default") &
-      "#tournamentParticipant" #> tournamentParticipants.map(pt =>
-        "* [class]" #> (if (pt.isPresent.get && pt.isEquipmentChecked.get) "present" else if (!pt.isPresent.get) "not_present" else "not_checked") &
-          "img [src]" #> ("/images/" + (if (pt.isStarFighter.get) "star" else "star_gray") + ".png") &
-          "img [class]" #> ("star" + pt.id) &
-          "img [onclick]" #> SHtml.ajaxInvoke(() => toggleStar(pt)) &
-          "span" #> pt.name &
-          "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, pt); refresh() }, "title" -> "Remove from Tournament")) &
-      "#newRoundName" #> SHtml.text("", newRound, "placeholder" -> "New Round") &
-      "#tournamentRound" #> t.rounds.map(r =>
-        ".roundAnchor [name]" #> ("round" + r.id.get) &
-          ".moveParticipants" #> (if (r.order.is > 1) {
-            "#advanceAll" #> SHtml.button(<span><img src="/images/group.png"/> All</span>, () => advance(r, All)) &
-              "#advanceSelected" #> SHtml.button(<span><img src="/images/cut_red.png"/> Selected</span>, () => S.redirectTo("/tournaments/advance/" + r.id.is)) &
-              "#advanceWinners" #> SHtml.button(<span><img src="/images/medal_gold_2.png"/> Winners</span>, () => advance(r, Winners)) &
-              "#advanceSingle" #> (SHtml.selectObj((Empty -> "-- Just this one --") :: allParticipantsFromPrevious(r), Empty, { p: Box[Participant] => p.foreach(p => advance(r, Single(p))) }) ++ SHtml.submit("OK", () => ()))
-          } else {
-            "*" #> ""
-          }) &
-          "#roundName *" #> <span><a name={ "round" + r.id.is }></a>{ r.order + ": " + r.name }</span> &
-          ".deleteRound [onclick]" #> SHtml.ajaxInvoke { () =>
-            deleteRound(t, r)
-            refresh()
-          } &
-          ".addPool [onclick]" #> SHtml.ajaxInvoke { () =>
-            newPool(r)
-            refresh()
-          } &
-          (if (r.order.is == 1) {
-            ".reorder [onclick]" #> SHtml.ajaxInvoke { () =>
-              redistributePools(r, Nil)
-              refresh()
-            }
-          } else {
-            ".reorder" #> ""
-          }) &
-          ".plan [onclick]" #> SHtml.ajaxInvoke { () =>
-            plan(r)
-            refresh()
-          } &
-          "name=ruleset" #> SHtml.ajaxSelect(Rulesets.rulesets.map(r => r.id -> r.id), Full(r.ruleset.get), { ruleset => r.ruleset(ruleset); r.save; S.notice("Ruleset changed") }) &
-          "name=timeLimit" #> SHtml.ajaxText((r.timeLimitOfFight.get / 1000).toString, { time => r.timeLimitOfFight(time.toLong seconds); r.save; S.notice("Time limit saved") }, "type" -> "number") &
-          "name=fightBreak" #> SHtml.ajaxText((r.breakInFightAt.get / 1000).toString, { time => r.breakInFightAt(time.toLong seconds); r.save; S.notice("Break time saved") }, "type" -> "number") &
-          "name=fightBreakDuration" #> SHtml.ajaxText((r.breakDuration.get / 1000).toString, { time => r.breakDuration(time.toLong seconds); r.save; S.notice("Break duration saved") }, "type" -> "number") &
-          "name=exchangeLimit" #> SHtml.ajaxText(r.exchangeLimit.toString, { time => r.exchangeLimit(time.toInt); r.save; S.notice("Exchange limit saved") }, "type" -> "number") &
-          "name=timeBetweenFights" #> SHtml.ajaxText((r.timeBetweenFights.get / 1000).toString, { time => r.timeBetweenFights(time.toLong seconds); r.save; S.notice("Time between fights saved") }, "type" -> "number") &
-          "#roundPool" #> r.pools.map { p =>
-            val pptsAlphabetic = p.participants.sortBy(_.name.is)
-            val ruleset = Rulesets.ruleset(r.ruleset.get)
-            val pptsRanking: List[(Participant, ruleset.Scores)] = ruleset.ranking(p)
-            ".deletePool [onclick]" #> SHtml.ajaxInvoke { () =>
-              deletePool(r, p)
+      ".downloadButton" #> Seq(
+        "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
+        "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
+        "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
+        "#tournamentParticipant" #> tournamentSubscriptions.map(sub =>
+          "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
+            "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
+            ".badge *" #> sub.fighterNumber.get &
+            ".name *" #> (sub.participant.obj.get.name.get + " " + sub.experience.get) &
+            "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, sub.participant.obj.get); refresh() }, "title" -> "Remove from Tournament")) &
+        "#newRoundName" #> SHtml.text("", newRound, "placeholder" -> "New Round") &
+        "#tournamentRound" #> t.rounds.map(r =>
+          ".roundAnchor [name]" #> ("round" + r.id.get) &
+            ".moveParticipants" #> (if (r.order.is > 1) {
+              "#advanceAll" #> SHtml.button(<span><img src="/images/group.png"/> All</span>, () => advance(r, All)) &
+                "#advanceSelected" #> SHtml.button(<span><img src="/images/cut_red.png"/> Selected</span>, () => S.redirectTo("/tournaments/advance/" + r.id.is)) &
+                "#advanceWinners" #> SHtml.button(<span><img src="/images/medal_gold_2.png"/> Winners</span>, () => advance(r, Winners)) &
+                "#advanceSingle" #> (SHtml.selectObj((Empty -> "-- Just this one --") :: allParticipantsFromPrevious(r), Empty, { p: Box[Participant] => p.foreach(p => advance(r, Single(p))) }) ++ SHtml.submit("OK", () => ()))
+            } else {
+              "*" #> ""
+            }) &
+            "#roundName *" #> <span><a name={ "round" + r.id.is }></a>{ r.order + ": " + r.name }</span> &
+            ".deleteRound [onclick]" #> SHtml.ajaxInvoke { () =>
+              deleteRound(t, r)
               refresh()
             } &
-              "#poolName *" #> <span><a name={ "pool" + p.id.is }></a>{ "Pool %d" format p.order.is }</span> &
-              "name=poolStartTime" #> SHtml.ajaxText(df.format(new Date(p.startTime.get)), { s => p.startTime(df.parse(s).getTime()); p.save; S.notice("Pool start-time saved") }) &
-              "name=poolArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), Full(p.arena.get.toString), { arena => p.arena(arena.toLong); p.save; S.notice("Arena changed") }) &
-              "#poolFight *" #> p.fights.map(f => {
-                ".fightOrder *" #> f.order.is &
-                  ".red *" #> renderFightFighter(f.fighterA.obj.get) &
-                  ".results *" #> renderResults(f) &
-                  ".blue *" #> renderFightFighter(f.fighterB.obj.get) &
-                  "name=moveUp" #> SHtml.ajaxButton(EntityRef("uArr"), () => { moveUp(f); refresh() }, "title" -> "Move Up", (if (f.order == 1) "disabled" else "enabled") -> "true") &
-                  "name=moveDown" #> SHtml.ajaxButton(EntityRef("dArr"), () => { moveDown(f); refresh() }, "title" -> "Move Down", (if (f.order == p.fights.size) "disabled" else "enabled") -> "true") &
-                  "name=remove" #> SHtml.ajaxButton(EntityRef("otimes"), () => { delete(p, f); refresh() }, "title" -> "Remove") &
-                  "name=unlock" #> SHtml.ajaxButton("unlock", () => { unlock(f); refresh(Some(p)) }, "title" -> "Unlock", (if (f.inProgress.is) "enabled" else "disabled") -> "true") &
-                  "name=edit" #> SHtml.ajaxButton("edit", () => { edit(f); refresh(Some(p)) }, "title" -> "Edit", (if (f.inProgress.is) "disabled" else "enabled") -> "true")
-              }) &
-              ".poolParticipantListHeader" #> (
-                "* [onclick]" #> SHtml.ajaxInvoke(() => Run("$('#poolParticipantList" + p.id.is + "').toggle()")) &
-                "span" #> p.participants.size) &
-                ".poolParticipantList [id]" #> ("poolParticipantList" + p.id.is) &
-                "#poolParticipant" #> pptsRanking.zipWithIndex.map {
-                  case ((pt, ps), i) =>
-                    val hasFights = p.fights.exists(f => f.fighterA.is == pt.id.is || f.fighterB.is == pt.id.is)
-                    "img [src]" #> ("/images/" + (if (pt.isStarFighter.get) "star" else "star_gray") + ".png") &
-                      "img [class]" #> ("star" + pt.id) &
-                      "img [onclick]" #> SHtml.ajaxInvoke(() => toggleStar(pt)) &
-                      ".participantName *" #> pt.name.is &
-                      ruleset.renderRankedFighter(i + 1, pt, t) &
-                      ".scores" #> ps.row &
-                      ".hasFights *" #> (if (hasFights) "" else "Not fighting") &
-                      (if (!hasFights)
-                        ".actions *" #> SHtml.ajaxButton(EntityRef("otimes"), () => Confirm("There is no way back!", SHtml.ajaxInvoke { () => removeFromPool(p, pt); RedirectTo("/tournaments/view/" + t.identifier.is) }._2.cmd), "title" -> "Remove from pool")
-                      else
-                        ".actions *" #> "")
-
-                } &
-                "#addPoolParticipant *" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: participantsNotInThisRound(r).map(pt => (pt.id.is.toString, pt.name.is)), Full("-1"), { id =>
-                  p.participants += Participant.findByKey(id.toLong).get
-                  p.save
-                  RedirectTo("/tournaments/view/" + t.identifier.is)
+            ".addPool [onclick]" #> SHtml.ajaxInvoke { () =>
+              newPool(r)
+              refresh()
+            } &
+            (if (r.order.is == 1) {
+              ".reorder [onclick]" #> SHtml.ajaxInvoke { () =>
+                redistributePools(r, Nil)
+                refresh()
+              }
+            } else {
+              ".reorder" #> ""
+            }) &
+            ".plan [onclick]" #> SHtml.ajaxInvoke { () =>
+              plan(r)
+              refresh()
+            } &
+            "name=ruleset" #> SHtml.ajaxSelect(Ruleset.rulesets.toList.map(r => r._1 -> r._1), Full(r.ruleset.get), { ruleset => r.ruleset(ruleset); r.save; S.notice("Ruleset changed") }) &
+            "name=timeLimit" #> SHtml.ajaxText((r.timeLimitOfFight.get / 1000).toString, { time => r.timeLimitOfFight(time.toLong seconds); r.save; S.notice("Time limit saved") }, "type" -> "number") &
+            "name=fightBreak" #> SHtml.ajaxText((r.breakInFightAt.get / 1000).toString, { time => r.breakInFightAt(time.toLong seconds); r.save; S.notice("Break time saved") }, "type" -> "number") &
+            "name=fightBreakDuration" #> SHtml.ajaxText((r.breakDuration.get / 1000).toString, { time => r.breakDuration(time.toLong seconds); r.save; S.notice("Break duration saved") }, "type" -> "number") &
+            "name=exchangeLimit" #> SHtml.ajaxText(r.exchangeLimit.toString, { time => r.exchangeLimit(time.toInt); r.save; S.notice("Exchange limit saved") }, "type" -> "number") &
+            "name=timeBetweenFights" #> SHtml.ajaxText((r.timeBetweenFights.get / 1000).toString, { time => r.timeBetweenFights(time.toLong seconds); r.save; S.notice("Time between fights saved") }, "type" -> "number") &
+            "#roundPool" #> r.pools.map { p =>
+              val pptsAlphabetic = p.participants.sortBy(_.name.is)
+              val ruleset = Ruleset.ruleset(r.ruleset.get).get
+              val pptsRanking: List[(Participant, ruleset.Scores)] = ruleset.ranking(p)
+              ".deletePool [onclick]" #> SHtml.ajaxInvoke { () =>
+                deletePool(r, p)
+                refresh()
+              } &
+                "#poolName *" #> <span><a name={ "pool" + p.id.is }></a>{ "Pool %d" format p.order.is }</span> &
+                "name=poolStartTime" #> SHtml.ajaxText(df.format(new Date(p.startTime.get)), { s => p.startTime(df.parse(s).getTime()); p.save; S.notice("Pool start-time saved") }) &
+                "name=poolArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), Full(p.arena.get.toString), { arena => p.arena(arena.toLong); p.save; S.notice("Arena changed") }) &
+                "#poolFight *" #> p.fights.map(f => {
+                  ".plannedTime [title]" #> (f.plannedStartTime as "yyyy-MM-dd HH:mm") &
+                    ".plannedTime *" #> (f.plannedStartTime as "HH:mm") &
+                    ".fightOrder *" #> f.order.is &
+                    ".red *" #> renderFightFighter(f.fighterA.obj.get) &
+                    ".results *" #> renderResults(f) &
+                    ".blue *" #> renderFightFighter(f.fighterB.obj.get) &
+                    "name=moveUp" #> SHtml.ajaxButton(EntityRef("uArr"), () => { moveUp(f); refresh() }, "title" -> "Move Up", (if (f.order == 1) "disabled" else "enabled") -> "true") &
+                    "name=moveDown" #> SHtml.ajaxButton(EntityRef("dArr"), () => { moveDown(f); refresh() }, "title" -> "Move Down", (if (f.order == p.fights.size) "disabled" else "enabled") -> "true") &
+                    "name=remove" #> SHtml.ajaxButton(EntityRef("otimes"), () => { delete(p, f); refresh() }, "title" -> "Remove") &
+                    "name=edit" #> SHtml.ajaxButton("edit", () => { edit(f); refresh(Some(p)) }, "title" -> "Edit", (if (f.inProgress.is) "disabled" else "enabled") -> "true")
                 }) &
-                "#planParticipantA" #> SHtml.select(("-1", "-- Select Red --") :: pptsAlphabetic.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => fighterA = Participant.findByKey(id.toLong)) &
-                "#planParticipantB" #> (SHtml.select(("-1", "-- Select Blue --") :: pptsAlphabetic.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => fighterB = Participant.findByKey(id.toLong)) ++
-                  SHtml.submit("Plan", () => addFight(p)))
-          }) &
-      "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong)) &
-      ".navbar-nav" #> (
-        ".dropdown" #> t.rounds.map(r =>
-          ".dropdown-toggle [href]" #> ("#round" + r.id.get) &
-            ".dropdown-toggle span" #> r.name.get &
-            "ul" #> (
-              ".roundref a [href]" #> ("#round" + r.id.get) &
-              ".poolref" #> r.pools.map(p =>
-                "a [href]" #> ("#pool" + p.id.get) &
-                  "a *" #> ("Pool " + p.order.get)))))
+                ".poolParticipantListHeader" #> (
+                  "* [onclick]" #> SHtml.ajaxInvoke(() => Run("$('#poolParticipantList" + p.id.is + "').toggle()")) &
+                  "span" #> p.participants.size) &
+                  ".poolParticipantList [id]" #> ("poolParticipantList" + p.id.is) &
+                  "#poolParticipant" #> pptsRanking.zipWithIndex.map {
+                    case ((pt, ps), i) =>
+                      val hasFights = p.fights.exists(f => f.fighterA.is == pt.id.is || f.fighterB.is == pt.id.is)
+                      "img [src]" #> ("/images/" + (if (pt.isStarFighter.get) "star" else "star_gray") + ".png") &
+                        "img [class]" #> ("star" + pt.id) &
+                        "img [onclick]" #> SHtml.ajaxInvoke(() => toggleStar(pt)) &
+                        ".participantName *" #> pt.name.is &
+                        ruleset.renderRankedFighter(i + 1, pt, t) &
+                        ".scores" #> ps.row &
+                        ".hasFights *" #> (if (hasFights) "" else "Not fighting") &
+                        (if (!hasFights)
+                          ".actions *" #> SHtml.ajaxButton(EntityRef("otimes"), () => Confirm("There is no way back!", SHtml.ajaxInvoke { () => removeFromPool(p, pt); RedirectTo("/tournaments/view/" + t.identifier.is) }._2.cmd), "title" -> "Remove from pool")
+                        else
+                          ".actions *" #> "")
+
+                  } &
+                  "#addPoolParticipant *" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: participantsNotInThisRound(r).map(pt => (pt.id.is.toString, pt.name.is)), Full("-1"), { id =>
+                    p.participants += Participant.findByKey(id.toLong).get
+                    p.save
+                    RedirectTo("/tournaments/view/" + t.identifier.is)
+                  }) &
+                  "#planParticipantA" #> SHtml.select(("-1", "-- Select Red --") :: pptsAlphabetic.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => fighterA = Participant.findByKey(id.toLong)) &
+                  "#planParticipantB" #> (SHtml.select(("-1", "-- Select Blue --") :: pptsAlphabetic.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => fighterB = Participant.findByKey(id.toLong)) ++
+                    SHtml.submit("Plan", () => addFight(p)))
+            }) &
+        "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control") &
+        ".navbar-nav" #> (
+          ".dropdown" #> t.rounds.map(r =>
+            ".dropdown-toggle [href]" #> ("#round" + r.id.get) &
+              ".dropdown-toggle span" #> r.name.get &
+              "ul" #> (
+                ".roundref a [href]" #> ("#round" + r.id.get) &
+                ".poolref" #> r.pools.map(p =>
+                  "a [href]" #> ("#pool" + p.id.get) &
+                    "a *" #> ("Pool " + p.order.get)))))
 
   }
 
   def downloadSchedule(tournament: Tournament) = {
     OutputStreamResponse(ScheduleExporter.doExport(tournament) _, List("content-disposition" -> ("inline; filename=\"schedule_" + tournament.identifier.get + ".xls\"")))
+  }
+
+  def downloadPools(tournament: Tournament) = {
+    OutputStreamResponse(PoolsExporter.doExport(tournament) _, List("content-disposition" -> ("inline; filename=\"pools_" + tournament.identifier.get + ".xls\"")))
   }
 
 }

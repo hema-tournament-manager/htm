@@ -1,0 +1,161 @@
+@import "livestream.less";
+@width: 1920px;
+@height: 1080px;
+
+.participant-bio {
+	.tournament, .round {
+		font-size: 40pt;
+	}
+	
+	.round {
+		margin-top: 20px;
+	}
+	
+	.name {
+		top: 350px;
+		font-size: 42pt;
+	}
+	
+	.club {
+		top: 423px;
+		font-size: 32pt;
+	}
+	
+	.detail {
+		font-size: 24pt;
+	}
+	
+	.age {
+		top: 614px;
+	}
+	
+	.height {
+		top: 673px;
+	}
+	
+	.weight {
+		top: 734px;
+	}
+	
+	.previousWin {
+		font-size: 22pt;
+		top: 818px;
+	}
+	
+	.previousWin1 {
+		top: 818px;
+	}
+
+	.previousWin2 {
+		top: 882px;
+	}
+
+	.previousWin3 {
+		top: 946px;
+	}
+	
+	.country {
+		top: 657px;
+		-webkit-transform: scale(2.25);
+	}
+}
+
+.participant-bio.left {
+	background-image: url(/assets/images/participant/bio/LS_playerbio_L_1080p.png?thresholding=yes);
+	
+	.tournament, .round {
+		left: 240px;
+	}
+
+	.name, .club {
+		left: 110px;
+	}
+	
+	.detail {
+		right: 1510px;
+	}
+	
+	.previousWin {
+		right: 1188px;
+	}
+	
+	.country {
+		right: 1237px;
+	}
+}
+.participant-bio.right {
+	background-image: url(/assets/images/participant/bio/LS_playerbio_R_1080p.png?thresholding=yes);
+
+	.tournament, .round {
+		left: 1300px;
+	}
+
+	.name, .club {
+		left: 1170px;
+	}
+	
+	.detail {
+		right: 440px;
+	}
+	
+	.previousWin {
+		right: 120px;
+	}
+	
+	.country {
+		right: 177px;
+	}
+}
+
+#main .fight {
+	.frame {
+		background-image: url(/assets/images/fight/LS_fightscreen_1080p.png?thresholding=yes);
+		color: white;
+		
+		.timer {
+			right: 1185px;
+			top: 11px;
+			font-size: 50pt;
+		}
+		
+		.score-red, .score-blue {
+			top: 936px;
+			font-size: 80pt;
+		}
+		
+		.score-red {
+			text-align: right;
+			right: 1224px !important;
+		}
+
+		.score-blue {
+			text-align: left;
+			left: 1230px !important;
+		}
+		
+		.tournament {
+			top: 24px;
+			left: 32px;
+			font-size: 28pt;
+		}
+		
+		.round {
+			top: 67px;
+			left: 32px;
+			font-size: 24pt;
+		}
+		
+		.fighter-bar {
+			top: 951px;
+			
+			.red {
+				left: 38px;
+			}
+			
+			.blue {
+				right: 38px;
+			}
+		}
+	}
+	
+}

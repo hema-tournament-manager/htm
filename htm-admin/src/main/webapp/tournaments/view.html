@@ -26,9 +26,23 @@ body {
 }
 </style>
 			</head>
-			<h2><span id="tournamentName">Tournament</span> <button name="downloadSchedule" class="pull-right">Download schedule</button></h2>
+			<h2>
+				<span id="tournamentName">Tournament</span>
+				<div class="btn-group pull-right">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						<span class="glyphicon glyphicon-download"></span> Download <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu">
+						<li class="downloadButton"><a href="#">Action</a></li>
+					</ul>
+				</div>
+			</h2>
 			<p>
 				Default arena: <select name="tournamentArena"></select>
+			</p>
+			<p><form>
+				Danger: <button id="deleteAllFights"></button>
+				</form>
 			</p>
 			<h3>Fights</h3>
 <div class="row">
@@ -92,7 +106,7 @@ body {
 						<table class="table">
 							<tbody>
 							<tr id="poolFight">
-								<td class="fightOrder">1</td>
+								<td class="plannedTime">10:01</td>
 								<td class="red"></td>
 								<td class="results">vs</td>
 								<td class="blue"></td>
@@ -100,9 +114,7 @@ body {
 									<button name="moveUp">^</button>
 									<button name="moveDown">v</button>
 									<button name="remove"><span class="glyphicon glyphicon-trash"></span></button>
-									<button name="unlock">unlock</button>
 									<button name="edit">edit</button>
-									</li>
 								</td>
 							</tr>
 							</tbody>
@@ -150,12 +162,14 @@ body {
 	<div class="col-md-3">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h3 class="panel-title">Participants</h3>
+				<h3 class="panel-title">Participants <span id="tournamentParticipantsCount" class="badge">0</span></h3>
 			</div>
 			<ul class="list-group">
-				<li id="tournamentParticipant" class="list-group-item"><img src="/images/star_gray.png" />
-					<span>Pietje Puk</span>
-					<button class="pull-right"><span class="glyphicon glyphicon-trash"></span></button></li>
+				<li id="tournamentParticipant" class="list-group-item">
+					<span class="badge pull-left"></span>
+					<span class="name">Pietje Puk</span>
+					<a href="#" class="pull-right">register</a>
+				</li>
 			</ul>
 			<div class="panel-body">
 				<form method="post">

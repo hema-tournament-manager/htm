@@ -21,55 +21,90 @@ form div input[type=text] {
 
 /* ]]> */
 </style>
-		</head>
-		<form class="lift:ParticipantRegistration?form=post">
-			<h2>Participant Registration</h2>
-			<fieldset>
-				<legend>Personalia</legend>
-				<div style="float: left;">
-					<label>Name <input name="name" /></label>
-				</div>
-				<div style="float: left;">
-					<label>Short Name <input name="shortName" /></label>
-				</div>
-				<div style="float: left; clear: left;">
-					<label>Club <input name="club" /></label>
-				</div>
-				<div style="float: left;">
-					<label>Club Code<input name="clubCode" /></label>
-				</div>
-			</fieldset>
-			<fieldset>
-				<legend>Registration</legend>
-				<div style="float: left;">
-					<label>ID<input name="externalId" /></label>
-				</div>
-				<div style="float: left; clear: left;">
-					<label><input name="present" /> Present</label>
-				</div>
-				<div style="float: left; clear: left;">
-					<label><input name="equipmentCheck" /> Equipment Checked</label>
-				</div>
-			</fieldset>
-			<fieldset>
-				<legend>HEMA Experience</legend>
-				<div style="float: left; clear: left;">
-					<label><input name="question1" /> Has more than one year of
-						HEMA experience</label>
-				</div>
-				<div style="float: left; clear: left;">
-					<label><input name="question2" /> Has fought in a HEMA
-						tournament before</label>
-				</div>
-				<div style="float: left; clear: left;">
-					<label><input name="question3" /> Has earned a top-three
-						position in a previous HEMA tournament</label>
-				</div>
-			</fieldset>
-			<div style="clear: left;">
-				<input name="save" type="submit" />
+</head>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<h2>Participant Registration</h2>
 			</div>
-		</form>
+		</div>
+		<div class="row">
+			<form class="lift:ParticipantRegistration?form=post;multipart=true">
+			<div class="col-md-5">
+				<fieldset>
+					<legend>Photo</legend>
+					<div style="float: left;">
+						<label>New photo <input type="file" name="photo" accept="image/*;capture=camera"</label>
+						<br/>
+						<img class="photo"/>
+					</div>
+				</fieldset>
+			</div>
+			<div class="col-md-5">
+				<fieldset>
+					<legend>Personalia</legend>
+					<div style="float: left;">
+						<label>Name <input name="name" /></label>
+					</div>
+					<div style="float: left;">
+						<label>Short Name <input name="shortName" /></label>
+					</div>
+					<div style="float: left; clear: left;">
+						<label>Club <input name="club" /></label>
+					</div>
+					<div style="float: left;">
+						<label>Club Code<input name="clubCode" /></label>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>Registration</legend>
+					<div style="float: left;">
+						<label>ID<input name="externalId" /></label>
+					</div>
+					<div style="float: left; clear: left;">
+						<label><input name="present" /> Present</label>
+					</div>
+				</fieldset>
+				<fieldset class="subscription" style="float: left; margin-right: 10px;">
+					<a name="tournament"></a>
+					<legend class="tournament">Tournament</legend>
+					<div style="float: left;">
+						<label>Fighter number</label>
+						<span class="fighterNumber badge" />
+					</div>
+					<div style="float: left; clear: left;">
+						<label>Pool <span class="pool" /></label>
+					</div>
+					<div style="float: left; clear: left;">
+						<label>Experience<input class="experience" /></label>
+					</div>
+					<div style="float: left; clear: left;">
+						<label><input class="gear" /> Gear checked</label>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>Bio</legend>
+					<div style="float: left;">
+						<label>Age <input name="age" /></label>
+					</div>
+					<div style="float: left;">
+						<label>Height (cm)<input name="height" /></label>
+					</div>
+					<div style="float: left;">
+						<label>Weight (kg)<input name="weight" /></label>
+					</div>
+					<div style="float: left;">
+						<label>Previous wins (1 per line)<br/><input name="previousWins" /></label>
+					</div>
+				</fieldset>
+				<div style="clear: left;">
+					<input name="save" type="submit" />
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+	
 	</div>
 </body>
 </html>
