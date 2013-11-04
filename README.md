@@ -30,13 +30,12 @@ export SBT_OPTS=-XX:MaxPermSize=256m
 
 * Prerequisites (run as root or sudo):
   - SBT (http://scalasbt.artifactoryonline.com/scalasbt/sbt-native-packages/org/scala-sbt/sbt/0.13.0/sbt.rpm)
-      yum localinstall sbt.rpm
+      `yum localinstall sbt.rpm`
   - JRE (http://www.java.com/getjava/ -> jre-7u45-linux-x64.rpm)
-      yum localinstall jre-7u45-linux-x64.rpm
+      yum localinstall jre-7u45-linux-x64.rpm`
   - Scala (http://www.scala-lang.org/files/archive/scala-2.10.3.tgz)
-      tar xvf scala-2.10.3.tgz
-      mv scala-2.10.3 /usr/lib
-      ln -s /usr/lib/scala-2.10.3 /usr/lib/scala
-      echo 'export PATH=$PATH:/usr/lib/scala/bin' > /etc/profile/scala.sh
-      echo 'export SBT_OPTS=-XX:MaxPermSize=256m' >> /etc/profile/scala.sh
+      ´tar xvf scala-2.10.3.tgz`
+      ´mv scala-2.10.3 /usr/lib`
+      ´ln -s /usr/lib/scala-2.10.3 /usr/lib/scala`
+      ´echo 'export PATH=$PATH:/usr/lib/scala/bin' > /etc/profile/scala.sh`
 
