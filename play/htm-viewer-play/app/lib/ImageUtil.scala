@@ -16,6 +16,10 @@ object ImageUtil {
 
     val alpha = image.getAlphaRaster()
 
+    if (alpha == null) {
+      return filename;
+    }
+
     for {
       x <- 0 to image.getWidth() - 1
       y <- 0 to image.getHeight() - 1
@@ -37,5 +41,5 @@ object ImageUtil {
     return newFilename;
 
   }
-  
+
 }
