@@ -116,7 +116,7 @@ object Application extends Controller {
 
     if (imageFile.exists()) {
 
-      if (resolution != "1024x768") {
+      if (name.endsWith(".png") && resolution != "1024x768") {
         Ok.sendFile(new File(ImageUtil.generateThresholded(imageFile.toString())));
       }
       Ok.sendFile(imageFile)
@@ -130,7 +130,7 @@ object Application extends Controller {
 
     println(request.getQueryString("thresholding"))
 
-    if (request.getQueryString("thresholding").map(_ == "yes").getOrElse(false)) {
+    if (name.endsWith(".png") && request.getQueryString("thresholding").map(_ == "yes").getOrElse(false)) {
       Ok.sendFile(new File(ImageUtil.generateThresholded(imageFile.toString())));
     } else {
       Ok.sendFile(imageFile);
