@@ -15,8 +15,8 @@ import play.api.libs.Files
 import play.api.libs.Files._
 import _root_.lib.Unzipper
 import java.io.File
-import javax.imageio.ImageIO
 import play.api.Play.current
+import lib.ImageUtil
 
 object Application extends Controller {
 
@@ -102,39 +102,6 @@ object Application extends Controller {
     }
   }
 
-  private def generateThresholded(filename: String): String = {
-    val newFilename = filename.replace(".png", "-thresholded.png");
-
-    if (new File(newFilename).exists()) {
-      return newFilename;
-    }
-
-    val image = ImageIO.read(new File(filename))
-
-    val alpha = image.getAlphaRaster()
-
-    for {
-      x <- 0 to image.getWidth() - 1
-      y <- 0 to image.getHeight() - 1
-    } {
-      val pixel = Array[Int](0)
-      alpha.getPixel(x, y, pixel);
-
-      if (pixel(0) > 127) {
-        pixel.update(0, 255)
-      } else {
-        pixel.update(0, 0)
-      }
-
-      alpha.setPixel(x, y, pixel)
-    }
-
-    ImageIO.write(image, "png", new File(newFilename))
-
-    return newFilename;
-
-  }
-
   def photo(id: String, side: String) = Action {
     val paddedId = ("0" * (4 - id.length)) + id
     val photoFile = new File("Avatars/Generated/" + paddedId + "_default_" + side + ".jpg")
@@ -150,7 +117,7 @@ object Application extends Controller {
     if (imageFile.exists()) {
 
       if (resolution != "1024x768") {
-        Ok.sendFile(new File(generateThresholded(imageFile.toString())));
+        Ok.sendFile(new File(ImageUtil.generateThresholded(imageFile.toString())));
       }
       Ok.sendFile(imageFile)
     } else
@@ -164,7 +131,7 @@ object Application extends Controller {
     println(request.getQueryString("thresholding"))
 
     if (request.getQueryString("thresholding").map(_ == "yes").getOrElse(false)) {
-      Ok.sendFile(new File(generateThresholded(imageFile.toString())));
+      Ok.sendFile(new File(ImageUtil.generateThresholded(imageFile.toString())));
     } else {
       Ok.sendFile(imageFile);
     }
