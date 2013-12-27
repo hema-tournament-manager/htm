@@ -47,12 +47,10 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.participant, OrderBy(TournamentParticipants.id, Ascending))
 
   def subscription(t: Tournament): Option[TournamentParticipants] = subscriptions.find(_.tournament.get == t.id.get)
-  def subscription(r: Round): Option[TournamentParticipants] = subscription(r.tournament.obj.get)
-  def subscription(p: Pool): Option[TournamentParticipants] = subscription(p.round.obj.get)
+  def subscription(p: Phase[_]): Option[TournamentParticipants] = subscription(p.tournament.obj.get)
 
   def initialRanking(t: Tournament): Int = subscription(t).map(_.experience.get).getOrElse(-1)
-  def initialRanking(r: Round): Int = initialRanking(r.tournament.obj.get)
-  def initialRanking(p: Pool): Int = initialRanking(p.round.obj.get)
+  def initialRanking(p: Phase[_]): Int = initialRanking(p.tournament.obj.get)
 
   def toMarshalled = MarshalledParticipant(
     id.is,

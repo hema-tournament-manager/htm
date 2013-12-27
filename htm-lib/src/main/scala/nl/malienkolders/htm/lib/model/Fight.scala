@@ -8,20 +8,17 @@ import util._
 import Helpers._
 import scala.xml._
 
-case class MarshalledFight(id: Long, pool: Long, round: Long, order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, plannedTime: Long, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
-case class MarshalledFightSummary(id: Long, poolId: Long, order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, plannedTime: Long, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
-case class MarshalledViewerFight(tournament: MarshalledTournamentSummary, roundName: String, order: Long, exchangeLimit: Int, timeLimit: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant)
-case class MarshalledViewerFightSummary(order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, started: Boolean, finished: Boolean, score: TotalScore)
+case class MarshalledFight(fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFightSummary(fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
 
-class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with OneToMany[Long, Fight] {
-  def getSingleton = Fight
-
-  object pool extends MappedLongForeignKey(this, Pool)
-  object order extends MappedLong(this)
+trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with FightToScore[F, S] {
+  
+  self: F =>
+    
+  object tournament extends MappedLongForeignKey(this, Tournament)
   object inProgress extends MappedBoolean(this)
   object fighterA extends MappedLongForeignKey(this, Participant)
   object fighterB extends MappedLongForeignKey(this, Participant)
-  object scores extends MappedOneToMany(Score, Score.fight, OrderBy(Score.timeInFight, Ascending)) with Owned[Score] with Cascade[Score]
   object timeStart extends MappedLong(this)
   object timeStop extends MappedLong(this)
   object netDuration extends MappedLong(this)
@@ -50,14 +47,14 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
 
   def shortLabel = fighterA.obj.get.name + " vs " + fighterB.obj.get.name
 
-  def toMarshalled = MarshalledFight(id.is, pool.is, pool.obj.get.round.is, order.is, fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, plannedStartTime, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
-  def toMarshalledSummary = MarshalledFightSummary(id.is, pool.is, order.is, fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, plannedStartTime, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledFight(fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalledSummary = MarshalledFightSummary(fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
   def fromMarshalled(m: MarshalledFight) = {
     timeStart(m.timeStart)
     timeStop(m.timeStop)
     netDuration(m.netDuration)
     scores.clear
-    m.scores.foreach(s => scores += Score.create.fromMarshalled(s))
+    m.scores.foreach(s => scores += scoreMeta.create.fromMarshalled(s))
     this
   }
   def fromMarshalledSummary(m: MarshalledFightSummary) = {
@@ -66,41 +63,29 @@ class Fight extends LongKeyedMapper[Fight] with IdPK with CreatedUpdated with On
     }
     timeStop(m.timeStop)
     netDuration(m.netDuration)
-    m.scores.drop(scores.size).foreach(s => scores += Score.create.fromMarshalled(s))
+    m.scores.drop(scores.size).foreach(s => scores += scoreMeta.create.fromMarshalled(s))
     this
   }
-  def toViewer = {
-    val r = pool.obj.get.round.obj.get
-    MarshalledViewerFight(r.tournament.obj.get.toMarshalledSummary, r.name.is, order.is, r.exchangeLimit.is, r.timeLimitOfFight.is, fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled)
-  }
-  def toViewerSummary = {
-    MarshalledViewerFightSummary(
-      order.is,
-      fighterA.obj.get.toMarshalled,
-      fighterB.obj.get.toMarshalled,
-      started_?,
-      finished_?,
-      currentScore)
-  }
 
-  def plannedStartTime: Long = {
-
-    val pool = this.pool.foreign.get;
-    val round = pool.round.foreign.get;
-
-    val result = pool.startTime.get + (round.timeLimitOfFight.get + round.timeBetweenFights.get + round.breakDuration.get) * (order.get - 1)
-
-    return result;
-  }
-
-  def plannedEndTime: Long = {
-    val pool = this.pool.foreign.get;
-    val round = pool.round.foreign.get;
-
-    return plannedStartTime + round.timeLimitOfFight.get + round.breakDuration.get;
-  }
 }
 
-object Fight extends Fight with LongKeyedMetaMapper[Fight] with CRUDify[Long, Fight] {
-  override def dbTableName = "fights"
+class PoolFight extends Fight[PoolFight, PoolFightScore] with IdPK {
+  def getSingleton = PoolFight
+  
+  def scoreMeta = PoolFightScore
+  
+  object pool extends MappedLongForeignKey(this, Pool)
+  object order extends MappedLong(this)
+  
 }
+object PoolFight extends PoolFight with LongKeyedMetaMapper[PoolFight]
+
+class EliminationFight extends Fight[EliminationFight, EliminationFightScore] with IdPK {
+  def getSingleton = EliminationFight
+  
+  def scoreMeta = EliminationFightScore
+  
+  object phase extends MappedLongForeignKey(this, EliminationPhase)
+  object round extends MappedLong(this)
+}
+object EliminationFight extends EliminationFight with LongKeyedMetaMapper[EliminationFight]
