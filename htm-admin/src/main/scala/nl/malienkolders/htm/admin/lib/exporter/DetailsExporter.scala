@@ -9,9 +9,9 @@ object DetailsExporter extends ExcelExporter {
   def doExport(out: OutputStream): Unit = {
     val workbook = loadWorkbook("details")
     val sheet = workbook.getSheetAt(0)
-    
+
     var i = 0
-    
+
     for (t <- Tournament.findAll) {
       sheet.getOrCreateRow(i).getOrCreateCell(0).setCellValue(t.name.get)
       i += 1
@@ -50,15 +50,15 @@ object DetailsExporter extends ExcelExporter {
             sheet.getOrCreateRow(i).getOrCreateCell(1).setCellValue(win)
             i += 1
           }
-          
+
         }
-        
+
         i += 1
       }
-      
+
       i += 1
     }
-    
+
     workbook.write(out)
   }
 
