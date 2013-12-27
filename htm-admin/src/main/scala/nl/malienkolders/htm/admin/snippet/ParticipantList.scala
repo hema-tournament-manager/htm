@@ -103,7 +103,7 @@ object ParticipantList {
   def downloadClubsList() = {
     OutputStreamResponse(ClubsExporter.doExport _, List("content-disposition" -> "inline; filename=\"clubs.xls\""))
   }
-  
+
   def downloadDetailsList() = {
     OutputStreamResponse(DetailsExporter.doExport _, List("content-disposition" -> "inline; filename=\"details.xls\""))
   }

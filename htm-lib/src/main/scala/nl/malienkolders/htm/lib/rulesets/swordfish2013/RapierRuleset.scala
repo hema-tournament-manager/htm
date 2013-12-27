@@ -7,25 +7,25 @@ import nl.malienkolders.htm.lib.model._
 import net.liftweb.mapper._
 
 case class ParticipantScores(
-  initialRanking: Int,
-  fights: Int,
-  wins: Int,
-  ties: Int,
-  losses: Int,
-  lossesByDoubles: Int,
-  cleanHitsReceived: Int,
-  cleanHitsDealt: Int,
-  afterblowsReceived: Int,
-  afterblowsDealt: Int,
-  doubleHits: Int,
-  exchangePoints: Int) extends Scores {
+    initialRanking: Int,
+    fights: Int,
+    wins: Int,
+    ties: Int,
+    losses: Int,
+    lossesByDoubles: Int,
+    cleanHitsReceived: Int,
+    cleanHitsDealt: Int,
+    afterblowsReceived: Int,
+    afterblowsDealt: Int,
+    doubleHits: Int,
+    exchangePoints: Int) extends Scores {
 
   def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
   def firstHits = cleanHitsDealt + afterblowsDealt
   def doubleHitsAverage = if (fights == 0) 0 else doubleHits.toDouble / fights
-  
+
   def points = wins * 3 + ties * 1
-  
+
   val fields: List[(String, () => AnyVal)] = List(
     "nr of fights" -> fights,
     "points" -> points,
@@ -40,13 +40,13 @@ case class ParticipantScores(
 }
 
 object RapierRuleset extends Ruleset {
-   type Scores = ParticipantScores
+  type Scores = ParticipantScores
 
   val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  
+
   val id = "swordfish-2013-rapier"
   val possiblePoints = List(0, 1, 2, 3)
-  
+
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {
       case (ParticipantScores(i1, f1, w1, _, _, lbd1, _, _, ar1, _, d1, p1), ParticipantScores(i2, f2, w2, _, _, lbd2, _, _, ar2, _, d2, p2)) =>
@@ -170,10 +170,10 @@ object RapierRuleset extends Ruleset {
         }
     })).sortWith((pt1, pt2) => compare(pt1._2, pt2._2))
   }
-  
-  def calculateFightPoints(pointsWinner: Int, pointsLoser: Int, doubles: Int): Int = 
+
+  def calculateFightPoints(pointsWinner: Int, pointsLoser: Int, doubles: Int): Int =
     (pointsWinner.min(6) - pointsLoser) - doubles
-    
+
   def ranking(r: Round): List[(Pool, List[(Participant, ParticipantScores)])] = {
     r.pools.toList.map { p =>
       (p, ranking(p))

@@ -6,25 +6,25 @@ import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.mapper._
 
 case class ParticipantScores(
-  initialRanking: Int,
-  fights: Int,
-  wins: Int,
-  ties: Int,
-  losses: Int,
-  lossesByDoubles: Int,
-  cleanHitsReceived: Int,
-  cleanHitsDealt: Int,
-  afterblowsReceived: Int,
-  afterblowsDealt: Int,
-  doubleHits: Int,
-  exchangePoints: Int) extends Scores {
+    initialRanking: Int,
+    fights: Int,
+    wins: Int,
+    ties: Int,
+    losses: Int,
+    lossesByDoubles: Int,
+    cleanHitsReceived: Int,
+    cleanHitsDealt: Int,
+    afterblowsReceived: Int,
+    afterblowsDealt: Int,
+    doubleHits: Int,
+    exchangePoints: Int) extends Scores {
   def group = if (fights > 0) exchangePoints else -10 + initialRanking
   def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
   def firstHits = cleanHitsDealt + afterblowsDealt
   def doubleHitsAverage = if (fights == 0) 0 else doubleHits.toDouble / fights
-  
+
   def points = wins * 3 + ties * 1
-  
+
   val fields: List[(String, () => AnyVal)] = List(
     "nr of fights" -> fights,
     "points" -> points,
@@ -154,9 +154,9 @@ abstract class SwordfishRuleset extends Ruleset {
         }
     })).sortWith((pt1, pt2) => compare(pt1._2, pt2._2))
   }
-  
+
   def lossesByDoubles(doubles: Int): Int = if (doubles >= 3) 1 else 0
-  
+
   def ranking(r: Round): List[(Pool, List[(Participant, ParticipantScores)])] = {
     r.pools.toList.map { p =>
       (p, ranking(p))

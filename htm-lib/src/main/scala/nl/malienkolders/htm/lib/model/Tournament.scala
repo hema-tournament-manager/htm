@@ -26,9 +26,9 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   def nextFighterNumber: Int = {
     subscriptions.map(_.fighterNumber.get).max + 1
   }
-  
+
   def pools: List[Pool] = rounds.flatMap(_.pools).toList
-  
+
   def startTime = pools.map(_.startTime.get) match {
     case Nil => 0
     case pools => pools.min
