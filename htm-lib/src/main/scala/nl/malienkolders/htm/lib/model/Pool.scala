@@ -4,7 +4,7 @@ package model
 import net.liftweb._
 import mapper._
 
-case class MarshalledPoolSummary(id: Long, name: String, order: Long, startTime: Long, finished: Boolean, round: MarshalledRoundSummary, fightCount: Long, participantsCount: Long)
+case class MarshalledPoolSummary(id: Long, name: String, order: Long, startTime: Long, finished: Boolean, fightCount: Long, participantsCount: Long)
 case class MarshalledPool(id: Long, name: String, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
 case class MarshalledViewerPool(summary: MarshalledPoolSummary, fights: List[MarshalledViewerFightSummary])
 
@@ -17,7 +17,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
   object startTime extends MappedLong(this)
 
   object order extends MappedLong(this)
-  object round extends MappedLongForeignKey(this, Round)
+  object phase extends MappedLongForeignKey(this, PoolPhase)
   object fights extends MappedOneToMany(Fight, Fight.pool, OrderBy(Fight.order, Ascending)) with Owned[Fight] with Cascade[Fight]
   object participants extends MappedManyToMany(PoolParticipants, PoolParticipants.pool, PoolParticipants.participant, Participant)
   object arena extends MappedLongForeignKey(this, Arena)
@@ -36,7 +36,6 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
     order.is,
     startTime.is,
     finished_?,
-    round.obj.get.toMarshalledSummary,
     fights.size,
     participants.size)
 
