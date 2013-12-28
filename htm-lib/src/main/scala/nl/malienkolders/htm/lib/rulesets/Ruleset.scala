@@ -32,10 +32,10 @@ abstract class Ruleset {
   def id: String
 
   def planning(phase: PoolPhase): List[Pool]
-  
+
   def ranking(p: Pool): List[(Participant, Scores)]
 
-  def ranking(phase: PoolPhase): List[(Pool, List[(Participant, Scores)])] = 
+  def ranking(phase: PoolPhase): List[(Pool, List[(Participant, Scores)])] =
     phase.pools.map { p =>
       (p, ranking(p))
     }.toList

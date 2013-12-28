@@ -1,6 +1,7 @@
 package nl.malienkolders.htm.lib.model
 
 import net.liftweb.mapper._
+import nl.malienkolders.htm.lib.rulesets.Ruleset
 
 trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with OneToMany[Long, P] {
 

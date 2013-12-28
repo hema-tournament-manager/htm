@@ -44,11 +44,11 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
     case d if d < 0 => -1
     case _ => 0
   }
-  
+
   def poolPhase: PoolPhase = phases(0).asInstanceOf[PoolPhase]
-  
+
   def eliminationPhase: EliminationPhase = phases(1).asInstanceOf[EliminationPhase]
-  
+
   def finalsPhase: EliminationPhase = phases(2).asInstanceOf[EliminationPhase]
 }
 object Tournament extends Tournament with LongKeyedMetaMapper[Tournament]

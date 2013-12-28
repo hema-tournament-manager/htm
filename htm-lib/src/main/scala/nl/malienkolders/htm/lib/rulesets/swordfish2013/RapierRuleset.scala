@@ -8,18 +8,18 @@ import net.liftweb.mapper._
 import nl.malienkolders.htm.lib.model.Fight
 
 case class ParticipantScores(
-  initialRanking: Int,
-  fights: Int,
-  wins: Int,
-  ties: Int,
-  losses: Int,
-  lossesByDoubles: Int,
-  cleanHitsReceived: Int,
-  cleanHitsDealt: Int,
-  afterblowsReceived: Int,
-  afterblowsDealt: Int,
-  doubleHits: Int,
-  exchangePoints: Int) extends Scores {
+    initialRanking: Int,
+    fights: Int,
+    wins: Int,
+    ties: Int,
+    losses: Int,
+    lossesByDoubles: Int,
+    cleanHitsReceived: Int,
+    cleanHitsDealt: Int,
+    afterblowsReceived: Int,
+    afterblowsDealt: Int,
+    doubleHits: Int,
+    exchangePoints: Int) extends Scores {
 
   def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
   def firstHits = cleanHitsDealt + afterblowsDealt

@@ -6,18 +6,18 @@ import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.mapper._
 
 case class ParticipantScores(
-  initialRanking: Int,
-  fights: Int,
-  wins: Int,
-  ties: Int,
-  losses: Int,
-  lossesByDoubles: Int,
-  cleanHitsReceived: Int,
-  cleanHitsDealt: Int,
-  afterblowsReceived: Int,
-  afterblowsDealt: Int,
-  doubleHits: Int,
-  exchangePoints: Int) extends Scores {
+    initialRanking: Int,
+    fights: Int,
+    wins: Int,
+    ties: Int,
+    losses: Int,
+    lossesByDoubles: Int,
+    cleanHitsReceived: Int,
+    cleanHitsDealt: Int,
+    afterblowsReceived: Int,
+    afterblowsDealt: Int,
+    doubleHits: Int,
+    exchangePoints: Int) extends Scores {
   def group = if (fights > 0) exchangePoints else -10 + initialRanking
   def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
   def firstHits = cleanHitsDealt + afterblowsDealt

@@ -94,7 +94,7 @@ object DefaultRuleset extends Ruleset {
   }
 
   def planning(phase: PoolPhase): List[Pool] = {
-    
+
     phase.pools.map { pool =>
       val pairings = roundRobinPairing(pool.participants.size, 0)
       pairings.foreach {
