@@ -12,9 +12,9 @@ case class MarshalledFight(fighterA: MarshalledParticipant, fighterB: Marshalled
 case class MarshalledFightSummary(fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
 
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with FightToScore[F, S] {
-  
+
   self: F =>
-    
+
   object tournament extends MappedLongForeignKey(this, Tournament)
   object inProgress extends MappedBoolean(this)
   object fighterA extends MappedLongForeignKey(this, Participant)
@@ -71,20 +71,20 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
 class PoolFight extends Fight[PoolFight, PoolFightScore] with IdPK {
   def getSingleton = PoolFight
-  
+
   def scoreMeta = PoolFightScore
-  
+
   object pool extends MappedLongForeignKey(this, Pool)
   object order extends MappedLong(this)
-  
+
 }
 object PoolFight extends PoolFight with LongKeyedMetaMapper[PoolFight]
 
 class EliminationFight extends Fight[EliminationFight, EliminationFightScore] with IdPK {
   def getSingleton = EliminationFight
-  
+
   def scoreMeta = EliminationFightScore
-  
+
   object phase extends MappedLongForeignKey(this, EliminationPhase)
   object round extends MappedLong(this)
 }

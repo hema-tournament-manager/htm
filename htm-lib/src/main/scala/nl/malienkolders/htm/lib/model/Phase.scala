@@ -28,7 +28,7 @@ trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with OneToMany[Long, P] {
   def previousPhases: List[Phase[_]] = tournament.foreign.get.phases.filter(_.order.is < order.is).toList
 
   def fights: Seq[Fight[_, _]]
-  
+
   def rulesetImpl = Ruleset(ruleset.get)
 
 }
@@ -47,7 +47,7 @@ class PoolPhase extends Phase[PoolPhase] with IdPK {
     pools += newPool
     newPool
   }
-  
+
   def fights = pools.flatMap(_.fights)
 
 }
@@ -56,9 +56,9 @@ object PoolPhase extends PoolPhase with LongKeyedMetaMapper[PoolPhase]
 class EliminationPhase extends Phase[EliminationPhase] with IdPK {
 
   def getSingleton = EliminationPhase
-  
+
   object eliminationFights extends MappedOneToMany(EliminationFight, EliminationFight.phase, OrderBy(EliminationFight.id, Ascending)) with Owned[EliminationFight] with Cascade[EliminationFight]
-  
+
   def fights = eliminationFights.toSeq
 
 }

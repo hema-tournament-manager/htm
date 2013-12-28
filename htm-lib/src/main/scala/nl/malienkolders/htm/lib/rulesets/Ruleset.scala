@@ -31,11 +31,14 @@ abstract class Ruleset {
 
   def id: String
 
-  def planning(round: Round): List[Pool]
-
+  def planning(phase: PoolPhase): List[Pool]
+  
   def ranking(p: Pool): List[(Participant, Scores)]
 
-  def ranking(r: Round): List[(Pool, List[(Participant, Scores)])]
+  def ranking(phase: PoolPhase): List[(Pool, List[(Participant, Scores)])] = 
+    phase.pools.map { p =>
+      (p, ranking(p))
+    }.toList
 
   def register(default: Boolean = false) = Ruleset.registerRuleset(this, default)
 
@@ -53,7 +56,7 @@ abstract class Ruleset {
       ".pool *" #> findPool(t, p).map(_.poolName).getOrElse("?")
 
   def findPool(tournament: Tournament, p: Participant) =
-    tournament.rounds.head.pools.find(_.participants.contains(p))
+    tournament.poolPhase.pools.find(_.participants.contains(p))
 
 }
 

@@ -32,9 +32,9 @@ case class TotalScore(
 
 trait Score[S <: Score[S, F], F <: Fight[F, S]] extends LongKeyedMapper[S] {
   self: S =>
-  
+
   object fight extends LongMappedMapper[S, F](this, fightMeta)
-  
+
   def fightMeta: F with LongKeyedMetaMapper[F]
 
   //object fight extends MappedLongForeignKey(this, Fight)
@@ -91,8 +91,8 @@ object EliminationFightScore extends EliminationFightScore with LongKeyedMetaMap
 
 trait FightToScore[F <: Fight[F, S], S <: Score[S, F]] extends OneToMany[Long, F] {
   self: F =>
-    
-   object scores extends MappedOneToMany(scoreMeta, scoreMeta.fight)
-   
-   def scoreMeta: LongKeyedMetaMapper[S] with S
+
+  object scores extends MappedOneToMany(scoreMeta, scoreMeta.fight)
+
+  def scoreMeta: LongKeyedMetaMapper[S] with S
 }
