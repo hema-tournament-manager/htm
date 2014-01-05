@@ -17,7 +17,7 @@ class ArenaList {
   val df = new SimpleDateFormat("HH:mm")
 
   def render = {
-    val colspan = 12 / Arena.count
+    val colspan = 12 / Arena.count.max(1)
     ".arena" #> Arena.findAll.map(a =>
       ".arena [class+]" #> ("col-md-" + colspan) &
         ".arenaName" #> a.name.get &
