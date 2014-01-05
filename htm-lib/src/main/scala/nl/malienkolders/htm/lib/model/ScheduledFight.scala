@@ -11,15 +11,15 @@ import net.liftweb.json._
 
 case class MarshalledScheduledFightSummary(time: Long, fight: MarshalledFightSummary)
 
-trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] with Ordered[F] {
+trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] {
   self: F =>
 
   object arena extends MappedLongForeignKey(this, Arena)
-  def fight: MappedLongForeignKey[F, _ <: Fight[_, _]] 
+  def fight: MappedLongForeignKey[F, _ <: Fight[_, _]]
   object time extends MappedLong(this)
-  
+
   def compare(that: F) = this.time.is.compareTo(that.time.is)
-  
+
   def toMarshalledSummary = MarshalledScheduledFightSummary(time.is, fight.foreign.get.toMarshalledSummary)
 }
 

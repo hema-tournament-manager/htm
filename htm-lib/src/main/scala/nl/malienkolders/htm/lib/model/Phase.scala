@@ -3,9 +3,9 @@ package nl.malienkolders.htm.lib.model
 import net.liftweb.mapper._
 import nl.malienkolders.htm.lib.rulesets.Ruleset
 
-sealed class PhaseType
-case object PoolType extends PhaseType
-case object EliminationType extends PhaseType
+sealed class PhaseType(val code: String)
+case object PoolType extends PhaseType("P")
+case object EliminationType extends PhaseType("E")
 
 trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with IdPK with OneToMany[Long, P] {
 

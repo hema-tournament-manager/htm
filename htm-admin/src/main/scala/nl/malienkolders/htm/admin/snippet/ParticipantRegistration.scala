@@ -22,8 +22,7 @@ object ParticipantRegistration {
       val tournament = sub.tournament.obj.get
 
       val poolName = for {
-        firstRound <- tournament.rounds.find(_.order.get == 1)
-        pool <- firstRound.pools.find(_.participants.exists(_.id.get == participantId))
+        pool <- tournament.poolPhase.pools.find(_.participants.exists(_.id.get == participantId))
       } yield { pool.poolName }
 
       poolName.getOrElse("?")

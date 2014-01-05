@@ -15,8 +15,7 @@ class TournamentList {
         "#tournamentEdit [href]" #> ("edit/" + t.identifier.is) &
         "#tournamentIdentifier" #> t.identifier.is &
         "#tournamentParticipants" #> t.participants.size &
-        "#tournamentRounds" #> t.rounds.size &
-        "#tournamentFights" #> t.rounds.flatMap(_.pools.flatMap(_.fights.map(f => 1))).size)
+        "#tournamentFights" #> t.phases.map(_.fights.size).foldLeft(0)(_ + _))
   }
 
 }

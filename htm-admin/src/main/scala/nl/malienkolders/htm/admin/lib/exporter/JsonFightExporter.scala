@@ -23,16 +23,16 @@ object JsonFightExporter extends FightExporter {
       ("ID" -> t.id.get.toString) ~
       ("StartTime" -> t.startTime.toString) ~
       ("Delay" -> "0") ~
-      ("Round" -> t.rounds.toList)
+      ("Phase" -> t.phases.toList)
 
-  implicit def renderRound(r: Round): JValue =
-    ("Name" -> r.name.get) ~
+  implicit def renderPhase(p: Phase[_]): JValue =
+    ("Name" -> p.name.get) ~
       ("Arena" -> List(
         ("Name" -> "Arena 1") ~
           ("ID" -> "1") ~
-          ("Fight" -> r.pools.flatMap(_.fights.toList))))
+          ("Fight" -> p.fights.toList)))
 
-  implicit def renderFight(f: Fight): JValue =
+  implicit def renderFight(f: Fight[_, _]): JValue =
     ("Fighter_1" -> f.fighterA.foreign.get.externalId.get) ~
       ("Fighter_2" -> f.fighterB.foreign.get.externalId.get) ~
       ("Score_1" -> f.currentScore.red.toString) ~
@@ -40,7 +40,7 @@ object JsonFightExporter extends FightExporter {
       ("Doubles" -> f.currentScore.double.toString) ~
       ("Status" -> fightStatus(f))
 
-  def fightStatus(f: Fight): String = if (f.finished_?) "finished" else if (f.started_?) "fighting" else "pending"
+  def fightStatus(f: Fight[_, _]): String = if (f.finished_?) "finished" else if (f.started_?) "fighting" else "pending"
 
   def createExport: JValue =
     "Event" -> (

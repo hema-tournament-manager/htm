@@ -13,11 +13,10 @@ object CsvFightExporter extends FightExporter {
     val ts = Tournament.findAll.toList
     val out = new PrintWriter("export.csv", "UTF-8")
     val separator = ","
-    out.println(List("Tournament", "Round", "Poule", "RedId", "RedName", "BlueId", "BlueName", "RedPoint", "RedAfterblow", "BluePoint", "BlueAfterblow", "DoubleHits", "ExchangeCount", "Duration").mkString(separator))
+    out.println(List("Tournament", "Phase", "RedId", "RedName", "BlueId", "BlueName", "RedPoint", "RedAfterblow", "BluePoint", "BlueAfterblow", "DoubleHits", "ExchangeCount", "Duration").mkString(separator))
     for {
       t <- ts
-      r <- t.rounds
-      p <- r.pools
+      p <- t.phases
       f <- p.fights
       red <- f.fighterA.obj
       blue <- f.fighterB.obj
@@ -26,8 +25,7 @@ object CsvFightExporter extends FightExporter {
       out.println(
         List[String](
           t.name.is,
-          r.name.is,
-          p.order.is,
+          p.name.is,
           red.externalId.is,
           red.name.is,
           blue.externalId.is,

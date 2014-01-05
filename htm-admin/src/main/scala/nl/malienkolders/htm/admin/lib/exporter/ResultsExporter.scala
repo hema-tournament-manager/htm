@@ -50,32 +50,27 @@ object ResultsExporter extends ExcelExporter {
     implicit var rowIndex = config.startRow - 1
     config.tournaments foreach { implicit t =>
       printTournament(t)
-      val poolPhaseRounds = t.rounds.filter(isPoolPhaseRound _)
-      poolPhaseRounds.head.pools foreach { pool =>
+      t.poolPhase.pools.foreach { pool =>
         printPool(pool)
-        poolPhaseRounds foreach { r =>
-          printRound(r)
-          r.pools.find(_.order.get == pool.order.get) foreach { p =>
-            p.fights foreach { f =>
-              printFight(f)
-              rowIndex += 1
-            }
-          }
+        pool.fights foreach { f =>
+          printFight(f)
+          rowIndex += 1
         }
       }
       rowIndex += 1
-      val finalRounds = t.rounds.filterNot(isPoolPhaseRound _)
-      finalRounds foreach { r =>
-        printRow(Map("pool.name" -> r.name.get))
-        val style = workbook.createCellStyle()
-        style.setAlignment(CellStyle.ALIGN_LEFT)
-        dataSheet.getRow(rowIndex).getCell(config.columns("pool.name")).setCellStyle(style)
-        r.pools foreach { p =>
-          p.fights foreach { f =>
-            printFight(f)
-            rowIndex += 1
-          }
-        }
+      printRow(Map("pool.name" -> "Elimination"))
+      val style = workbook.createCellStyle()
+      style.setAlignment(CellStyle.ALIGN_LEFT)
+      dataSheet.getRow(rowIndex).getCell(config.columns("pool.name")).setCellStyle(style)
+      t.eliminationPhase.fights foreach { f =>
+        printFight(f)
+        rowIndex += 1
+      }
+      rowIndex += 1
+      printRow(Map("pool.name" -> "Finals"))
+      dataSheet.getRow(rowIndex).getCell(config.columns("pool.name")).setCellStyle(style)
+      t.finalsPhase.fights foreach { f =>
+        printFight(f)
         rowIndex += 1
       }
       rowIndex += 1
@@ -84,18 +79,16 @@ object ResultsExporter extends ExcelExporter {
     workbook.write(out)
   }
 
-  def isPoolPhaseRound(r: Round): Boolean = r.name.get.startsWith("Round ")
-
   def printTournament(tournament: Tournament)(implicit sheet: Sheet, rowIndex: Int, config: Config) =
     printRow(Map("tournament.name" -> tournament.name.get))
 
   def printPool(pool: Pool)(implicit sheet: Sheet, rowIndex: Int, config: Config) =
     printRow(Map("pool.name" -> pool.poolName))
 
-  def printRound(round: Round)(implicit sheet: Sheet, rowIndex: Int, config: Config) =
-    printRow(Map("round.name" -> round.name.get))
+  def printPhase(phase: Phase[_])(implicit sheet: Sheet, rowIndex: Int, config: Config) =
+    printRow(Map("phase.name" -> phase.name.get))
 
-  def printFight(f: Fight)(implicit sheet: Sheet, rowIndex: Int, config: Config) =
+  def printFight(f: Fight[_, _])(implicit sheet: Sheet, rowIndex: Int, config: Config) =
     printRow(Map("fighterA.id" -> f.fighterA.obj.get.externalId.get.toInt,
       "fighterA.name" -> f.fighterA.obj.get.name.get,
       "fighterA.club" -> f.fighterA.obj.get.clubCode.get,
@@ -105,7 +98,7 @@ object ResultsExporter extends ExcelExporter {
       "points.a" -> f.currentScore.red,
       "points.doubles" -> f.currentScore.double,
       "points.b" -> f.currentScore.blue,
-      "time.planned" -> new Date(f.plannedStartTime),
+      "time.planned" -> new Date(f.scheduled.foreign.get.time.get),
       "time.start" -> new Date(f.timeStart.get),
       "time.duration" -> f.netDuration.get / 1000))
 

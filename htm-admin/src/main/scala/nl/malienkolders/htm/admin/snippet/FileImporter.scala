@@ -5,7 +5,6 @@ import http._
 import common._
 import util.Helpers._
 import scala.xml.NodeSeq
-import nl.malienkolders.htm.admin.lib.ParticipantImporter
 import nl.malienkolders.htm.lib.model._
 import nl.htm.importer.{ Importer => ImporterImpl, InputStreamSettings }
 import nl.htm.importer.swordfish._
@@ -17,9 +16,12 @@ object FileImporter {
     var upload: Box[FileParamHolder] = Empty
 
     def process() = {
-      Fight.bulkDelete_!!()
+      PoolFight.bulkDelete_!!()
+      EliminationFight.bulkDelete_!!()
       TournamentParticipants.bulkDelete_!!()
       Participant.bulkDelete_!!()
+      PoolPhase.bulkDelete_!!()
+      EliminationPhase.bulkDelete_!!()
       Tournament.bulkDelete_!!()
       val data = upload match {
         case Full(FileParamHolder(_, mime, fileName, file)) =>
@@ -30,7 +32,7 @@ object FileImporter {
       }
       data match {
         case Some(eventData) =>
-          ParticipantImporter.doImport(eventData)
+          //TODO: fix importer! ParticipantImporter.doImport(eventData)
           S.notice("Import succeeded")
           S.redirectTo("/tournaments/list")
         case _ =>

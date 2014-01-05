@@ -10,7 +10,6 @@ import net.liftweb.http.js.JsCmds._
 import net.liftweb.mapper._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.lib._
-import nl.malienkolders.htm.admin.lib.TournamentUtils._
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.sitemap.LocPath.stringToLocPath
 import net.liftweb.util.IterableConst.itBindable

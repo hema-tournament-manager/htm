@@ -61,14 +61,14 @@ object AdminRest extends RestHelper {
 
     case "api" :: "fight" :: "confirm" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledFight](json)
-      JBool((FightServer !! FightResult(FightHelper.dao(m.phaseType).findByKey(m.id).get.fromMarshalled(m), true)).map {
+      JBool((FightServer !! FightResult(FightHelper.dao(m.phaseType).findByKey(m.id).get.fromMarshalled(m).asInstanceOf[Fight[_, _]], true)).map {
         case FightMsg(_) => true
         case _ => false
       }.getOrElse[Boolean](false))
 
     case "api" :: "fight" :: "cancel" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledFight](json)
-      JBool((FightServer !! FightResult(FightHelper.dao(m.phaseType).findByKey(m.id).get.fromMarshalled(m), false)).map {
+      JBool((FightServer !! FightResult(FightHelper.dao(m.phaseType).findByKey(m.id).get.fromMarshalled(m).asInstanceOf[Fight[_, _]], false)).map {
         case FightMsg(_) => true
         case _ => false
       }.getOrElse[Boolean](false))
@@ -86,15 +86,15 @@ object AdminRest extends RestHelper {
       FightServer ! FightUpdate(fight)
       JBool(true)
 
-    case "api" :: "fight" :: "update" :: AsLong(id) :: "timer" :: Nil JsonPost json -> _ =>
+    case "api" :: "fight" :: "update" :: phase :: AsLong(id) :: "timer" :: Nil JsonPost json -> _ =>
       val timer = Extraction.extract[TimerMessage](json)
-      FightServer ! TimerUpdate(id, timer)
+      FightServer ! TimerUpdate(FightId(phase, id), timer)
       JBool(true)
 
-    case "api" :: "fight" :: "update" :: AsLong(id) :: "message" :: Nil JsonPost json -> _ =>
+    case "api" :: "fight" :: "update" :: phase :: AsLong(id) :: "message" :: Nil JsonPost json -> _ =>
       json match {
         case JString(message) =>
-          FightServer ! MessageUpdate(id, message)
+          FightServer ! MessageUpdate(FightId(phase, id), message)
           JBool(true)
         case _ => JBool(false)
       }

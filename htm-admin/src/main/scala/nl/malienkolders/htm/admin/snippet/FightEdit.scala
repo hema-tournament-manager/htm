@@ -12,32 +12,28 @@ import java.util.Date
 
 object FightEdit {
 
-  val menu = Menu.param[ParamInfo]("Edit Fight", "Edit Fight", s => Full(ParamInfo(s)),
-    pi => pi.param) / "fights" / "edit"
+  val menu = Menu.params[FightId]("Edit Fight", "Edit Fight", {
+    case phase :: AsLong(id) :: Nil => Full(FightId(phase, id))
+    case _ => Empty
+  },
+    pi => pi.phase :: pi.id.toString :: Nil) / "fights" / "edit"
   lazy val loc = menu.toLoc
 
   def render = {
 
-    val f = Fight.findByKey(FightEdit.loc.currentValue.map(_.param).get.toLong).get
+    val id = FightEdit.loc.currentValue.get
+    val f: Fight[_, _] = FightHelper.dao(id.phase).findByKey(id.id).get
     val totalScore = f.currentScore
-
-    //val score = Score.create
-
-    //score.pointsRed(totalScore.red)
-    //score.pointsBlue(totalScore.blue)
 
     val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     def process() {
-      //f.scores.clear()
-      //f.scores += score
       f.save()
-      S.redirectTo("/tournaments/view/" + f.pool.foreign.get.round.foreign.get.tournament.is)
+      S.redirectTo("/tournaments/view/" + f.phase.foreign.get.tournament.is)
     }
 
     def addScoreLine() {
-      //f.scores.clear()
-      f.scores += Score.create
+      f.addScore
       f.save()
       S.redirectTo("/fights/edit/" + f.id.get)
     }
@@ -61,7 +57,7 @@ object FightEdit {
         "#doAdd" #> SHtml.onSubmitUnit(addScoreLine) &
         "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart.get)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker") &
         "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop.get)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker") &
-        ".score" #> f.scores.map(score =>
+        ".score" #> f.mapScores(score =>
           "name=pointsRed" #> score.pointsRed.toForm &
             "name=pointsBlue" #> score.pointsBlue.toForm &
             "name=cleanHitsRed" #> score.cleanHitsRed.toForm &

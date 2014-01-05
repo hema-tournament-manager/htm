@@ -37,7 +37,28 @@ class Boot {
     // Use Lift's Mapper ORM to populate the database
     // you don't need to use Mapper to use Lift... use
     // any ORM you want
-    Schemifier.schemify(true, Schemifier.infoF _, User, Country, Score, model.Tournament, TournamentParticipants, Round, Pool, PoolParticipants, Participant, Fight, ParticipantNameMapping, Viewer, ArenaViewers, Arena, Image, ScaledImage)
+    Schemifier.schemify(true, Schemifier.infoF _,
+      User,
+      Country,
+      PoolFightScore,
+      EliminationFightScore,
+      model.Tournament,
+      TournamentParticipants,
+      PoolPhase,
+      EliminationPhase,
+      Pool,
+      PoolParticipants,
+      Participant,
+      PoolFight,
+      EliminationFight,
+      ParticipantNameMapping,
+      Viewer,
+      ArenaViewers,
+      Arena,
+      ScheduledPoolFight,
+      ScheduledEliminationFight,
+      Image,
+      ScaledImage)
 
     // where to search snippet
     LiftRules.addToPackages("nl.malienkolders.htm.admin")
@@ -63,7 +84,6 @@ class Boot {
       (Menu.i("Tournaments") / "tournaments" / "list") ::
       TournamentView.menu ::
       TournamentEdit.menu ::
-      TournamentAdvance.menu ::
       FightEdit.menu ::
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::
