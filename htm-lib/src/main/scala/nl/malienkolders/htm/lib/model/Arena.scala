@@ -16,7 +16,11 @@ class Arena extends LongKeyedMapper[Arena] with IdPK with CreatedUpdated with Or
 
   object name extends MappedString(this, 64)
 
-  object pools extends MappedOneToMany(Pool, Pool.arena, OrderBy(Pool.startTime, Ascending)) with Owned[Pool]
+  object fights extends MappedOneToManyBase[ScheduledFight[_]]({ () =>
+    ScheduledPoolFight.findAll(By(ScheduledPoolFight.arena, this)) ++ ScheduledEliminationFight.findAll(By(ScheduledEliminationFight.arena, this)).sortBy(_.time.is)
+  },
+    { f: ScheduledFight[_] => f.arena.asInstanceOf[MappedForeignKey[Long, _, Arena]] }) with Owned[ScheduledFight[_]] with Cascade[ScheduledFight[_]]
+  
   object viewers extends MappedManyToMany(ArenaViewers, ArenaViewers.arena, ArenaViewers.viewer, Viewer)
 
   def compare(that: Arena) = this.name.is.compareTo(that.name.is)

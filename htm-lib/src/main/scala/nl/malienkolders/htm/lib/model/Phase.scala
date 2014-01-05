@@ -3,7 +3,11 @@ package nl.malienkolders.htm.lib.model
 import net.liftweb.mapper._
 import nl.malienkolders.htm.lib.rulesets.Ruleset
 
-trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with OneToMany[Long, P] {
+sealed class PhaseType
+case object PoolType extends PhaseType
+case object EliminationType extends PhaseType
+
+trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with IdPK with OneToMany[Long, P] {
 
   self: P =>
 
@@ -34,7 +38,7 @@ trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with OneToMany[Long, P] {
 
 }
 
-class PoolPhase extends Phase[PoolPhase] with IdPK {
+class PoolPhase extends Phase[PoolPhase] {
 
   def getSingleton = PoolPhase
 
@@ -54,7 +58,7 @@ class PoolPhase extends Phase[PoolPhase] with IdPK {
 }
 object PoolPhase extends PoolPhase with LongKeyedMetaMapper[PoolPhase]
 
-class EliminationPhase extends Phase[EliminationPhase] with IdPK {
+class EliminationPhase extends Phase[EliminationPhase] {
 
   def getSingleton = EliminationPhase
 

@@ -6,6 +6,7 @@ import mapper._
 
 case class MarshalledPoolSummary(id: Long, name: String, order: Long, startTime: Long, finished: Boolean, fightCount: Long, participantsCount: Long)
 case class MarshalledPool(id: Long, name: String, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
+case class MarshalledViewerPool(summary: MarshalledPoolSummary, fights: List[MarshalledViewerPoolFightSummary])
 
 class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToMany {
   def getSingleton = Pool
@@ -36,6 +37,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
     finished_?,
     fights.size,
     participants.size)
+  def toViewer = MarshalledViewerPool(toMarshalledSummary, fights.map(_.toViewerSummary).toList)
 
   def poolName: String = {
     ('A'.toInt + (order.get - 1)).toChar.toString;

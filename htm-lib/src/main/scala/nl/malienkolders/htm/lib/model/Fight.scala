@@ -8,13 +8,17 @@ import util._
 import Helpers._
 import scala.xml._
 
-case class MarshalledFight(fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFight(phaseType: PhaseType, id: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
 case class MarshalledFightSummary(fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
 
-trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with FightToScore[F, S] {
+trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {
 
   self: F =>
 
+  private val fightToPhaseType: Map[LongKeyedMapper[_], PhaseType] = Map(
+      PoolFight -> PoolType,
+      EliminationFight -> EliminationType)
+    
   object tournament extends MappedLongForeignKey(this, Tournament)
   object inProgress extends MappedBoolean(this)
   object fighterA extends MappedLongForeignKey(this, Participant)
@@ -22,6 +26,9 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
   object timeStart extends MappedLong(this)
   object timeStop extends MappedLong(this)
   object netDuration extends MappedLong(this)
+  
+  def phaseType = fightToPhaseType(getSingleton)
+  def phase: MappedLongForeignKey[_, _ <: Phase[_]]
 
   def started_? = timeStart.is > 0 || inProgress.is
   def finished_? = timeStop.is > 0
@@ -47,7 +54,7 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def shortLabel = fighterA.obj.get.name + " vs " + fighterB.obj.get.name
 
-  def toMarshalled = MarshalledFight(fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledFight(phaseType, id.is, fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
   def toMarshalledSummary = MarshalledFightSummary(fighterA.obj.get.toMarshalled, fighterB.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
   def fromMarshalled(m: MarshalledFight) = {
     timeStart(m.timeStart)
@@ -69,18 +76,37 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
 }
 
-class PoolFight extends Fight[PoolFight, PoolFightScore] with IdPK {
+object FightHelper {
+  def dao(phaseType: PhaseType) = phaseType match {
+    case PoolType => PoolFight
+    case EliminationType => EliminationFight
+    case _ => PoolFight
+  }
+}
+
+case class MarshalledViewerPoolFightSummary(order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, started: Boolean, finished: Boolean, score: TotalScore)
+
+class PoolFight extends Fight[PoolFight, PoolFightScore] {
   def getSingleton = PoolFight
 
   def scoreMeta = PoolFightScore
 
   object pool extends MappedLongForeignKey(this, Pool)
   object order extends MappedLong(this)
+  
+  def phase = pool.foreign.get.phase
 
+  def toViewerSummary = MarshalledViewerPoolFightSummary(
+      order.is,
+      fighterA.foreign.get.toMarshalled,
+      fighterB.foreign.get.toMarshalled,
+      started_?,
+      finished_?,
+      currentScore)
 }
 object PoolFight extends PoolFight with LongKeyedMetaMapper[PoolFight]
 
-class EliminationFight extends Fight[EliminationFight, EliminationFightScore] with IdPK {
+class EliminationFight extends Fight[EliminationFight, EliminationFightScore] {
   def getSingleton = EliminationFight
 
   def scoreMeta = EliminationFightScore

@@ -22,25 +22,20 @@ class ArenaList {
       ".arena [class+]" #> ("col-md-" + colspan) &
         ".arenaName" #> a.name.get &
         ".download-schedule" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadSchedule(a)), Text("Download schedule")) &
-        ".pool" #> a.pools.map { implicit p =>
-          implicit val r = p.round.foreign.get
-          implicit val t = r.tournament.foreign.get
-          ".pool [class+]" #> (if (p.finished_?) "success" else "waiting") &
-            ".time *" #> df.format(new Date(p.startTime.is)) &
+        ".fight" #> a.fights.map { implicit sf =>
+          val f = sf.fight.foreign.get
+          implicit val p = f.phase.foreign.get
+          implicit val t = p.tournament.foreign.get
+          ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
+            ".time *" #> df.format(new Date(sf.time.is)) &
             ".tournament *" #> tournamentName &
-            ".round *" #> roundName &
-            ".poolName *" #> poolName
+            ".phase *" #> phaseName
         })
   }
 
-  def poolName(implicit t: Tournament, p: Pool) =
-    <a href={ "/tournaments/view/" + t.identifier.get + "#pool" + p.id.get }>
-      { "Pool " + p.order.get }
-    </a>
-
-  def roundName(implicit t: Tournament, r: Round) =
-    <a href={ "/tournaments/view/" + t.identifier.get + "#round" + r.id.get }>
-      { r.name.get }
+  def phaseName(implicit t: Tournament, p: Phase[_]) =
+    <a href={ "/tournaments/view/" + t.identifier.get + "#phase" + p.id.get }>
+      { p.name.get }
     </a>
 
   def tournamentName(implicit t: Tournament) =
