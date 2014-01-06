@@ -27,6 +27,7 @@ import scala.collection.mutable.ListBuffer
 import scala.util.Random
 import java.text.SimpleDateFormat
 import java.util.Date
+import net.liftweb.http.js.JsCmds.{Reload, RedirectTo}
 
 case class ParamInfo(param: String)
 
@@ -57,7 +58,7 @@ object TournamentView {
         gearChecked(true).
         fighterNumber(tournament.nextFighterNumber)
       tournament.save
-      refresh()
+      refresh(Some(participant))
     }
 
     def deleteParticipantFromTournament(tournament: Tournament, participant: Participant) {
@@ -82,17 +83,23 @@ object TournamentView {
       S.redirectTo(t.id.is.toString + anchor.map {
         case p: Participant => "#participant" + p.id.is
         case p: Phase[_] => "#phase" + p.id.is
+        case s: String => s
         case _ => ""
       }.getOrElse(""))
 
-    "#tournamentName" #> t.name &
-      "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
-      ".downloadButton" #> Seq(
-        "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
-        "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
-        "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
-        ".participant" #> tournamentSubscriptions.map(sub =>
-          "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
+    def autofill() = {
+      def fill(pts: List[Participant], ps: Seq[Pool]): Unit = pts match {
+        case Nil => Unit
+        case pt :: pts =>
+          ps.head.participants += pt
+          fill(pts, ps.tail :+ ps.head)
+      }
+      fill(tournamentSubscriptions.map(_.participant.foreign.get).toList, t.poolPhase.pools)
+      t.poolPhase.save
+      RedirectTo("#poolphase") & Reload
+    }
+    
+    def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
             "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
             ".label *" #> sub.fighterNumber.get &
             ".name *" #> sub.participant.foreign.get.name.get &
@@ -100,8 +107,22 @@ object TournamentView {
             ".club [title]" #> sub.participant.foreign.get.club.get &
             ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
             ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
-            ".initialRanking *" #> sub.experience.get) &
-         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
+            ".pool *" #> t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.poolName) &
+            ".initialRanking *" #> sub.experience.get
+
+    "#tournamentName" #> t.name &
+      "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
+      ".downloadButton" #> Seq(
+        "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
+        "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
+        "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
+        "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant _)) &
+        "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
+        "#autofill" #> SHtml.a(autofill _, Text("Auto-fill")) &
+        ".tournamentPool" #> t.poolPhase.pools.map { p =>
+          ".panel-title *" #> p.poolName &
+            ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }
+        } &
         "#phase" #> t.phases.map(p =>
           ".phaseAnchor [name]" #> ("phase" + p.id.get) &
             "#phaseName *" #> <span><a name={ "phase" + p.id.is }></a>{ p.order.is + ": " + p.name.is }</span> &
@@ -110,8 +131,7 @@ object TournamentView {
             "name=fightBreak" #> SHtml.ajaxText((p.breakInFightAt.get / 1000).toString, { time => p.breakInFightAt(time.toLong seconds); p.save; S.notice("Break time saved") }, "type" -> "number") &
             "name=fightBreakDuration" #> SHtml.ajaxText((p.breakDuration.get / 1000).toString, { time => p.breakDuration(time.toLong seconds); p.save; S.notice("Break duration saved") }, "type" -> "number") &
             "name=exchangeLimit" #> SHtml.ajaxText(p.exchangeLimit.toString, { time => p.exchangeLimit(time.toInt); p.save; S.notice("Exchange limit saved") }, "type" -> "number") &
-            "name=timeBetweenFights" #> SHtml.ajaxText((p.timeBetweenFights.get / 1000).toString, { time => p.timeBetweenFights(time.toLong seconds); p.save; S.notice("Time between fights saved") }, "type" -> "number")
-           )
+            "name=timeBetweenFights" #> SHtml.ajaxText((p.timeBetweenFights.get / 1000).toString, { time => p.timeBetweenFights(time.toLong seconds); p.save; S.notice("Time between fights saved") }, "type" -> "number"))
 
   }
 

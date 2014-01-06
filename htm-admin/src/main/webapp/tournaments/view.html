@@ -24,76 +24,94 @@ li.not_checked {
 body {
 	padding-bottom: 60px;
 }
+
+h3 {
+	clear: both;
+}
+
+.tournamentPool.panel {
+	float: left;
+	margin-right: 5px;
+	width: 270px;
+}
 </style>
-			</head>
-			<h2>
-				<span id="tournamentName">Tournament</span>
-				<div class="btn-group pull-right">
-					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-						<span class="glyphicon glyphicon-download"></span> Download <span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" role="menu">
-						<li class="downloadButton"><a href="#">Action</a></li>
-					</ul>
-				</div>
-			</h2>
-			<p>
-				Default arena: <select name="tournamentArena"></select>
-			</p>
-			<a name="participants"></a>
-			<h3>Participants</h3>
-			<table id="participants" class="table table-striped">
-				<thead>
-					<tr>
-						<th>Number</th>
-						<th>Name</th>
-						<th>Country</th>
-						<th>Club</th>
-						<th>Seed</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr class="participant">
-						<td><span class="label label-default"></span></td>
-						<td class="name"></td>
-						<td class="country"></td>
-						<td class="club"></td>
-						<td class="initialRanking"></td>
-						<td><a href="#">registration info</a></td>
-					</tr>
-				</tbody>
-			</table>
-			<form class="form">
-				<select class="form-control" id="addParticipant">
-					<option>&mdash; Add participant &mdash;</option>
-				</select>
-			</form>
-			<a name="poolphase"></a>
-			<h3>Pool Phase</h3>
-			<a name="eliminationphase"></a>
-			<h3>Elimination Phase</h3>
-			<a name="finalse"></a>
-			<h3>Finals</h3>
-	<div class="col-md-3">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">Participants</h3>
-			</div>
-			<ul class="list-group">
-				<li id="tournamentParticipant" class="list-group-item">
-					<span class="badge pull-left"></span>
-					<span class="name">Pietje Puk</span>
-					<a href="#" class="pull-right">register</a>
-				</li>
+</head>
+	<h2>
+		<span id="tournamentName">Tournament</span>
+		<div class="btn-group pull-right">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				<span class="glyphicon glyphicon-download"></span> Download <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li class="downloadButton"><a href="#">Action</a></li>
 			</ul>
-			<div class="panel-body">
-				<form method="post">
-					<input id="addParticipant" type="text" placeholder="Add Participant" />
-				</form>
-			</div>
 		</div>
+	</h2>
+	<p>
+		Default arena: <select name="tournamentArena"></select>
+	</p>
+	<a name="participants"></a>
+	<h3>Participants</h3>
+	<table id="participants" class="table table-striped">
+		<thead>
+			<tr>
+				<th>Number</th>
+				<th>Name</th>
+				<th>Country</th>
+				<th>Club</th>
+				<th>Seed</th>
+				<th>Pool</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="participant">
+				<td><span class="label label-default"></span></td>
+				<td class="name"></td>
+				<td class="country"></td>
+				<td class="club"></td>
+				<td class="initialRanking"></td>
+				<td class="pool"></td>
+				<td><a href="#">registration info</a></td>
+			</tr>
+		</tbody>
+	</table>
+	<form class="form">
+		<select class="form-control" id="addParticipant">
+			<option>&mdash; Add participant &mdash;</option>
+		</select>
+	</form>
+	<a name="poolphase"></a>
+	<h3>
+		Pool Phase
+		<div class="btn-group">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+				<span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="#" id="autofill">Autofill</a></li>
+			</ul>
+		</div>
+	</h3>
+	<div class="tournamentPool panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">pool</h4>
+		</div>
+		<table class="table">
+			<tbody>
+				<tr class="participant">
+					<td class="number"><span class="label label-default">999</span></td>
+					<td class="name">name</td>
+					<td class="country"></td>
+					<td class="club"></td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
+	<a name="eliminationphase"></a>
+	<h3>Elimination Phase</h3>
+	<a name="finalse"></a>
+	<h3>Finals</h3>
 	<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 			<ul class="nav navbar-nav">
