@@ -40,129 +40,42 @@ body {
 			<p>
 				Default arena: <select name="tournamentArena"></select>
 			</p>
-			<p><form>
-				Danger: <button id="deleteAllFights"></button>
-				</form>
-			</p>
-			<h3>Fights</h3>
-<div class="row">
-	<div class="col-md-9">
-			<div id="tournamentRound">
-				<a name="round1" class="roundAnchor"></a>
-				<div class="moveParticipants">
-					<form method="post">
-						Advance
-						<button id="advanceAll"
-							title="Advance all participants to the next round (useful for pool phase)">
-							<img src="/images/group.png" /> All
-						</button>
-						or
-						<button id="advanceSelected"
-							title="Advance a custom selection of participants to the next round (useful for switching from pool phase to single elimination)">
-							<img src="/images/cut_red.png" /> Selected
-						</button>
-						or
-						<button id="advanceWinners"
-							title="Advance only the winners to the next round (useful for single elimination phase)">
-							<img src="/images/medal_gold_2.png" /> Winners
-						</button>
-						or <select id="advanceSingle"><option>-- Just
-								this one --</option></select>
-					</form>
-				</div>
-				<div class="panel panel-default round">
-					<div class="panel-heading">
-						<button class="deleteRound btn btn-default pull-right" title="Delete Round"><span class="glyphicon glyphicon-trash"></span></button>
-						<h3 id="roundName" class="panel-title">Round 1</h3>
-					</div>
-					<div class="panel-body">
-					<p>
-						Ruleset: <select name="ruleset"></select>
-					</p>
-					<p>
-						Time limit: <input type="number" name="timeLimit" /> seconds,
-						with a break at <input type="number" name="fightBreak" /> seconds
-						(0 = no limit) with break duration <input type="number" name="fightBreakDuration"/> seconds
-					</p>
-					<p>
-						Exchange limit: <input type="number" name="exchangeLimit" />
-						exchanges (0 = no limit)
-					</p>
-					<p>
-						Time between fights: <input type="number" name="timeBetweenFights" /> seconds
-					</p>
-					<p>
-						<button class="reorder">Reorder</button>
-						<button class="plan">Automatic Planning</button>
-					</p>
-					<div id="roundPool" class="pool panel panel-default">
-						<div class="panel-heading">
-							<button class="deletePool btn btn-default pull-right" title="Delete Pool"><span class="glyphicon glyphicon-trash"></span></button>
-							<h4 id="poolName" class="panel-title">Pool 1</h4>
-							<br/>
-							<p>Arena: <select name="poolArena"></select> Start-time: <input type="datetime" name="poolStartTime" class="hasDatePicker datetimepicker"/> </p>
-							
-						</div>
-						<table class="table">
-							<tbody>
-							<tr id="poolFight">
-								<td class="plannedTime">10:01</td>
-								<td class="red"></td>
-								<td class="results">vs</td>
-								<td class="blue"></td>
-								<td class="actions">
-									<button name="moveUp">^</button>
-									<button name="moveDown">v</button>
-									<button name="remove"><span class="glyphicon glyphicon-trash"></span></button>
-									<button name="edit">edit</button>
-								</td>
-							</tr>
-							</tbody>
-						</table>
-						<div class="panel-body">
-						<p class="poolParticipantListHeader">
-							<span>8</span> participants
-						</p>
-						</div>
-						<table class="poolParticipantList table">
-							<tr id="poolParticipant">
-								<td class="starStatus"><img src="/images/star_gray.png" /></td>
-								<td class="ranking"></td>
-								<td class="name"></td>
-								<td class="club"></td>
-								<td class="scores"></td>
-								<td class="hasFights"></td>
-								<td class="actions"></td>
-							</tr>
-							<tr>
-								<td id="addPoolParticipant" colspan="15"></td>
-							</tr>
-						</table>
-						<div class="panel-body">
-							<form method="post">
-								<input id="planParticipantA" /> <input id="planParticipantB" />
-							</form>
-						</div>
-					</div>
-					<button class="addPool btn btn-default">Add Pool</button>
-				</div>
-				</div>
-			</div>
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">Add Round</h3>
-			</div>
-			<div class="panel-body">
-				<form method="post">
-					<input id="newRoundName" type="text" placeholder="New Round" />
-				</form>
-			</div>
-		</div>
-	</div>
+			<a name="participants"></a>
+			<h3>Participants</h3>
+			<table id="participants" class="table table-striped">
+				<thead>
+					<tr>
+						<th colspan="2">Name</th>
+						<th>Country</th>
+						<th>Club</th>
+						<th>Seed</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="participant">
+						<td><span class="label label-default"></span></td>
+						<td class="name"></td>
+						<td class="country"></td>
+						<td class="club"></td>
+						<td class="initialRanking"></td>
+					</tr>
+				</tbody>
+			</table>
+			<form class="form">
+				<select class="form-control" id="addParticipant">
+					<option>&mdash; Add participant &mdash;</option>
+				</select>
+			</form>
+			<a name="poolphase"></a>
+			<h3>Pool Phase</h3>
+			<a name="eliminationphase"></a>
+			<h3>Elimination Phase</h3>
+			<a name="finalse"></a>
+			<h3>Finals</h3>
 	<div class="col-md-3">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h3 class="panel-title">Participants <span id="tournamentParticipantsCount" class="badge">0</span></h3>
+				<h3 class="panel-title">Participants</h3>
 			</div>
 			<ul class="list-group">
 				<li id="tournamentParticipant" class="list-group-item">
@@ -181,13 +94,10 @@ body {
 	<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 			<ul class="nav navbar-nav">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span>Dropdown</span> <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li class="roundref"><a href="#">Settings</a></li>
-						<li class="poolref"><a href="#">Pool 1</a></li>
-					</ul>
-				</li>
+				<li><a href="#participants">Participants <span id="tournamentParticipantsCount" class="badge">999</span></a></li>
+				<li><a href="#poolphase">Pool Phase</a></li>
+				<li><a href="#eliminationphase">Elimination Phase</a></li>
+				<li><a href="#finals">Finals</a></li>
 			</ul>
 		</div>
 	</nav>

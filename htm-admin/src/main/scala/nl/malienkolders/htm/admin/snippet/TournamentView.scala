@@ -91,12 +91,17 @@ object TournamentView {
         "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
         "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
         "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
-        "#tournamentParticipant" #> tournamentSubscriptions.map(sub =>
+        ".participant" #> tournamentSubscriptions.map(sub =>
           "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
             "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
-            ".badge *" #> sub.fighterNumber.get &
-            ".name *" #> (sub.participant.obj.get.name.get + " " + sub.experience.get) &
-            "button" #> SHtml.ajaxButton(EntityRef("otimes"), () => { deleteParticipantFromTournament(t, sub.participant.obj.get); refresh() }, "title" -> "Remove from Tournament")) &
+            ".label *" #> sub.fighterNumber.get &
+            ".name *" #> sub.participant.foreign.get.name.get &
+            ".club *" #> sub.participant.foreign.get.clubCode.get &
+            ".club [title]" #> sub.participant.foreign.get.club.get &
+            ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
+            ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
+            ".seed *" #> sub.experience.get) &
+         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
         "#phase" #> t.phases.map(p =>
           ".phaseAnchor [name]" #> ("phase" + p.id.get) &
             "#phaseName *" #> <span><a name={ "phase" + p.id.is }></a>{ p.order.is + ": " + p.name.is }</span> &
@@ -105,8 +110,8 @@ object TournamentView {
             "name=fightBreak" #> SHtml.ajaxText((p.breakInFightAt.get / 1000).toString, { time => p.breakInFightAt(time.toLong seconds); p.save; S.notice("Break time saved") }, "type" -> "number") &
             "name=fightBreakDuration" #> SHtml.ajaxText((p.breakDuration.get / 1000).toString, { time => p.breakDuration(time.toLong seconds); p.save; S.notice("Break duration saved") }, "type" -> "number") &
             "name=exchangeLimit" #> SHtml.ajaxText(p.exchangeLimit.toString, { time => p.exchangeLimit(time.toInt); p.save; S.notice("Exchange limit saved") }, "type" -> "number") &
-            "name=timeBetweenFights" #> SHtml.ajaxText((p.timeBetweenFights.get / 1000).toString, { time => p.timeBetweenFights(time.toLong seconds); p.save; S.notice("Time between fights saved") }, "type" -> "number") &
-            "#addParticipant" #> SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control"))
+            "name=timeBetweenFights" #> SHtml.ajaxText((p.timeBetweenFights.get / 1000).toString, { time => p.timeBetweenFights(time.toLong seconds); p.save; S.notice("Time between fights saved") }, "type" -> "number")
+           )
 
   }
 

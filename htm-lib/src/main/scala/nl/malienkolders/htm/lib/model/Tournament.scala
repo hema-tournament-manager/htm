@@ -26,8 +26,9 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
 
   def rapier_? = name.is.toLowerCase().contains("rapier")
 
-  def nextFighterNumber: Int = {
-    subscriptions.map(_.fighterNumber.get).max + 1
+  def nextFighterNumber: Int = subscriptions.size match {
+    case 0 => 1
+    case _ => subscriptions.map(_.fighterNumber.get).max + 1
   }
 
   def startTime = 0
