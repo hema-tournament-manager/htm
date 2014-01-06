@@ -46,7 +46,7 @@ object TournamentView {
       }
     }
 
-    val tournamentSubscriptions = t.subscriptions.sortBy(_.fighterNumber.is)
+    val tournamentSubscriptions = t.subscriptions.sortBy(_.experience.is).reverse
     val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.subscriptions.map(_.participant.obj.get).toList
 
     def addParticipant(tournament: Tournament, participantId: Long) {
@@ -100,7 +100,7 @@ object TournamentView {
             ".club [title]" #> sub.participant.foreign.get.club.get &
             ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
             ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
-            ".seed *" #> sub.experience.get) &
+            ".initialRanking *" #> sub.experience.get) &
          "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
         "#phase" #> t.phases.map(p =>
           ".phaseAnchor [name]" #> ("phase" + p.id.get) &
