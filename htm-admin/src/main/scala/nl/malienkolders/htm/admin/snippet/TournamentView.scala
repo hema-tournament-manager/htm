@@ -27,7 +27,7 @@ import scala.collection.mutable.ListBuffer
 import scala.util.Random
 import java.text.SimpleDateFormat
 import java.util.Date
-import net.liftweb.http.js.JsCmds.{Reload, RedirectTo}
+import net.liftweb.http.js.JsCmds.{ Reload, RedirectTo }
 
 case class ParamInfo(param: String)
 
@@ -98,17 +98,17 @@ object TournamentView {
       t.poolPhase.save
       RedirectTo("#poolphase") & Reload
     }
-    
+
     def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
-            "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
-            ".label *" #> sub.fighterNumber.get &
-            ".name *" #> sub.participant.foreign.get.name.get &
-            ".club *" #> sub.participant.foreign.get.clubCode.get &
-            ".club [title]" #> sub.participant.foreign.get.club.get &
-            ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
-            ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
-            ".pool *" #> t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.poolName) &
-            ".initialRanking *" #> sub.experience.get
+      "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
+      ".label *" #> sub.fighterNumber.get &
+      ".name *" #> sub.participant.foreign.get.name.get &
+      ".club *" #> sub.participant.foreign.get.clubCode.get &
+      ".club [title]" #> sub.participant.foreign.get.club.get &
+      ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
+      ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
+      ".pool *" #> t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.poolName) &
+      ".initialRanking *" #> sub.experience.get
 
     "#tournamentName" #> t.name &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &

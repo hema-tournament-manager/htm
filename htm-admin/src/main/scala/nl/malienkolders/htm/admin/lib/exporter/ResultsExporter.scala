@@ -89,12 +89,12 @@ object ResultsExporter extends ExcelExporter {
     printRow(Map("phase.name" -> phase.name.get))
 
   def printFight(f: Fight[_, _])(implicit sheet: Sheet, rowIndex: Int, config: Config) =
-    printRow(Map("fighterA.id" -> f.fighterA.obj.get.externalId.get.toInt,
-      "fighterA.name" -> f.fighterA.obj.get.name.get,
-      "fighterA.club" -> f.fighterA.obj.get.clubCode.get,
-      "fighterB.id" -> f.fighterB.obj.get.externalId.get.toInt,
-      "fighterB.name" -> f.fighterB.obj.get.name.get,
-      "fighterB.club" -> f.fighterB.obj.get.clubCode.get,
+    printRow(Map("fighterA.id" -> f.fighterAParticipant.obj.get.externalId.get.toInt,
+      "fighterA.name" -> f.fighterAParticipant.obj.get.name.get,
+      "fighterA.club" -> f.fighterAParticipant.obj.get.clubCode.get,
+      "fighterB.id" -> f.fighterBParticipant.obj.get.externalId.get.toInt,
+      "fighterB.name" -> f.fighterBParticipant.obj.get.name.get,
+      "fighterB.club" -> f.fighterBParticipant.obj.get.clubCode.get,
       "points.a" -> f.currentScore.red,
       "points.doubles" -> f.currentScore.double,
       "points.b" -> f.currentScore.blue,

@@ -25,7 +25,7 @@ case class Winner(fight: EliminationFight) extends Fighter {
 }
 object Winner extends (EliminationFight => Winner) {
   val re = """F(\d+)W""".r
-  
+
   def parse(s: String): Option[Winner] = re.findFirstIn(s) match {
     case Some(re(fightId)) => Some(Winner(EliminationFight.findByKey(fightId.toLong).get))
     case None => None
@@ -37,7 +37,7 @@ case class Loser(fight: EliminationFight) extends Fighter {
 }
 object Loser extends (EliminationFight => Loser) {
   val re = """F(\d+)L""".r
-  
+
   def parse(s: String): Option[Loser] = re.findFirstIn(s) match {
     case Some(re(fightId)) => Some(Loser(EliminationFight.findByKey(fightId.toLong).get))
     case None => None
@@ -49,7 +49,7 @@ case class PoolFighter(pool: Pool, ranking: Int) extends Fighter {
 }
 object PoolFighter extends ((Pool, Int) => PoolFighter) {
   val re = """P(\d+):(\d+)""".r
-  
+
   def parse(s: String): Option[PoolFighter] = re.findFirstIn(s) match {
     case Some(re(poolId, ranking)) => Some(PoolFighter(Pool.findByKey(poolId.toLong).get, ranking.toInt))
     case None => None
@@ -61,7 +61,7 @@ case class SpecificFighter(participant: Participant) extends Fighter {
 }
 object SpecificFighter extends (Participant => SpecificFighter) {
   val re = """(\d+)""".r
-  
+
   def parse(s: String): Option[SpecificFighter] = re.findFirstIn(s) match {
     case Some(re(participantId)) => Some(SpecificFighter(Participant.findByKey(participantId.toLong).get))
     case None => None
