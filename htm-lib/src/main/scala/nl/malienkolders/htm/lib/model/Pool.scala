@@ -26,7 +26,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   def finished_? = fights.map(_.finished_?).toList.forall(_ == true)
 
-  def addFight(a: Participant, b: Participant) = fights += PoolFight.create.fighterA(a).fighterB(b).inProgress(false).order(fights.size + 1)
+  def addFight(a: Participant, b: Participant) = fights += PoolFight.create.fighterAParticipant(a).fighterBParticipant(b).inProgress(false).order(fights.size + 1)
 
   def toMarshalled = MarshalledPool(id.is, poolName, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
   def toMarshalledSummary = MarshalledPoolSummary(

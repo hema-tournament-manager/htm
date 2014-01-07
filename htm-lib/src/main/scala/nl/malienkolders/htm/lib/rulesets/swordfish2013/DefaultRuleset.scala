@@ -130,17 +130,17 @@ abstract class SwordfishRuleset extends Ruleset {
       case (ps @ ParticipantScores(i, c, w, t, l, lbd, hR, hD, aR, aD, d, p), f) =>
         if (f.inFight_?(pt)) {
           f.currentScore match {
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
             case _ => ParticipantScores(i, c, w, t, l, lbd, hR, hD, aR, aD, d, p)
           }

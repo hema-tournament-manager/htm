@@ -139,25 +139,25 @@ object RapierRuleset extends Ruleset {
             case TotalScore(_, _, _, _, double, _) if (double >= 3) =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd + 1, hR, hD, aR, aD, d + double, p)
             // In the case of a tie, the score will be the fighter’s score minus doubles, with a minimum of 0 points.
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p + (a.min(6) - double).max(0))
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p + (b.min(6) - double).max(0))
             // If the winner has more than 6 points, the winner’s score will first be reduced to 6
             // The loser’s points will be then deducted from the winner’s 
             // Double hits are removed from the remaining winning points
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p + calculateFightPoints(a, b, double))
             // The loser receives no points
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p)
             // The loser receives no points
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p)
             // If the winner has more than 6 points, the winner’s score will first be reduced to 6
             // The loser’s points will be then deducted from the winner’s 
             // Double hits are removed from the remaining winning points
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p + calculateFightPoints(b, a, double))
             case _ => ps
           }
