@@ -99,6 +99,54 @@ object TournamentView {
       RedirectTo("#poolphase") & Reload
     }
 
+    def generateElimination() = {
+      t.finalsPhase.eliminationFights.clear()
+      t.eliminationPhase.eliminationFights.clear()
+      val pools = t.poolPhase.pools
+      val poolCount = pools.size
+      def generateFromPools(x: Int): (List[EliminationFight], List[EliminationFight]) = x match {
+        case _ if x < poolCount / 2 =>
+          val (left, right) = generateFromPools(x + 1)
+          (EliminationFight.create.round(1).name("1/" + poolCount + " Finals, Fight " + (x + 1)).fighterAFuture(PoolFighter(pools(x), 1).format).fighterBFuture(PoolFighter(pools(poolCount / 2 + x), 2).format) :: left,
+            EliminationFight.create.round(1).name("1/" + poolCount + " Finals, Fight " + (poolCount / 2 + x + 1)).fighterAFuture(PoolFighter(pools(poolCount / 2 + x), 1).format).fighterBFuture(PoolFighter(pools(x), 2).format) :: right)
+        case _ => (Nil, Nil)
+      }
+      val (left, right) = generateFromPools(0)
+      val round1 = left ++ right
+
+      t.eliminationPhase.eliminationFights ++= round1
+      // we have to save the fights to get their id's
+      t.save()
+
+      def generateNextRound(previous: List[EliminationFight], roundNumber: Int): Unit = previous.size match {
+        case n if n < 4 => Nil
+        case n =>
+          val next = (for (i <- 0 to (n / 2 - 1)) yield EliminationFight.create
+            .round(roundNumber)
+            .name("1/" + (n / 2) + " Finals, Fight " + (i + 1))
+            .fighterAFuture(Winner(previous(i * 2)).format)
+            .fighterBFuture(Winner(previous(i * 2 + 1)).format)).toList
+
+          t.eliminationPhase.eliminationFights ++= next
+          // we have to save the fights to get their id's
+          t.save()
+
+          generateNextRound(next, roundNumber + 1)
+      }
+
+      generateNextRound(round1, 2)
+
+      RedirectTo("#eliminationphase") & Reload
+    }
+
+    def renderFighter(fighter: Fighter) = fighter match {
+      case SpecificFighter(pt) => renderParticipant(pt.subscription(t).get)
+      case _ => ".label *" #> "?" &
+        ".name *" #> fighter.toString &
+        ".club" #> Nil &
+        ".country" #> Nil
+    }
+
     def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
       "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
       ".label *" #> sub.fighterNumber.get &
@@ -110,6 +158,7 @@ object TournamentView {
       ".pool *" #> t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.poolName) &
       ".initialRanking *" #> sub.experience.get
 
+    // bindings
     "#tournamentName" #> t.name &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
       ".downloadButton" #> Seq(
@@ -119,9 +168,16 @@ object TournamentView {
         "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
         "#autofill" #> SHtml.a(autofill _, Text("Auto-fill")) &
+        "#generateElimination" #> SHtml.a(generateElimination _, Text("Generate elimination fights")) &
         ".tournamentPool" #> t.poolPhase.pools.map { p =>
           ".panel-title *" #> p.poolName &
             ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }
+        } &
+        ".eliminationRound" #> t.eliminationPhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {
+          case (round, fights) =>
+            ".fight" #> fights.map(f =>
+              ".panel-title *" #> f.name.get &
+                ".participant" #> (f.fighterA :: f.fighterB :: Nil).map(renderFighter _))
         } &
         "#phase" #> t.phases.map(p =>
           ".phaseAnchor [name]" #> ("phase" + p.id.get) &

@@ -17,14 +17,18 @@ sealed abstract class Fighter {
   def format: String
 }
 object Fighter {
-  def parse(s: String): Fighter = List(Winner.parse(s), Loser.parse(s), PoolFighter.parse(s), SpecificFighter.parse(s)).flatten.head
+  def parse(s: String): Fighter = Winner.parse(s)
+    .orElse(Loser.parse(s))
+    .orElse(PoolFighter.parse(s))
+    .orElse(SpecificFighter.parse(s))
+    .getOrElse(UnknownFighter(s))
 }
 case class Winner(fight: EliminationFight) extends Fighter {
   def format = "F" + fight.id.get + "W"
-  override def toString = "Winner of fight " + fight.name.is
+  override def toString = "Winner of " + fight.name.is
 }
 object Winner extends (EliminationFight => Winner) {
-  val re = """F(\d+)W""".r
+  val re = """^F(\d+)W$""".r
 
   def parse(s: String): Option[Winner] = re.findFirstIn(s) match {
     case Some(re(fightId)) => Some(Winner(EliminationFight.findByKey(fightId.toLong).get))
@@ -33,10 +37,10 @@ object Winner extends (EliminationFight => Winner) {
 }
 case class Loser(fight: EliminationFight) extends Fighter {
   def format = "F" + fight.id.get + "L"
-  override def toString = "Loser of fight " + fight.name.is
+  override def toString = "Loser of " + fight.name.is
 }
 object Loser extends (EliminationFight => Loser) {
-  val re = """F(\d+)L""".r
+  val re = """^F(\d+)L$""".r
 
   def parse(s: String): Option[Loser] = re.findFirstIn(s) match {
     case Some(re(fightId)) => Some(Loser(EliminationFight.findByKey(fightId.toLong).get))
@@ -48,7 +52,7 @@ case class PoolFighter(pool: Pool, ranking: Int) extends Fighter {
   override def toString = "Number " + ranking + " of pool " + pool.poolName
 }
 object PoolFighter extends ((Pool, Int) => PoolFighter) {
-  val re = """P(\d+):(\d+)""".r
+  val re = """^P(\d+):(\d+)$""".r
 
   def parse(s: String): Option[PoolFighter] = re.findFirstIn(s) match {
     case Some(re(poolId, ranking)) => Some(PoolFighter(Pool.findByKey(poolId.toLong).get, ranking.toInt))
@@ -60,12 +64,16 @@ case class SpecificFighter(participant: Participant) extends Fighter {
   override def toString = participant.name.get
 }
 object SpecificFighter extends (Participant => SpecificFighter) {
-  val re = """(\d+)""".r
+  val re = """^(\d+)$""".r
 
   def parse(s: String): Option[SpecificFighter] = re.findFirstIn(s) match {
     case Some(re(participantId)) => Some(SpecificFighter(Participant.findByKey(participantId.toLong).get))
     case None => None
   }
+}
+case class UnknownFighter(label: String) extends Fighter {
+  def format = label
+  override def toString = "Unknown fighter definition: " + label
 }
 
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {

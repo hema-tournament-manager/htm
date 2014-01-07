@@ -29,10 +29,15 @@ h3 {
 	clear: both;
 }
 
-.tournamentPool.panel {
+.tournamentPool.panel, .fight.panel {
 	float: left;
 	margin-right: 5px;
-	width: 270px;
+	width: 260px;
+}
+
+td.number {
+	width: 20px;
+	padding: 8px 0px 8px 8px !important;
 }
 </style>
 </head>
@@ -109,8 +114,36 @@ h3 {
 		</table>
 	</div>
 	<a name="eliminationphase"></a>
-	<h3>Elimination Phase</h3>
-	<a name="finalse"></a>
+	<h3>
+		Elimination Phase
+		<div class="btn-group">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+				<span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="#" id="generateElimination">Gen</a></li>
+			</ul>
+		</div>
+	</h3>
+	<div class="eliminationRound well">
+		<div class="fight panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">fight</h4>
+			</div>
+			<table class="table">
+				<tbody>
+					<tr class="participant">
+						<td class="number"><span class="label label-default">999</span></td>
+						<td class="name">name</td>
+						<td class="country"></td>
+						<td class="club"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div style="clear: both; margin-bottom: -20px;"></div>
+	</div>
+	<a name="finals"></a>
 	<h3>Finals</h3>
 	<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
