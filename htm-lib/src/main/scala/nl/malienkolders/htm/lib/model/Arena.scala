@@ -16,10 +16,9 @@ class Arena extends LongKeyedMapper[Arena] with IdPK with CreatedUpdated with Or
 
   object name extends MappedString(this, 64)
 
-  object fights extends MappedOneToManyBase[ScheduledFight[_]]({ () =>
-    ScheduledPoolFight.findAll(By(ScheduledPoolFight.arena, this)) ++ ScheduledEliminationFight.findAll(By(ScheduledEliminationFight.arena, this)).sortBy(_.time.is)
-  },
-    { f: ScheduledFight[_] => f.arena.asInstanceOf[MappedForeignKey[Long, _, Arena]] }) with Owned[ScheduledFight[_]] with Cascade[ScheduledFight[_]]
+  object timeslots extends MappedOneToMany(ArenaTimeSlot, ArenaTimeSlot.arena, OrderBy(ArenaTimeSlot.day, Ascending), OrderBy(ArenaTimeSlot.from, Ascending))
+
+  def fights = timeslots.flatMap(_.fights)
 
   object viewers extends MappedManyToMany(ArenaViewers, ArenaViewers.arena, ArenaViewers.viewer, Viewer)
 

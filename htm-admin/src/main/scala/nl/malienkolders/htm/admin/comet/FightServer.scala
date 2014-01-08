@@ -43,7 +43,7 @@ object FightServer extends LiftActor {
     case FightUpdate(f) => {
       val fight: Fight[_, _] = FightHelper.dao(f.phaseType).findByKey(f.id).asInstanceOf[Box[Fight[_, _]]].get.fromMarshalledSummary(f).asInstanceOf[Fight[_, _]]
       fight.inProgress(f.timeStop == 0).asInstanceOf[Fight[_, _]].save
-      val arena = fight.scheduled.foreign.get.arena.foreign.get
+      val arena = fight.scheduled.foreign.get.timeslot.foreign.get.arena.foreign.get
       arena.viewers.foreach { viewer =>
         viewer.rest.fightUpdate(arena, fight.asInstanceOf[PoolFight])
       }
@@ -51,7 +51,7 @@ object FightServer extends LiftActor {
 
     case TimerUpdate(f, TimerMessage(action, time)) => {
       val fight = FightHelper.dao(f.phase).findByKey(f.id).get
-      val arena = fight.scheduled.foreign.get.arena.foreign.get
+      val arena = fight.scheduled.foreign.get.timeslot.foreign.get.arena.foreign.get
       arena.viewers.foreach { viewer =>
         viewer.rest.timerUpdate(arena, action, time)
       }
@@ -59,7 +59,7 @@ object FightServer extends LiftActor {
 
     case MessageUpdate(f, message) => {
       val fight = FightHelper.dao(f.phase).findByKey(f.id).get
-      val arena = fight.scheduled.foreign.get.arena.foreign.get
+      val arena = fight.scheduled.foreign.get.timeslot.foreign.get.arena.foreign.get
       arena.viewers.foreach { viewer =>
         viewer.rest.fightUpdate(arena, "message" -> message)
       }

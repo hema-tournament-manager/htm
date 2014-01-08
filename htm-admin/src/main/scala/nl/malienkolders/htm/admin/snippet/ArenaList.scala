@@ -22,15 +22,20 @@ class ArenaList {
       ".arena [class+]" #> ("col-md-" + colspan) &
         ".arenaName" #> a.name.get &
         ".download-schedule" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadSchedule(a)), Text("Download schedule")) &
-        ".fight" #> a.fights.map { implicit sf =>
-          val f = sf.fight.foreign.get
-          implicit val p = f.phase.foreign.get
-          implicit val t = p.tournament.foreign.get
-          ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
-            ".time *" #> df.format(new Date(sf.time.is)) &
-            ".tournament *" #> tournamentName &
-            ".name *" #> f.name.get
-        }) &
+        ".timeslot" #> a.timeslots.map(t =>
+          ".header" #> (
+            ".from *" #> df.format(t.from.get) &
+            ".to *" #> df.format(t.to.get) &
+            ".name *" #> t.name.get) &
+            ".fight" #> t.fights.map { implicit sf =>
+              val f = sf.fight.foreign.get
+              implicit val p = f.phase.foreign.get
+              implicit val t = p.tournament.foreign.get
+              ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
+                ".time *" #> df.format(new Date(sf.time.is)) &
+                ".tournament *" #> tournamentName &
+                ".name *" #> f.name.get
+            })) &
       ".unscheduled" #> (".tournament" #> Tournament.findAll().map(t =>
         ".tournamentName *" #> t.name.get &
           ".phase" #> t.phases.map(p =>

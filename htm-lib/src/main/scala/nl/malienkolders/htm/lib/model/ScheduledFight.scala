@@ -14,7 +14,7 @@ case class MarshalledScheduledFightSummary(time: Long, fight: MarshalledFightSum
 trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] {
   self: F =>
 
-  object arena extends MappedLongForeignKey(this, Arena)
+  object timeslot extends MappedLongForeignKey(this, ArenaTimeSlot)
   def fight: MappedLongForeignKey[F, _ <: Fight[_, _]]
   object time extends MappedLong(this)
 

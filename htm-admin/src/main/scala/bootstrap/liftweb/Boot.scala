@@ -58,7 +58,10 @@ class Boot {
       ScheduledPoolFight,
       ScheduledEliminationFight,
       Image,
-      ScaledImage)
+      ScaledImage,
+      Event,
+      Day,
+      ArenaTimeSlot)
 
     // where to search snippet
     LiftRules.addToPackages("nl.malienkolders.htm.admin")
@@ -80,7 +83,7 @@ class Boot {
     DefaultRuleset.register(true)
     rapier.RapierRuleset.register()
 
-    val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
+    val entries: List[ConvertableToMenu] = (Menu.i("Event") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list") ::
       TournamentView.menu ::
       TournamentEdit.menu ::
