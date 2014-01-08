@@ -15,6 +15,7 @@ case class MarshalledFightSummary(phaseType: PhaseType, id: Long, fighterA: Mars
 
 sealed abstract class Fighter {
   def format: String
+  def participant: Option[Participant]
 }
 object Fighter {
   def parse(s: String): Fighter = Winner.parse(s)
@@ -25,6 +26,10 @@ object Fighter {
 }
 case class Winner(fight: EliminationFight) extends Fighter {
   def format = "F" + fight.id.get + "W"
+  def participant = fight.finished_? match {
+    case true => fight.winner
+    case false => None
+  }
   override def toString = "Winner of " + fight.name.is
 }
 object Winner extends (EliminationFight => Winner) {
@@ -37,6 +42,10 @@ object Winner extends (EliminationFight => Winner) {
 }
 case class Loser(fight: EliminationFight) extends Fighter {
   def format = "F" + fight.id.get + "L"
+  def participant = fight.finished_? match {
+    case true => fight.loser
+    case false => None
+  }
   override def toString = "Loser of " + fight.name.is
 }
 object Loser extends (EliminationFight => Loser) {
@@ -49,6 +58,10 @@ object Loser extends (EliminationFight => Loser) {
 }
 case class PoolFighter(pool: Pool, ranking: Int) extends Fighter {
   def format = "P" + pool.id.get + ":" + ranking
+  def participant = pool.finished_? match {
+    case true => Some(pool.ranked(ranking - 1))
+    case false => None
+  }
   override def toString = "Number " + ranking + " of pool " + pool.poolName
 }
 object PoolFighter extends ((Pool, Int) => PoolFighter) {
@@ -59,21 +72,22 @@ object PoolFighter extends ((Pool, Int) => PoolFighter) {
     case None => None
   }
 }
-case class SpecificFighter(participant: Participant) extends Fighter {
-  def format = participant.id.get.toString
-  override def toString = participant.name.get
+case class SpecificFighter(override val participant: Option[Participant]) extends Fighter {
+  def format = participant.map(_.id.get.toString).getOrElse("")
+  override def toString = participant.map(_.name.get).getOrElse("")
 }
-object SpecificFighter extends (Participant => SpecificFighter) {
+object SpecificFighter extends (Option[Participant] => SpecificFighter) {
   val re = """^(\d+)$""".r
 
   def parse(s: String): Option[SpecificFighter] = re.findFirstIn(s) match {
-    case Some(re(participantId)) => Some(SpecificFighter(Participant.findByKey(participantId.toLong).get))
+    case Some(re(participantId)) => Some(SpecificFighter(Some(Participant.findByKey(participantId.toLong)).get))
     case None => None
   }
 }
 case class UnknownFighter(label: String) extends Fighter {
   def format = label
-  override def toString = "Unknown fighter definition: " + label
+  def participant = None
+  override def toString = label
 }
 
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {
@@ -126,12 +140,18 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
     b <- fighterBParticipant
   } yield a.id.is == p.id.is || b.id.is == p.id.is) getOrElse false
 
-  def fighterA: Fighter = fighterAParticipant.foreign.map(p => SpecificFighter(p)).getOrElse(Fighter.parse(fighterAFuture.get))
-  def fighterB: Fighter = fighterBParticipant.foreign.map(p => SpecificFighter(p)).getOrElse(Fighter.parse(fighterBFuture.get))
+  def fighterA: Fighter = fighterAParticipant.foreign.map(p => SpecificFighter(Some(p))).getOrElse(Fighter.parse(fighterAFuture.get))
+  def fighterB: Fighter = fighterBParticipant.foreign.map(p => SpecificFighter(Some(p))).getOrElse(Fighter.parse(fighterBFuture.get))
 
   def winner = currentScore match {
     case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterAParticipant.obj.get)
     case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterBParticipant.obj.get)
+    case _ => Empty
+  }
+
+  def loser = currentScore match {
+    case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterAParticipant.obj.get)
+    case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterBParticipant.obj.get)
     case _ => Empty
   }
 

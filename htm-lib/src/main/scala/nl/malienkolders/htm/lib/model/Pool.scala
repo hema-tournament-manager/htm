@@ -43,6 +43,10 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
     ('A'.toInt + (order.get - 1)).toChar.toString;
   }
 
+  def ranked: List[Participant] =
+    // TODO: ranking of participants
+    participants.toList
+
 }
 object Pool extends Pool with LongKeyedMetaMapper[Pool] {
   def defaultArena(tournament: Tournament): Arena = {

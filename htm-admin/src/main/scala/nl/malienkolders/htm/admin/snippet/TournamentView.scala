@@ -136,16 +136,41 @@ object TournamentView {
 
       generateNextRound(round1, 2)
 
+      def generateFinals() = {
+        val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
+        t.finalsPhase.eliminationFights += EliminationFight.create
+          .round(1)
+          .name("3rd Place")
+          .fighterAFuture(Loser(semiFinals(0)).format)
+          .fighterBFuture(Loser(semiFinals(1)).format)
+        t.finalsPhase.eliminationFights += EliminationFight.create
+          .round(2)
+          .name("1st Place")
+          .fighterAFuture(Winner(semiFinals(0)).format)
+          .fighterBFuture(Winner(semiFinals(1)).format)
+        t.save()
+      }
+
+      generateFinals()
+
       RedirectTo("#eliminationphase") & Reload
     }
 
     def renderFighter(fighter: Fighter) = fighter match {
-      case SpecificFighter(pt) => renderParticipant(pt.subscription(t).get)
+      case SpecificFighter(Some(pt)) => renderParticipant(pt.subscription(t).get)
+      case SpecificFighter(None) => ".label *" #> "?" &
+        ".name *" #> "Pick a fighter" &
+        ".club" #> Nil &
+        ".country" #> Nil
       case _ => ".label *" #> "?" &
         ".name *" #> fighter.toString &
         ".club" #> Nil &
         ".country" #> Nil
     }
+
+    def renderFights(fights: Seq[EliminationFight]) = ".fight" #> fights.map(f =>
+      ".panel-title *" #> f.name.get &
+        ".participant" #> (f.fighterA :: f.fighterB :: Nil).map(renderFighter _))
 
     def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
       "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
@@ -168,17 +193,15 @@ object TournamentView {
         "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
         "#autofill" #> SHtml.a(autofill _, Text("Auto-fill")) &
-        "#generateElimination" #> SHtml.a(generateElimination _, Text("Generate elimination fights")) &
+        "#generateElimination-top2" #> SHtml.a(generateElimination _, Text("Top 2 per pool")) &
         ".tournamentPool" #> t.poolPhase.pools.map { p =>
           ".panel-title *" #> p.poolName &
             ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }
         } &
         ".eliminationRound" #> t.eliminationPhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {
-          case (round, fights) =>
-            ".fight" #> fights.map(f =>
-              ".panel-title *" #> f.name.get &
-                ".participant" #> (f.fighterA :: f.fighterB :: Nil).map(renderFighter _))
+          case (_, fights) => renderFights(fights)
         } &
+        ".finals" #> renderFights(t.finalsPhase.fights.reverse) &
         "#phase" #> t.phases.map(p =>
           ".phaseAnchor [name]" #> ("phase" + p.id.get) &
             "#phaseName *" #> <span><a name={ "phase" + p.id.is }></a>{ p.order.is + ": " + p.name.is }</span> &
