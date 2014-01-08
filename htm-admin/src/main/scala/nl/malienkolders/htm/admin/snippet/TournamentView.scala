@@ -169,7 +169,9 @@ object TournamentView {
     }
 
     def renderFights(fights: Seq[EliminationFight]) = ".fight" #> fights.map(f =>
-      ".panel-title *" #> f.name.get &
+      ".fight-title *" #> f.name.get &
+        ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-success").getOrElse("label-warning") &
+        ".scheduled [href]" #> "/arenas/list" &
         ".participant" #> (f.fighterA :: f.fighterB :: Nil).map(renderFighter _))
 
     def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &

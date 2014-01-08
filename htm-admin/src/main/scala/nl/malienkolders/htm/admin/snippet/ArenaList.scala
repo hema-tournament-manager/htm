@@ -29,8 +29,14 @@ class ArenaList {
           ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
             ".time *" #> df.format(new Date(sf.time.is)) &
             ".tournament *" #> tournamentName &
-            ".phase *" #> phaseName
-        })
+            ".name *" #> f.name.get
+        }) &
+      ".unscheduled" #> (".tournament" #> Tournament.findAll().map(t =>
+        ".tournamentName *" #> t.name.get &
+          ".phase" #> t.phases.map(p =>
+            ".phaseHeader" #> (".name *" #> p.name.get) &
+              ".fight" #> p.fights.filter(_.scheduled.foreign.isEmpty).map(f =>
+                ".name *" #> f.name.get))))
   }
 
   def phaseName(implicit t: Tournament, p: Phase[_]) =
