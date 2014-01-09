@@ -56,9 +56,9 @@ class ArenaList {
         ".download-schedule" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadSchedule(a)), Text("Download schedule")) &
         ".timeslot" #> a.timeslots.map(ts =>
           ".header" #> (
+            ".name *" #> ts.name.get &
             ".from *" #> df.format(ts.from.get) &
             ".to *" #> df.format(ts.to.get) &
-            ".name *" #> ts.name.get &
             ".unschedule" #> SHtml.a(() => unscheduleFights(ts.fights), Text("Unschedule"))) &
             ".fight" #> ts.fights.map { implicit sf =>
               val f = sf.fight.foreign.get
@@ -93,7 +93,7 @@ class ArenaList {
                             case (d, i) =>
                               ".dayName *" #> ("Day " + (i + 1)) &
                                 ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
-                                  "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span><span class="name">{ ts.name.get }</span>))
+                                  "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="name">{ ts.name.get }</span><span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span>))
                           }))))))
   }
 
