@@ -6,7 +6,6 @@ import mapper._
 import util.Helpers._
 import scala.xml.NodeSeq
 import nl.malienkolders.htm.lib.model._
-import java.text.SimpleDateFormat
 import com.github.nscala_time.time.Imports._
 
 class EventView {

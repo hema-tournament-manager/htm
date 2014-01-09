@@ -23,11 +23,8 @@ import net.liftweb.util.IterableConst.itStringPromotable
 import net.liftweb.util.StringPromotable.jsCmdToStrPromo
 import scala.xml.Text
 import scala.xml.EntityRef
-import scala.xml.EntityRef
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
-import java.text.SimpleDateFormat
-import java.util.Date
 import net.liftweb.http.js.JsCmds.{ Reload, RedirectTo }
 
 case class ParamInfo(param: String)
@@ -36,8 +33,6 @@ object TournamentView {
   val menu = (Menu.param[ParamInfo]("View Tournament", "View Tournament", s => Full(ParamInfo(s)),
     pi => pi.param) / "tournaments" / "view" >> Hidden)
   lazy val loc = menu.toLoc
-
-  val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
   def render = {
     val t = {
@@ -171,8 +166,9 @@ object TournamentView {
 
     def renderFights(fights: Seq[EliminationFight]) = ".fight" #> fights.map(f =>
       ".fight-title *" #> f.name.get &
-        ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-success").getOrElse("label-warning") &
+        ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
         ".scheduled [href]" #> "/arenas/list" &
+        ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled") &
         ".participant" #> (f.fighterA :: f.fighterB :: Nil).map(renderFighter _))
 
     def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
