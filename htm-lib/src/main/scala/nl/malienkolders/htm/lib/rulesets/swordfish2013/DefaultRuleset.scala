@@ -4,6 +4,7 @@ package swordfish2013
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.mapper._
+import net.liftweb.util.TimeHelpers._
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -101,23 +102,20 @@ abstract class SwordfishRuleset extends Ruleset {
       iterations - 1)
   }
 
-  def planning(round: Round): List[Pool] = {
-    val previousRounds = round.previousRounds
-    round.pools.map { pool =>
+  def planning(phase: PoolPhase): List[Pool] = {
+    phase.pools.map { pool =>
       val maxNumberOfRounds = pool.participants.size - (if (pool.participants.size.isEven) 1 else 0)
 
       // don't generate fights after all fighters have faced each other
       // with 4 fighters everyone has to fight 3 times, so you need 3 rounds
       // with 5 fighters everyone has to fight 4 times, but every round one person cannot fight, so you need 5 rounds
-      if (previousRounds.size < maxNumberOfRounds) {
-        val pairings = roundRobinPairing(pool.participants.size, previousRounds.size)
-        pairings.foreach {
-          case (a, b) if a != -1 && b != -1 =>
-            pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
-          case _ => // do nothing
-        }
-        pool.save
+      val pairings = roundRobinPairing(pool.participants.size, 0)
+      pairings.foreach {
+        case (a, b) if a != -1 && b != -1 =>
+          pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
+        case _ => // do nothing
       }
+      pool.save
       pool
     }.toList
   }
@@ -126,26 +124,24 @@ abstract class SwordfishRuleset extends Ruleset {
     // seed the Random with the pool id, so the random ranking is always the same for this pool
     implicit val random = new scala.util.Random(p.id.is)
     val pts = p.participants.toList
-    val r = p.round.obj.get
+    val r = p.phase.obj.get
     val t = r.tournament.obj.get
-    val rs = Round.findAll(By(Round.tournament, t)).filter(_.order.is <= r.order.is)
-    val ps = Pool.findAll(ByList(Pool.round, rs.map(_.id.is)))
-    val fs = Fight.findAll(ByList(Fight.pool, ps.map(_.id.is))).filter(_.finished_?)
+    val fs = p.fights.filter(_.finished_?)
     pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
       case (ps @ ParticipantScores(i, c, w, t, l, lbd, hR, hD, aR, aD, d, p), f) =>
         if (f.inFight_?(pt)) {
           f.currentScore match {
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
             case _ => ParticipantScores(i, c, w, t, l, lbd, hR, hD, aR, aD, d, p)
           }
@@ -157,11 +153,12 @@ abstract class SwordfishRuleset extends Ruleset {
 
   def lossesByDoubles(doubles: Int): Int = if (doubles >= 3) 1 else 0
 
-  def ranking(r: Round): List[(Pool, List[(Participant, ParticipantScores)])] = {
-    r.pools.toList.map { p =>
-      (p, ranking(p))
-    }
-  }
+  val fightProperties = FightProperties(
+    timeLimit = 3 minutes,
+    breakAt = 0,
+    breakDuration = 0,
+    timeBetweenFights = 2 minute,
+    exchangeLimit = 10)
 }
 
 object DefaultRuleset extends SwordfishRuleset {

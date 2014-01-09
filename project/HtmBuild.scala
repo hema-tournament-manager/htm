@@ -39,7 +39,8 @@ object HtmBuild extends Build {
                "ch.qos.logback" % "logback-classic" % "0.9.26",
                "org.specs2" %% "specs2" % "2.2.3" % "test",
                "com.h2database" % "h2" % "1.2.147",
-               "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion))
+               "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion,
+               "com.github.nscala-time" %% "nscala-time" % "0.6.0"))
 		
 	lazy val importerSettings = buildSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Importer",

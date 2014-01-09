@@ -25,17 +25,22 @@ abstract class Scores {
   }
 }
 
-abstract class Ruleset {
+case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Long)
+
+trait Ruleset {
 
   type Scores <: nl.malienkolders.htm.lib.rulesets.Scores
 
   def id: String
 
-  def planning(round: Round): List[Pool]
+  def planning(phase: PoolPhase): List[Pool]
 
   def ranking(p: Pool): List[(Participant, Scores)]
 
-  def ranking(r: Round): List[(Pool, List[(Participant, Scores)])]
+  def ranking(phase: PoolPhase): List[(Pool, List[(Participant, Scores)])] =
+    phase.pools.map { p =>
+      (p, ranking(p))
+    }.toList
 
   def register(default: Boolean = false) = Ruleset.registerRuleset(this, default)
 
@@ -53,8 +58,9 @@ abstract class Ruleset {
       ".pool *" #> findPool(t, p).map(_.poolName).getOrElse("?")
 
   def findPool(tournament: Tournament, p: Participant) =
-    tournament.rounds.head.pools.find(_.participants.contains(p))
+    tournament.poolPhase.pools.find(_.participants.contains(p))
 
+  def fightProperties: FightProperties
 }
 
 object Ruleset {
@@ -71,7 +77,7 @@ object Ruleset {
 
   def apply() = _defaultRuleset
 
-  def apply(id: String) = rulesets.get(id).get
+  def apply(id: String) = rulesets.get(id).getOrElse(_defaultRuleset)
 
   def ruleset(id: String): Option[Ruleset] = rulesets.get(id)
 

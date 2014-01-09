@@ -4,7 +4,6 @@ import net.liftweb._
 import http._
 import util.Helpers._
 import scala.xml.NodeSeq
-import nl.malienkolders.htm.admin.lib.ParticipantImporter
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.lib.FightExporter
 import net.liftweb.common.Full

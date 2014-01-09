@@ -24,7 +24,7 @@ object AdminRest extends RestHelper {
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 
     case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
-      Extraction.decompose(Arena.findByKey(arenaId).map(_.pools.map(_.toMarshalledSummary)).getOrElse(false))
+      Extraction.decompose(Arena.findByKey(arenaId).map(_.fights.map(_.toMarshalledSummary)).getOrElse(false))
 
     case "api" :: "participants" :: Nil JsonGet _ =>
       Extraction.decompose(Participant.findAll.map(_.toMarshalled))
@@ -37,25 +37,6 @@ object AdminRest extends RestHelper {
 
     case "api" :: "tournament" :: AsLong(tournamentId) :: Nil JsonGet _ =>
       Tournament.findByKey(tournamentId).map(t => Extraction.decompose(t.toMarshalled)).getOrElse[JValue](JBool(false))
-
-    case "api" :: "tournament" :: AsLong(tournamentId) :: "rounds" :: Nil JsonGet _ =>
-      Extraction.decompose(Tournament.findByKey(tournamentId).get.rounds.map(_.toMarshalled))
-
-    case "api" :: "round" :: AsLong(roundId) :: Nil JsonGet _ =>
-      Extraction.decompose(Round.findByKey(roundId).map(_.toMarshalled).getOrElse(false))
-
-    case "api" :: "round" :: AsLong(roundId) :: "pools" :: Nil JsonGet _ =>
-      Extraction.decompose(Round.findByKey(roundId).map(_.pools.map(_.toMarshalled)).getOrElse(false))
-
-    case "api" :: "round" :: AsLong(roundId) :: "fight" :: Nil JsonGet _ =>
-      val fight = for {
-        round <- Round.findByKey(roundId)
-        pool <- round.pools.find(!_.finished_?)
-        fight <- pool.fights.find(!_.finished_?)
-      } yield {
-        fight.toMarshalledSummary
-      }
-      Extraction.decompose(fight.getOrElse(false))
 
     case "api" :: "pool" :: AsLong(poolId) :: Nil JsonGet _ =>
       Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalled).getOrElse(false))
@@ -78,46 +59,42 @@ object AdminRest extends RestHelper {
         case _ => JBool(false)
       }.getOrElse[JValue](JBool(false))
 
-    case "api" :: "pool" :: AsLong(poolId) :: "fight" :: "peek" :: Nil JsonGet _ =>
-      (FightServer !! PeekFight(Pool.findByKey(poolId).get)).map {
-        case FightMsg(f) => Extraction.decompose(f.toMarshalled)
-        case _ => JBool(false)
-      }.getOrElse[JValue](JBool(false))
-
-    case "api" :: "pool" :: AsLong(poolId) :: "fight" :: AsLong(fightOrder) :: Nil JsonGet _ =>
-      Extraction.decompose(Fight.find(By(Fight.pool, poolId), By(Fight.order, fightOrder)).map(_.toMarshalledSummary).getOrElse(false))
-
     case "api" :: "fight" :: "confirm" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledFight](json)
-      JBool((FightServer !! FightResult(Fight.findByKey(m.id).get.fromMarshalled(m), true)).map {
+      JBool((FightServer !! FightResult(FightHelper.dao(m.phaseType).findByKey(m.id).get.fromMarshalled(m).asInstanceOf[Fight[_, _]], true)).map {
         case FightMsg(_) => true
         case _ => false
       }.getOrElse[Boolean](false))
 
     case "api" :: "fight" :: "cancel" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledFight](json)
-      JBool((FightServer !! FightResult(Fight.findByKey(m.id).get.fromMarshalled(m), false)).map {
+      JBool((FightServer !! FightResult(FightHelper.dao(m.phaseType).findByKey(m.id).get.fromMarshalled(m).asInstanceOf[Fight[_, _]], false)).map {
         case FightMsg(_) => true
         case _ => false
       }.getOrElse[Boolean](false))
 
-    case "api" :: "fight" :: AsLong(id) :: Nil JsonGet _ =>
-      Fight.findByKey(id).map(f => Extraction.decompose(f.toMarshalled)).getOrElse[JValue](JBool(false))
+    case "api" :: "fight" :: phase :: AsLong(id) :: Nil JsonGet _ =>
+      val dao = phase match {
+        case "P" => PoolFight
+        case "E" => EliminationFight
+        case _ => PoolFight
+      }
+      dao.findByKey(id).map(f => Extraction.decompose(f.toMarshalled)).getOrElse[JValue](JBool(false))
 
     case "api" :: "fight" :: "update" :: Nil JsonPost json -> _ =>
       val fight = Extraction.extract[MarshalledFightSummary](json)
       FightServer ! FightUpdate(fight)
       JBool(true)
 
-    case "api" :: "fight" :: "update" :: AsLong(id) :: "timer" :: Nil JsonPost json -> _ =>
+    case "api" :: "fight" :: "update" :: phase :: AsLong(id) :: "timer" :: Nil JsonPost json -> _ =>
       val timer = Extraction.extract[TimerMessage](json)
-      FightServer ! TimerUpdate(id, timer)
+      FightServer ! TimerUpdate(FightId(phase, id), timer)
       JBool(true)
 
-    case "api" :: "fight" :: "update" :: AsLong(id) :: "message" :: Nil JsonPost json -> _ =>
+    case "api" :: "fight" :: "update" :: phase :: AsLong(id) :: "message" :: Nil JsonPost json -> _ =>
       json match {
         case JString(message) =>
-          FightServer ! MessageUpdate(id, message)
+          FightServer ! MessageUpdate(FightId(phase, id), message)
           JBool(true)
         case _ => JBool(false)
       }
@@ -138,8 +115,8 @@ object AdminRest extends RestHelper {
                   case JInt(arenaId) =>
                     Arena.findByKey(arenaId.toLong) match {
                       case Full(arena) =>
-                        val pools = arena.pools.filterNot(_.finished_?).map(pool => Map("pool" -> pool.toMarshalledSummary, "fights" -> pool.fights.map(_.toMarshalledSummary)))
-                        val newPayload = p ~ ("pools" -> Extraction.decompose(pools))
+                        val fights = arena.fights.filterNot(_.fight.foreign.get.finished_?).map(_.toMarshalledSummary)
+                        val newPayload = p ~ ("fights" -> Extraction.decompose(fights))
                         viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
                           Viewer.findByKey(viewerId).foreach(viewer =>
                             viewer.rest.update(view, newPayload))

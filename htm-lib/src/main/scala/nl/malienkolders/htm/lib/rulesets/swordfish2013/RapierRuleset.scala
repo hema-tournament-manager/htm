@@ -5,6 +5,7 @@ package rapier
 import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import net.liftweb.mapper._
+import net.liftweb.util.TimeHelpers._
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -105,23 +106,20 @@ object RapierRuleset extends Ruleset {
       iterations - 1)
   }
 
-  def planning(round: Round): List[Pool] = {
-    val previousRounds = round.previousRounds
-    round.pools.map { pool =>
+  def planning(phase: PoolPhase): List[Pool] = {
+    phase.pools.map { pool =>
       val maxNumberOfRounds = pool.participants.size - (if (pool.participants.size.isEven) 1 else 0)
 
       // don't generate fights after all fighters have faced each other
       // with 4 fighters everyone has to fight 3 times, so you need 3 rounds
       // with 5 fighters everyone has to fight 4 times, but every round one person cannot fight, so you need 5 rounds
-      if (previousRounds.size < maxNumberOfRounds) {
-        val pairings = roundRobinPairing(pool.participants.size, previousRounds.size)
-        pairings.foreach {
-          case (a, b) if a != -1 && b != -1 =>
-            pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
-          case _ => // do nothing
-        }
-        pool.save
+      val pairings = roundRobinPairing(pool.participants.size, 0)
+      pairings.foreach {
+        case (a, b) if a != -1 && b != -1 =>
+          pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
+        case _ => // do nothing
       }
+      pool.save
       pool
     }.toList
   }
@@ -130,11 +128,9 @@ object RapierRuleset extends Ruleset {
     // seed the Random with the pool id, so the random ranking is always the same for this pool
     implicit val random = new scala.util.Random(p.id.is)
     val pts = p.participants.toList
-    val r = p.round.obj.get
+    val r = p.phase.obj.get
     val t = r.tournament.obj.get
-    val rs = Round.findAll(By(Round.tournament, t)).filter(_.order.is <= r.order.is)
-    val ps = Pool.findAll(ByList(Pool.round, rs.map(_.id.is)))
-    val fs = Fight.findAll(ByList(Fight.pool, ps.map(_.id.is))).filter(_.finished_?)
+    val fs = p.fights.filter(_.finished_?)
     pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
       case (ps @ ParticipantScores(i, c, w, t, l, lbd, hR, hD, aR, aD, d, p), f) =>
         if (f.inFight_?(pt)) {
@@ -143,25 +139,25 @@ object RapierRuleset extends Ruleset {
             case TotalScore(_, _, _, _, double, _) if (double >= 3) =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd + 1, hR, hD, aR, aD, d + double, p)
             // In the case of a tie, the score will be the fighter’s score minus doubles, with a minimum of 0 points.
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p + (a.min(6) - double).max(0))
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p + (b.min(6) - double).max(0))
             // If the winner has more than 6 points, the winner’s score will first be reduced to 6
             // The loser’s points will be then deducted from the winner’s 
             // Double hits are removed from the remaining winning points
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p + calculateFightPoints(a, b, double))
             // The loser receives no points
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p)
             // The loser receives no points
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p)
             // If the winner has more than 6 points, the winner’s score will first be reduced to 6
             // The loser’s points will be then deducted from the winner’s 
             // Double hits are removed from the remaining winning points
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p + calculateFightPoints(b, a, double))
             case _ => ps
           }
@@ -174,9 +170,10 @@ object RapierRuleset extends Ruleset {
   def calculateFightPoints(pointsWinner: Int, pointsLoser: Int, doubles: Int): Int =
     (pointsWinner.min(6) - pointsLoser) - doubles
 
-  def ranking(r: Round): List[(Pool, List[(Participant, ParticipantScores)])] = {
-    r.pools.toList.map { p =>
-      (p, ranking(p))
-    }
-  }
+  val fightProperties = FightProperties(
+    timeLimit = 3 minutes,
+    breakAt = 0,
+    breakDuration = 0,
+    timeBetweenFights = 2 minute,
+    exchangeLimit = 10)
 }

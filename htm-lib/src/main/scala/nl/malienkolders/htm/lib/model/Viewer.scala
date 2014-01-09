@@ -83,7 +83,7 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
       update(arena, "fight", data)
     }
 
-    def fightUpdate(arena: Arena, f: Fight): Boolean = {
+    def fightUpdate(arena: Arena, f: PoolFight): Boolean = {
       if (state != "fight") {
         fightUpdate(arena, Extraction.decompose(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
       }

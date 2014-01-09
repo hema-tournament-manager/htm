@@ -8,6 +8,7 @@ import net.liftweb.mapper._
 import org.apache.commons.io.FileUtils
 import java.text.SimpleDateFormat
 import java.util.Date
+import com.github.nscala_time.time.Imports._
 
 object Utils {
 
@@ -38,7 +39,11 @@ object Utils {
 
   }
 
+  val yyyymmdd = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.UTC)
+  val hhmm = DateTimeFormat.forPattern("HH:mm").withZone(DateTimeZone.UTC)
+
   implicit class TimeRenderHelper(time: Long) {
+    def hhmm = LocalTime.fromMillisOfDay(time).toString(Utils.hhmm)
     def as(format: String) = new SimpleDateFormat(format).format(new Date(time))
   }
 

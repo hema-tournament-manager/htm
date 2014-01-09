@@ -93,10 +93,10 @@ object DefaultRuleset extends Ruleset {
       iterations - 1)
   }
 
-  def planning(round: Round): List[Pool] = {
-    val previous = round.previousRounds
-    round.pools.map { pool =>
-      val pairings = roundRobinPairing(pool.participants.size, previous.size)
+  def planning(phase: PoolPhase): List[Pool] = {
+
+    phase.pools.map { pool =>
+      val pairings = roundRobinPairing(pool.participants.size, 0)
       pairings.foreach {
         case (a, b) if a != -1 && b != -1 =>
           pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
@@ -111,30 +111,28 @@ object DefaultRuleset extends Ruleset {
     // seed the Random with the pool id, so the random ranking is always the same for this pool
     implicit val random = new scala.util.Random(p.id.is)
     val pts = p.participants.toList
-    val r = p.round.obj.get
+    val r = p.phase.obj.get
     val t = r.tournament.obj.get
-    val rs = Round.findAll(By(Round.tournament, t)).filter(_.order.is <= r.order.is)
-    val ps = Pool.findAll(ByList(Pool.round, rs.map(_.id.is)))
-    val fs = Fight.findAll(ByList(Fight.pool, ps.map(_.id.is))).filter(_.finished_?)
+    val fs = p.fights.filter(_.finished_?)
     pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
       case (ps @ ParticipantScores(i, c, w, t, l, hR, hD, aR, aD, d), f) =>
         if (f.inFight_?(pt)) {
           f.currentScore match {
-            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterAParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterBParticipant.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
             case _ => ParticipantScores(i, c, w, t, l, hR, hD, aR, aD, d)
           }
@@ -144,10 +142,10 @@ object DefaultRuleset extends Ruleset {
     })).sortWith((pt1, pt2) => compare(pt1._2, pt2._2))
   }
 
-  def ranking(r: Round): List[(Pool, List[(Participant, ParticipantScores)])] = {
-    r.pools.toList.map { p =>
-      (p, ranking(p))
-    }
-  }
-
+  val fightProperties = FightProperties(
+    timeLimit = 3 minutes,
+    breakAt = 0,
+    breakDuration = 0,
+    timeBetweenFights = 2 minute,
+    exchangeLimit = 10)
 }

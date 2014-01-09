@@ -6,6 +6,33 @@
 </head>
 <body class="lift:content_id=main">
 	<div id="main" class="lift:surround?with=default;at=content">
+		<head><style>
+		.schedule .dropdown-menu {
+			left: auto;
+			right: 0;
+		}
+		
+		.schedule .dropdown-menu .dropdown-menu {
+			left: auto;
+			right: 100%;
+		}
+		
+		.timeslot .from, .timeslot .name {
+			margin-right: 4px;
+		}
+		
+		.timeslot .from:after {
+			content: "-";
+			margin-left: 3px;
+		}
+		
+		.timeslot .name:after {
+			content: ": ";
+		}		
+		
+	</style>
+		
+		</style></head>
 		<div class="lift:ArenaList">
 			<div class="container">
 				<div class="row">
@@ -24,24 +51,110 @@
 									</div>
 								</h3>
 							</div>
-							<table class="table">
+							<table class="timeslot table">
 								<thead>
-									<tr>
-										<th>time</th>
-										<th>tournament</th>
-										<th>round</th>
-										<th>pool</th>
+									<tr class="header">
+										<th colspan="3"><span class="name"></span><span class="from"></span><span class="to"></span></th>
+										<th>
+											<div class="btn-group">
+												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li><a href="#" class="unschedule">Unschedule</a></li>
+												</ul>
+											</div>
+										</th>
 									</tr>
 								</thead>
 						  		<tbody>
-						  			<tr class="pool">
+						  			<tr class="fight">
 								  		<td class="time">14:00</td>
 								  		<td class="tournament">Longsword open</td>
-								  		<td class="round">Round 1</td>
-								  		<td class="poolName">Pool A</td>
+								  		<td class="name">Fight 1</td>
+								  		<td>
+								  			<div class="btn-group">
+												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li><a href="#" class="unschedule">Unschedule</a></li>
+												</ul>
+											</div>
+								  		</td>
 						  			</tr>
 						  		</tbody>
 						  	</table>
+						</div>
+					</div>
+					
+					<div class="unscheduled col-md-3">
+						<div class="tournament panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<span class="tournamentName">Tournament</span>
+								</h3>
+							</div>
+							<table class="table">
+								<tbody class="phase">
+									<tr class="phaseHeader">
+										<th class="name">Phase A</th>
+										<th class="schedule">
+											<div class="btn-group">
+												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li class="dropdown-submenu">
+														<a tabindex="-1" href="#">Schedule</a>
+														<ul class="dropdown-menu">
+															<li class="arena dropdown-submenu">
+																<a href="#" class="arenaName">Arena X</a>
+																<ul class="dropdown-menu">
+																	<li class="day dropdown-submenu">
+																		<a href="#" class="dayName">Day Y</a>
+																		<ul class="dropdown-menu">
+																			<li class="timeslot"><a href="#">Timeslot Z</a></li>
+																		</ul>
+																	</li>
+																</ul>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</div>
+										</th>
+									</tr>
+									<tr class="fight">
+										<td class="name">Fight X</td>
+										<td class="schedule">
+											<div class="btn-group">
+												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li class="dropdown-submenu">
+														<a tabindex="-1" href="#">Schedule</a>
+														<ul class="dropdown-menu">
+															<li class="arena dropdown-submenu">
+																<a href="#" class="arenaName">Arena X</a>
+																<ul class="dropdown-menu">
+																	<li class="day dropdown-submenu">
+																		<a href="#" class="dayName">Day Y</a>
+																		<ul class="dropdown-menu">
+																			<li class="timeslot"><a href="#">Timeslot Z</a></li>
+																		</ul>
+																	</li>
+																</ul>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div>

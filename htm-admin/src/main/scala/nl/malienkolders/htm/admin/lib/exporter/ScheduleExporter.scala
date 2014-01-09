@@ -27,6 +27,9 @@ object ScheduleExporter extends ExcelExporter {
 
     for (pool <- pools) {
 
+      val phase = pool.phase.obj.get
+      val t = phase.tournament.obj.get
+
       if (poolHeaders == ShortHeaders) {
         i = i + 1;
         val poolRow = sheet.getOrCreateRow(i);
@@ -35,9 +38,8 @@ object ScheduleExporter extends ExcelExporter {
         if (i == 2)
           i = i + 1;
         val headerRow = sheet.getOrCreateRow(i);
-        val r = pool.round.obj.get
-        val t = r.tournament.obj.get
-        headerRow.getOrCreateCell(0).setCellValue(s"${t.name.get} / Pool ${pool.poolName} / ${r.name.get}")
+
+        headerRow.getOrCreateCell(0).setCellValue(s"${t.name.get} / Pool ${pool.poolName} / ${phase.name.get}")
         i = i + 1;
       }
 
@@ -45,11 +47,11 @@ object ScheduleExporter extends ExcelExporter {
 
         val row = sheet.getOrCreateRow(i);
 
-        row.getOrCreateCell(1).setCellValue(new Date(fight.plannedStartTime))
-        row.getOrCreateCell(2).setCellValue(fight.fighterA.foreign.get.subscription(pool).get.fighterNumber.get)
-        row.getOrCreateCell(3).setCellValue(fight.fighterA.foreign.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
-        row.getOrCreateCell(4).setCellValue(fight.fighterB.foreign.get.subscription(pool).get.fighterNumber.get)
-        row.getOrCreateCell(5).setCellValue(fight.fighterB.foreign.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
+        row.getOrCreateCell(1).setCellValue(new Date(fight.scheduled.foreign.get.time.get))
+        row.getOrCreateCell(2).setCellValue(fight.fighterAParticipant.foreign.get.subscription(t).get.fighterNumber.get)
+        row.getOrCreateCell(3).setCellValue(fight.fighterAParticipant.foreign.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
+        row.getOrCreateCell(4).setCellValue(fight.fighterBParticipant.foreign.get.subscription(t).get.fighterNumber.get)
+        row.getOrCreateCell(5).setCellValue(fight.fighterBParticipant.foreign.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
 
         i = i + 1;
       }
@@ -59,11 +61,11 @@ object ScheduleExporter extends ExcelExporter {
   }
 
   def doExport(tournament: Tournament)(outputStream: OutputStream): Unit = {
-    doExport(tournament.name.get, tournament.rounds.flatMap(_.pools).sortBy(_.startTime.get), ShortHeaders, outputStream);
+    doExport(tournament.name.get, tournament.poolPhase.pools.sortBy(_.startTime.get), ShortHeaders, outputStream);
   }
 
   def doExport(arena: Arena, onlyUnfinishedPools: Boolean)(outputStream: OutputStream) {
-    doExport(arena.name.get, arena.pools.sortBy(_.startTime.get).filter(a => !onlyUnfinishedPools || !a.finished_?), LongHeaders, outputStream);
+    //TODO: fix arena export
   }
 
 }

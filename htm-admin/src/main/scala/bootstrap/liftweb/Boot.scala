@@ -37,7 +37,31 @@ class Boot {
     // Use Lift's Mapper ORM to populate the database
     // you don't need to use Mapper to use Lift... use
     // any ORM you want
-    Schemifier.schemify(true, Schemifier.infoF _, User, Country, Score, model.Tournament, TournamentParticipants, Round, Pool, PoolParticipants, Participant, Fight, ParticipantNameMapping, Viewer, ArenaViewers, Arena, Image, ScaledImage)
+    Schemifier.schemify(true, Schemifier.infoF _,
+      User,
+      Country,
+      PoolFightScore,
+      EliminationFightScore,
+      model.Tournament,
+      TournamentParticipants,
+      PoolPhase,
+      EliminationPhase,
+      Pool,
+      PoolParticipants,
+      Participant,
+      PoolFight,
+      EliminationFight,
+      ParticipantNameMapping,
+      Viewer,
+      ArenaViewers,
+      Arena,
+      ScheduledPoolFight,
+      ScheduledEliminationFight,
+      Image,
+      ScaledImage,
+      Event,
+      Day,
+      ArenaTimeSlot)
 
     // where to search snippet
     LiftRules.addToPackages("nl.malienkolders.htm.admin")
@@ -59,22 +83,21 @@ class Boot {
     DefaultRuleset.register(true)
     rapier.RapierRuleset.register()
 
-    val entries: List[ConvertableToMenu] = (Menu.i("Home") / "index") ::
-      (Menu.i("Tournaments") / "tournaments" / "list") ::
-      TournamentView.menu ::
-      TournamentEdit.menu ::
-      TournamentAdvance.menu ::
-      FightEdit.menu ::
-      (Menu.i("Participants") / "participants" / "list") ::
-      ParticipantRegistration.menu ::
-      (Menu.i("Arenas") / "arenas" / "list") ::
-      (Menu.i("Viewers") / "viewers" / "list") ::
-      (Menu.i("Images") / "images" / "list") ::
-      (Menu.i("Import") / "import") ::
-      (Menu.i("Export") / "export") ::
-      (Menu.i("Battle") / "battle") ::
-      (Menu.i("Controller") / "viewer") ::
-      Nil
+    val entries: List[ConvertableToMenu] = (Menu.i("Event") / "index") ::
+      (Menu.i("Tournaments") / "tournaments" / "list" submenus (
+        TournamentView.menu,
+        TournamentEdit.menu)) ::
+        FightEdit.menu ::
+        (Menu.i("Participants") / "participants" / "list") ::
+        ParticipantRegistration.menu ::
+        (Menu.i("Arenas") / "arenas" / "list") ::
+        (Menu.i("Viewers") / "viewers" / "list") ::
+        (Menu.i("Images") / "images" / "list") ::
+        (Menu.i("Import") / "import") ::
+        (Menu.i("Export") / "export") ::
+        (Menu.i("Battle") / "battle") ::
+        (Menu.i("Controller") / "viewer") ::
+        Nil
 
     // Build SiteMap
     def sitemap = SiteMap(entries: _*)

@@ -10,7 +10,6 @@ import net.liftweb.http.js.JsCmds._
 import net.liftweb.mapper._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.lib._
-import nl.malienkolders.htm.admin.lib.TournamentUtils._
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.sitemap.LocPath.stringToLocPath
 import net.liftweb.util.IterableConst.itBindable
@@ -25,7 +24,7 @@ import scala.util.Random
 
 object TournamentEdit {
   val menu = Menu.param[ParamInfo]("Edit Tournament", "Edit Tournament", s => Full(ParamInfo(s)),
-    pi => pi.param) / "tournaments" / "edit"
+    pi => pi.param) / "tournaments" / "edit" >> Loc.Hidden
   lazy val loc = menu.toLoc
 
   def render = {

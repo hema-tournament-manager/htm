@@ -21,7 +21,7 @@ object PoolsExporter extends ExcelExporter {
 
     var i = 2;
 
-    for (pool <- tournament.rounds.head.pools) {
+    for (pool <- tournament.poolPhase.pools) {
       i = i + 1;
       val poolRow = sheet.getOrCreateRow(i);
       poolRow.getOrCreateCell(0).setCellValue(pool.poolName)
@@ -30,7 +30,7 @@ object PoolsExporter extends ExcelExporter {
 
         val row = sheet.getOrCreateRow(i);
 
-        row.getOrCreateCell(1).setCellValue(p.subscription(pool).get.fighterNumber.get)
+        row.getOrCreateCell(1).setCellValue(p.subscription(tournament).get.fighterNumber.get)
         row.getOrCreateCell(2).setCellValue(p.name.get)
         row.getOrCreateCell(3).setCellValue(p.club.get)
 

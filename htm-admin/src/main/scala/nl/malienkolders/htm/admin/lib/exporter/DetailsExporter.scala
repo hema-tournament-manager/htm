@@ -15,9 +15,9 @@ object DetailsExporter extends ExcelExporter {
     for (t <- Tournament.findAll) {
       sheet.getOrCreateRow(i).getOrCreateCell(0).setCellValue(t.name.get)
       i += 1
-      for (r <- t.rounds.filter(r => t.identifier.get == "wrestling" || r.name.get == ROUND_NAME_FINAL || r.name.get == ROUND_NAME_THIRD_PLACE)) {
-        sheet.getOrCreateRow(i).getOrCreateCell(0).setCellValue(r.name.get)
-        for (p <- r.pools.flatMap(_.fights).flatMap(f => List(f.fighterA.obj.get, f.fighterB.obj.get))) {
+      for (phase <- t.phases.filter(p => t.identifier.get == "wrestling" || p.name.get == ROUND_NAME_FINAL || p.name.get == ROUND_NAME_THIRD_PLACE)) {
+        sheet.getOrCreateRow(i).getOrCreateCell(0).setCellValue(phase.name.get)
+        for (p <- phase.fights.flatMap(f => List(f.fighterAParticipant.obj.get, f.fighterBParticipant.obj.get))) {
           val row = sheet.getOrCreateRow(i)
           i += 1
           val rowName = sheet.getOrCreateRow(i)
