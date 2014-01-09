@@ -2,6 +2,7 @@ package nl.malienkolders.htm.admin.snippet
 
 import net.liftweb._
 import http._
+import js.JsCmds._
 import mapper._
 import util.Helpers._
 import scala.xml.NodeSeq
@@ -11,13 +12,37 @@ import java.util.Date
 import nl.malienkolders.htm.admin.lib.exporter.ScheduleExporter
 import net.liftweb.http.OutputStreamResponse
 import scala.xml.Text
+import java.util.TimeZone
+import net.liftweb.common.Empty
 
 class ArenaList {
 
   val df = new SimpleDateFormat("HH:mm")
+  df.setTimeZone(TimeZone.getTimeZone("UTC"))
 
+  def scheduleFight(f: Fight[_, _], ts: ArenaTimeSlot) = {
+    ts.fights += f.schedule(ts.firstFreeMoment)
+
+    ts.save()
+    f.save()
+
+    Reload
+  }
+
+  def unschedule(sf: ScheduledFight[_]) = {
+    val f = sf.fight.foreign.get
+    val ts = sf.timeslot.foreign.get
+
+    f.scheduled(Empty)
+    sf.delete_!
+
+    f.save()
+    ts.save()
+
+    Reload
+  }
   def render = {
-    val colspan = 12 / Arena.count.max(1)
+    val colspan = 9 / Arena.count.max(1)
     ".arena" #> Arena.findAll.map(a =>
       ".arena [class+]" #> ("col-md-" + colspan) &
         ".arenaName" #> a.name.get &
@@ -34,14 +59,24 @@ class ArenaList {
               ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
                 ".time *" #> df.format(new Date(sf.time.is)) &
                 ".tournament *" #> tournamentName &
-                ".name *" #> f.name.get
+                ".name *" #> f.name.get &
+                ".unschedule" #> SHtml.a(() => unschedule(sf), Text("Unschedule"))
             })) &
       ".unscheduled" #> (".tournament" #> Tournament.findAll().map(t =>
         ".tournamentName *" #> t.name.get &
           ".phase" #> t.phases.map(p =>
             ".phaseHeader" #> (".name *" #> p.name.get) &
               ".fight" #> p.fights.filter(_.scheduled.foreign.isEmpty).map(f =>
-                ".name *" #> f.name.get))))
+                ".name *" #> f.name.get &
+                  ".schedule" #> (
+                    ".arena" #> Arena.findAll().map(a =>
+                      ".arenaName *" #> a.name.get &
+                        ".day" #> Day.findAll().zipWithIndex.map {
+                          case (d, i) =>
+                            ".dayName *" #> ("Day " + (i + 1)) &
+                              ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
+                                "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span><span class="name">{ ts.name.get }</span>))
+                        }))))))
   }
 
   def phaseName(implicit t: Tournament, p: Phase[_]) =

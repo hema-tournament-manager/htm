@@ -177,6 +177,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
     this
   }
 
+  def schedule(time: Long): ScheduledFight[_]
+
 }
 
 object FightHelper {
@@ -213,6 +215,12 @@ class PoolFight extends Fight[PoolFight, PoolFightScore] {
     started_?,
     finished_?,
     currentScore)
+
+  def schedule(time: Long) = {
+    val sf = ScheduledPoolFight.create.fight(this).time(time)
+    scheduled(sf)
+    sf
+  }
 }
 object PoolFight extends PoolFight with LongKeyedMetaMapper[PoolFight]
 
@@ -224,5 +232,11 @@ class EliminationFight extends Fight[EliminationFight, EliminationFightScore] {
   object phase extends MappedLongForeignKey(this, EliminationPhase)
   object round extends MappedLong(this)
   object scheduled extends MappedLongForeignKey(this, ScheduledEliminationFight)
+
+  def schedule(time: Long) = {
+    val sf = ScheduledEliminationFight.create.fight(this).time(time)
+    scheduled(sf)
+    sf
+  }
 }
 object EliminationFight extends EliminationFight with LongKeyedMetaMapper[EliminationFight]

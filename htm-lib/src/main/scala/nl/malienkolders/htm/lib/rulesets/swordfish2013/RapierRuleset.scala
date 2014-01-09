@@ -5,7 +5,7 @@ package rapier
 import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import net.liftweb.mapper._
-import nl.malienkolders.htm.lib.model.Fight
+import net.liftweb.util.TimeHelpers._
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -170,4 +170,10 @@ object RapierRuleset extends Ruleset {
   def calculateFightPoints(pointsWinner: Int, pointsLoser: Int, doubles: Int): Int =
     (pointsWinner.min(6) - pointsLoser) - doubles
 
+  val fightProperties = FightProperties(
+    timeLimit = 3 minutes,
+    breakAt = 0,
+    breakDuration = 0,
+    timeBetweenFights = 2 minute,
+    exchangeLimit = 10)
 }

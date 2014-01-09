@@ -142,4 +142,10 @@ object DefaultRuleset extends Ruleset {
     })).sortWith((pt1, pt2) => compare(pt1._2, pt2._2))
   }
 
+  val fightProperties = FightProperties(
+    timeLimit = 3 minutes,
+    breakAt = 0,
+    breakDuration = 0,
+    timeBetweenFights = 2 minute,
+    exchangeLimit = 10)
 }

@@ -21,6 +21,15 @@ class ArenaTimeSlot extends LongKeyedMapper[ArenaTimeSlot] with IdPK with OneToM
   object from extends MappedLong(this)
   object to extends MappedLong(this)
   object fightingTime extends MappedBoolean(this)
+  def firstFreeMoment = fights.isEmpty match {
+    case true => from.get
+    case _ =>
+      val lastFight = fights.maxBy(_.time.get)
+      val phase = lastFight.fight.foreign.get.phase.foreign.get
+      val fp = phase.rulesetImpl.fightProperties
+
+      lastFight.time.get + fp.timeLimit + fp.breakDuration + fp.timeBetweenFights
+  }
 
   object fights extends MappedOneToManyBase[ScheduledFight[_]]({ () =>
     ScheduledPoolFight.findAll(By(ScheduledPoolFight.timeslot, this)) ++ ScheduledEliminationFight.findAll(By(ScheduledEliminationFight.timeslot, this)).sortBy(_.time.is)

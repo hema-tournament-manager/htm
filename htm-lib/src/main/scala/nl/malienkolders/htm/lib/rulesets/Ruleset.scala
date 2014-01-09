@@ -25,7 +25,9 @@ abstract class Scores {
   }
 }
 
-abstract class Ruleset {
+case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Long)
+
+trait Ruleset {
 
   type Scores <: nl.malienkolders.htm.lib.rulesets.Scores
 
@@ -58,6 +60,7 @@ abstract class Ruleset {
   def findPool(tournament: Tournament, p: Participant) =
     tournament.poolPhase.pools.find(_.participants.contains(p))
 
+  def fightProperties: FightProperties
 }
 
 object Ruleset {
@@ -74,7 +77,7 @@ object Ruleset {
 
   def apply() = _defaultRuleset
 
-  def apply(id: String) = rulesets.get(id).get
+  def apply(id: String) = rulesets.get(id).getOrElse(_defaultRuleset)
 
   def ruleset(id: String): Option[Ruleset] = rulesets.get(id)
 

@@ -4,6 +4,7 @@ package swordfish2013
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.mapper._
+import net.liftweb.util.TimeHelpers._
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -151,6 +152,13 @@ abstract class SwordfishRuleset extends Ruleset {
   }
 
   def lossesByDoubles(doubles: Int): Int = if (doubles >= 3) 1 else 0
+
+  val fightProperties = FightProperties(
+    timeLimit = 3 minutes,
+    breakAt = 0,
+    breakDuration = 0,
+    timeBetweenFights = 2 minute,
+    exchangeLimit = 10)
 }
 
 object DefaultRuleset extends SwordfishRuleset {
