@@ -39,7 +39,16 @@
 								<thead>
 									<tr class="header">
 										<th colspan="3"><span class="from"></span> - <span class="to"></span> <span class="name"></span></th>
-										<th></th>
+										<th>
+											<div class="btn-group">
+												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li><a href="#" class="unschedule">Unschedule</a></li>
+												</ul>
+											</div>
+										</th>
 									</tr>
 								</thead>
 						  		<tbody>
@@ -74,7 +83,31 @@
 								<tbody class="phase">
 									<tr class="phaseHeader">
 										<th class="name">Phase A</th>
-										<td></td>
+										<th class="schedule">
+											<div class="btn-group">
+												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li class="dropdown-submenu">
+														<a tabindex="-1" href="#">Schedule</a>
+														<ul class="dropdown-menu">
+															<li class="arena dropdown-submenu">
+																<a href="#" class="arenaName">Arena X</a>
+																<ul class="dropdown-menu">
+																	<li class="day dropdown-submenu">
+																		<a href="#" class="dayName">Day Y</a>
+																		<ul class="dropdown-menu">
+																			<li class="timeslot"><a href="#">Timeslot Z</a></li>
+																		</ul>
+																	</li>
+																</ul>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</div>
+										</th>
 									</tr>
 									<tr class="fight">
 										<td class="name">Fight X</td>
