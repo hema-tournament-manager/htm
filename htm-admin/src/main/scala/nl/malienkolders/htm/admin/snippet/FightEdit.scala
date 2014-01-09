@@ -16,7 +16,7 @@ object FightEdit {
     case phase :: AsLong(id) :: Nil => Full(FightId(phase, id))
     case _ => Empty
   },
-    pi => pi.phase :: pi.id.toString :: Nil) / "fights" / "edit"
+    pi => pi.phase :: pi.id.toString :: Nil) / "fights" / "edit" >> Loc.Hidden
   lazy val loc = menu.toLoc
 
   def render = {

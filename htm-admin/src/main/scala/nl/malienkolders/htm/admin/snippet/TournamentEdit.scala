@@ -24,7 +24,7 @@ import scala.util.Random
 
 object TournamentEdit {
   val menu = Menu.param[ParamInfo]("Edit Tournament", "Edit Tournament", s => Full(ParamInfo(s)),
-    pi => pi.param) / "tournaments" / "edit"
+    pi => pi.param) / "tournaments" / "edit" >> Loc.Hidden
   lazy val loc = menu.toLoc
 
   def render = {

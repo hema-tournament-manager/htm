@@ -4,6 +4,7 @@ import net.liftweb._
 import net.liftweb.common._
 import net.liftweb.http._
 import net.liftweb.sitemap._
+import Loc._
 import net.liftweb.util.Helpers._
 import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds._
@@ -32,8 +33,8 @@ import net.liftweb.http.js.JsCmds.{ Reload, RedirectTo }
 case class ParamInfo(param: String)
 
 object TournamentView {
-  val menu = Menu.param[ParamInfo]("View Tournament", "View Tournament", s => Full(ParamInfo(s)),
-    pi => pi.param) / "tournaments" / "view"
+  val menu = (Menu.param[ParamInfo]("View Tournament", "View Tournament", s => Full(ParamInfo(s)),
+    pi => pi.param) / "tournaments" / "view" >> Hidden)
   lazy val loc = menu.toLoc
 
   val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")

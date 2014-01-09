@@ -84,9 +84,10 @@ class Boot {
     rapier.RapierRuleset.register()
 
     val entries: List[ConvertableToMenu] = (Menu.i("Event") / "index") ::
-      (Menu.i("Tournaments") / "tournaments" / "list") ::
-      TournamentView.menu ::
-      TournamentEdit.menu ::
+      (Menu.i("Tournaments") / "tournaments" / "list" submenus(
+	      TournamentView.menu,
+	      TournamentEdit.menu
+      )) ::
       FightEdit.menu ::
       (Menu.i("Participants") / "participants" / "list") ::
       ParticipantRegistration.menu ::

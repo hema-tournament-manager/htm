@@ -13,7 +13,7 @@ import nl.malienkolders.htm.admin.lib.PhotoImporterBackend
 object ParticipantRegistration {
 
   val menu = Menu.param[ParamInfo]("Registration", "Registration", s => Full(ParamInfo(s)),
-    pi => pi.param) / "participants" / "register"
+    pi => pi.param) / "participants" / "register" >> Loc.Hidden
   lazy val loc = menu.toLoc
 
   implicit class PimpedSubscription(sub: TournamentParticipants) {
