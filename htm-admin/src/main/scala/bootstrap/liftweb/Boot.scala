@@ -84,21 +84,20 @@ class Boot {
     rapier.RapierRuleset.register()
 
     val entries: List[ConvertableToMenu] = (Menu.i("Event") / "index") ::
-      (Menu.i("Tournaments") / "tournaments" / "list" submenus(
-	      TournamentView.menu,
-	      TournamentEdit.menu
-      )) ::
-      FightEdit.menu ::
-      (Menu.i("Participants") / "participants" / "list") ::
-      ParticipantRegistration.menu ::
-      (Menu.i("Arenas") / "arenas" / "list") ::
-      (Menu.i("Viewers") / "viewers" / "list") ::
-      (Menu.i("Images") / "images" / "list") ::
-      (Menu.i("Import") / "import") ::
-      (Menu.i("Export") / "export") ::
-      (Menu.i("Battle") / "battle") ::
-      (Menu.i("Controller") / "viewer") ::
-      Nil
+      (Menu.i("Tournaments") / "tournaments" / "list" submenus (
+        TournamentView.menu,
+        TournamentEdit.menu)) ::
+        FightEdit.menu ::
+        (Menu.i("Participants") / "participants" / "list") ::
+        ParticipantRegistration.menu ::
+        (Menu.i("Arenas") / "arenas" / "list") ::
+        (Menu.i("Viewers") / "viewers" / "list") ::
+        (Menu.i("Images") / "images" / "list") ::
+        (Menu.i("Import") / "import") ::
+        (Menu.i("Export") / "export") ::
+        (Menu.i("Battle") / "battle") ::
+        (Menu.i("Controller") / "viewer") ::
+        Nil
 
     // Build SiteMap
     def sitemap = SiteMap(entries: _*)
