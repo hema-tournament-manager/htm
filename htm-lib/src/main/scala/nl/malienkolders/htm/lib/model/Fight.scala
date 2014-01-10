@@ -195,7 +195,7 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
     this
   }
 
-  def schedule(time: Long): ScheduledFight[_]
+  def schedule(time: Long, duration: Long): ScheduledFight[_]
 
   def sameFighters(other: Fight[_, _]) = {
     val myFighters = fighterA :: fighterB :: Nil
@@ -239,8 +239,8 @@ class PoolFight extends Fight[PoolFight, PoolFightScore] {
     finished_?,
     currentScore)
 
-  def schedule(time: Long) = {
-    val sf = ScheduledPoolFight.create.fight(this).time(time)
+  def schedule(time: Long, duration: Long) = {
+    val sf = ScheduledPoolFight.create.fight(this).time(time).duration(duration)
     scheduled(sf)
     sf
   }
@@ -256,8 +256,8 @@ class EliminationFight extends Fight[EliminationFight, EliminationFightScore] {
   object round extends MappedLong(this)
   object scheduled extends MappedLongForeignKey(this, ScheduledEliminationFight)
 
-  def schedule(time: Long) = {
-    val sf = ScheduledEliminationFight.create.fight(this).time(time)
+  def schedule(time: Long, duration: Long) = {
+    val sf = ScheduledEliminationFight.create.fight(this).time(time).duration(duration)
     scheduled(sf)
     sf
   }

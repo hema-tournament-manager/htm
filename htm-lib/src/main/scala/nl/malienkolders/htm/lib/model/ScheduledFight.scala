@@ -17,6 +17,17 @@ trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] {
   object timeslot extends MappedLongForeignKey(this, ArenaTimeSlot)
   def fight: MappedLongForeignKey[F, _ <: Fight[_, _]]
   object time extends MappedLong(this)
+  object duration extends MappedLong(this)
+
+  def previous: Option[ScheduledFight[_]] = {
+    val ts = timeslot.foreign.get
+    ts.fights.sortBy(_.time.is).reverse.find(_.time.is < time.is)
+  }
+
+  def next: Option[ScheduledFight[_]] = {
+    val ts = timeslot.foreign.get
+    ts.fights.sortBy(_.time.is).find(_.time.is > time.is)
+  }
 
   def compare(that: F) = this.time.is.compareTo(that.time.is)
 
