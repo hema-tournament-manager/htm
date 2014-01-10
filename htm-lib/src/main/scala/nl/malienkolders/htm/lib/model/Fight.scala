@@ -16,6 +16,7 @@ case class MarshalledFightSummary(phaseType: PhaseType, id: Long, fighterA: Mars
 sealed abstract class Fighter {
   def format: String
   def participant: Option[Participant]
+  def sameAs(other: Fighter): Boolean
 }
 object Fighter {
   def parse(s: String): Fighter = Winner.parse(s)
@@ -29,6 +30,10 @@ case class Winner(fight: EliminationFight) extends Fighter {
   def participant = fight.finished_? match {
     case true => fight.winner
     case false => None
+  }
+  def sameAs(other: Fighter) = other match {
+    case w: Winner => fight.id.get == w.fight.id.get
+    case _ => false
   }
   override def toString = "Winner of " + fight.name.is
 }
@@ -46,6 +51,10 @@ case class Loser(fight: EliminationFight) extends Fighter {
     case true => fight.loser
     case false => None
   }
+  def sameAs(other: Fighter) = other match {
+    case l: Loser => fight.id.get == l.fight.id.get
+    case _ => false
+  }
   override def toString = "Loser of " + fight.name.is
 }
 object Loser extends (EliminationFight => Loser) {
@@ -62,6 +71,10 @@ case class PoolFighter(pool: Pool, ranking: Int) extends Fighter {
     case true => Some(pool.ranked(ranking - 1))
     case false => None
   }
+  def sameAs(other: Fighter) = other match {
+    case pf: PoolFighter => pool.id.get == pf.pool.id.get && ranking == pf.ranking
+    case _ => false
+  }
   override def toString = "Number " + ranking + " of pool " + pool.poolName
 }
 object PoolFighter extends ((Pool, Int) => PoolFighter) {
@@ -74,6 +87,10 @@ object PoolFighter extends ((Pool, Int) => PoolFighter) {
 }
 case class SpecificFighter(override val participant: Option[Participant]) extends Fighter {
   def format = participant.map(_.id.get.toString).getOrElse("")
+  def sameAs(other: Fighter) = other match {
+    case SpecificFighter(Some(otherParticipant)) => participant.map(_.id.is == otherParticipant.id.is).getOrElse(false)
+    case _ => false
+  }
   override def toString = participant.map(_.name.get).getOrElse("")
 }
 object SpecificFighter extends (Option[Participant] => SpecificFighter) {
@@ -87,6 +104,7 @@ object SpecificFighter extends (Option[Participant] => SpecificFighter) {
 case class UnknownFighter(label: String) extends Fighter {
   def format = label
   def participant = None
+  def sameAs(other: Fighter) = false
   override def toString = label
 }
 
@@ -179,6 +197,11 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def schedule(time: Long): ScheduledFight[_]
 
+  def sameFighters(other: Fight[_, _]) = {
+    val myFighters = fighterA :: fighterB :: Nil
+    val theirFighters = other.fighterA :: other.fighterB :: Nil
+    myFighters.filterNot(my => theirFighters.exists(_.sameAs(my))).isEmpty
+  }
 }
 
 object FightHelper {

@@ -15,6 +15,7 @@ import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.admin.lib._
 import nl.malienkolders.htm.admin.lib.exporter._
 import nl.malienkolders.htm.admin.lib.Utils.TimeRenderHelper
+import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.sitemap.LocPath.stringToLocPath
 import net.liftweb.util.IterableConst.itBindable
@@ -88,11 +89,28 @@ object TournamentView {
         case Nil => Unit
         case pt :: pts =>
           ps.head.participants += pt
-          fill(pts, ps.tail :+ ps.head)
+          fill(pts, if (ps.head.participants.size.isOdd) ps else ps.tail :+ ps.head)
       }
       fill(tournamentSubscriptions.map(_.participant.foreign.get).toList, t.poolPhase.pools)
       t.poolPhase.save
+      generatePoolFights()
       RedirectTo("#poolphase") & Reload
+    }
+
+    def generatePoolFights() = {
+      val ruleset = t.poolPhase.rulesetImpl
+      for (pool <- t.poolPhase.pools) {
+        val planned = ruleset.planning(pool)
+        // remove all fights that already exist in the pool
+        val newlyPlanned = planned.filterNot(plannedFight => pool.fights.exists(existingFight => existingFight.sameFighters(plannedFight)))
+
+        pool.fights ++= newlyPlanned
+
+        // renumber the merged fights
+        pool.fights.sortBy(_.order.is).zipWithIndex.foreach { case (f, i) => f.order(i + 1).name("Pool " + pool.poolName + ", Fight " + (i + 1)) }
+
+        pool.saveMe()
+      }
     }
 
     def generateElimination() = {

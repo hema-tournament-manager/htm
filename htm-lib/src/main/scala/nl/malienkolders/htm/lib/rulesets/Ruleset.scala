@@ -33,7 +33,7 @@ trait Ruleset {
 
   def id: String
 
-  def planning(phase: PoolPhase): List[Pool]
+  def planning(pool: Pool): List[PoolFight]
 
   def ranking(p: Pool): List[(Participant, Scores)]
 
