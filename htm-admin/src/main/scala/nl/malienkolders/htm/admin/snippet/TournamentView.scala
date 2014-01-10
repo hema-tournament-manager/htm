@@ -182,7 +182,7 @@ object TournamentView {
         ".country" #> Nil
     }
 
-    def renderFights(fights: Seq[EliminationFight]) = ".fight" #> fights.map(f =>
+    def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
       ".fight-title *" #> f.name.get &
         ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
         ".scheduled [href]" #> "/arenas/list" &
@@ -211,10 +211,11 @@ object TournamentView {
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
         "#autofill" #> SHtml.a(autofill _, Text("Auto-fill")) &
         "#generateElimination-top2" #> SHtml.a(generateElimination _, Text("Top 2 per pool")) &
-        ".tournamentPool" #> t.poolPhase.pools.map { p =>
+        ".tournamentPool" #> t.poolPhase.pools.map(p =>
           ".panel-title *" #> p.poolName &
-            ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }
-        } &
+            ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }) &
+        ".poolPhase" #> t.poolPhase.pools.map(p =>
+          renderFights(p.fights)) &
         ".eliminationRound" #> t.eliminationPhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {
           case (_, fights) => renderFights(fights)
         } &
