@@ -15,6 +15,7 @@ import scala.xml.Text
 import java.util.TimeZone
 import net.liftweb.common.Empty
 import net.liftweb.http.js.JsCmd
+import net.liftweb.common.Full
 
 class ArenaList {
 
@@ -41,12 +42,13 @@ class ArenaList {
   def unscheduleFights(sfs: Seq[ScheduledFight[_]]) = {
     for (sf <- sfs) {
       val ts = sf.timeslot.foreign.get
-      val f = sf.fight.foreign.get
+      sf.fight.foreign.foreach { f =>
+        f.scheduled(Empty)
+        f.save()
+      }
 
-      f.scheduled(Empty)
       sf.delete_!
 
-      f.save()
       ts.save()
     }
 
@@ -120,18 +122,22 @@ class ArenaList {
               divider,
               action("Unschedule", () => unscheduleFights(ts.fights)))) &
               ".fight" #> ts.fights.map { implicit sf =>
-                val f = sf.fight.foreign.get
-                implicit val p = f.phase.foreign.get
-                implicit val t = p.tournament.foreign.get
-                ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
-                  ".time *" #> df.format(new Date(sf.time.is)) &
-                  ".tournament *" #> tournamentName &
-                  ".name *" #> f.name.get &
-                  ".action" #> List(
-                    action("Move up", moveUp _),
-                    action("Move down", moveDown _),
-                    divider,
-                    action("Unschedule", unscheduleFight _))
+                sf.fight.foreign match {
+                  case Full(f) =>
+                    implicit val p = f.phase.foreign.get
+                    implicit val t = p.tournament.foreign.get
+                    ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
+                      ".time *" #> df.format(new Date(sf.time.is)) &
+                      ".tournament *" #> tournamentName &
+                      ".name *" #> f.name.get &
+                      ".action" #> List(
+                        action("Move up", moveUp _),
+                        action("Move down", moveDown _),
+                        divider,
+                        action("Unschedule", unscheduleFight _))
+                  case _ =>
+                    ".name *" #> "???"
+                }
               })) &
       ".unscheduled" #> (".tournament" #> Tournament.findAll().map(t =>
         ".tournamentName *" #> t.name.get &
