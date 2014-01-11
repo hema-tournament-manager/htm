@@ -10,8 +10,8 @@ import scala.xml._
 
 case class FightId(phase: String, id: Long)
 
-case class MarshalledFight(phaseType: PhaseType, id: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
-case class MarshalledFightSummary(phaseType: PhaseType, id: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFight(phaseType: String, id: Long, name: String, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFightSummary(phaseType: String, id: Long, name: String, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
 
 sealed abstract class Fighter {
   def format: String
@@ -175,8 +175,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def shortLabel = fighterA.toString + " vs " + fighterB.toString
 
-  def toMarshalled = MarshalledFight(phaseType, id.is, fighterAParticipant.obj.get.toMarshalled, fighterBParticipant.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
-  def toMarshalledSummary = MarshalledFightSummary(phaseType, id.is, fighterAParticipant.obj.get.toMarshalled, fighterBParticipant.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledFight(phaseType.code, id.is, name.is, fighterAParticipant.obj.get.toMarshalled, fighterBParticipant.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalledSummary = MarshalledFightSummary(phaseType.code, id.is, name.is, fighterAParticipant.obj.get.toMarshalled, fighterBParticipant.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
   def fromMarshalled(m: MarshalledFight) = {
     timeStart(m.timeStart)
     timeStop(m.timeStop)

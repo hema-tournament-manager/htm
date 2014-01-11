@@ -20,6 +20,9 @@ object AdminRest extends RestHelper {
     case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>
       JsonFightExporter.createExport
 
+    case "api" :: "event" :: Nil JsonGet _ =>
+      JString(Event.theOne.name.get)
+
     case "api" :: "arenas" :: Nil JsonGet _ =>
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 

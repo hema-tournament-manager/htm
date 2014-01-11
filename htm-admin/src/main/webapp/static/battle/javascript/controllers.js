@@ -427,18 +427,22 @@ var CorrectScoreCtrl = function($scope, $modalInstance, score) {
 }
 
 var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, appService) {
-	$rootScope.title = "Swordfish 2013";
+	$rootScope.title = "Loading...";
 	$rootScope.subtitle = "";
 	
 	$scope.arenas = new Array();
 	var _ = window._;
 
+	playRoutes.controllers.AdminInterface.event().get().success(function(data) {
+		$rootScope.title = JSON.parse(data);
+	});
+	
 	playRoutes.controllers.AdminInterface.arenas().get().success(function(data, status) {
-		$scope.arenas = _.map(data, function(arena) { arena.fetchedPools = new Array(); return arena; });
+		$scope.arenas = _.map(data, function(arena) { arena.fetchedFights = new Array(); return arena; });
 		_.each($scope.arenas, function(arena) {
 			playRoutes.controllers.AdminInterface.arena(arena.id).get().success(function(data, status) {
 				console.log(JSON.stringify(data));
-				arena.fetchedPools = data;
+				arena.fetchedFights = data;
 			});
 		});
 	}).error(function(data, status, headers) {
@@ -446,7 +450,7 @@ var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, ap
 	});
 	
 	$scope.subscribe = function(arena) {
-		$rootScope.arena = _.omit(arena, "fetchedPools");
+		$rootScope.arena = _.omit(arena, "fetchedFights");
 		$location.path("/fight");
 	};
 };
