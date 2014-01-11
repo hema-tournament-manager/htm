@@ -7,7 +7,7 @@ import net.liftweb.mapper.Mapper
 import java.lang.reflect.Method;
 
 class MappedRequiredString[T <: Mapper[T]](towner: T, theMaxLen: Int) extends MappedString[T](towner, theMaxLen) {
-  
+
   override def required_? = true
   override def validations = valMinLen(1, this.name + " is a required field") _ :: Nil
 }

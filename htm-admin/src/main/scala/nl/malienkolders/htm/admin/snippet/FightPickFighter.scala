@@ -21,10 +21,9 @@ object FightPickFighter {
   def render = {
 
     val param = FightPickFighter.loc.currentValue.get.param
-    val phase = param.take(1)
-    val id = param.drop(1).dropRight(1).toLong
+    val id = param.dropRight(1).toLong
     val side = param.takeRight(1)
-    val current: Fight[_, _] = FightHelper.dao(phase).findByKey(id).get
+    val current: Fight[_, _] = EliminationFight.findByKey(id).get
     val t = current.phase.foreign.get.tournament.foreign.get
 
     def fighter = side match {
