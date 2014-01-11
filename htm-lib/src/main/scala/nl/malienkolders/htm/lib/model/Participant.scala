@@ -30,7 +30,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   def primaryKeyField = id
   object id extends MappedLongIndex(this)
   object externalId extends MappedString(this, 8)
-  object name extends MappedPoliteString(this, 128)
+  object name extends MappedRequiredPoliteString(this, 128)
   object shortName extends MappedPoliteString(this, 64)
   object club extends MappedPoliteString(this, 128)
   object clubCode extends MappedPoliteString(this, 16)

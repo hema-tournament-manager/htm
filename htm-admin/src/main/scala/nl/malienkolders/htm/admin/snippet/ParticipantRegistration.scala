@@ -38,8 +38,13 @@ object ParticipantRegistration {
       for (fph <- upload) {
         PhotoImporterBackend.handlePhoto(p, fph.fileStream)
       }
-      p.save
-      S.redirectTo("/participants/list")
+      if (p.validate.isEmpty) {
+    	p.save
+    	S.redirectTo("/participants/list")
+      }
+      else {
+        S.error(p.validate)
+      }
     }
 
     ".photo [src]" #> s"/photo/${p.externalId.get}/l" &

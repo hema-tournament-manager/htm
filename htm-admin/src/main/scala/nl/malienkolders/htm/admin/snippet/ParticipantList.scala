@@ -87,7 +87,11 @@ object ParticipantList {
                 Focus("countrySelectDropdown")
 
             }) &
-            ".action" #> <a href={ "/participants/register/" + p.externalId.is } style="margin-right: 10px">register</a>
+            ".action" #> <a href={ "/participants/register/" + p.externalId.is } style="margin-right: 10px">register</a> &
+            ".delete" #> SHtml.a({ () => 
+              p.delete_!
+              Reload
+            }, Text("delete"))
       }) &
       ".totals" #> (
         ".people *" #> ps.size &
