@@ -4,7 +4,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	if (!$rootScope.arena) {
 		$location.path("/");
 	} else {
-	console.log($rootScope.arena);
 	$rootScope.title = "Loading...";
 	$rootScope.subtitle = $rootScope.arena.name;
 	var _ = window._;
@@ -18,50 +17,46 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     $scope.announcement = "";
     $scope.announcementBuffer = "";
 	
+	console.log(JSON.stringify($scope.arena));
 	playRoutes.controllers.AdminInterface.arena($scope.arena.id).get().success(function(data, status) {
-		$rootScope.title = data[0].round.tournament.name;
-		$scope.pools = data;
+		$rootScope.title = data[0].fight.tournament.name;
+		$scope.fights = new Array();
 		var globalOrder = 1;
-		_.each(_.reject($scope.pools, function(pool) { return pool.finished; }), function(pool) {
-			for (var i = 1; i <= pool.fightCount; i++) {
-				var fight = {poolId: pool.id, pool: pool, order: i, globalOrder: globalOrder++, loading: true, started: false};
-				$scope.fights.push(fight);
-				playRoutes.controllers.AdminInterface.poolFight(pool.id, fight.order).get().success(function(data, status) {
-					var fight = _.findWhere($scope.fights, {poolId: data.poolId, order: data.order});
-					fight = _.extend(fight, data);
-					fight.loading = false;
-    				fight['totalScore'] = function() {
-    					return _.reduce(this.scores, function(memo, score) {
-    						memo.a += score.pointsRed;
-    						memo.b += score.pointsBlue;
-    						memo.d += score.doubles;
-    						memo.x += score.exchanges;
-    						return memo;
-    					}, {a: 0, b: 0, d: 0, x: 0});
-    				};
-    				fight['lastScore'] = function() {
-    					var result = _.reduceRight(this.scores, function(memo, score) {
-    						if (!memo.score) {
-    							if (score.scoreType == "undo") {
-    								memo.undos += 1;
-    							} else if (memo.undos == 0) {
-    								memo.score = score;
-    							} else {
-    								memo.undos -= 1;
-    							}
-    						}
-    						return memo;
-    					}, {undos: 0, score: false});
-    					return result.score;
-    				};
-					$scope.fights[fight.globalOrder - 1] = fight;
-					if (($scope.currentFight.globalOrder == -1 || fight.globalOrder < $scope.currentFight.globalOrder) && fight.timeStop == 0) {
-						$scope.currentFight = fight;
+		_.each(_.reject(data, function(fight) { return fight.fight.finished; }), function(f) {
+			var fight = {globalOrder: globalOrder++, started: false, time: f.time};
+			fight = _.extend(fight, f.fight);
+			fight['totalScore'] = function() {
+				return _.reduce(this.scores, function(memo, score) {
+					memo.a += score.pointsRed;
+					memo.b += score.pointsBlue;
+					memo.d += score.doubles;
+					memo.x += score.exchanges;
+					return memo;
+				}, {a: 0, b: 0, d: 0, x: 0});
+			};
+			fight['lastScore'] = function() {
+				var result = _.reduceRight(this.scores, function(memo, score) {
+					if (!memo.score) {
+						if (score.scoreType == "undo") {
+							memo.undos += 1;
+						} else if (memo.undos == 0) {
+							memo.score = score;
+						} else {
+							memo.undos -= 1;
+						}
 					}
-				});
+					return memo;
+				}, {undos: 0, score: false});
+				return result.score;
+			};
+			$scope.fights.push(fight);
+			if (($scope.currentFight.globalOrder == -1 || fight.globalOrder < $scope.currentFight.globalOrder) && fight.timeStop == 0) {
+				$scope.currentFight = fight;
 			}
 		});
+		console.log(JSON.stringify($scope.fights));
 	});
+	
 	
     $scope.pendingOperation = false;
     
@@ -378,7 +373,9 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     });
     
     $scope.$watch('announcement', function(newValue, oldValue) {
-    	playRoutes.controllers.AdminInterface.messageUpdate($scope.currentFight.id).post(JSON.stringify(newValue));
+    	if ($scope.currentFight.id) {
+    		playRoutes.controllers.AdminInterface.messageUpdate($scope.currentFight.id).post(JSON.stringify(newValue));
+    	}
     });
     
     $(window).on("beforeunload", function() {
