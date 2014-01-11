@@ -18,7 +18,7 @@
 		<tbody>
 			<tr data-ng-repeat="fight in arena.fetchedFights | orderBy:'time'" data-ng-class="{true: 'success', false: 'waiting'}[fight.fight.finished]" data-ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
 				<td>{{fight.time | hours}}</td>
-				<td>{{fight.fight.name}}</td>
+				<td>{{fight.fight.tournament.name}}</td>
 				<td>{{fight.fight.name}}</td>
 			</tr>
 		</tbody>

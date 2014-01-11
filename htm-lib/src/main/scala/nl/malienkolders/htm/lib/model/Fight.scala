@@ -10,8 +10,8 @@ import scala.xml._
 
 case class FightId(phase: String, id: Long)
 
-case class MarshalledFight(phaseType: String, id: Long, name: String, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
-case class MarshalledFightSummary(phaseType: String, id: Long, name: String, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFight(tournament: MarshalledTournamentSummary, phaseType: String, id: Long, name: String, fighterA: Option[MarshalledParticipant], fighterB: Option[MarshalledParticipant], timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFightSummary(tournament: MarshalledTournamentSummary, phaseType: String, id: Long, name: String, fighterA: Option[MarshalledParticipant], fighterB: Option[MarshalledParticipant], timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
 
 sealed abstract class Fighter {
   def format: String
@@ -116,7 +116,6 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   self: F =>
 
-  object tournament extends MappedLongForeignKey(this, Tournament)
   object name extends MappedString(this, 128)
   object inProgress extends MappedBoolean(this)
   object fighterAFuture extends MappedString(this, 16)
@@ -177,8 +176,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def shortLabel = fighterA.toString + " vs " + fighterB.toString
 
-  def toMarshalled = MarshalledFight(phaseType.code, id.is, name.is, fighterA.participant.get.toMarshalled, fighterB.participant.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
-  def toMarshalledSummary = MarshalledFightSummary(phaseType.code, id.is, name.is, fighterA.participant.get.toMarshalled, fighterB.participant.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledFight(phase.foreign.get.tournament.foreign.get.toMarshalledSummary, phaseType.code, id.is, name.is, fighterA.participant.map(_.toMarshalled), fighterB.participant.map(_.toMarshalled), timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalledSummary = MarshalledFightSummary(phase.foreign.get.tournament.foreign.get.toMarshalledSummary, phaseType.code, id.is, name.is, fighterA.participant.map(_.toMarshalled), fighterB.participant.map(_.toMarshalled), timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
   def fromMarshalled(m: MarshalledFight) = {
     timeStart(m.timeStart)
     timeStop(m.timeStop)
