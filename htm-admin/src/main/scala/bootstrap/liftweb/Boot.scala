@@ -88,6 +88,7 @@ class Boot {
         TournamentView.menu,
         TournamentEdit.menu)) ::
         FightEdit.menu ::
+        FightPickFighter.menu ::
         (Menu.i("Participants") / "participants" / "list") ::
         ParticipantRegistration.menu ::
         (Menu.i("Arenas") / "arenas" / "list") ::

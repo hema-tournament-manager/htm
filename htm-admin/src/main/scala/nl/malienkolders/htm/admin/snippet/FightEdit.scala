@@ -4,6 +4,7 @@ import net.liftweb._
 import common._
 import http._
 import sitemap._
+import Loc._
 import util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import java.text.SimpleDateFormat
@@ -12,17 +13,14 @@ import java.util.Date
 
 object FightEdit {
 
-  val menu = Menu.params[FightId]("Edit Fight", "Edit Fight", {
-    case phase :: AsLong(id) :: Nil => Full(FightId(phase, id))
-    case _ => Empty
-  },
-    pi => pi.phase :: pi.id.toString :: Nil) / "fights" / "edit" >> Loc.Hidden
+  val menu = (Menu.param[ParamInfo]("Edit Fight", "Edit Fight", s => Full(ParamInfo(s)),
+    pi => pi.param) / "fights" / "edit" >> Hidden)
   lazy val loc = menu.toLoc
 
   def render = {
 
-    val id = FightEdit.loc.currentValue.get
-    val f: Fight[_, _] = FightHelper.dao(id.phase).findByKey(id.id).get
+    val id = FightEdit.loc.currentValue.get.param
+    val f: Fight[_, _] = FightHelper.dao(id.take(1)).findByKey(id.drop(1).toLong).get
     val totalScore = f.currentScore
 
     val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")

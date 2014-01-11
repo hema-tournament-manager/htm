@@ -39,10 +39,9 @@ object ParticipantRegistration {
         PhotoImporterBackend.handlePhoto(p, fph.fileStream)
       }
       if (p.validate.isEmpty) {
-    	p.save
-    	S.redirectTo("/participants/list")
-      }
-      else {
+        p.save
+        S.redirectTo("/participants/list")
+      } else {
         S.error(p.validate)
       }
     }

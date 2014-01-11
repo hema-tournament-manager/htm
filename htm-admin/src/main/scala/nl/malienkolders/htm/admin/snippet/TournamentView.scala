@@ -192,7 +192,7 @@ object TournamentView {
       RedirectTo("#eliminationphase") & Reload
     }
 
-    def renderFighter(fighter: Fighter) = fighter match {
+    def renderFighter(f: Fight[_, _], side: String, fighter: Fighter) = (fighter match {
       case SpecificFighter(Some(pt)) => renderParticipant(pt.subscription(t).get)
       case SpecificFighter(None) => ".label *" #> "?" &
         ".name *" #> "Pick a fighter" &
@@ -202,19 +202,20 @@ object TournamentView {
         ".name *" #> fighter.toString &
         ".club" #> Nil &
         ".country" #> Nil
-    }
+    }) & ".edit [href]" #> s"/fights/pick/${f.phaseType.code}${f.id.is}${side}"
 
     def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
       ".fight-title *" #> f.name.get &
+        ".scheduled [name]" #> s"fight${f.id.get}" &
         ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
         ".scheduled [href]" #> "/arenas/list" &
         ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled") &
-        ".participant" #> (f.fighterA :: f.fighterB :: Nil).map(renderFighter _))
+        ".participant" #> (f.fighterA :: f.fighterB :: Nil).zipWithIndex.map { case (fighter, i) => renderFighter(f, if (i == 0) "A" else "B", fighter) })
 
     def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
       "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
-      "a [name]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
-      "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
+      ".register [name]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
+      ".register [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
       ".label *" #> sub.fighterNumber.get &
       ".name *" #> sub.participant.foreign.get.name.get &
       ".club *" #> sub.participant.foreign.get.clubCode.get &

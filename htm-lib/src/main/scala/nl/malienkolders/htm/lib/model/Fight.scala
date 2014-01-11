@@ -113,10 +113,6 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   self: F =>
 
-  private val fightToPhaseType: Map[LongKeyedMapper[_], PhaseType] = Map(
-    PoolFight -> PoolType,
-    EliminationFight -> EliminationType)
-
   object tournament extends MappedLongForeignKey(this, Tournament)
   object name extends MappedString(this, 128)
   object inProgress extends MappedBoolean(this)
@@ -128,7 +124,7 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
   object timeStop extends MappedLong(this)
   object netDuration extends MappedLong(this)
 
-  def phaseType = fightToPhaseType(getSingleton)
+  def phaseType: PhaseType
   def phase: MappedLongForeignKey[_, _ <: Phase[_]]
   def scheduled: MappedLongForeignKey[_, _ <: ScheduledFight[_]]
 
@@ -231,6 +227,7 @@ class PoolFight extends Fight[PoolFight, PoolFightScore] {
   object scheduled extends MappedLongForeignKey(this, ScheduledPoolFight)
 
   def phase = pool.foreign.get.phase
+  val phaseType = PoolType
 
   def toViewerSummary = MarshalledViewerPoolFightSummary(
     order.is,
@@ -254,6 +251,8 @@ class EliminationFight extends Fight[EliminationFight, EliminationFightScore] {
   def scoreMeta = EliminationFightScore
 
   object phase extends MappedLongForeignKey(this, EliminationPhase)
+  val phaseType = EliminationType
+
   object round extends MappedLong(this)
   object scheduled extends MappedLongForeignKey(this, ScheduledEliminationFight)
 
