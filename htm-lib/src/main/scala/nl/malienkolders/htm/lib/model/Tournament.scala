@@ -13,7 +13,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
 
   def primaryKeyField = id
   object id extends MappedLongIndex(this)
-  object name extends MappedString(this, 32)
+  object name extends MappedString(this, 64)
   object mnemonic extends MappedString(this, 8)
   object identifier extends MappedString(this, 32)
   object phases extends MappedOneToManyBase[Phase[_]]({ () =>
@@ -52,7 +52,17 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
 
   def finalsPhase: EliminationPhase = phases(2).asInstanceOf[EliminationPhase]
 }
-object Tournament extends Tournament with LongKeyedMetaMapper[Tournament]
+object Tournament extends Tournament with LongKeyedMetaMapper[Tournament] {
+
+  override def create = {
+    val t = super.create
+    t.phases ++= List(PoolPhase.create, EliminationPhase.create, EliminationPhase.create)
+    t.poolPhase.name("Pool Phase")
+    t.eliminationPhase.name("Elimination Phase")
+    t.finalsPhase.name("Finals")
+    t
+  }
+}
 
 class TournamentParticipants extends LongKeyedMapper[TournamentParticipants] with IdPK {
   def getSingleton = TournamentParticipants

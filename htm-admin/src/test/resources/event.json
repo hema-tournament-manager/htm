@@ -1,0 +1,57 @@
+{	"name": "European Martial Arts Gathering",
+	"days": [
+		{	"date": "2014-02-01",
+			"timeslots": [
+				{ "name": "Check-in", "from": "10:00", "to": "12:00" },
+				{ "name": "Pools Longsword Tournament", "from": "12:00", "to": "13:00" },
+				{ "name": "Elimination Longsword Tournament", "from": "13:00", "to": "14:00" },
+				{ "name": "Pools Rapier Tournament", "from": "15:00", "to": "16:00" },
+				{ "name": "Elimination Rapier Tournament", "from": "16:00", "to": "17:00" },
+				{ "name": "Pools Albion Steel Longsword Invitational", "from": "17:00", "to": "18:00" },
+				{ "name": "Elimination Albion Steel Longsword Invitational", "from": "18:00", "to": "19:00" }
+			]
+		},
+		{	"date": "2014-02-02",
+			"timeslots": [
+				{ "name": "Check-in", "from": "09:00", "to": "11:00" },
+				{ "name": "Pools Dussack Tournament", "from": "11:00", "to": "12:00" },
+				{ "name": "Elimination Dussack Tournament", "from": "12:00", "to": "13:00" },
+				{ "name": "Finals", "from": "14:00", "to": "18:00" }
+			]
+		},
+		{	"date": "2014-02-03",
+			"timeslots": [{ "name": "Workshops", "from": "09:00", "to": "16:00" }]
+		}
+	],
+	"arenas": 2,
+	"tournaments": [
+		{	"id": "dussack",
+			"name": "Dussack Tournament",
+			"mnemonic": "D",
+			"poolPhase": { "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
+			"finalPhase": { }
+		},
+		{	"id": "rapier",
+			"name": "Rapier Tournament",
+			"mnemonic": "R",
+			"poolPhase": { "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
+			"finalPhase": { }
+		},
+		{	"id": "longsword",
+			"name": "Longsword Tournament",
+			"mnemonic": "L",
+			"poolPhase": { "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
+			"finalPhase": { }
+		},
+		{	"id": "albion",
+			"name": "Albion Steel Longsword Invitational",
+			"mnemonic": "A",
+			"poolPhase": { "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
+			"finalPhase": { }
+		}
+	]
+}

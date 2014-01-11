@@ -21,11 +21,7 @@ class TournamentList {
       }
 
       val t = Tournament.create.identifier(identifier).name(name).mnemonic(label)
-      t.phases ++= List(PoolPhase.create, EliminationPhase.create, EliminationPhase.create)
-      t.poolPhase.name("Pool Phase")
       t.poolPhase.pools ++= (for (i <- 1 to pools) yield { Pool.create(t).order(i) })
-      t.eliminationPhase.name("Elimination Phase")
-      t.finalsPhase.name("Finals")
       t.save()
 
       S.redirectTo("/tournaments/list")
