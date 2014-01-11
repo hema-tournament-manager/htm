@@ -47,7 +47,7 @@ object TournamentView {
     val tournamentSubscriptions = t.subscriptions.sortBy(_.experience.is).reverse
     val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.subscriptions.map(_.participant.obj.get).toList
 
-    def addParticipant(tournament: Tournament, participantId: Long) {
+    def addParticipant(tournament: Tournament, participantId: Long) = {
       val participant = Participant.findByKey(participantId).get
       tournament.subscriptions += TournamentParticipants.create.
         participant(participant).
@@ -55,7 +55,7 @@ object TournamentView {
         gearChecked(true).
         fighterNumber(tournament.nextFighterNumber)
       tournament.save
-      refresh(Some(participant))
+      RedirectTo("#participant" + participant.externalId.get) & Reload
     }
 
     def deleteParticipantFromTournament(tournament: Tournament, participant: Participant) {
@@ -189,7 +189,9 @@ object TournamentView {
         ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled") &
         ".participant" #> (f.fighterA :: f.fighterB :: Nil).map(renderFighter _))
 
-    def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
+    def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
+      "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
+      "a [name]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
       "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
       ".label *" #> sub.fighterNumber.get &
       ".name *" #> sub.participant.foreign.get.name.get &

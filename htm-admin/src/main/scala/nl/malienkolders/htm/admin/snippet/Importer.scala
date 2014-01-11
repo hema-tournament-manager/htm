@@ -3,6 +3,7 @@ package nl.malienkolders.htm.admin.snippet
 import net.liftweb._
 import http._
 import common._
+import mapper._
 import util.Helpers._
 import scala.xml.NodeSeq
 import nl.malienkolders.htm.lib.model._
@@ -19,19 +20,22 @@ object Importer {
     var json = ""
 
     def process(): () => Any = {
-      PoolFight.bulkDelete_!!()
-      EliminationFight.bulkDelete_!!()
-      TournamentParticipants.bulkDelete_!!()
-      Participant.bulkDelete_!!()
-      PoolPhase.bulkDelete_!!()
-      EliminationPhase.bulkDelete_!!()
-      Tournament.bulkDelete_!!()
-
       val data = Swordfish2013Importer.doImport(SwordfishSettings(url, Country.findAll.map(c => c.code2.get -> c.name.get)))
 
-      //TODO: fix importer! ParticipantImporter.doImport(data)
+      data.participants.foreach { pDef =>
+        if (Participant.find(By(Participant.externalId, pDef.sourceIds.head.id)).isEmpty) {
+          Participant.create.externalId(pDef.sourceIds.head.id)
+            .name(pDef.name)
+            .shortName(pDef.shortName)
+            .club(pDef.club)
+            .clubCode(pDef.clubCode)
+            .country(Country.find(By(Country.code2, pDef.country)))
+            .save()
+        }
+      }
+
       S.notice("Import succeeded")
-      S.redirectTo("/tournaments/list")
+      S.redirectTo("/participants/list")
     }
 
     def processJson() = {
