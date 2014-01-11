@@ -71,10 +71,10 @@
 			<div class="panel-body htm-current-fight-box" data-ng-show="currentFight.started">
 				<div class="row htm-fight-buttons">
 					<div class="col-sm-4 col-md-4 htm-clickable" data-ng-click="toggleTimer()">
-						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{round.timeLimitOfFight | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
+						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{currentFight.timeLimit | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4 htm-clickable">
-						<big data-ng-click="showExchanges()">Exchange: {{currentFight.totalScore().x}} <span data-ng-show="round.exchangeLimit &gt; 0">of {{round.exchangeLimit}}</span></big>
+						<big data-ng-click="showExchanges()">Exchange: {{currentFight.totalScore().x}} <span data-ng-show="currentFight.exchangeLimit &gt; 0">of {{currentFight.exchangeLimit}}</span></big>
 					</div>
 					<div class="col-sm-2 col-md-2">
 						<button type="button" class="btn btn-sm btn-default" data-ng-click="undoClicked()" data-ng-disabled="currentFight.scores.length == 0">Undo</button>
@@ -199,7 +199,7 @@
 </div>
 
 <div id="score-options" class="btn-group">
-	<button type="button" ng-repeat="score in round.possiblePoints" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
+	<button type="button" ng-repeat="score in currentFight.possiblePoints" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
 	<button type="button" ng-click="cancelScoreSelect()" class="btn btn-default btn-lg" title="Cancel">
 		<span class="glyphicon glyphicon-remove-circle"></span>
 	</button>

@@ -13,7 +13,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     $scope.currentFight = {globalOrder: -1, started: false};
     $scope.totalScore = {a: 0, b: 0, d: 0, x: 0};
     $scope.fightsShowing = [1, 5];
-    $scope.round = false;
     $scope.announcement = "";
     $scope.announcementBuffer = "";
 	
@@ -291,15 +290,15 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     }
     
     $scope.exchangeLimitReached = function() {
-    	return $scope.round != false && $scope.currentFight.started && $scope.round.exchangeLimit > 0 && $scope.currentFight.totalScore().x >= $scope.round.exchangeLimit;
+    	return $scope.currentFight.started && $scope.currentFight.exchangeLimit > 0 && $scope.currentFight.totalScore().x >= $scope.currentFight.exchangeLimit;
     };
     
     $scope.timeLimitReached = function() {
-    	return $scope.round != false && $scope.currentFight.started && $scope.timerValue() >= $scope.round.timeLimitOfFight;
+    	return $scope.currentFight.started && $scope.timerValue() >= $scope.currentFight.timeLimitOfFight;
     };
     
     $scope.doubleHitLimitReached = function() {
-    	return $scope.round != false && $scope.currentFight.started && $scope.currentFight.totalScore().d >= 3;
+    	return $scope.currentFight.started && $scope.currentFight.totalScore().d >= 5;
     };
     
     $scope.sendUpdate = function() {
@@ -310,26 +309,22 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 		$scope.resetTimer();
     	
 		if ($scope.currentFight.globalOrder > -1) {
-	    	playRoutes.controllers.AdminInterface.round($scope.currentFight.pool.round.id).get().success(function(data, status) {
-	    		$scope.round = data;
-	    		
-	    		$scope.currentFight.started = true;
-	    		$scope.currentFight.timeStart = Date.now();
-	    		$scope.timer.currentTime = _.reduce($scope.currentFight.scores, function(memo, score) { return Math.max(score.timeInFight, memo); }, 0);
-	    		$scope.timer.displayTime = $scope.timerValue();
-	    		
-	    		$scope.sendUpdate();
-	    		
-	        	playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
+	    	$scope.currentFight.started = true;
+	    	$scope.currentFight.timeStart = Date.now();
+	    	$scope.timer.currentTime = _.reduce($scope.currentFight.scores, function(memo, score) { return Math.max(score.timeInFight, memo); }, 0);
+	    	$scope.timer.displayTime = $scope.timerValue();
+	    	
+	    	$scope.sendUpdate();
+	    	
+	        playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
 
-	        	var next = $scope.findNextFight();
-	    		if (next) {
-	    			$scope.defaultAnnouncements.nextup = "Next up: <span class=\"badge red\">" + next.fighterA.externalId + "</span> <b>" + next.fighterA.shortName  + "</b> vs <span class=\"badge blue\">" + next.fighterB.externalId + "</span> <b>" + next.fighterB.shortName + "</b> at " + $filter('hours')(next.plannedTime);
-	    		} else {
-	    			$scope.defaultAnnouncements.nextup = "";
-	    		}
-	    		$scope.defaultAnnouncement('nextup');
-	    	});
+	        var next = $scope.findNextFight();
+	    	if (next) {
+	    		$scope.defaultAnnouncements.nextup = "Next up: <span class=\"label label-default\">" + next.tournament.memo + "</span> <span class=\"badge red\">" + next.fighterA.participant.externalId + "</span> <b>" + next.fighterA.label  + "</b> vs <span class=\"badge blue\">" + next.fighterB.participant.externalId + "</span> <b>" + next.fighterB.label + "</b> at " + $filter('hours')(next.time);
+	    	} else {
+	    		$scope.defaultAnnouncements.nextup = "";
+	    	}
+	    	$scope.defaultAnnouncement('nextup');
     	}
     };
     

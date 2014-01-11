@@ -10,8 +10,34 @@ import scala.xml._
 
 case class FightId(phase: String, id: Long)
 
-case class MarshalledFight(tournament: MarshalledTournamentSummary, phaseType: String, id: Long, name: String, fighterA: MarshalledFighter, fighterB: MarshalledFighter, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
-case class MarshalledFightSummary(tournament: MarshalledTournamentSummary, phaseType: String, id: Long, name: String, fighterA: MarshalledFighter, fighterB: MarshalledFighter, timeStart: Long, timeStop: Long, netDuration: Long, scores: List[MarshalledScore])
+case class MarshalledFight(
+  tournament: MarshalledTournamentSummary,
+  phaseType: String,
+  id: Long,
+  name: String,
+  fighterA: MarshalledFighter,
+  fighterB: MarshalledFighter,
+  timeStart: Long,
+  timeStop: Long,
+  netDuration: Long,
+  scores: List[MarshalledScore],
+  timeLimit: Long,
+  exchangeLimit: Int,
+  possiblePoints: List[Int])
+case class MarshalledFightSummary(
+  tournament: MarshalledTournamentSummary,
+  phaseType: String,
+  id: Long,
+  name: String,
+  fighterA: MarshalledFighter,
+  fighterB: MarshalledFighter,
+  timeStart: Long,
+  timeStop: Long,
+  netDuration: Long,
+  scores: List[MarshalledScore],
+  timeLimit: Long,
+  exchangeLimit: Int,
+  possiblePoints: List[Int])
 case class MarshalledFighter(label: String, participant: Option[MarshalledParticipant])
 
 sealed abstract class Fighter {
@@ -178,8 +204,34 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def shortLabel = fighterA.toString + " vs " + fighterB.toString
 
-  def toMarshalled = MarshalledFight(phase.foreign.get.tournament.foreign.get.toMarshalledSummary, phaseType.code, id.is, name.is, fighterA.toMarshalled, fighterB.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
-  def toMarshalledSummary = MarshalledFightSummary(phase.foreign.get.tournament.foreign.get.toMarshalledSummary, phaseType.code, id.is, name.is, fighterA.toMarshalled, fighterB.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledFight(
+    phase.foreign.get.tournament.foreign.get.toMarshalledSummary,
+    phaseType.code,
+    id.is,
+    name.is,
+    fighterA.toMarshalled,
+    fighterB.toMarshalled,
+    timeStart.is,
+    timeStop.is,
+    netDuration.is,
+    scores.map(_.toMarshalled).toList,
+    phase.foreign.get.rulesetImpl.fightProperties.timeLimit,
+    phase.foreign.get.rulesetImpl.fightProperties.exchangeLimit,
+    phase.foreign.get.rulesetImpl.possiblePoints)
+  def toMarshalledSummary = MarshalledFightSummary(
+    phase.foreign.get.tournament.foreign.get.toMarshalledSummary,
+    phaseType.code,
+    id.is,
+    name.is,
+    fighterA.toMarshalled,
+    fighterB.toMarshalled,
+    timeStart.is,
+    timeStop.is,
+    netDuration.is,
+    scores.map(_.toMarshalled).toList,
+    phase.foreign.get.rulesetImpl.fightProperties.timeLimit,
+    phase.foreign.get.rulesetImpl.fightProperties.exchangeLimit,
+    phase.foreign.get.rulesetImpl.possiblePoints)
   def fromMarshalled(m: MarshalledFight) = {
     timeStart(m.timeStart)
     timeStop(m.timeStop)
