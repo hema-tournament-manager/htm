@@ -120,9 +120,11 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
   object name extends MappedString(this, 128)
   object inProgress extends MappedBoolean(this)
   object fighterAFuture extends MappedString(this, 16)
-  object fighterAParticipant extends MappedLongForeignKey(this, Participant)
+  def fighterAFuture(f: Fighter): F = fighterAFuture(f.format)
+  def fighterAFuture(p: Participant): F = fighterAFuture(SpecificFighter(Some(p)))
   object fighterBFuture extends MappedString(this, 16)
-  object fighterBParticipant extends MappedLongForeignKey(this, Participant)
+  def fighterBFuture(f: Fighter): F = fighterBFuture(f.format)
+  def fighterBFuture(p: Participant): F = fighterBFuture(SpecificFighter(Some(p)))
   object timeStart extends MappedLong(this)
   object timeStop extends MappedLong(this)
   object netDuration extends MappedLong(this)
@@ -154,29 +156,29 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
   }
 
   def inFight_?(p: Participant) = (for {
-    a <- fighterAParticipant
-    b <- fighterBParticipant
+    a <- fighterA.participant
+    b <- fighterB.participant
   } yield a.id.is == p.id.is || b.id.is == p.id.is) getOrElse false
 
-  def fighterA: Fighter = fighterAParticipant.foreign.map(p => SpecificFighter(Some(p))).getOrElse(Fighter.parse(fighterAFuture.get))
-  def fighterB: Fighter = fighterBParticipant.foreign.map(p => SpecificFighter(Some(p))).getOrElse(Fighter.parse(fighterBFuture.get))
+  def fighterA: Fighter = Fighter.parse(fighterAFuture.get)
+  def fighterB: Fighter = Fighter.parse(fighterBFuture.get)
 
   def winner = currentScore match {
-    case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterAParticipant.obj.get)
-    case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterBParticipant.obj.get)
+    case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterA.participant.get)
+    case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterB.participant.get)
     case _ => Empty
   }
 
   def loser = currentScore match {
-    case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterAParticipant.obj.get)
-    case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterBParticipant.obj.get)
+    case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterA.participant.get)
+    case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterB.participant.get)
     case _ => Empty
   }
 
   def shortLabel = fighterA.toString + " vs " + fighterB.toString
 
-  def toMarshalled = MarshalledFight(phaseType.code, id.is, name.is, fighterAParticipant.obj.get.toMarshalled, fighterBParticipant.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
-  def toMarshalledSummary = MarshalledFightSummary(phaseType.code, id.is, name.is, fighterAParticipant.obj.get.toMarshalled, fighterBParticipant.obj.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalled = MarshalledFight(phaseType.code, id.is, name.is, fighterA.participant.get.toMarshalled, fighterB.participant.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
+  def toMarshalledSummary = MarshalledFightSummary(phaseType.code, id.is, name.is, fighterA.participant.get.toMarshalled, fighterB.participant.get.toMarshalled, timeStart.is, timeStop.is, netDuration.is, scores.map(_.toMarshalled).toList)
   def fromMarshalled(m: MarshalledFight) = {
     timeStart(m.timeStart)
     timeStop(m.timeStop)
@@ -234,8 +236,8 @@ class PoolFight extends Fight[PoolFight, PoolFightScore] {
 
   def toViewerSummary = MarshalledViewerPoolFightSummary(
     order.is,
-    fighterAParticipant.foreign.get.toMarshalled,
-    fighterBParticipant.foreign.get.toMarshalled,
+    fighterA.participant.get.toMarshalled,
+    fighterB.participant.get.toMarshalled,
     started_?,
     finished_?,
     currentScore)
