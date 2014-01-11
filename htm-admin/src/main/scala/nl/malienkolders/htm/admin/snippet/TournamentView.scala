@@ -176,8 +176,8 @@ object TournamentView {
 
     def renderFighter(f: Fight[_, _], side: String, fighter: Fighter) = (fighter match {
       case SpecificFighter(Some(pt)) => renderParticipant(pt.subscription(t).get)
-      case SpecificFighter(None) => ".label *" #> "?" &
-        ".name *" #> "Pick a fighter" &
+      case SpecificFighter(None) | UnknownFighter(_) => ".label *" #> "?" &
+        ".name *" #> <a href={ s"/fights/pick/${f.id.is}${side}" }>Pick a fighter</a> &
         ".club *" #> Nil &
         ".country *" #> Nil
       case _ => ".label *" #> "?" &
