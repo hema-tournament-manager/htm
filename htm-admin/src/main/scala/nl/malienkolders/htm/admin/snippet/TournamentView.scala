@@ -84,35 +84,6 @@ object TournamentView {
         case _ => ""
       }.getOrElse(""))
 
-    def autofill() = {
-      def fill(pts: List[Participant], ps: Seq[Pool]): Unit = pts match {
-        case Nil => Unit
-        case pt :: pts =>
-          ps.head.participants += pt
-          fill(pts, if (ps.head.participants.size.isOdd) ps else ps.tail :+ ps.head)
-      }
-      fill(tournamentSubscriptions.map(_.participant.foreign.get).toList, t.poolPhase.pools)
-      t.poolPhase.save
-      generatePoolFights()
-      RedirectTo("#poolphase") & Reload
-    }
-
-    def generatePoolFights() = {
-      val ruleset = t.poolPhase.rulesetImpl
-      for (pool <- t.poolPhase.pools) {
-        val planned = ruleset.planning(pool)
-        // remove all fights that already exist in the pool
-        val newlyPlanned = planned.filterNot(plannedFight => pool.fights.exists(existingFight => existingFight.sameFighters(plannedFight)))
-
-        pool.fights ++= newlyPlanned
-
-        // renumber the merged fights
-        pool.fights.sortBy(_.order.is).zipWithIndex.foreach { case (f, i) => f.order(i + 1).name("Pool " + pool.poolName + ", Fight " + (i + 1)) }
-
-        pool.saveMe()
-      }
-    }
-
     def generateFinals() = {
       val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
 
@@ -224,6 +195,7 @@ object TournamentView {
       ".pool *" #> t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.poolName) &
       ".initialRanking *" #> sub.experience.get
 
+    val generatePoolPhase = new GeneratePoolPhase(t)
     // bindings
     "#tournamentName" #> t.name &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
@@ -233,9 +205,10 @@ object TournamentView {
         "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
         "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
-        "#autofill" #> SHtml.a(autofill _, Text("Auto-fill")) &
         "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool")) &
         "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
+        "#pool-generation-pool-count" #> SHtml.text(t.poolPhase.pools.size.toString, s => generatePoolPhase.poolCount = s.toInt) &
+        "#pool-generation-generate" #> SHtml.submit("Generate", () => {generatePoolPhase.generate(); S.redirectTo("#poolphase")}) &
         ".tournamentPool" #> t.poolPhase.pools.map(p =>
           ".panel-title *" #> p.poolName &
             ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }) &

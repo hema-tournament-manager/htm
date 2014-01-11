@@ -81,7 +81,10 @@ object PoolFighter extends ((Pool, Int) => PoolFighter) {
   val re = """^P(\d+):(\d+)$""".r
 
   def parse(s: String): Option[PoolFighter] = re.findFirstIn(s) match {
-    case Some(re(poolId, ranking)) => Some(PoolFighter(Pool.findByKey(poolId.toLong).get, ranking.toInt))
+    case Some(re(poolId, ranking)) => Pool.findByKey(poolId.toLong) match {
+      case Full(p) => Some(PoolFighter(p, ranking.toInt))
+      case _ => None
+    }
     case None => None
   }
 }

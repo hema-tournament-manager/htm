@@ -5,9 +5,9 @@
 <title>Tournament</title>
 </head>
 <body class="lift:content_id=main">
-	<div id="main" class="lift:surround?with=default;at=content">
-		<div class="lift:TournamentView">
-			<head>
+  <div id="main" class="lift:surround?with=default;at=content">
+    <div class="lift:TournamentView">
+      <head>
 <style>
 li.present {
 	background-color: #ada;
@@ -29,7 +29,7 @@ h3 {
 	clear: both;
 }
 
-.tournamentPool.panel, .fight.panel {
+.tournamentPool.panel,.fight.panel {
 	float: left;
 	margin-right: 5px;
 	width: 260px;
@@ -39,182 +39,223 @@ td.number {
 	width: 20px;
 	padding: 8px 0px 8px 8px !important;
 }
-</style>
-</head>
-	<h2>
-		<span id="tournamentName">Tournament</span>
-		<div class="btn-group pull-right">
-			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-				<span class="glyphicon glyphicon-download"></span> Download <span class="caret"></span>
-			</button>
-			<ul class="dropdown-menu" role="menu">
-				<li class="downloadButton"><a href="#">Action</a></li>
-			</ul>
-		</div>
-	</h2>
-	<p>
-		Default arena: <select name="tournamentArena"></select>
-	</p>
-	<a name="participants"></a>
-	<h3>Participants</h3>
-	<table id="participants" class="table table-striped">
-		<thead>
-			<tr>
-				<th>Number</th>
-				<th>Name</th>
-				<th>Country</th>
-				<th>Club</th>
-				<th>Seed</th>
-				<th>Pool</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr class="participant">
-				<td><span class="label label-default"></span></td>
-				<td class="name"></td>
-				<td class="country"></td>
-				<td class="club"></td>
-				<td class="initialRanking"></td>
-				<td class="pool"></td>
-				<td><a href="#">registration info</a></td>
-			</tr>
-		</tbody>
-	</table>
-	<form class="form">
-		<select class="form-control" id="addParticipant">
-			<option>&mdash; Add participant &mdash;</option>
-		</select>
-	</form>
-	<a name="poolphase"></a>
-	<h3>
-		Pool Phase
-	</h3>
-	<a name="poolphase-pools"></a>
-	<h4>
-		Pools
-		<div class="btn-group">
-			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-				<span class="caret"></span>
-			</button>
-			<ul class="dropdown-menu">
-				<li><a href="#" id="autofill">Autofill</a></li>
-			</ul>
-		</div>
-	</h4>
-	<div class="tournamentPool panel panel-default">
-		<div class="panel-heading">
-			<h4 class="panel-title">pool</h4>
-		</div>
-		<table class="table">
-			<tbody>
-				<tr class="participant">
-					<td class="number"><span class="label label-default">999</span></td>
-					<td class="name">name</td>
-					<td class="country"></td>
-					<td class="club"></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<div class="clearfix"></div>
-	<a name="poolphase-fights"></a>
-	<h4>Fights</h4>
-	<div class="poolPhase well">
-		<div class="fight panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title"><span class="fight-title">fight</span><a href="#" class="scheduled label pull-right" title="Show schedule">unscheduled</a></h4>
-			</div>
-			<table class="table">
-				<tbody>
-					<tr class="participant">
-						<td class="number"><span class="label label-default">999</span></td>
-						<td class="name">name</td>
-						<td class="country"></td>
-						<td class="club"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div style="clear: both; margin-bottom: -20px;"></div>
-	</div>
-	<a name="eliminationphase"></a>
-	<h3>
-		Elimination Phase
-		<div class="btn-group">
-			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-				<span class="caret"></span>
-			</button>
-			<ul class="dropdown-menu">
-				<li class="dropdown-submenu">
-					<a tabindex="-1" href="#">Generate</a>
-					<ul class="dropdown-menu">
-						<li><a href="#" id="generateElimination-top2">Top 2 per pool</a></li>
-						<li><a href="#" id="generateElimination-4th">Top 2 per pool</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-	</h3>
-	<div class="eliminationRound well">
-		<div class="fight panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title"><span class="fight-title">fight</span><a href="#" class="scheduled label pull-right" title="Show schedule">unscheduled</a></h4>
-			</div>
-			<table class="table">
-				<tbody>
-					<tr class="participant">
-						<td class="number"><span class="label label-default">999</span></td>
-						<td class="name">name</td>
-						<td class="country"></td>
-						<td class="club"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div style="clear: both; margin-bottom: -20px;"></div>
-	</div>
-	<a name="finals"></a>
-	<h3>Finals</h3>
-	<div class="finals well">
-		<div class="fight panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title"><span class="fight-title">fight</span><a href="#" class="scheduled label pull-right" title="Show schedule">unscheduled</a></h4>
-			</div>
-			<table class="table">
-				<tbody>
-					<tr class="participant">
-						<td class="number"><span class="label label-default">999</span></td>
-						<td class="name">name</td>
-						<td class="country"></td>
-						<td class="club"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div style="clear: both; margin-bottom: -20px;"></div>
-	</div>
-	
-	
-	<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-		<div class="collapse navbar-collapse navbar-ex1-collapse">
-			<ul class="nav navbar-nav">
-				<li><a href="#participants">Participants <span id="tournamentParticipantsCount" class="badge">999</span></a></li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Pool Phase <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li><a href="#poolphase-pools">Pools</a></li>
-						<li><a href="#poolphase-fights">Fights</a></li>
-					</ul>
-				</li>
-				<li><a href="#eliminationphase">Elimination Phase</a></li>
-				<li><a href="#finals">Finals</a></li>
-			</ul>
-		</div>
-	</nav>
-	
-</div>
 
+.modal-vertical-centered {
+	padding-top: 15%;
+}
+</style>
+      </head>
+      <h2>
+        <span id="tournamentName">Tournament</span>
+        <div class="btn-group pull-right">
+          <button type="button" class="btn btn-default dropdown-toggle"
+            data-toggle="dropdown">
+            <span class="glyphicon glyphicon-download"></span> Download
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li class="downloadButton"><a href="#">Action</a></li>
+          </ul>
+        </div>
+      </h2>
+      <p>
+        Default arena: <select name="tournamentArena"></select>
+      </p>
+      <a name="participants"></a>
+      <h3>Participants</h3>
+      <table id="participants" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Number</th>
+            <th>Name</th>
+            <th>Country</th>
+            <th>Club</th>
+            <th>Seed</th>
+            <th>Pool</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="participant">
+            <td><span class="label label-default"></span></td>
+            <td class="name"></td>
+            <td class="country"></td>
+            <td class="club"></td>
+            <td class="initialRanking"></td>
+            <td class="pool"></td>
+            <td><a href="#">registration info</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <form class="form">
+        <select class="form-control" id="addParticipant">
+          <option>&mdash; Add participant &mdash;</option>
+        </select>
+      </form>
+      <a name="poolphase"></a>
+      <h3>Pool Phase</h3>
+      <a name="poolphase-pools"></a>
+      <h4>
+        Pools
+        <button id="expand-pool-generation-form" type="button"
+          class="btn btn-default" data-toggle="modal"
+          data-target="#pool-generation-dialog">
+          Generate pools</span>
+        </button>
+      </h4>
+      <div class="modal fade modal-vertical-centered"
+        id="pool-generation-dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"
+                aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Pool generation parameters</h4>
+            </div>
+            <form class="form" method="post">
+              <div class="modal-body">
+                <p>Participants of this tournament are added to a
+                  number of pools</p>
+                <label>Pool count <input id="pool-generation-pool-count" class="form-control" type="text" value="1"/> </label>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                  data-dismiss="modal">Cancel</button>
+                <button id="pool-generation-generate" type="submit" class="btn btn-primary">Generate</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="tournamentPool panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">pool</h4>
+        </div>
+        <table class="table">
+          <tbody>
+            <tr class="participant">
+              <td class="number"><span class="label label-default">999</span></td>
+              <td class="name">name</td>
+              <td class="country"></td>
+              <td class="club"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="clearfix"></div>
+      <a name="poolphase-fights"></a>
+      <h4>Fights</h4>
+      <div class="poolPhase well">
+        <div class="fight panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <span class="fight-title">fight</span><a href="#"
+                class="scheduled label pull-right" title="Show schedule">unscheduled</a>
+            </h4>
+          </div>
+          <table class="table">
+            <tbody>
+              <tr class="participant">
+                <td class="number"><span
+                  class="label label-default">999</span></td>
+                <td class="name">name</td>
+                <td class="country"></td>
+                <td class="club"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="clear: both; margin-bottom: -20px;"></div>
+      </div>
+      <a name="eliminationphase"></a>
+      <h3>
+        Elimination Phase
+        <div class="btn-group">
+          <button type="button"
+            class="btn btn-default btn-sm dropdown-toggle"
+            data-toggle="dropdown">
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li class="dropdown-submenu"><a tabindex="-1" href="#">Generate</a>
+              <ul class="dropdown-menu">
+                <li><a href="#" id="generateElimination-top2">Top
+                    2 per pool</a></li>
+                <li><a href="#" id="generateElimination-4th">Top
+                    2 per pool</a></li>
+              </ul></li>
+          </ul>
+        </div>
+      </h3>
+      <div class="eliminationRound well">
+        <div class="fight panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <span class="fight-title">fight</span><a href="#"
+                class="scheduled label pull-right" title="Show schedule">unscheduled</a>
+            </h4>
+          </div>
+          <table class="table">
+            <tbody>
+              <tr class="participant">
+                <td class="number"><span
+                  class="label label-default">999</span></td>
+                <td class="name">name</td>
+                <td class="country"></td>
+                <td class="club"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="clear: both; margin-bottom: -20px;"></div>
+      </div>
+      <a name="finals"></a>
+      <h3>Finals</h3>
+      <div class="finals well">
+        <div class="fight panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <span class="fight-title">fight</span><a href="#"
+                class="scheduled label pull-right" title="Show schedule">unscheduled</a>
+            </h4>
+          </div>
+          <table class="table">
+            <tbody>
+              <tr class="participant">
+                <td class="number"><span
+                  class="label label-default">999</span></td>
+                <td class="name">name</td>
+                <td class="country"></td>
+                <td class="club"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="clear: both; margin-bottom: -20px;"></div>
+      </div>
+
+
+      <nav class="navbar navbar-default navbar-fixed-bottom"
+        role="navigation">
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="#participants">Participants <span
+                id="tournamentParticipantsCount" class="badge">999</span></a></li>
+            <li class="dropdown"><a href="#"
+              class="dropdown-toggle" data-toggle="dropdown">Pool
+                Phase <b class="caret"></b>
+            </a>
+              <ul class="dropdown-menu">
+                <li><a href="#poolphase-pools">Pools</a></li>
+                <li><a href="#poolphase-fights">Fights</a></li>
+              </ul></li>
+            <li><a href="#eliminationphase">Elimination Phase</a></li>
+            <li><a href="#finals">Finals</a></li>
+          </ul>
+        </div>
+      </nav>
+
+    </div>
 </body>
 </html>
 

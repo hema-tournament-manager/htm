@@ -130,7 +130,11 @@ table.poolParticipantList {
 				<span class="lift:Menu.builder?top:class=nav;li_item:class=active;linkToSelf=true;expandAll=false;level=0"></span>
 	</nav>
 	<div class="container">
-				<div class="lift:Msgs?showAll=true"></div>
+      <lift:Msgs>
+        <lift:error_class>alert alert-danger</lift:error_class>
+        <lift:notice_class>alert alert-info</lift:notice_msg>
+        <lift:warning_class>alert alert-warning</lift:notice_msg>
+      </lift:Msgs>
 	
 			<div class="col-md-12">
 				<div id="content">The main content will get bound here</div>
