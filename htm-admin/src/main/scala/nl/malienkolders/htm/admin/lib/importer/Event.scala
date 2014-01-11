@@ -20,6 +20,6 @@ case class EliminationPick(top: Int)
 
 object Event {
   implicit val formats = DefaultFormats
-  
+
   def parse(data: String): Event = JsonParser.parse(data).extract[Event]
 }

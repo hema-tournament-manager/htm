@@ -46,7 +46,7 @@ object Utils {
     def hhmm = LocalTime.fromMillisOfDay(time).toString(Utils.hhmm)
     def as(format: String) = new SimpleDateFormat(format).format(new Date(time))
   }
-  
+
   implicit class DateTimeParserHelper(time: String) {
     def yyyymmdd = Utils.yyyymmdd.parseLocalDate(time).toDate().getTime()
     def hhmm = Utils.hhmm.parseLocalTime(time).getMillisOfDay()
