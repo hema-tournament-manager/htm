@@ -78,7 +78,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     		$scope.timer.currentTime += Date.now() - $scope.timer.lastStart;
     		$scope.timer.displayTime = $scope.timer.currentTime;
     	}
-    	playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
+    	playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.phaseType, $scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
     }
     $scope.tick = function() {
     	if ($scope.timer.running) {
@@ -316,7 +316,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	    	
 	    	$scope.sendUpdate();
 	    	
-	        playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
+	        playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.phaseType, $scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
 
 	        var next = $scope.findNextFight();
 	    	if (next) {
@@ -369,7 +369,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     
     $scope.$watch('announcement', function(newValue, oldValue) {
     	if ($scope.currentFight.id) {
-    		playRoutes.controllers.AdminInterface.messageUpdate($scope.currentFight.id).post(JSON.stringify(newValue));
+    		playRoutes.controllers.AdminInterface.messageUpdate($scope.currentFight.phaseType, $scope.currentFight.id).post(JSON.stringify(newValue));
     	}
     });
     

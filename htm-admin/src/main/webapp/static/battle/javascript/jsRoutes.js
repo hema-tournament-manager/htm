@@ -29,13 +29,13 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.fightUpdate 
       }
 
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.timerUpdate = 
-    function(id) {
-    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("id", id) + "/timer"})
+    function(phase, id) {
+    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("phase", phase) + "/" + (function(k,v) {return v})("id", id) + "/timer"})
     }
 
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.messageUpdate = 
-    function(id) {
-    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("id", id) + "/message"})
+    function(phase, id) {
+    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("phase", phase) + "/" + (function(k,v) {return v})("id", id) + "/message"})
     }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.pool = 
