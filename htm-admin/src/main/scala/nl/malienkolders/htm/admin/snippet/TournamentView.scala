@@ -113,8 +113,61 @@ object TournamentView {
       }
     }
 
-    def generateElimination() = {
-      t.finalsPhase.eliminationFights.clear()
+    def generateFinals() = {
+      val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
+
+      // add fights if necessary
+      t.finalsPhase.eliminationFights ++= (for (i <- t.finalsPhase.eliminationFights.size to 1) yield EliminationFight.create)
+
+      t.finalsPhase.eliminationFights.head
+        .round(1)
+        .name("3rd Place")
+        .fighterAFuture(Loser(semiFinals(0)).format)
+        .fighterBFuture(Loser(semiFinals(1)).format)
+      t.finalsPhase.eliminationFights.last
+        .round(2)
+        .name("1st Place")
+        .fighterAFuture(Winner(semiFinals(0)).format)
+        .fighterBFuture(Winner(semiFinals(1)).format)
+      t.save()
+    }
+
+    def generateNextRound(previous: List[EliminationFight], roundNumber: Int): Unit = previous.size match {
+      case n if n < 4 => Nil
+      case n =>
+        val next = (for (i <- 0 to (n / 2 - 1)) yield EliminationFight.create
+          .round(roundNumber)
+          .name("1/" + (n / 2) + " Finals, Fight " + (i + 1))
+          .fighterAFuture(Winner(previous(i * 2)).format)
+          .fighterBFuture(Winner(previous(i * 2 + 1)).format)).toList
+
+        t.eliminationPhase.eliminationFights ++= next
+        // we have to save the fights to get their id's
+        t.save()
+
+        generateNextRound(next, roundNumber + 1)
+    }
+
+    def generateElimination(nthFinals: Int) = {
+      t.eliminationPhase.eliminationFights.clear()
+
+      val round1 = for (i <- 1 to nthFinals) yield EliminationFight.create
+        .round(1)
+        .name(s"1/$nthFinals Finals, Fight $i")
+        .fighterAFuture(SpecificFighter(None).format)
+        .fighterBFuture(SpecificFighter(None).format)
+
+      t.eliminationPhase.eliminationFights ++= round1
+      t.save()
+
+      generateNextRound(round1.toList, 2)
+
+      generateFinals()
+
+      RedirectTo("#eliminationphase") & Reload
+    }
+
+    def generateEliminationTop2() = {
       t.eliminationPhase.eliminationFights.clear()
       val pools = t.poolPhase.pools
       val poolCount = pools.size
@@ -132,38 +185,7 @@ object TournamentView {
       // we have to save the fights to get their id's
       t.save()
 
-      def generateNextRound(previous: List[EliminationFight], roundNumber: Int): Unit = previous.size match {
-        case n if n < 4 => Nil
-        case n =>
-          val next = (for (i <- 0 to (n / 2 - 1)) yield EliminationFight.create
-            .round(roundNumber)
-            .name("1/" + (n / 2) + " Finals, Fight " + (i + 1))
-            .fighterAFuture(Winner(previous(i * 2)).format)
-            .fighterBFuture(Winner(previous(i * 2 + 1)).format)).toList
-
-          t.eliminationPhase.eliminationFights ++= next
-          // we have to save the fights to get their id's
-          t.save()
-
-          generateNextRound(next, roundNumber + 1)
-      }
-
       generateNextRound(round1, 2)
-
-      def generateFinals() = {
-        val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
-        t.finalsPhase.eliminationFights += EliminationFight.create
-          .round(1)
-          .name("3rd Place")
-          .fighterAFuture(Loser(semiFinals(0)).format)
-          .fighterBFuture(Loser(semiFinals(1)).format)
-        t.finalsPhase.eliminationFights += EliminationFight.create
-          .round(2)
-          .name("1st Place")
-          .fighterAFuture(Winner(semiFinals(0)).format)
-          .fighterBFuture(Winner(semiFinals(1)).format)
-        t.save()
-      }
 
       generateFinals()
 
@@ -212,7 +234,8 @@ object TournamentView {
         "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
         "#autofill" #> SHtml.a(autofill _, Text("Auto-fill")) &
-        "#generateElimination-top2" #> SHtml.a(generateElimination _, Text("Top 2 per pool")) &
+        "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool")) &
+        "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
         ".tournamentPool" #> t.poolPhase.pools.map(p =>
           ".panel-title *" #> p.poolName &
             ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }) &

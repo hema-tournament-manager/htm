@@ -86,7 +86,7 @@ object PoolFighter extends ((Pool, Int) => PoolFighter) {
   }
 }
 case class SpecificFighter(override val participant: Option[Participant]) extends Fighter {
-  def format = participant.map(_.id.get.toString).getOrElse("")
+  def format = participant.map(_.id.get.toString).getOrElse("PICK")
   def sameAs(other: Fighter) = other match {
     case SpecificFighter(Some(otherParticipant)) => participant.map(_.id.is == otherParticipant.id.is).getOrElse(false)
     case _ => false
@@ -98,6 +98,7 @@ object SpecificFighter extends (Option[Participant] => SpecificFighter) {
 
   def parse(s: String): Option[SpecificFighter] = re.findFirstIn(s) match {
     case Some(re(participantId)) => Some(SpecificFighter(Some(Participant.findByKey(participantId.toLong)).get))
+    case None if s == "PICK" => Some(SpecificFighter(None))
     case None => None
   }
 }
