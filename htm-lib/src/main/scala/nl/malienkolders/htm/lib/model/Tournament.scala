@@ -21,7 +21,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   },
     { p: Phase[_] => p.tournament.asInstanceOf[MappedForeignKey[Long, _, Tournament]] }) with Owned[Phase[_]] with Cascade[Phase[_]]
   object defaultArena extends MappedLongForeignKey(this, Arena)
-  object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.tournament, OrderBy(TournamentParticipants.fighterNumber, Ascending))
+  object subscriptions extends MappedOneToMany(TournamentParticipant, TournamentParticipant.tournament, OrderBy(TournamentParticipant.fighterNumber, Ascending))
   def participants = subscriptions.map(_.participant.obj.get)
 
   def rapier_? = name.is.toLowerCase().contains("rapier")
@@ -64,8 +64,8 @@ object Tournament extends Tournament with LongKeyedMetaMapper[Tournament] {
   }
 }
 
-class TournamentParticipants extends LongKeyedMapper[TournamentParticipants] with IdPK {
-  def getSingleton = TournamentParticipants
+class TournamentParticipant extends LongKeyedMapper[TournamentParticipant] with IdPK {
+  def getSingleton = TournamentParticipant
   object tournament extends MappedLongForeignKey(this, Tournament)
   object participant extends MappedLongForeignKey(this, Participant)
   object fighterNumber extends MappedInt(this)
@@ -73,4 +73,4 @@ class TournamentParticipants extends LongKeyedMapper[TournamentParticipants] wit
   object experience extends MappedInt(this)
   object gearChecked extends MappedBoolean(this)
 }
-object TournamentParticipants extends TournamentParticipants with LongKeyedMetaMapper[TournamentParticipants]
+object TournamentParticipant extends TournamentParticipant with LongKeyedMetaMapper[TournamentParticipant]

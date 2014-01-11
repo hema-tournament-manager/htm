@@ -43,7 +43,7 @@ class Boot {
       PoolFightScore,
       EliminationFightScore,
       model.Tournament,
-      TournamentParticipants,
+      TournamentParticipant,
       PoolPhase,
       EliminationPhase,
       Pool,
