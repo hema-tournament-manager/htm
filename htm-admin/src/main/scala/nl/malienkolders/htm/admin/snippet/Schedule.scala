@@ -17,7 +17,7 @@ import net.liftweb.common.Empty
 import net.liftweb.http.js.JsCmd
 import net.liftweb.common.Full
 
-class ArenaList {
+class Schedule {
 
   val df = new SimpleDateFormat("HH:mm")
   df.setTimeZone(TimeZone.getTimeZone("UTC"))

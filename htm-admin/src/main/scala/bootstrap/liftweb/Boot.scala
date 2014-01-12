@@ -91,7 +91,7 @@ class Boot {
         FightPickFighter.menu ::
         (Menu.i("Participants") / "participants" / "list") ::
         ParticipantRegistration.menu ::
-        (Menu.i("Arenas") / "arenas" / "list") ::
+        (Menu.i("Schedule") / "schedule") ::
         (Menu.i("Viewers") / "viewers" / "list") ::
         (Menu.i("Images") / "images" / "list") ::
         (Menu.i("Import") / "import") ::
