@@ -193,9 +193,20 @@ object TournamentView {
     def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
       ".fight-title *" #> f.name.get &
         ".scheduled [name]" #> s"fight${f.id.get}" &
-        ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
-        ".scheduled [href]" #> "/arenas/list" &
-        ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled") &
+        (f.finished_? match {
+          case true =>
+            ".scheduled [class+]" #> "label-success" &
+              ".scheduled [href]" #> "#" &
+              ".scheduled [title]" #> "Results" &
+              ".scheduled *" #> {
+                val s = f.currentScore
+                s"${s.red} (${s.double}) ${s.blue}"
+              }
+          case false =>
+            ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
+              ".scheduled [href]" #> s"/schedule#fight${f.id.get}" &
+              ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled")
+        }) &
         ".participant" #> (f.fighterA :: f.fighterB :: Nil).zipWithIndex.map { case (fighter, i) => renderFighter(f, if (i == 0) "A" else "B", fighter) })
 
     def renderParticipant(sub: TournamentParticipant) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
