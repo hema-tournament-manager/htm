@@ -374,6 +374,9 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     };
     
     $scope.$watch('currentFight', function(newValue, oldValue) {
+    	if (newValue && newValue.tournament) {
+    		$rootScope.title = newValue.tournament.name;
+    	}
 		$scope.fightsShowing[0] = Math.max($scope.currentFight.globalOrder - 2, 1);
     	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
     	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
