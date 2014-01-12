@@ -25,7 +25,7 @@
 						<td ng-show="!fight.loading">{{fight.time | hours}}</td>
 						<td><span class="label label-default" title="{{fight.tournament.name}}">{{fight.tournament.memo}}</span></td>
 						<td>{{fight.name}}</td>
-						<td class="text-left">{{fight.fighterA.label}} <span data-ng-show="fight.fighterA.participant.clubCode">({{fight.fighterA.participant.clubCode}})</span></td>
+						<td class="text-left">{{fight.fighterA.name}} <span data-ng-show="fight.fighterA.participant.clubCode">({{fight.fighterA.participant.clubCode}})</span></td>
 						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().a}}</span></td>
 						<td class="text-center">
               <span data-ng-show="!fight.postponed && fight.timeStop == 0">vs</span>
@@ -33,7 +33,7 @@
 							<span data-ng-show="fight.timeStop &gt; 0">({{fight.totalScore().d}})</span>
 						</td>
 						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().b}}</span></td>
-						<td class="text-right">{{fight.fighterB.label}} <span data-ng-show="fight.fighterB.participant.clubCode">({{fight.fighterB.participant.clubCode}})</span></td>
+						<td class="text-right">{{fight.fighterB.name}} <span data-ng-show="fight.fighterB.participant.clubCode">({{fight.fighterB.participant.clubCode}})</span></td>
 					</tr>
 					<tr>
 						<td colspan="8" class="text-center" data-ng-switch data-on="fightsAfter()">

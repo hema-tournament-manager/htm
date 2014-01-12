@@ -24,6 +24,17 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 		_.each(_.reject(data, function(fight) { return fight.fight.finished; }), function(f) {
 			var fight = {globalOrder: globalOrder++, started: false, time: f.time};
 			fight = _.extend(fight, f.fight);
+			if (fight.fighterA.participant) {
+				fight.fighterA.name = fight.fighterA.participant.name;
+			} else {
+				fight.fighterA.name = fight.fighterA.label;
+			}
+			if (fight.fighterB.participant) {
+				fight.fighterB.name = fight.fighterB.participant.name;
+			} else {
+				fight.fighterB.name = fight.fighterB.label;
+			}
+			fight.name
 			fight['totalScore'] = function() {
 				return _.reduce(this.scores, function(memo, score) {
 					memo.a += score.pointsRed;
