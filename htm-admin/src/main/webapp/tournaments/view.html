@@ -43,6 +43,11 @@ td.number {
 .modal-vertical-centered {
 	padding-top: 15%;
 }
+
+.participant-pick-pool {
+  width: 128px;
+}
+
 </style>
       </head>
       <h2>
@@ -82,7 +87,11 @@ td.number {
             <td class="country"></td>
             <td class="club"></td>
             <td class="initialRanking"></td>
-            <td class="pool"></td>
+            <td>
+              <select  class="form-control participant-pick-pool">
+                <option>&mdash; no pool &mdash;</option>
+              </select>
+            </td>
             <td><a href="#" class="register">registration info</a></td>
           </tr>
         </tbody>

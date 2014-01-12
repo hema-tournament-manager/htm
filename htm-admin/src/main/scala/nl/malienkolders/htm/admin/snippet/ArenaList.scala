@@ -166,14 +166,9 @@ class ArenaList {
                           }))))))
   }
 
-  def phaseName(implicit t: Tournament, p: Phase[_]) =
-    <a href={ "/tournaments/view/" + t.identifier.get + "#phase" + p.id.get }>
-      { p.name.get }
-    </a>
-
   def tournamentName(implicit t: Tournament) =
-    <a href={ "/tournaments/view/" + t.identifier.get }>
-      { t.name.get }
+    <a href={ "/tournaments/view/" + t.identifier.get } class="label label-default" title={ t.name.get }>
+      { t.mnemonic.get }
     </a>
 
   def downloadSchedule(a: Arena, onlyUnfinishedPools: Boolean = true) = {
