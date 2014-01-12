@@ -45,7 +45,7 @@ object FightServer extends LiftActor {
       fight.inProgress(f.timeStop == 0).asInstanceOf[Fight[_, _]].save
       val arena = fight.scheduled.foreign.get.timeslot.foreign.get.arena.foreign.get
       arena.viewers.foreach { viewer =>
-        viewer.rest.fightUpdate(arena, fight.asInstanceOf[PoolFight])
+        viewer.rest.fightUpdate(arena, fight)
       }
     }
 
