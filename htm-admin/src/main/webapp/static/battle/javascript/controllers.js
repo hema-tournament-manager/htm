@@ -434,7 +434,10 @@ var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, ap
 		_.each($scope.arenas, function(arena) {
 			playRoutes.controllers.AdminInterface.arena(arena.id).get().success(function(data, status) {
 				console.log(JSON.stringify(data));
-				arena.fetchedFights = data;
+				arena.fetchedFights = _.map(data, function(fight) {
+					fight.fight.finished = fight.fight.timeStop > 0;
+					return fight;
+				});
 			});
 		});
 	}).error(function(data, status, headers) {
