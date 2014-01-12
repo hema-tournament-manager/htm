@@ -24,9 +24,14 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.fight =
       }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.fightUpdate = 
-      function() {
-      return _wA({method:"POST", url:"/" + "api/fight/update"})
-      }
+    function() {
+    return _wA({method:"POST", url:"/" + "api/fight/update"})
+    }
+
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.fightPostpone = 
+    function() {
+    return _wA({method:"POST", url:"/" + "api/fight/postpone"})
+    }
 
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.timerUpdate = 
     function(phase, id) {

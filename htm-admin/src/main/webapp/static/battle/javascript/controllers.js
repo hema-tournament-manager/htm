@@ -329,11 +329,11 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     };
     
     $scope.findCurrentFight = function() {
-    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0; });
+    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0 && !fight.postponed; });
     };
 
     $scope.findNextFight = function() {
-    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0 && fight.globalOrder > $scope.currentFight.globalOrder; });
+    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0 && !fight.postponed && fight.globalOrder > $scope.currentFight.globalOrder; });
     };
     
     $scope.confirmFight = function() {
@@ -343,6 +343,18 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     		$scope.currentFight.netDuration = $scope.timerValue();
     		
     		playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight).success(function(data, status) {
+    			$scope.currentFight = $scope.findCurrentFight();
+    		});
+    	}
+    };
+    
+    $scope.postponeFight = function() {
+    	if ($scope.currentFight.globalOrder > -1) {
+    		$scope.stopTimer();
+    		
+    		$scope.currentFight.postponed = true;
+    		
+    		playRoutes.controllers.AdminInterface.fightPostpone().post($scope.currentFight).success(function(data, status) {
     			$scope.currentFight = $scope.findCurrentFight();
     		});
     	}

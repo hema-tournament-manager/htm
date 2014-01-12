@@ -28,7 +28,8 @@
 						<td class="text-left">{{fight.fighterA.label}} <span data-ng-show="fight.fighterA.participant.clubCode">({{fight.fighterA.participant.clubCode}})</span></td>
 						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().a}}</span></td>
 						<td class="text-center">
-							<span data-ng-show="fight.timeStop == 0">vs</span>
+              <span data-ng-show="!fight.postponed && fight.timeStop == 0">vs</span>
+              <span data-ng-show="fight.postponed">X</span>
 							<span data-ng-show="fight.timeStop &gt; 0">({{fight.totalScore().d}})</span>
 						</td>
 						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().b}}</span></td>
@@ -58,15 +59,19 @@
 						<ul class="dropdown-menu" role="menu" aria-labelledby="fight-menu">
 							<li><a href="" data-ng-click="correctScore()">Score correction...</a></li>
 							 <li class="divider"></li>
-							<li><a href="" data-ng-click="confirmFight()">Confirm fight</a></li>
+              <li><a href="" data-ng-click="confirmFight()">Confirm fight</a></li>
+              <li><a href="" data-ng-click="postponeFight()">Postpone fight</a></li>
 						</ul>
 					</div>
 				</h3>
 			</div>
 			<div class="panel-body" data-ng-hide="currentFight.started">
-				<button class="btn btn-primary" data-ng-click="startFight()" data-ng-disabled="findNextFight().order &lt; 0">
-					Start fight
-				</button>
+        <button class="btn btn-primary" data-ng-click="startFight()" data-ng-disabled="findNextFight().order &lt; 0">
+          Start fight
+        </button>
+        <button class="btn btn-primary" data-ng-click="postponeFight()" data-ng-disabled="findNextFight().order &lt; 0">
+          Postpone fight
+        </button>
 			</div>
 			<div class="panel-body htm-current-fight-box" data-ng-show="currentFight.started">
 				<div class="row htm-fight-buttons">
