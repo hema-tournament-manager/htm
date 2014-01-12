@@ -162,13 +162,13 @@ object TournamentView {
 
       RedirectTo("#eliminationphase") & Reload
     }
-    
+
     def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
-      t.poolPhase.pools.foreach(pool => {pool.participants -= participant.participant.foreign.get; pool.save});
+      t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
       if (poolId >= 0) {
         val poolTo = t.poolPhase.pools.find(_.id.is == poolId).get
-    	poolTo.participants += participant.participant.foreign.get
-    	poolTo.save
+        poolTo.participants += participant.participant.foreign.get
+        poolTo.save
       }
       t.save
       Reload
