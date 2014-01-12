@@ -38,7 +38,6 @@ case class MarshalledFightSummary(
   timeLimit: Long,
   exchangeLimit: Int,
   possiblePoints: List[Int])
-case class MarshalledFighter(label: String, participant: Option[MarshalledParticipant])
 
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {
 
