@@ -12,16 +12,14 @@
 			<tr>
 				<th>Time</th>
 				<th>Tournament</th>
-				<th>Round</th>
-				<th>Pool</th>
+				<th>Fight</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr data-ng-repeat="pool in arena.fetchedPools | orderBy:'startTime'" data-ng-class="{true: 'success', false: 'waiting'}[pool.finished]" data-ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
-				<td>{{pool.startTime | hours}}</td>
-				<td>{{pool.round.tournament.name}}</td>
-				<td>{{pool.round.name}}</td>
-				<td>Pool {{pool.order}}</td>
+			<tr data-ng-repeat="fight in arena.fetchedFights | orderBy:'time'" data-ng-class="{true: 'success', false: 'waiting'}[fight.fight.finished]" data-ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
+				<td>{{fight.time | hours}}</td>
+				<td>{{fight.fight.tournament.name}}</td>
+				<td>{{fight.fight.name}}</td>
 			</tr>
 		</tbody>
 	</table>

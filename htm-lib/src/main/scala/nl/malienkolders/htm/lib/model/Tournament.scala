@@ -3,7 +3,7 @@ package nl.malienkolders.htm.lib.model
 import net.liftweb._
 import mapper._
 
-case class MarshalledTournamentSummary(id: Long, name: String, identifier: String, rapier: Boolean)
+case class MarshalledTournamentSummary(id: Long, name: String, identifier: String, memo: String)
 case class MarshalledTournament(id: Long, name: String, identifier: String, participants: List[Long])
 case class MarshalledTournamentRound(id: Long, finished: Boolean)
 
@@ -38,7 +38,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
     name.is,
     identifier.is,
     participants.map(_.id.is).toList)
-  def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, identifier.is, rapier_?)
+  def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, identifier.is, mnemonic.is)
 
   def compare(that: Tournament) = (this.id.is - that.id.is) match {
     case d if d > 0 => 1

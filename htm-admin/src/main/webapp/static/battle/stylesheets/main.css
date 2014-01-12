@@ -60,6 +60,10 @@
 	font-weight: bold;
 }
 
+.htm-waiting {
+	font-style: italic;
+}
+
 .btn-default:hover {
 	background-color:#BDBDBD;
 }

@@ -43,13 +43,13 @@ object FightEdit {
 
     S.appendJs(Run("$('#timeStop')." + datetimepickerInitStr) & Run("$('#timeStart')." + datetimepickerInitStr))
     ".red" #> (
-      ".name *" #> f.fighterAParticipant.obj.get.name.is &
-      ".club [title]" #> f.fighterAParticipant.obj.get.club.is &
-      ".club *" #> f.fighterAParticipant.obj.get.clubCode.is) &
+      ".name *" #> f.fighterA.participant.get.name.is &
+      ".club [title]" #> f.fighterA.participant.get.club.is &
+      ".club *" #> f.fighterA.participant.get.clubCode.is) &
       ".blue" #> (
-        ".name *" #> f.fighterBParticipant.obj.get.name.is &
-        ".club [title]" #> f.fighterBParticipant.obj.get.club.is &
-        ".club *" #> f.fighterBParticipant.obj.get.clubCode.is) &
+        ".name *" #> f.fighterB.participant.get.name.is &
+        ".club [title]" #> f.fighterB.participant.get.club.is &
+        ".club *" #> f.fighterB.participant.get.clubCode.is) &
         "#scoreRed" #> totalScore.red &
         "#scoreBlue" #> totalScore.blue &
         "#doAdd" #> SHtml.onSubmitUnit(addScoreLine) &

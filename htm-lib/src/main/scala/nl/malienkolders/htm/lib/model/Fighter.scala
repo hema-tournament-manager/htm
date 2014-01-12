@@ -60,7 +60,7 @@ object Loser extends (EliminationFight => Loser) {
 case class PoolFighter(pool: Pool, ranking: Int) extends Fighter {
   def format = "P" + pool.id.get + ":" + ranking
   def participant = {
-    //println(s"POOL ${pool.poolName} FINISHED: ${pool.finished_?}")
+    println(s"POOL ${pool.poolName} FINISHED: ${pool.finished_?}")
     pool.finished_? match {
       case true => Some(pool.ranked(ranking - 1))
       case false => None

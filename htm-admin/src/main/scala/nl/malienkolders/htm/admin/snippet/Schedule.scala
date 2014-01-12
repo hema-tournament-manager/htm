@@ -17,7 +17,7 @@ import net.liftweb.common.Empty
 import net.liftweb.http.js.JsCmd
 import net.liftweb.common.Full
 
-class ArenaList {
+class Schedule {
 
   val df = new SimpleDateFormat("HH:mm")
   df.setTimeZone(TimeZone.getTimeZone("UTC"))
@@ -140,7 +140,16 @@ class ArenaList {
                 }
               })) &
       ".unscheduled" #> (".tournament" #> Tournament.findAll().map(t =>
-        ".tournamentName *" #> t.name.get &
+        ".tournamentLabel *" #> t.mnemonic.get &
+          (t.name.get match {
+            case n if n.length > 20 =>
+              ".tournamentName *" #> (n.take(20) + "...") &
+                ".tournamentName [title]" #> t.name.get
+            case n =>
+              ".tournamentName *" #> n
+          }) &
+
+          ".unscheduledCount *" #> t.phases.flatMap(_.fights.filter(_.scheduled.foreign.isEmpty)).size &
           ".phase" #> t.phases.map(p =>
             ".phaseHeader" #> (
               ".name *" #> p.name.get &

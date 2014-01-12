@@ -49,6 +49,14 @@ object FightServer extends LiftActor {
       }
     }
 
+    case PostponeFight(f) => {
+      val fight: Fight[_, _] = FightHelper.dao(f.phaseType).findByKey(f.id).asInstanceOf[Box[Fight[_, _]]].get.fromMarshalledSummary(f).asInstanceOf[Fight[_, _]]
+      val scheduled = fight.scheduled.foreign.get
+      scheduled.delete_!
+      fight.scheduled(Empty)
+      fight.save()
+    }
+
     case TimerUpdate(f, TimerMessage(action, time)) => {
       val fight = FightHelper.dao(f.phase).findByKey(f.id).get
       val arena = fight.scheduled.foreign.get.timeslot.foreign.get.arena.foreign.get
@@ -76,4 +84,5 @@ case class PopFight(pool: Pool)
 case class FightMsg[F <: Fight[_, _]](fight: F)
 case class FightResult[F <: Fight[_, _]](fight: F, confirm: Boolean)
 case class FightUpdate(fight: MarshalledFightSummary)
+case class PostponeFight(fight: MarshalledFightSummary)
 case object NoFightMsg

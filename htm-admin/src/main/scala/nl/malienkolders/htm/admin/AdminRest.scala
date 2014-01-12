@@ -20,11 +20,14 @@ object AdminRest extends RestHelper {
     case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>
       JsonFightExporter.createExport
 
+    case "api" :: "event" :: Nil JsonGet _ =>
+      JString(Event.theOne.name.get)
+
     case "api" :: "arenas" :: Nil JsonGet _ =>
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 
     case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
-      Extraction.decompose(Arena.findByKey(arenaId).map(_.fights.map(_.toMarshalledSummary)).getOrElse(false))
+      Extraction.decompose(Arena.findByKey(arenaId).map(_.fights.filter(_.fight.foreign.isDefined).sortBy(_.time.is).map(_.toMarshalledSummary)).getOrElse(false))
 
     case "api" :: "participants" :: Nil JsonGet _ =>
       Extraction.decompose(Participant.findAll.map(_.toMarshalled))
@@ -84,6 +87,11 @@ object AdminRest extends RestHelper {
     case "api" :: "fight" :: "update" :: Nil JsonPost json -> _ =>
       val fight = Extraction.extract[MarshalledFightSummary](json)
       FightServer ! FightUpdate(fight)
+      JBool(true)
+
+    case "api" :: "fight" :: "postpone" :: Nil JsonPost json -> _ =>
+      val fight = Extraction.extract[MarshalledFightSummary](json)
+      FightServer ! PostponeFight(fight)
       JBool(true)
 
     case "api" :: "fight" :: "update" :: phase :: AsLong(id) :: "timer" :: Nil JsonPost json -> _ =>

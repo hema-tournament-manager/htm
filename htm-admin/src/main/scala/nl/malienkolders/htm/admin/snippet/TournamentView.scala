@@ -175,15 +175,19 @@ object TournamentView {
     }
 
     def renderFighter(f: Fight[_, _], side: String, fighter: Fighter) = (fighter match {
-      case SpecificFighter(Some(pt)) => renderParticipant(pt.subscription(t).get)
-      case SpecificFighter(None) | UnknownFighter(_) => ".label *" #> "?" &
-        ".name *" #> <a href={ s"/fights/pick/${f.id.is}${side}" }>Pick a fighter</a> &
-        ".club *" #> Nil &
-        ".country *" #> Nil
-      case _ => ".label *" #> "?" &
-        ".name *" #> fighter.toString &
-        ".club *" #> Nil &
-        ".country *" #> Nil
+      case UnknownFighter(_) =>
+        ".label *" #> "?" &
+          ".name *" #> <a href={ s"/fights/pick/${f.id.is}${side}" }>Pick a fighter</a> &
+          ".club *" #> Nil &
+          ".country *" #> Nil
+      case knownFighter => knownFighter.participant match {
+        case Some(pt) => renderParticipant(pt.subscription(t).get) & "* [title]" #> knownFighter.toString
+        case None =>
+          ".label *" #> "?" &
+            ".name *" #> knownFighter.toString &
+            ".club *" #> Nil &
+            ".country *" #> Nil
+      }
     }) & ".edit [href]" #> s"/fights/pick/${f.id.is}${side}"
 
     def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
