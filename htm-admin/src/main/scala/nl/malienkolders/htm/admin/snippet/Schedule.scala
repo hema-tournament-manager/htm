@@ -121,7 +121,7 @@ class Schedule {
               action("Pack", () => pack(ts)),
               divider,
               action("Unschedule", () => unscheduleFights(ts.fights)))) &
-              ".fight" #> ts.fights.map { implicit sf =>
+              ".fight" #> ts.fights.sortBy(_.time.is).map { implicit sf =>
                 sf.fight.foreign match {
                   case Full(f) =>
                     implicit val p = f.phase.foreign.get
