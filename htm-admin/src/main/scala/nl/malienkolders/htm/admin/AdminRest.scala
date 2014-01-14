@@ -123,7 +123,7 @@ object AdminRest extends RestHelper {
                   case JInt(arenaId) =>
                     Arena.findByKey(arenaId.toLong) match {
                       case Full(arena) =>
-                        val fights = arena.fights.filterNot(_.fight.foreign.get.finished_?).map(_.toMarshalledSummary)
+                        val fights = arena.fights.filterNot(_.fight.foreign.get.finished_?).sortBy(_.time.is).map(_.toMarshalledSummary)
                         val newPayload = p ~ ("fights" -> Extraction.decompose(fights))
                         viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
                           Viewer.findByKey(viewerId).foreach(viewer =>
