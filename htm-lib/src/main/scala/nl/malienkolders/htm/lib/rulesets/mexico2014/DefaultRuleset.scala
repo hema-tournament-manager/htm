@@ -5,6 +5,7 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.mapper._
 import net.liftweb.util.TimeHelpers._
+import scala.xml.Elem
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -23,15 +24,17 @@ case class ParticipantScores(
   def firstHits = cleanHitsDealt + afterblowsDealt
   def doubleHitsAverage = if (fights == 0) 0 else doubleHits.toDouble / fights
 
-  val fields: List[(String, () => AnyVal)] = List(
-    "nr of fights" -> fights,
-    "wins" -> wins,
-    "losses" -> losses,
-    "points scored" -> exchangePoints,
-    "points lost by doubles" -> lossesByDoubles,
-    "double hits" -> doubleHits,
-    "afterblows received" -> afterblowsReceived,
-    "average double hits" -> doubleHitsAverage)
+  def none(caption: String) = <span>{ caption }</span>
+  def asc(caption: String) = <span><span>{ caption }</span><small class="glyphicon glyphicon-sort-by-attributes"></small></span>
+  def desc(caption: String) = <span><span>{ caption }</span><small class="glyphicon glyphicon-sort-by-attributes-alt"></small></span>
+
+  val fields: List[((String, Elem), () => AnyVal)] = List(
+    ("Number of fights", none("#")) -> fights,
+    ("Wins", desc("W")) -> wins,
+    ("Clean hits against", asc("CA")) -> cleanHitsReceived,
+    ("Clean hits", desc("C")) -> cleanHitsDealt,
+    ("Afterblows against", asc("AA")) -> afterblowsReceived,
+    ("Double hits", asc("D")) -> doubleHits)
 }
 
 abstract class EmagRuleset extends Ruleset {
@@ -57,7 +60,7 @@ abstract class EmagRuleset extends Ruleset {
             w1 > w2
           } else if (cr1 != cr2) {
             // b. fewest clean hits against
-            cr1 > cr2
+            cr1 < cr2
           } else if (cd1 != cd2) {
             // d. most clean hits dealt
             cd1 > cd2

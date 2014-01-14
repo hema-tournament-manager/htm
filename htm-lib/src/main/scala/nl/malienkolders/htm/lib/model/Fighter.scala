@@ -62,7 +62,7 @@ case class PoolFighter(pool: Pool, ranking: Int) extends Fighter {
   def participant = {
     println(s"POOL ${pool.poolName} FINISHED: ${pool.finished_?}")
     pool.finished_? match {
-      case true => Some(pool.ranked(ranking - 1))
+      case true => Some(pool.ranked(ranking - 1)._1)
       case false => None
     }
   }

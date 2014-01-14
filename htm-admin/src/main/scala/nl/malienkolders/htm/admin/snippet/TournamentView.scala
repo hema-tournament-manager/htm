@@ -237,8 +237,22 @@ object TournamentView {
         "#pool-generation-pool-count" #> SHtml.text(t.poolPhase.pools.size.toString, s => generatePoolPhase.poolCount = s.toInt) &
         "#pool-generation-generate" #> SHtml.submit("Generate", () => { generatePoolPhase.generate(); S.redirectTo("#poolphase") }) &
         ".tournamentPool" #> t.poolPhase.pools.map(p =>
-          ".panel-title *" #> p.poolName &
-            ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }) &
+          ".panel-title" #> (
+            ".name *" #> p.poolName &
+            "a [href]" #> s"#ranking${p.id.get}") &
+            ".participants" #> (".participant" #> p.ranked.map {
+              case (pt, _) =>
+                renderParticipant(pt.subscription(t).get)
+            }) &
+            ".modal" #> (
+              "* [id]" #> s"ranking${p.id.get}" &
+              ".modal-title *" #> s"Pool ${p.poolName}" &
+              "thead" #> (".field" #> t.poolPhase.rulesetImpl.emptyScore.header) &
+              ".participant" #> p.ranked.map {
+                case (pt, s) =>
+                  renderParticipant(pt.subscription(t).get) &
+                    ".field" #> s.row
+              })) &
         ".poolPhase" #> t.poolPhase.pools.map(p =>
           renderFights(p.fights)) &
         ".eliminationRound" #> t.eliminationPhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {

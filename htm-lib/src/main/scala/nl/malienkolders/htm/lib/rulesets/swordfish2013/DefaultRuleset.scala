@@ -5,6 +5,8 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.mapper._
 import net.liftweb.util.TimeHelpers._
+import scala.xml.Elem
+import scala.xml.Text
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -26,7 +28,7 @@ case class ParticipantScores(
 
   def points = wins * 3 + ties * 1
 
-  val fields: List[(String, () => AnyVal)] = List(
+  val fields: List[((String, Elem), () => AnyVal)] = List[(String, () => AnyVal)](
     "nr of fights" -> fights,
     "points" -> points,
     "wins" -> wins,
@@ -36,7 +38,10 @@ case class ParticipantScores(
     "points lost by doubles" -> lossesByDoubles,
     "double hits" -> doubleHits,
     "afterblows received" -> afterblowsReceived,
-    "average double hits" -> doubleHitsAverage)
+    "average double hits" -> doubleHitsAverage).map {
+      case (n, v) =>
+        (n, Text(n).asInstanceOf[Elem]) -> v
+    }
 }
 
 abstract class SwordfishRuleset extends Ruleset {

@@ -9,6 +9,8 @@ import net.liftweb.http._
 import net.liftweb.mapper._
 import net.liftweb.util.Helpers._
 import net.liftweb.util.StringPromotable.intToStrPromo
+import scala.xml.Elem
+import scala.xml.Text
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -26,12 +28,12 @@ case class ParticipantScores(
   def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
   def firstHits = cleanHitsDealt + afterblowsDealt
 
-  val fields: List[(String, () => AnyVal)] = List(
-    "nr of fights" -> fights,
-    "points" -> points,
-    "clean hits received" -> cleanHitsReceived,
-    "double hits" -> doubleHits,
-    "clean hits dealt" -> cleanHitsDealt)
+  val fields: List[((String, Elem), () => AnyVal)] = List(
+    ("nr of fights", Text("nr of fights").asInstanceOf[Elem]) -> fights,
+    ("points", Text("points").asInstanceOf[Elem]) -> points,
+    ("clean hits received", Text("clean hits received").asInstanceOf[Elem]) -> cleanHitsReceived,
+    ("double hits", Text("double hits").asInstanceOf[Elem]) -> doubleHits,
+    ("clean hits dealt", Text("clean hits dealt").asInstanceOf[Elem]) -> cleanHitsDealt)
 }
 
 object DefaultRuleset extends Ruleset {
