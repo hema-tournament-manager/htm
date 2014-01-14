@@ -52,7 +52,7 @@ object TournamentView {
       tournament.subscriptions += TournamentParticipant.create.
         participant(participant).
         experience(0).
-        gearChecked(true).
+        gearChecked(false).
         fighterNumber(tournament.nextFighterNumber)
       tournament.save
       RedirectTo("#participant" + participant.externalId.get) & Reload
