@@ -16,6 +16,7 @@ import java.util.TimeZone
 import net.liftweb.common.Empty
 import net.liftweb.http.js.JsCmd
 import net.liftweb.common.Full
+import net.liftweb.util.CssSel
 
 class Schedule {
 
@@ -108,6 +109,38 @@ class Schedule {
 
     val divider = ("* [class+]" #> "divider" & "* *" #> Nil)
 
+    def schedule(fights: Seq[Fight[_, _]]) = ".schedule" #> (
+      ".arena" #> Arena.findAll().map(a =>
+        ".arenaName *" #> a.name.get &
+          ".day" #> Day.findAll().zipWithIndex.map {
+            case (d, i) =>
+              ".dayName *" #> ("Day " + (i + 1)) &
+                ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
+                  "a" #> SHtml.a(() => scheduleFights(fights, ts), <span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span><span class="name">{ ts.name.get }</span>))
+          }))
+
+    def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
+      ".name *" #> f.name.get &
+        ".schedule" #> (
+          ".arena" #> Arena.findAll().map(a =>
+            ".arenaName *" #> a.name.get &
+              ".day" #> Day.findAll().zipWithIndex.map {
+                case (d, i) =>
+                  ".dayName *" #> ("Day " + (i + 1)) &
+                    ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
+                      "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="name">{ ts.name.get }</span><span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span>))
+              })))
+
+    def renderPhase(name: String, fights: Seq[Fight[_, _]]): Option[CssSel] = fights.isEmpty match {
+      case false =>
+        Some(".phaseHeader" #> (
+          ".name *" #> name &
+          schedule(fights)) &
+          renderFights(fights))
+      case true =>
+        None
+    }
+
     ".arena" #> Arena.findAll.map(a =>
       ".arena [class+]" #> ("col-md-" + colspan) &
         ".arenaName" #> a.name.get &
@@ -148,31 +181,11 @@ class Schedule {
             case n =>
               ".tournamentName *" #> n
           }) &
-
           ".unscheduledCount *" #> t.phases.flatMap(_.fights.filter(_.scheduled.foreign.isEmpty)).size &
-          ".phase" #> t.phases.map(p =>
-            ".phaseHeader" #> (
-              ".name *" #> p.name.get &
-              ".schedule" #> (
-                ".arena" #> Arena.findAll().map(a =>
-                  ".arenaName *" #> a.name.get &
-                    ".day" #> Day.findAll().zipWithIndex.map {
-                      case (d, i) =>
-                        ".dayName *" #> ("Day " + (i + 1)) &
-                          ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
-                            "a" #> SHtml.a(() => scheduleFights(p.fights, ts), <span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span><span class="name">{ ts.name.get }</span>))
-                    }))) &
-                ".fight" #> p.fights.filter(_.scheduled.foreign.isEmpty).map(f =>
-                  ".name *" #> f.name.get &
-                    ".schedule" #> (
-                      ".arena" #> Arena.findAll().map(a =>
-                        ".arenaName *" #> a.name.get &
-                          ".day" #> Day.findAll().zipWithIndex.map {
-                            case (d, i) =>
-                              ".dayName *" #> ("Day " + (i + 1)) &
-                                ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
-                                  "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="name">{ ts.name.get }</span><span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span>))
-                          }))))))
+          ".phase" #> (t.poolPhase.pools.map(pool =>
+            renderPhase(s"Pool ${pool.poolName}", pool.fights.filter(_.scheduled.foreign.isEmpty)))
+            ++ List(t.eliminationPhase, t.finalsPhase).map(p =>
+              renderPhase(p.name.get, p.fights.filter(_.scheduled.foreign.isEmpty)))).flatten))
   }
 
   def tournamentName(implicit t: Tournament) =
