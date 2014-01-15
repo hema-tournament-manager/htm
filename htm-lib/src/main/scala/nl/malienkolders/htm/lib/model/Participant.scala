@@ -52,6 +52,10 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   def initialRanking(t: Tournament): Int = subscription(t).map(_.experience.get).getOrElse(-1)
   def initialRanking(p: Phase[_]): Int = initialRanking(p.tournament.obj.get)
 
+  def poolForTournament(t: Tournament): Option[Pool] = {
+    t.poolPhase.pools.find(_.participants.exists(_.id.is == id.is))
+  }
+
   def toMarshalled = MarshalledParticipant(
     id.is,
     externalId.is,

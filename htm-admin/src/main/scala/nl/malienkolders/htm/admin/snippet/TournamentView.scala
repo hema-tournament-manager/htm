@@ -162,13 +162,13 @@ object TournamentView {
 
       RedirectTo("#eliminationphase") & Reload
     }
-    
+
     def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
-      t.poolPhase.pools.foreach(pool => {pool.participants -= participant.participant.foreign.get; pool.save});
+      t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
       if (poolId >= 0) {
         val poolTo = t.poolPhase.pools.find(_.id.is == poolId).get
-    	poolTo.participants += participant.participant.foreign.get
-    	poolTo.save
+        poolTo.participants += participant.participant.foreign.get
+        poolTo.save
       }
       t.save
       Reload
@@ -194,6 +194,16 @@ object TournamentView {
         ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled") &
         ".participant" #> (f.fighterA :: f.fighterB :: Nil).zipWithIndex.map { case (fighter, i) => renderFighter(f, if (i == 0) "A" else "B", fighter) })
 
+    def renderPickPool(sub: TournamentParticipant) = {
+      val allOptions = ("-1", "-- No pool --") :: t.poolPhase.pools.map(p => (p.id.is.toString, p.poolName)).toList;
+      val currentPoolId = sub.participant.foreign.get.poolForTournament(t).map(_.id.is).getOrElse(-1);
+      val enabled = sub.participant.foreign.get.poolForTournament(t).map(_.fights.filter(f => f.inFight_?(sub.participant.foreign.get) && f.finished_?)).size == 0
+      SHtml.ajaxSelect(allOptions
+          , Full(currentPoolId.toString), 
+          s => addParticipantToPool(sub, s.toInt),
+          if (enabled) { "disabled" -> "disabled" } else { "enabled" -> "enabled" })
+    }
+        
     def renderParticipant(sub: TournamentParticipant) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
       "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
       ".register [name]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
@@ -204,7 +214,7 @@ object TournamentView {
       ".club [title]" #> sub.participant.foreign.get.club.get &
       ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
       ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
-      ".participant-pick-pool" #> SHtml.ajaxSelect(("-1", "-- No pool --") :: t.poolPhase.pools.map(p => (p.id.is.toString, p.poolName)).toList, Full(t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.id.is).getOrElse(-1).toString), s => addParticipantToPool(sub, s.toInt)) &
+      ".participant-pick-pool" #> renderPickPool(sub) &
       ".initialRanking *" #> sub.experience.get
 
     val generatePoolPhase = new GeneratePoolPhase(t)
