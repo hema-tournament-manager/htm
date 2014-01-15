@@ -27,6 +27,7 @@ import scala.xml.EntityRef
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 import net.liftweb.http.js.JsCmds.{ Reload, RedirectTo }
+import scala.xml.Elem
 
 case class ParamInfo(param: String)
 
@@ -209,8 +210,27 @@ object TournamentView {
         }) &
         ".participant" #> (f.fighterA :: f.fighterB :: Nil).zipWithIndex.map { case (fighter, i) => renderFighter(f, if (i == 0) "A" else "B", fighter) })
 
+    def gearCheckError(sub: TournamentParticipant): Option[Elem] = if (!sub.gearChecked.is) {
+      Some(SHtml.a(() => { sub.gearChecked(true).save(); Reload }, <span><span class="glyphicon glyphicon-cog"></span> Gear not checked</span>, "title" -> "Click to mark gear as checked"))
+    } else {
+      None
+    }
+
+    def presenceError(sub: TournamentParticipant): Option[Elem] = {
+      val p = sub.participant.foreign.get
+      if (!p.isPresent.is) {
+        Some(SHtml.a(() => { p.isPresent(true).save(); Reload }, <span><span class="glyphicon glyphicon-user"></span> Not present</span>, "title" -> "Click to mark participant as present"))
+      } else {
+        None
+      }
+    }
+
+    def errors(sub: TournamentParticipant): List[Elem] = {
+      List(presenceError(sub), gearCheckError(sub)).flatten
+    }
+
     def renderParticipant(sub: TournamentParticipant) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
-      "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
+      "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "" else "danger") &
       ".register [name]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
       ".register [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
       ".label *" #> sub.fighterNumber.get &
@@ -220,7 +240,8 @@ object TournamentView {
       ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
       ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
       ".participant-pick-pool" #> SHtml.ajaxSelect(("-1", "-- No pool --") :: t.poolPhase.pools.map(p => (p.id.is.toString, p.poolName)).toList, Full(t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.id.is).getOrElse(-1).toString), s => addParticipantToPool(sub, s.toInt)) &
-      ".initialRanking *" #> sub.experience.get
+      ".initialRanking *" #> sub.experience.get &
+      ".error" #> errors(sub)
 
     val generatePoolPhase = new GeneratePoolPhase(t)
     // bindings
