@@ -6,6 +6,8 @@ import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import net.liftweb.mapper._
 import net.liftweb.util.TimeHelpers._
+import scala.xml.Elem
+import scala.xml.Text
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -27,7 +29,7 @@ case class ParticipantScores(
 
   def points = wins * 3 + ties * 1
 
-  val fields: List[(String, () => AnyVal)] = List(
+  val fields: List[((String, Elem), () => AnyVal)] = List[(String, () => AnyVal)](
     "nr of fights" -> fights,
     "points" -> points,
     "wins" -> wins,
@@ -37,7 +39,10 @@ case class ParticipantScores(
     "fights lost by doubles" -> lossesByDoubles,
     "double hits" -> doubleHits,
     "afterblows received" -> afterblowsReceived,
-    "average double hits" -> doubleHitsAverage)
+    "average double hits" -> doubleHitsAverage).map {
+      case (n, v) =>
+        (n, Text(n).asInstanceOf[Elem]) -> v
+    }
 }
 
 object RapierRuleset extends Ruleset {
@@ -106,21 +111,20 @@ object RapierRuleset extends Ruleset {
       iterations - 1)
   }
 
-  def planning(phase: PoolPhase): List[Pool] = {
-    phase.pools.map { pool =>
-      val maxNumberOfRounds = pool.participants.size - (if (pool.participants.size.isEven) 1 else 0)
+  def planning(pool: Pool): List[PoolFight] = {
+    val maxNumberOfRounds = pool.participants.size - (if (pool.participants.size.isEven) 1 else 0)
 
-      // don't generate fights after all fighters have faced each other
-      // with 4 fighters everyone has to fight 3 times, so you need 3 rounds
-      // with 5 fighters everyone has to fight 4 times, but every round one person cannot fight, so you need 5 rounds
-      val pairings = roundRobinPairing(pool.participants.size, 0)
-      pairings.foreach {
-        case (a, b) if a != -1 && b != -1 =>
-          pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
-        case _ => // do nothing
-      }
-      pool.save
-      pool
+    // don't generate fights after all fighters have faced each other
+    // with 4 fighters everyone has to fight 3 times, so you need 3 rounds
+    // with 5 fighters everyone has to fight 4 times, but every round one person cannot fight, so you need 5 rounds
+    val rawPairings = (for (i <- 0 to (maxNumberOfRounds - 1)) yield { roundRobinPairing(pool.participants.size, i) }).flatten
+    val pairings = rawPairings.filter(p => p._1 != -1 && p._2 != -1)
+    pairings.zipWithIndex.map {
+      case ((a, b), i) =>
+        PoolFight.create
+          .fighterAFuture(pool.participants(a - 1))
+          .fighterBFuture(pool.participants(b - 1))
+          .order(i + 1)
     }.toList
   }
 
@@ -139,25 +143,25 @@ object RapierRuleset extends Ruleset {
             case TotalScore(_, _, _, _, double, _) if (double >= 3) =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd + 1, hR, hD, aR, aD, d + double, p)
             // In the case of a tie, the score will be the fighter’s score minus doubles, with a minimum of 0 points.
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterAParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p + (a.min(6) - double).max(0))
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterBParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p + (b.min(6) - double).max(0))
             // If the winner has more than 6 points, the winner’s score will first be reduced to 6
             // The loser’s points will be then deducted from the winner’s 
             // Double hits are removed from the remaining winning points
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterAParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p + calculateFightPoints(a, b, double))
             // The loser receives no points
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterBParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p)
             // The loser receives no points
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterAParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, lbd, hR + b, hD + a, aR + aafter, aD + bafter, d + double, p)
             // If the winner has more than 6 points, the winner’s score will first be reduced to 6
             // The loser’s points will be then deducted from the winner’s 
             // Double hits are removed from the remaining winning points
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterBParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, lbd, hR + a, hD + b, aR + bafter, aD + aafter, d + double, p + calculateFightPoints(b, a, double))
             case _ => ps
           }

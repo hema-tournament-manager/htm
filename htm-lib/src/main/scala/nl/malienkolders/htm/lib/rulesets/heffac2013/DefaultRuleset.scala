@@ -9,6 +9,8 @@ import net.liftweb.http._
 import net.liftweb.mapper._
 import net.liftweb.util.Helpers._
 import net.liftweb.util.StringPromotable.intToStrPromo
+import scala.xml.Elem
+import scala.xml.Text
 
 case class ParticipantScores(
     initialRanking: Int,
@@ -26,12 +28,12 @@ case class ParticipantScores(
   def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
   def firstHits = cleanHitsDealt + afterblowsDealt
 
-  val fields: List[(String, () => AnyVal)] = List(
-    "nr of fights" -> fights,
-    "points" -> points,
-    "clean hits received" -> cleanHitsReceived,
-    "double hits" -> doubleHits,
-    "clean hits dealt" -> cleanHitsDealt)
+  val fields: List[((String, Elem), () => AnyVal)] = List(
+    ("nr of fights", Text("nr of fights").asInstanceOf[Elem]) -> fights,
+    ("points", Text("points").asInstanceOf[Elem]) -> points,
+    ("clean hits received", Text("clean hits received").asInstanceOf[Elem]) -> cleanHitsReceived,
+    ("double hits", Text("double hits").asInstanceOf[Elem]) -> doubleHits,
+    ("clean hits dealt", Text("clean hits dealt").asInstanceOf[Elem]) -> cleanHitsDealt)
 }
 
 object DefaultRuleset extends Ruleset {
@@ -93,17 +95,20 @@ object DefaultRuleset extends Ruleset {
       iterations - 1)
   }
 
-  def planning(phase: PoolPhase): List[Pool] = {
+  def planning(pool: Pool): List[PoolFight] = {
+    val maxNumberOfRounds = pool.participants.size - (if (pool.participants.size.isEven) 1 else 0)
 
-    phase.pools.map { pool =>
-      val pairings = roundRobinPairing(pool.participants.size, 0)
-      pairings.foreach {
-        case (a, b) if a != -1 && b != -1 =>
-          pool.addFight(pool.participants(a - 1), pool.participants(b - 1))
-        case _ => // do nothing
-      }
-      pool.save
-      pool
+    // don't generate fights after all fighters have faced each other
+    // with 4 fighters everyone has to fight 3 times, so you need 3 rounds
+    // with 5 fighters everyone has to fight 4 times, but every round one person cannot fight, so you need 5 rounds
+    val rawPairings = (for (i <- 0 to (maxNumberOfRounds - 1)) yield { roundRobinPairing(pool.participants.size, i) }).flatten
+    val pairings = rawPairings.filter(p => p._1 != -1 && p._2 != -1)
+    pairings.zipWithIndex.map {
+      case ((a, b), i) =>
+        PoolFight.create
+          .fighterAFuture(SpecificFighter(Some(pool.participants(a - 1))).format)
+          .fighterBFuture(SpecificFighter(Some(pool.participants(b - 1))).format)
+          .order(i + 1)
     }.toList
   }
 
@@ -118,21 +123,21 @@ object DefaultRuleset extends Ruleset {
       case (ps @ ParticipantScores(i, c, w, t, l, hR, hD, aR, aD, d), f) =>
         if (f.inFight_?(pt)) {
           f.currentScore match {
-            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterAParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterBParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if double >= 3 && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterAParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterBParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t + 1, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterAParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterBParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterAParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, t, l + 1, hR + b, hD + a, aR + aafter, aD + bafter, d + double)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterBParticipant.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, t, l, hR + a, hD + b, aR + bafter, aD + aafter, d + double)
             case _ => ParticipantScores(i, c, w, t, l, hR, hD, aR, aD, d)
           }

@@ -1,18 +1,16 @@
 package nl.malienkolders.htm.lib.rulesets
-package swordfish2013
+package mexico2014
 
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.mapper._
 import net.liftweb.util.TimeHelpers._
 import scala.xml.Elem
-import scala.xml.Text
 
 case class ParticipantScores(
     initialRanking: Int,
     fights: Int,
     wins: Int,
-    ties: Int,
     losses: Int,
     lossesByDoubles: Int,
     cleanHitsReceived: Int,
@@ -26,32 +24,27 @@ case class ParticipantScores(
   def firstHits = cleanHitsDealt + afterblowsDealt
   def doubleHitsAverage = if (fights == 0) 0 else doubleHits.toDouble / fights
 
-  def points = wins * 3 + ties * 1
+  def none(caption: String) = <span>{ caption }</span>
+  def asc(caption: String) = <span><span>{ caption }</span><small class="glyphicon glyphicon-sort-by-attributes"></small></span>
+  def desc(caption: String) = <span><span>{ caption }</span><small class="glyphicon glyphicon-sort-by-attributes-alt"></small></span>
 
-  val fields: List[((String, Elem), () => AnyVal)] = List[(String, () => AnyVal)](
-    "nr of fights" -> fights,
-    "points" -> points,
-    "wins" -> wins,
-    "ties" -> ties,
-    "losses" -> losses,
-    "points scored" -> exchangePoints,
-    "points lost by doubles" -> lossesByDoubles,
-    "double hits" -> doubleHits,
-    "afterblows received" -> afterblowsReceived,
-    "average double hits" -> doubleHitsAverage).map {
-      case (n, v) =>
-        (n, Text(n).asInstanceOf[Elem]) -> v
-    }
+  val fields: List[((String, Elem), () => AnyVal)] = List(
+    ("Number of fights", none("#")) -> fights,
+    ("Wins", desc("W")) -> wins,
+    ("Clean hits against", asc("CA")) -> cleanHitsReceived,
+    ("Clean hits", desc("C")) -> cleanHitsDealt,
+    ("Afterblows against", asc("AA")) -> afterblowsReceived,
+    ("Double hits", asc("D")) -> doubleHits)
 }
 
-abstract class SwordfishRuleset extends Ruleset {
+abstract class EmagRuleset extends Ruleset {
   type Scores = ParticipantScores
 
-  val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {
-      case (ParticipantScores(i1, f1, w1, _, _, lbd1, _, _, ar1, _, d1, p1), ParticipantScores(i2, f2, w2, _, _, lbd2, _, _, ar2, _, d2, p2)) =>
+      case (ParticipantScores(i1, f1, w1, _, lbd1, cr1, cd1, ar1, _, d1, p1), ParticipantScores(i2, f2, w2, _, lbd2, cr2, cd2, ar2, _, d2, p2)) =>
         val effectivePoints1 = p1 - lbd1
         val effectivePoints2 = p2 - lbd2
         if (f1 == 0 && f2 == 0) {
@@ -61,24 +54,24 @@ abstract class SwordfishRuleset extends Ruleset {
           // put fighters who have fought before those who haven't
           f2 == 0
         } else {
-          // rank according to Swordfish rules
-          if (s1.points != s2.points) {
-            // 0. most points
-            s1.points > s2.points
-          } else if (w1 != w2) {
+          // rank according to Mexico 2014 rules
+          if (w1 != w2) {
             // a. most wins
             w1 > w2
-          } else if (effectivePoints1 != effectivePoints2) {
-            // b. most points scored
-            effectivePoints1 > effectivePoints2
-          } else if (d1 != d2) {
-            // d. fewest doubles
-            d1 < d2
+          } else if (cr1 != cr2) {
+            // b. fewest clean hits against
+            cr1 < cr2
+          } else if (cd1 != cd2) {
+            // d. most clean hits dealt
+            cd1 > cd2
           } else if (ar1 != ar2) {
             // f. fewest afterblows received
-            ar1 > ar2
+            ar1 < ar2
+          } else if (d1 != d2) {
+            // g. fewest doubles
+            d1 < d2
           } else {
-            // i. randomly
+            // z. randomly
             random.nextBoolean
           }
         }
@@ -131,23 +124,23 @@ abstract class SwordfishRuleset extends Ruleset {
     val r = p.phase.obj.get
     val t = r.tournament.obj.get
     val fs = p.fights.filter(_.finished_?)
-    pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
-      case (ps @ ParticipantScores(i, c, w, t, l, lbd, hR, hD, aR, aD, d, p), f) =>
+    pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
+      case (ps @ ParticipantScores(i, c, w, l, lbd, hR, hD, aR, aD, d, p), f) =>
         if (f.inFight_?(pt)) {
           f.currentScore match {
             case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, t + 1, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
+              ParticipantScores(i, c + 1, w, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
             case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, t + 1, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
+              ParticipantScores(i, c + 1, w, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
             case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w + 1, t, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
+              ParticipantScores(i, c + 1, w + 1, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
             case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, t, l + 1, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
+              ParticipantScores(i, c + 1, w, l + 1, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
             case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, t, l + 1, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
+              ParticipantScores(i, c + 1, w, l + 1, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
             case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w + 1, t, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case _ => ParticipantScores(i, c, w, t, l, lbd, hR, hD, aR, aD, d, p)
+              ParticipantScores(i, c + 1, w + 1, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
+            case _ => ParticipantScores(i, c, w, l, lbd, hR, hD, aR, aD, d, p)
           }
         } else {
           ps
@@ -161,11 +154,11 @@ abstract class SwordfishRuleset extends Ruleset {
     timeLimit = 3 minutes,
     breakAt = 0,
     breakDuration = 0,
-    timeBetweenFights = 2 minute,
+    timeBetweenFights = 0,
     exchangeLimit = 10)
 }
 
-object DefaultRuleset extends SwordfishRuleset {
-  val id = "swordfish-2013-default"
-  val possiblePoints = List(0, 1, 2, 3)
+object DefaultRuleset extends EmagRuleset {
+  val id = "emag-2014-default"
+  val possiblePoints = List(-1, 0, 1, 2)
 }

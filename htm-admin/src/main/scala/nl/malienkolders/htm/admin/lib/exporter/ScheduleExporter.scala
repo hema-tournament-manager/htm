@@ -48,10 +48,10 @@ object ScheduleExporter extends ExcelExporter {
         val row = sheet.getOrCreateRow(i);
 
         row.getOrCreateCell(1).setCellValue(new Date(fight.scheduled.foreign.get.time.get))
-        row.getOrCreateCell(2).setCellValue(fight.fighterAParticipant.foreign.get.subscription(t).get.fighterNumber.get)
-        row.getOrCreateCell(3).setCellValue(fight.fighterAParticipant.foreign.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
-        row.getOrCreateCell(4).setCellValue(fight.fighterBParticipant.foreign.get.subscription(t).get.fighterNumber.get)
-        row.getOrCreateCell(5).setCellValue(fight.fighterBParticipant.foreign.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
+        row.getOrCreateCell(2).setCellValue(fight.fighterA.participant.get.subscription(t).get.fighterNumber.get)
+        row.getOrCreateCell(3).setCellValue(fight.fighterA.participant.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
+        row.getOrCreateCell(4).setCellValue(fight.fighterB.participant.get.subscription(t).get.fighterNumber.get)
+        row.getOrCreateCell(5).setCellValue(fight.fighterB.participant.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
 
         i = i + 1;
       }

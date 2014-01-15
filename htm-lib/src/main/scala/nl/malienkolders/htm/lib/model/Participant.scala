@@ -30,7 +30,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   def primaryKeyField = id
   object id extends MappedLongIndex(this)
   object externalId extends MappedString(this, 8)
-  object name extends MappedPoliteString(this, 128)
+  object name extends MappedRequiredPoliteString(this, 128)
   object shortName extends MappedPoliteString(this, 64)
   object club extends MappedPoliteString(this, 128)
   object clubCode extends MappedPoliteString(this, 16)
@@ -44,10 +44,10 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   object previousWins extends MappedTextarea(this, 1024)
 
   def tournaments = subscriptions.map(_.tournament.obj.get)
-  object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.participant, OrderBy(TournamentParticipants.id, Ascending))
+  object subscriptions extends MappedOneToMany(TournamentParticipant, TournamentParticipant.participant, OrderBy(TournamentParticipant.id, Ascending))
 
-  def subscription(t: Tournament): Option[TournamentParticipants] = subscriptions.find(_.tournament.get == t.id.get)
-  def subscription(p: Phase[_]): Option[TournamentParticipants] = subscription(p.tournament.obj.get)
+  def subscription(t: Tournament): Option[TournamentParticipant] = subscriptions.find(_.tournament.get == t.id.get)
+  def subscription(p: Phase[_]): Option[TournamentParticipant] = subscription(p.tournament.obj.get)
 
   def initialRanking(t: Tournament): Int = subscription(t).map(_.experience.get).getOrElse(-1)
   def initialRanking(p: Phase[_]): Int = initialRanking(p.tournament.obj.get)

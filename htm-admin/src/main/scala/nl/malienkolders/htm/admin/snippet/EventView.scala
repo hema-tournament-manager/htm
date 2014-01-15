@@ -12,8 +12,8 @@ class EventView {
   val datef = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.UTC)
   val fmt = DateTimeFormat.forPattern("HH:mm").withZone(DateTimeZone.UTC)
 
-  def timeslotMatrix = {
-    val timeslotsPerArena = ArenaTimeSlot.findAll().groupBy(_.arena.is)
+  def timeslotMatrix(day: Day) = {
+    val timeslotsPerArena = ArenaTimeSlot.findAll(By(ArenaTimeSlot.day, day)).groupBy(_.arena.is)
     val arenaIds = Arena.findAll().map(_.id.get)
     def loop(map: Map[Long, List[ArenaTimeSlot]]): List[List[Option[ArenaTimeSlot]]] = map.values.exists(!_.isEmpty) match {
       case false => arenaIds.map(_ => Nil)
@@ -29,7 +29,7 @@ class EventView {
   }, "class" -> "form-control input-sm")
 
   def render = {
-    val e = Event.findAll().headOption.getOrElse(Event.create.name("My Event " + DateTime.now.year().get()).saveMe())
+    val e = Event.theOne
     val ds = Day.findAll() match {
       case Nil => Day.create.date(LocalDate.now.toDate.getTime).saveMe() :: Nil
       case days => days
@@ -42,7 +42,7 @@ class EventView {
           ".dayTitle *" #> ("Day " + (i + 1)) &
             ".date" #> SHtml.text(new LocalDate(d.date.get).toString(datef), s => d.date(datef.parseLocalDate(s).toDate().getTime()).save(), "class" -> "date pull-right form-control input-sm") &
             ".arenaHeader" #> arenas.map(a => "* *" #> a.name.get) &
-            ".timeslot" #> timeslotMatrix.map(ts =>
+            ".timeslot" #> timeslotMatrix(d).map(ts =>
               ".arena" #> ts.map {
                 case Some(t) =>
                   ".from *" #> timeInput(t, t.from) &

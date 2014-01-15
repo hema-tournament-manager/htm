@@ -20,11 +20,14 @@ object AdminRest extends RestHelper {
     case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>
       JsonFightExporter.createExport
 
+    case "api" :: "event" :: Nil JsonGet _ =>
+      JString(Event.theOne.name.get)
+
     case "api" :: "arenas" :: Nil JsonGet _ =>
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 
     case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
-      Extraction.decompose(Arena.findByKey(arenaId).map(_.fights.map(_.toMarshalledSummary)).getOrElse(false))
+      Extraction.decompose(Arena.findByKey(arenaId).map(_.fights.filter(_.fight.foreign.isDefined).sortBy(_.time.is).map(_.toMarshalledSummary)).getOrElse(false))
 
     case "api" :: "participants" :: Nil JsonGet _ =>
       Extraction.decompose(Participant.findAll.map(_.toMarshalled))
@@ -86,6 +89,11 @@ object AdminRest extends RestHelper {
       FightServer ! FightUpdate(fight)
       JBool(true)
 
+    case "api" :: "fight" :: "postpone" :: Nil JsonPost json -> _ =>
+      val fight = Extraction.extract[MarshalledFightSummary](json)
+      FightServer ! PostponeFight(fight)
+      JBool(true)
+
     case "api" :: "fight" :: "update" :: phase :: AsLong(id) :: "timer" :: Nil JsonPost json -> _ =>
       val timer = Extraction.extract[TimerMessage](json)
       FightServer ! TimerUpdate(FightId(phase, id), timer)
@@ -115,7 +123,7 @@ object AdminRest extends RestHelper {
                   case JInt(arenaId) =>
                     Arena.findByKey(arenaId.toLong) match {
                       case Full(arena) =>
-                        val fights = arena.fights.filterNot(_.fight.foreign.get.finished_?).map(_.toMarshalledSummary)
+                        val fights = arena.fights.filterNot(_.fight.foreign.get.finished_?).sortBy(_.time.is).map(_.toMarshalledSummary)
                         val newPayload = p ~ ("fights" -> Extraction.decompose(fights))
                         viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
                           Viewer.findByKey(viewerId).foreach(viewer =>

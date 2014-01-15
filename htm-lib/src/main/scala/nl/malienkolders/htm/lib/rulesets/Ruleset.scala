@@ -11,21 +11,21 @@ import scala.xml.NodeBuffer
 import net.liftweb.util.CssSel
 
 abstract class Scores {
-  def fields: Seq[(String, () => AnyVal)]
+  def fields: Seq[((String, Elem), () => AnyVal)]
 
   implicit def val2lazyVal(i: AnyVal): () => AnyVal =
     () => i
 
   def header: Seq[Elem] = fields.map {
-    case (name, _) => <th>{ name }</th>
+    case ((name, header), _) => <th title={ name }>{ header }</th>
   }
 
   def row: Seq[Elem] = fields.map {
-    case (name, value) => <td title={ name }>{ value() }</td>
+    case ((name, _), value) => <td title={ name }>{ value() }</td>
   }
 }
 
-case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Long)
+case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int)
 
 trait Ruleset {
 
@@ -33,7 +33,7 @@ trait Ruleset {
 
   def id: String
 
-  def planning(phase: PoolPhase): List[Pool]
+  def planning(pool: Pool): List[PoolFight]
 
   def ranking(p: Pool): List[(Participant, Scores)]
 

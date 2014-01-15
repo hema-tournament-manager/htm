@@ -83,9 +83,14 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
       update(arena, "fight", data)
     }
 
-    def fightUpdate(arena: Arena, f: PoolFight): Boolean = {
+    def fightUpdate[F <: Fight[_, _]](arena: Arena, f: F): Boolean = {
       if (state != "fight") {
-        fightUpdate(arena, Extraction.decompose(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
+        f match {
+          case f: PoolFight =>
+            fightUpdate(arena, Extraction.decompose(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
+          case f: EliminationFight =>
+            fightUpdate(arena, Extraction.decompose(Map("eliminationSummary" -> f.phase.foreign.get.fights.map(_.toMarshalledSummary))))
+        }
       }
       fightUpdate(arena, Extraction.decompose(f.toMarshalled))
     }

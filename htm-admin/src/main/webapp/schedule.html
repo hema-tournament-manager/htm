@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-	<title>Arenas</title>
+	<title>Schedule</title>
 </head>
 <body class="lift:content_id=main">
 	<div id="main" class="lift:surround?with=default;at=content">
@@ -26,14 +26,14 @@
 			margin-left: 3px;
 		}
 		
-		.timeslot .name:after {
+		.timeslot td .name:after, li.timeslot .name:after {
 			content: ": ";
 		}		
 		
 	</style>
 		
 		</style></head>
-		<div class="lift:ArenaList">
+		<div class="lift:Schedule">
 			<div class="container">
 				<div class="row">
 					<div class="arena">
@@ -56,12 +56,12 @@
 									<tr class="header">
 										<th colspan="3"><span class="name"></span><span class="from"></span><span class="to"></span></th>
 										<th>
-											<div class="btn-group">
+											<div class="btn-group pull-right">
 												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
 													<span class="caret"></span>
 												</button>
 												<ul class="dropdown-menu">
-													<li><a href="#" class="unschedule">Unschedule</a></li>
+													<li class="action"><a href="#">Action</a></li>
 												</ul>
 											</div>
 										</th>
@@ -73,12 +73,12 @@
 								  		<td class="tournament">Longsword open</td>
 								  		<td class="name">Fight 1</td>
 								  		<td>
-								  			<div class="btn-group">
+								  			<div class="btn-group pull-right">
 												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
 													<span class="caret"></span>
 												</button>
 												<ul class="dropdown-menu">
-													<li><a href="#" class="unschedule">Unschedule</a></li>
+													<li class="action"><a href="#">Unschedule</a></li>
 												</ul>
 											</div>
 								  		</td>
@@ -91,8 +91,10 @@
 					<div class="unscheduled col-md-3">
 						<div class="tournament panel panel-default">
 							<div class="panel-heading">
-								<h3 class="panel-title">
-									<span class="tournamentName">Tournament</span>
+								<h3 class="panel-title" style="position: relative">
+                  <span class="tournamentLabel label label-default">T</span>
+                  <span class="tournamentName">Tournament</span>
+									<span class="unscheduledCount badge" style="position: absolute; top: 0px; right: -5px;" title="Number of unscheduled fights">999</span>
 								</h3>
 							</div>
 							<table class="table">
@@ -100,7 +102,7 @@
 									<tr class="phaseHeader">
 										<th class="name">Phase A</th>
 										<th class="schedule">
-											<div class="btn-group">
+											<div class="btn-group pull-right">
 												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
 													<span class="caret"></span>
 												</button>
@@ -128,7 +130,7 @@
 									<tr class="fight">
 										<td class="name">Fight X</td>
 										<td class="schedule">
-											<div class="btn-group">
+											<div class="btn-group pull-right">
 												<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
 													<span class="caret"></span>
 												</button>

@@ -2,7 +2,7 @@
 
 var FightCtrl = function($scope, $timeout, playRoutes, stateService) {
 	_.extend($scope, stateService.get("fight"));
-	$scope.totalScore = {a: 0, b: 0, d: 0};
+	$scope.totalScore = {a: 0, b: 0, d: 0, x: 0};
 	
 	$scope.updateScore = function() {
 		$scope.totalScore = _.reduce($scope.scores, function(memo, score) {

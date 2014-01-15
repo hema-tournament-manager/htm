@@ -16,7 +16,7 @@ object ParticipantRegistration {
     pi => pi.param) / "participants" / "register" >> Loc.Hidden
   lazy val loc = menu.toLoc
 
-  implicit class PimpedSubscription(sub: TournamentParticipants) {
+  implicit class PimpedSubscription(sub: TournamentParticipant) {
     def pool = {
       val participantId = sub.participant.get
       val tournament = sub.tournament.obj.get
@@ -38,8 +38,12 @@ object ParticipantRegistration {
       for (fph <- upload) {
         PhotoImporterBackend.handlePhoto(p, fph.fileStream)
       }
-      p.save
-      S.redirectTo("/participants/list")
+      if (p.validate.isEmpty) {
+        p.save
+        S.redirectTo("/participants/list")
+      } else {
+        S.error(p.validate)
+      }
     }
 
     ".photo [src]" #> s"/photo/${p.externalId.get}/l" &

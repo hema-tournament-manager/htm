@@ -4,7 +4,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	if (!$rootScope.arena) {
 		$location.path("/");
 	} else {
-	console.log($rootScope.arena);
 	$rootScope.title = "Loading...";
 	$rootScope.subtitle = $rootScope.arena.name;
 	var _ = window._;
@@ -14,54 +13,60 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     $scope.currentFight = {globalOrder: -1, started: false};
     $scope.totalScore = {a: 0, b: 0, d: 0, x: 0};
     $scope.fightsShowing = [1, 5];
-    $scope.round = false;
     $scope.announcement = "";
     $scope.announcementBuffer = "";
 	
+	console.log(JSON.stringify($scope.arena));
 	playRoutes.controllers.AdminInterface.arena($scope.arena.id).get().success(function(data, status) {
-		$rootScope.title = data[0].round.tournament.name;
-		$scope.pools = data;
+		$rootScope.title = data[0].fight.tournament.name;
+		$scope.fights = new Array();
 		var globalOrder = 1;
-		_.each(_.reject($scope.pools, function(pool) { return pool.finished; }), function(pool) {
-			for (var i = 1; i <= pool.fightCount; i++) {
-				var fight = {poolId: pool.id, pool: pool, order: i, globalOrder: globalOrder++, loading: true, started: false};
-				$scope.fights.push(fight);
-				playRoutes.controllers.AdminInterface.poolFight(pool.id, fight.order).get().success(function(data, status) {
-					var fight = _.findWhere($scope.fights, {poolId: data.poolId, order: data.order});
-					fight = _.extend(fight, data);
-					fight.loading = false;
-    				fight['totalScore'] = function() {
-    					return _.reduce(this.scores, function(memo, score) {
-    						memo.a += score.pointsRed;
-    						memo.b += score.pointsBlue;
-    						memo.d += score.doubles;
-    						memo.x += score.exchanges;
-    						return memo;
-    					}, {a: 0, b: 0, d: 0, x: 0});
-    				};
-    				fight['lastScore'] = function() {
-    					var result = _.reduceRight(this.scores, function(memo, score) {
-    						if (!memo.score) {
-    							if (score.scoreType == "undo") {
-    								memo.undos += 1;
-    							} else if (memo.undos == 0) {
-    								memo.score = score;
-    							} else {
-    								memo.undos -= 1;
-    							}
-    						}
-    						return memo;
-    					}, {undos: 0, score: false});
-    					return result.score;
-    				};
-					$scope.fights[fight.globalOrder - 1] = fight;
-					if (($scope.currentFight.globalOrder == -1 || fight.globalOrder < $scope.currentFight.globalOrder) && fight.timeStop == 0) {
-						$scope.currentFight = fight;
+		_.each(_.reject(data, function(fight) { return fight.fight.finished; }), function(f) {
+			var fight = {globalOrder: globalOrder++, started: false, time: f.time};
+			fight = _.extend(fight, f.fight);
+			if (fight.fighterA.participant) {
+				fight.fighterA.name = fight.fighterA.participant.name;
+			} else {
+				fight.fighterA.name = fight.fighterA.label;
+			}
+			if (fight.fighterB.participant) {
+				fight.fighterB.name = fight.fighterB.participant.name;
+			} else {
+				fight.fighterB.name = fight.fighterB.label;
+			}
+			fight.name
+			fight['totalScore'] = function() {
+				return _.reduce(this.scores, function(memo, score) {
+					memo.a += score.pointsRed;
+					memo.b += score.pointsBlue;
+					memo.d += score.doubles;
+					memo.x += score.exchanges;
+					return memo;
+				}, {a: 0, b: 0, d: 0, x: 0});
+			};
+			fight['lastScore'] = function() {
+				var result = _.reduceRight(this.scores, function(memo, score) {
+					if (!memo.score) {
+						if (score.scoreType == "undo") {
+							memo.undos += 1;
+						} else if (memo.undos == 0) {
+							memo.score = score;
+						} else {
+							memo.undos -= 1;
+						}
 					}
-				});
+					return memo;
+				}, {undos: 0, score: false});
+				return result.score;
+			};
+			$scope.fights.push(fight);
+			if (($scope.currentFight.globalOrder == -1 || fight.globalOrder < $scope.currentFight.globalOrder) && fight.timeStop == 0) {
+				$scope.currentFight = fight;
 			}
 		});
+		console.log(JSON.stringify($scope.fights));
 	});
+	
 	
     $scope.pendingOperation = false;
     
@@ -84,7 +89,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     		$scope.timer.currentTime += Date.now() - $scope.timer.lastStart;
     		$scope.timer.displayTime = $scope.timer.currentTime;
     	}
-    	playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
+    	playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.phaseType, $scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
     }
     $scope.tick = function() {
     	if ($scope.timer.running) {
@@ -296,15 +301,15 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     }
     
     $scope.exchangeLimitReached = function() {
-    	return $scope.round != false && $scope.currentFight.started && $scope.round.exchangeLimit > 0 && $scope.currentFight.totalScore().x >= $scope.round.exchangeLimit;
+    	return $scope.currentFight.started && $scope.currentFight.exchangeLimit > 0 && $scope.currentFight.totalScore().x >= $scope.currentFight.exchangeLimit;
     };
     
     $scope.timeLimitReached = function() {
-    	return $scope.round != false && $scope.currentFight.started && $scope.timerValue() >= $scope.round.timeLimitOfFight;
+    	return $scope.currentFight.started && $scope.timerValue() >= $scope.currentFight.timeLimitOfFight;
     };
     
     $scope.doubleHitLimitReached = function() {
-    	return $scope.round != false && $scope.currentFight.started && $scope.currentFight.totalScore().d >= 3;
+    	return $scope.currentFight.started && $scope.currentFight.totalScore().d >= 5;
     };
     
     $scope.sendUpdate = function() {
@@ -315,35 +320,31 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 		$scope.resetTimer();
     	
 		if ($scope.currentFight.globalOrder > -1) {
-	    	playRoutes.controllers.AdminInterface.round($scope.currentFight.pool.round.id).get().success(function(data, status) {
-	    		$scope.round = data;
-	    		
-	    		$scope.currentFight.started = true;
-	    		$scope.currentFight.timeStart = Date.now();
-	    		$scope.timer.currentTime = _.reduce($scope.currentFight.scores, function(memo, score) { return Math.max(score.timeInFight, memo); }, 0);
-	    		$scope.timer.displayTime = $scope.timerValue();
-	    		
-	    		$scope.sendUpdate();
-	    		
-	        	playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
+	    	$scope.currentFight.started = true;
+	    	$scope.currentFight.timeStart = Date.now();
+	    	$scope.timer.currentTime = _.reduce($scope.currentFight.scores, function(memo, score) { return Math.max(score.timeInFight, memo); }, 0);
+	    	$scope.timer.displayTime = $scope.timerValue();
+	    	
+	    	$scope.sendUpdate();
+	    	
+	        playRoutes.controllers.AdminInterface.timerUpdate($scope.currentFight.phaseType, $scope.currentFight.id).post({action: $scope.timer.running ? "start" : "stop", time: $scope.timer.currentTime});
 
-	        	var next = $scope.findNextFight();
-	    		if (next) {
-	    			$scope.defaultAnnouncements.nextup = "Next up: <span class=\"badge red\">" + next.fighterA.externalId + "</span> <b>" + next.fighterA.shortName  + "</b> vs <span class=\"badge blue\">" + next.fighterB.externalId + "</span> <b>" + next.fighterB.shortName + "</b> at " + $filter('hours')(next.plannedTime);
-	    		} else {
-	    			$scope.defaultAnnouncements.nextup = "";
-	    		}
-	    		$scope.defaultAnnouncement('nextup');
-	    	});
+	        var next = $scope.findNextFight();
+	    	if (next) {
+	    		$scope.defaultAnnouncements.nextup = "Next up: <span class=\"label label-default\">" + next.tournament.memo + "</span> <span class=\"badge red\">" + next.fighterA.participant.externalId + "</span> <b>" + next.fighterA.label  + "</b> vs <span class=\"badge blue\">" + next.fighterB.participant.externalId + "</span> <b>" + next.fighterB.label + "</b> at " + $filter('hours')(next.time);
+	    	} else {
+	    		$scope.defaultAnnouncements.nextup = "";
+	    	}
+	    	$scope.defaultAnnouncement('nextup');
     	}
     };
     
     $scope.findCurrentFight = function() {
-    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0; });
+    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0 && !fight.postponed; });
     };
 
     $scope.findNextFight = function() {
-    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0 && fight.globalOrder > $scope.currentFight.globalOrder; });
+    	return _.find($scope.fights, function(fight) { return fight.timeStop == 0 && !fight.postponed && fight.globalOrder > $scope.currentFight.globalOrder; });
     };
     
     $scope.confirmFight = function() {
@@ -353,6 +354,18 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     		$scope.currentFight.netDuration = $scope.timerValue();
     		
     		playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight).success(function(data, status) {
+    			$scope.currentFight = $scope.findCurrentFight();
+    		});
+    	}
+    };
+    
+    $scope.postponeFight = function() {
+    	if ($scope.currentFight.globalOrder > -1) {
+    		$scope.stopTimer();
+    		
+    		$scope.currentFight.postponed = true;
+    		
+    		playRoutes.controllers.AdminInterface.fightPostpone().post($scope.currentFight).success(function(data, status) {
     			$scope.currentFight = $scope.findCurrentFight();
     		});
     	}
@@ -372,13 +385,18 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     };
     
     $scope.$watch('currentFight', function(newValue, oldValue) {
+    	if (newValue && newValue.tournament) {
+    		$rootScope.title = newValue.tournament.name;
+    	}
 		$scope.fightsShowing[0] = Math.max($scope.currentFight.globalOrder - 2, 1);
     	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
     	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
     });
     
     $scope.$watch('announcement', function(newValue, oldValue) {
-    	playRoutes.controllers.AdminInterface.messageUpdate($scope.currentFight.id).post(JSON.stringify(newValue));
+    	if ($scope.currentFight.id) {
+    		playRoutes.controllers.AdminInterface.messageUpdate($scope.currentFight.phaseType, $scope.currentFight.id).post(JSON.stringify(newValue));
+    	}
     });
     
     $(window).on("beforeunload", function() {
@@ -427,18 +445,25 @@ var CorrectScoreCtrl = function($scope, $modalInstance, score) {
 }
 
 var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, appService) {
-	$rootScope.title = "Swordfish 2013";
+	$rootScope.title = "Loading...";
 	$rootScope.subtitle = "";
 	
 	$scope.arenas = new Array();
 	var _ = window._;
 
+	playRoutes.controllers.AdminInterface.event().get().success(function(data) {
+		$rootScope.title = JSON.parse(data);
+	});
+	
 	playRoutes.controllers.AdminInterface.arenas().get().success(function(data, status) {
-		$scope.arenas = _.map(data, function(arena) { arena.fetchedPools = new Array(); return arena; });
+		$scope.arenas = _.map(data, function(arena) { arena.fetchedFights = new Array(); return arena; });
 		_.each($scope.arenas, function(arena) {
 			playRoutes.controllers.AdminInterface.arena(arena.id).get().success(function(data, status) {
 				console.log(JSON.stringify(data));
-				arena.fetchedPools = data;
+				arena.fetchedFights = _.map(data, function(fight) {
+					fight.fight.finished = fight.fight.timeStop > 0;
+					return fight;
+				});
 			});
 		});
 	}).error(function(data, status, headers) {
@@ -446,7 +471,7 @@ var PoolsCtrl = function($rootScope, $scope, $timeout, $location, playRoutes, ap
 	});
 	
 	$scope.subscribe = function(arena) {
-		$rootScope.arena = _.omit(arena, "fetchedPools");
+		$rootScope.arena = _.omit(arena, "fetchedFights");
 		$location.path("/fight");
 	};
 };

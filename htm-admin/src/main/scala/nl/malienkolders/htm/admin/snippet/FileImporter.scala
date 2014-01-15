@@ -18,7 +18,7 @@ object FileImporter {
     def process() = {
       PoolFight.bulkDelete_!!()
       EliminationFight.bulkDelete_!!()
-      TournamentParticipants.bulkDelete_!!()
+      TournamentParticipant.bulkDelete_!!()
       Participant.bulkDelete_!!()
       PoolPhase.bulkDelete_!!()
       EliminationPhase.bulkDelete_!!()

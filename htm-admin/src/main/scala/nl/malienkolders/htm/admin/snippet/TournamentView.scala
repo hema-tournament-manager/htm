@@ -15,6 +15,7 @@ import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.admin.lib._
 import nl.malienkolders.htm.admin.lib.exporter._
 import nl.malienkolders.htm.admin.lib.Utils.TimeRenderHelper
+import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.sitemap.LocPath.stringToLocPath
 import net.liftweb.util.IterableConst.itBindable
@@ -46,15 +47,15 @@ object TournamentView {
     val tournamentSubscriptions = t.subscriptions.sortBy(_.experience.is).reverse
     val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.subscriptions.map(_.participant.obj.get).toList
 
-    def addParticipant(tournament: Tournament, participantId: Long) {
+    def addParticipant(tournament: Tournament, participantId: Long) = {
       val participant = Participant.findByKey(participantId).get
-      tournament.subscriptions += TournamentParticipants.create.
+      tournament.subscriptions += TournamentParticipant.create.
         participant(participant).
         experience(0).
-        gearChecked(true).
+        gearChecked(false).
         fighterNumber(tournament.nextFighterNumber)
       tournament.save
-      refresh(Some(participant))
+      RedirectTo("#participant" + participant.externalId.get) & Reload
     }
 
     def deleteParticipantFromTournament(tournament: Tournament, participant: Participant) {
@@ -83,20 +84,61 @@ object TournamentView {
         case _ => ""
       }.getOrElse(""))
 
-    def autofill() = {
-      def fill(pts: List[Participant], ps: Seq[Pool]): Unit = pts match {
-        case Nil => Unit
-        case pt :: pts =>
-          ps.head.participants += pt
-          fill(pts, ps.tail :+ ps.head)
-      }
-      fill(tournamentSubscriptions.map(_.participant.foreign.get).toList, t.poolPhase.pools)
-      t.poolPhase.save
-      RedirectTo("#poolphase") & Reload
+    def generateFinals() = {
+      val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
+
+      // add fights if necessary
+      t.finalsPhase.eliminationFights ++= (for (i <- t.finalsPhase.eliminationFights.size to 1) yield EliminationFight.create)
+
+      t.finalsPhase.eliminationFights.head
+        .round(1)
+        .name("3rd Place")
+        .fighterAFuture(Loser(semiFinals(0)).format)
+        .fighterBFuture(Loser(semiFinals(1)).format)
+      t.finalsPhase.eliminationFights.last
+        .round(2)
+        .name("1st Place")
+        .fighterAFuture(Winner(semiFinals(0)).format)
+        .fighterBFuture(Winner(semiFinals(1)).format)
+      t.save()
     }
 
-    def generateElimination() = {
-      t.finalsPhase.eliminationFights.clear()
+    def generateNextRound(previous: List[EliminationFight], roundNumber: Int): Unit = previous.size match {
+      case n if n < 4 => Nil
+      case n =>
+        val next = (for (i <- 0 to (n / 2 - 1)) yield EliminationFight.create
+          .round(roundNumber)
+          .name("1/" + (n / 2) + " Finals, Fight " + (i + 1))
+          .fighterAFuture(Winner(previous(i * 2)).format)
+          .fighterBFuture(Winner(previous(i * 2 + 1)).format)).toList
+
+        t.eliminationPhase.eliminationFights ++= next
+        // we have to save the fights to get their id's
+        t.save()
+
+        generateNextRound(next, roundNumber + 1)
+    }
+
+    def generateElimination(nthFinals: Int) = {
+      t.eliminationPhase.eliminationFights.clear()
+
+      val round1 = for (i <- 1 to nthFinals) yield EliminationFight.create
+        .round(1)
+        .name(s"1/$nthFinals Finals, Fight $i")
+        .fighterAFuture(SpecificFighter(None).format)
+        .fighterBFuture(SpecificFighter(None).format)
+
+      t.eliminationPhase.eliminationFights ++= round1
+      t.save()
+
+      generateNextRound(round1.toList, 2)
+
+      generateFinals()
+
+      RedirectTo("#eliminationphase") & Reload
+    }
+
+    def generateEliminationTop2() = {
       t.eliminationPhase.eliminationFights.clear()
       val pools = t.poolPhase.pools
       val poolCount = pools.size
@@ -114,74 +156,73 @@ object TournamentView {
       // we have to save the fights to get their id's
       t.save()
 
-      def generateNextRound(previous: List[EliminationFight], roundNumber: Int): Unit = previous.size match {
-        case n if n < 4 => Nil
-        case n =>
-          val next = (for (i <- 0 to (n / 2 - 1)) yield EliminationFight.create
-            .round(roundNumber)
-            .name("1/" + (n / 2) + " Finals, Fight " + (i + 1))
-            .fighterAFuture(Winner(previous(i * 2)).format)
-            .fighterBFuture(Winner(previous(i * 2 + 1)).format)).toList
-
-          t.eliminationPhase.eliminationFights ++= next
-          // we have to save the fights to get their id's
-          t.save()
-
-          generateNextRound(next, roundNumber + 1)
-      }
-
       generateNextRound(round1, 2)
-
-      def generateFinals() = {
-        val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
-        t.finalsPhase.eliminationFights += EliminationFight.create
-          .round(1)
-          .name("3rd Place")
-          .fighterAFuture(Loser(semiFinals(0)).format)
-          .fighterBFuture(Loser(semiFinals(1)).format)
-        t.finalsPhase.eliminationFights += EliminationFight.create
-          .round(2)
-          .name("1st Place")
-          .fighterAFuture(Winner(semiFinals(0)).format)
-          .fighterBFuture(Winner(semiFinals(1)).format)
-        t.save()
-      }
 
       generateFinals()
 
       RedirectTo("#eliminationphase") & Reload
     }
 
-    def renderFighter(fighter: Fighter) = fighter match {
-      case SpecificFighter(Some(pt)) => renderParticipant(pt.subscription(t).get)
-      case SpecificFighter(None) => ".label *" #> "?" &
-        ".name *" #> "Pick a fighter" &
-        ".club" #> Nil &
-        ".country" #> Nil
-      case _ => ".label *" #> "?" &
-        ".name *" #> fighter.toString &
-        ".club" #> Nil &
-        ".country" #> Nil
+    def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
+      t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
+      if (poolId >= 0) {
+        val poolTo = t.poolPhase.pools.find(_.id.is == poolId).get
+        poolTo.participants += participant.participant.foreign.get
+        poolTo.save
+      }
+      t.save
+      Reload
     }
 
-    def renderFights(fights: Seq[EliminationFight]) = ".fight" #> fights.map(f =>
-      ".fight-title *" #> f.name.get &
-        ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
-        ".scheduled [href]" #> "/arenas/list" &
-        ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled") &
-        ".participant" #> (f.fighterA :: f.fighterB :: Nil).map(renderFighter _))
+    def renderFighter(f: Fight[_, _], side: String, fighter: Fighter) = (fighter match {
+      case UnknownFighter(_) =>
+        ".label *" #> "?" &
+          ".name *" #> <a href={ s"/fights/pick/${f.id.is}${side}" }>Pick a fighter</a> &
+          ".club *" #> Nil &
+          ".country *" #> Nil
+      case knownFighter => knownFighter.participant match {
+        case Some(pt) => renderParticipant(pt.subscription(t).get) & "* [title]" #> knownFighter.toString
+        case None =>
+          ".label *" #> "?" &
+            ".name *" #> knownFighter.toString &
+            ".club *" #> Nil &
+            ".country *" #> Nil
+      }
+    }) & ".edit [href]" #> s"/fights/pick/${f.id.is}${side}"
 
-    def renderParticipant(sub: TournamentParticipants) = "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
-      "a [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
+    def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
+      ".fight-title *" #> f.name.get &
+        ".scheduled [name]" #> s"fight${f.id.get}" &
+        (f.finished_? match {
+          case true =>
+            ".scheduled [class+]" #> "label-success" &
+              ".scheduled [href]" #> "#" &
+              ".scheduled [title]" #> "Results" &
+              ".scheduled *" #> {
+                val s = f.currentScore
+                s"${s.red} (${s.double}) ${s.blue}"
+              }
+          case false =>
+            ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
+              ".scheduled [href]" #> s"/schedule#fight${f.id.get}" &
+              ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled")
+        }) &
+        ".participant" #> (f.fighterA :: f.fighterB :: Nil).zipWithIndex.map { case (fighter, i) => renderFighter(f, if (i == 0) "A" else "B", fighter) })
+
+    def renderParticipant(sub: TournamentParticipant) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
+      "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "present" else if (!sub.participant.obj.get.isPresent.get) "not_present" else "not_checked") &
+      ".register [name]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
+      ".register [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
       ".label *" #> sub.fighterNumber.get &
       ".name *" #> sub.participant.foreign.get.name.get &
       ".club *" #> sub.participant.foreign.get.clubCode.get &
       ".club [title]" #> sub.participant.foreign.get.club.get &
       ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
       ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
-      ".pool *" #> t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.poolName) &
+      ".participant-pick-pool" #> SHtml.ajaxSelect(("-1", "-- No pool --") :: t.poolPhase.pools.map(p => (p.id.is.toString, p.poolName)).toList, Full(t.poolPhase.pools.find(_.participants.exists(_.id.is == sub.participant.is)).map(_.id.is).getOrElse(-1).toString), s => addParticipantToPool(sub, s.toInt)) &
       ".initialRanking *" #> sub.experience.get
 
+    val generatePoolPhase = new GeneratePoolPhase(t)
     // bindings
     "#tournamentName" #> t.name &
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
@@ -191,12 +232,29 @@ object TournamentView {
         "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
         "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
-        "#autofill" #> SHtml.a(autofill _, Text("Auto-fill")) &
-        "#generateElimination-top2" #> SHtml.a(generateElimination _, Text("Top 2 per pool")) &
-        ".tournamentPool" #> t.poolPhase.pools.map { p =>
-          ".panel-title *" #> p.poolName &
-            ".participant" #> p.participants.map { pt => renderParticipant(pt.subscription(t).get) }
-        } &
+        "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool")) &
+        "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
+        "#pool-generation-pool-count" #> SHtml.text(t.poolPhase.pools.size.toString, s => generatePoolPhase.poolCount = s.toInt) &
+        "#pool-generation-generate" #> SHtml.submit("Generate", () => { generatePoolPhase.generate(); S.redirectTo("#poolphase") }) &
+        ".tournamentPool" #> t.poolPhase.pools.map(p =>
+          ".panel-title" #> (
+            ".name *" #> p.poolName &
+            "a [href]" #> s"#ranking${p.id.get}") &
+            ".participants" #> (".participant" #> p.ranked.map {
+              case (pt, _) =>
+                renderParticipant(pt.subscription(t).get)
+            }) &
+            ".modal" #> (
+              "* [id]" #> s"ranking${p.id.get}" &
+              ".modal-title *" #> s"Pool ${p.poolName}" &
+              "thead" #> (".field" #> t.poolPhase.rulesetImpl.emptyScore.header) &
+              ".participant" #> p.ranked.map {
+                case (pt, s) =>
+                  renderParticipant(pt.subscription(t).get) &
+                    ".field" #> s.row
+              })) &
+        ".poolPhase" #> t.poolPhase.pools.map(p =>
+          renderFights(p.fights)) &
         ".eliminationRound" #> t.eliminationPhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {
           case (_, fights) => renderFights(fights)
         } &

@@ -3,7 +3,7 @@ package nl.malienkolders.htm.lib.model
 import net.liftweb._
 import mapper._
 
-case class MarshalledTournamentSummary(id: Long, name: String, identifier: String, rapier: Boolean)
+case class MarshalledTournamentSummary(id: Long, name: String, identifier: String, memo: String)
 case class MarshalledTournament(id: Long, name: String, identifier: String, participants: List[Long])
 case class MarshalledTournamentRound(id: Long, finished: Boolean)
 
@@ -13,7 +13,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
 
   def primaryKeyField = id
   object id extends MappedLongIndex(this)
-  object name extends MappedString(this, 32)
+  object name extends MappedString(this, 64)
   object mnemonic extends MappedString(this, 8)
   object identifier extends MappedString(this, 32)
   object phases extends MappedOneToManyBase[Phase[_]]({ () =>
@@ -21,7 +21,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   },
     { p: Phase[_] => p.tournament.asInstanceOf[MappedForeignKey[Long, _, Tournament]] }) with Owned[Phase[_]] with Cascade[Phase[_]]
   object defaultArena extends MappedLongForeignKey(this, Arena)
-  object subscriptions extends MappedOneToMany(TournamentParticipants, TournamentParticipants.tournament, OrderBy(TournamentParticipants.fighterNumber, Ascending))
+  object subscriptions extends MappedOneToMany(TournamentParticipant, TournamentParticipant.tournament, OrderBy(TournamentParticipant.fighterNumber, Ascending))
   def participants = subscriptions.map(_.participant.obj.get)
 
   def rapier_? = name.is.toLowerCase().contains("rapier")
@@ -38,7 +38,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
     name.is,
     identifier.is,
     participants.map(_.id.is).toList)
-  def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, identifier.is, rapier_?)
+  def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, identifier.is, mnemonic.is)
 
   def compare(that: Tournament) = (this.id.is - that.id.is) match {
     case d if d > 0 => 1
@@ -52,10 +52,20 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
 
   def finalsPhase: EliminationPhase = phases(2).asInstanceOf[EliminationPhase]
 }
-object Tournament extends Tournament with LongKeyedMetaMapper[Tournament]
+object Tournament extends Tournament with LongKeyedMetaMapper[Tournament] {
 
-class TournamentParticipants extends LongKeyedMapper[TournamentParticipants] with IdPK {
-  def getSingleton = TournamentParticipants
+  override def create = {
+    val t = super.create
+    t.phases ++= List(PoolPhase.create, EliminationPhase.create, EliminationPhase.create)
+    t.poolPhase.name("Pool Phase")
+    t.eliminationPhase.name("Elimination Phase")
+    t.finalsPhase.name("Finals")
+    t
+  }
+}
+
+class TournamentParticipant extends LongKeyedMapper[TournamentParticipant] with IdPK {
+  def getSingleton = TournamentParticipant
   object tournament extends MappedLongForeignKey(this, Tournament)
   object participant extends MappedLongForeignKey(this, Participant)
   object fighterNumber extends MappedInt(this)
@@ -63,4 +73,4 @@ class TournamentParticipants extends LongKeyedMapper[TournamentParticipants] wit
   object experience extends MappedInt(this)
   object gearChecked extends MappedBoolean(this)
 }
-object TournamentParticipants extends TournamentParticipants with LongKeyedMetaMapper[TournamentParticipants]
+object TournamentParticipant extends TournamentParticipant with LongKeyedMetaMapper[TournamentParticipant]

@@ -3,9 +3,9 @@
 var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 	var _ = window._;
 	_.extend($scope, stateService.get("overview/arena"));
-	$scope.displayedPools = $scope.pools;
-	$scope.currentPool = $scope.displayedPools.shift();
-	$scope.poolBuffer = false;
+	$scope.displayedFights = $scope.fights;
+	$scope.currentFight = $scope.displayedFights.shift();
+	$scope.fightBuffer = false;
 
 	$scope.currentTime = Date.now();
 	
@@ -15,17 +15,18 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 	};
 	$scope.tick();
 	
-	var nextPoolTimeout = false;
-	$scope.nextPool = function() {
-		if ($scope.displayedPools.length > 2) {
-			if ($scope.poolBuffer) {
-				$scope.displayedPools.push($scope.poolBuffer);
+	// cycle the fights
+	var nextFightTimeout = false;
+	$scope.nextFight = function() {
+		if ($scope.displayedFights.length > 2) {
+			if ($scope.fightBuffer) {
+				$scope.displayedFights.push($scope.fightBuffer);
 			}
-			$scope.poolBuffer = $scope.displayedPools.shift();
+			$scope.fightBuffer = $scope.displayedFights.shift();
 		}
-		nextPoolTimeout = $timeout($scope.nextPool, 10000);
+		nextFightTimeout = $timeout($scope.nextFight, 10000);
 	}
-	nextPoolTimeout = $timeout($scope.nextPool, 10000);
+	nextFightTimeout = $timeout($scope.nextFight, 10000);
 	
 	$scope.totalScore = function(fight) {
 		return _.reduce(fight.scores, function(memo, score) {
@@ -38,16 +39,16 @@ var OverviewArenaCtrl = function($scope, $timeout, stateService) {
 	};
 	
 	stateService.change(function(view, state) {
-		if (nextPoolTimeout) {
-			$timeout.cancel(nextPoolTimeout);
+		if (nextFightTimeout) {
+			$timeout.cancel(nextFightTimeout);
 		}
 
 		if (view == "overview/arena") {
 			_.extend($scope, state);
-			$scope.displayedPools = state.pools;
-			$scope.currentPool = $scope.displayedPools.shift();
-			$scope.poolBuffer = false;
-			nextPoolTimeout = $timeout($scope.nextPool, 10000);
+			$scope.displayedFights = state.fights;
+			$scope.currentFight = $scope.displayedFights.shift();
+			$scope.fightBuffer = false;
+			nextFightTimeout = $timeout($scope.nextFight, 10000);
 		}
 	});
 };

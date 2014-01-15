@@ -14,7 +14,7 @@ import nl.malienkolders.htm.lib._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.snippet.TournamentView
 import nl.malienkolders.htm.admin.AdminRest
-import nl.malienkolders.htm.lib.rulesets.swordfish2013._
+import nl.malienkolders.htm.lib.rulesets.mexico2014._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -43,7 +43,7 @@ class Boot {
       PoolFightScore,
       EliminationFightScore,
       model.Tournament,
-      TournamentParticipants,
+      TournamentParticipant,
       PoolPhase,
       EliminationPhase,
       Pool,
@@ -81,16 +81,16 @@ class Boot {
     CountryImporter.doImport
 
     DefaultRuleset.register(true)
-    rapier.RapierRuleset.register()
 
     val entries: List[ConvertableToMenu] = (Menu.i("Event") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list" submenus (
         TournamentView.menu,
         TournamentEdit.menu)) ::
         FightEdit.menu ::
+        FightPickFighter.menu ::
         (Menu.i("Participants") / "participants" / "list") ::
         ParticipantRegistration.menu ::
-        (Menu.i("Arenas") / "arenas" / "list") ::
+        (Menu.i("Schedule") / "schedule") ::
         (Menu.i("Viewers") / "viewers" / "list") ::
         (Menu.i("Images") / "images" / "list") ::
         (Menu.i("Import") / "import") ::
