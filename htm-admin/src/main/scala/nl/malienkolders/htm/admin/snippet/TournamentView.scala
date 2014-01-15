@@ -165,14 +165,25 @@ object TournamentView {
     }
 
     def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
-      t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
-      if (poolId >= 0) {
-        val poolTo = t.poolPhase.pools.find(_.id.is == poolId).get
-        poolTo.participants += participant.participant.foreign.get
-        poolTo.save
+      if (participant.participant.foreign.get.poolForTournament(t).fold(false)(_.id.get != poolId)) {
+	      t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
+	      
+	      t.poolPhase.fights.filter(_.inFight_?(participant.participant.foreign.get)).map(_.delete_!)
+	      
+	      if (poolId >= 0) {
+	        val poolTo = t.poolPhase.pools.find(_.id.is == poolId).get
+	        poolTo.participants += participant.participant.foreign.get
+	        poolTo.save
+	      }
+	      t.save
+	      
+	      val poolPhaseGenerator = new GeneratePoolPhase(t)
+	      poolPhaseGenerator.generatePoolFights;
+	      Reload
       }
-      t.save
-      Reload
+      else {
+        JsCmds.Noop
+      }
     }
 
     def renderFighter(f: Fight[_, _], side: String, fighter: Fighter) = (fighter match {
@@ -213,11 +224,12 @@ object TournamentView {
     def renderPickPool(sub: TournamentParticipant) = {
       val allOptions = ("-1", "-- No pool --") :: t.poolPhase.pools.map(p => (p.id.is.toString, p.poolName)).toList;
       val currentPoolId = sub.participant.foreign.get.poolForTournament(t).map(_.id.is).getOrElse(-1);
-      val enabled = sub.participant.foreign.get.poolForTournament(t).map(_.fights.filter(f => f.inFight_?(sub.participant.foreign.get) && f.finished_?)).size == 0
+      
+      val enabled = t.poolPhase.fights.filter(f => f.inFight_?(sub.participant.foreign.get) && f.finished_?).size == 0
       SHtml.ajaxSelect(allOptions
           , Full(currentPoolId.toString), 
           s => addParticipantToPool(sub, s.toInt),
-          if (enabled) { "disabled" -> "disabled" } else { "enabled" -> "enabled" })
+          if (!enabled) { "disabled" -> "disabled" } else { "enabled" -> "enabled" })
     }
         
     def gearCheckError(sub: TournamentParticipant): Option[Elem] = if (!sub.gearChecked.is) {
