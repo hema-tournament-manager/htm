@@ -165,7 +165,7 @@ object TournamentView {
     }
 
     def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
-      if (participant.participant.foreign.get.poolForTournament(t).fold(false)(_.id.get != poolId)) {
+      if (participant.participant.foreign.get.poolForTournament(t).fold(-1l)(_.id.is) != poolId) {
 	      t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
 	      
 	      t.poolPhase.fights.filter(_.inFight_?(participant.participant.foreign.get)).map(_.delete_!)
