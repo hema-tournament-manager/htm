@@ -7,35 +7,41 @@
 			<table class="table table-condensed table-hover">
 				<tbody>
 					<tr>
-						<td colspan="7" class="text-center" data-ng-switch data-on="fightsBefore()">
+						<td colspan="8" class="text-center" data-ng-switch data-on="fightsBefore()">
 							<span data-ng-switch-when="true">
 								{{fights | orderBy:'order' | filter:beforeRangeFunction | size}} more
 							</span>
 							<span data-ng-switch-default>
-								&mdash; start of pool &mdash;
+								&mdash;
 							</span>
 						</td>
 					</tr>
-					<tr data-ng-repeat="fight in fights | orderBy:'globalOrder' | filter:inRangeFunction" data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight.id]" data-ng-mouseenter="fight.hover = true" data-ng-mouseleave="fight.hover = false" data-ng-animate="{enter: 'animated fadeIn'}">
+					<tr data-ng-repeat="fight in fights | orderBy:'globalOrder' | filter:inRangeFunction"
+						data-ng-class="{true: 'htm-current-fight', false: ''}[fight.id==currentFight.id]"
+						data-ng-mouseenter="fight.hover = true"
+						data-ng-mouseleave="fight.hover = false"
+						data-ng-animate="{enter: 'animated fadeIn'}">
 						<td ng-show="fight.loading">Loading...</td>
-						<td ng-show="!fight.loading">{{fight.plannedTime | hours}}</td>
-						<td>{{fight.id}}</td>
-						<td class="text-left">{{fight.fighterA.name}} <span data-ng-show="fight.fighterA.clubCode">({{fight.fighterA.clubCode}})</span></td>
+						<td ng-show="!fight.loading">{{fight.time | hours}}</td>
+						<td><span class="label label-default" title="{{fight.tournament.name}}">{{fight.tournament.memo}}</span></td>
+						<td>{{fight.name}}</td>
+						<td class="text-left">{{fight.fighterA.name}} <span data-ng-show="fight.fighterA.participant.clubCode">({{fight.fighterA.participant.clubCode}})</span></td>
 						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().a}}</span></td>
 						<td class="text-center">
-							<span data-ng-show="fight.timeStop == 0">vs</span>
+              <span data-ng-show="!fight.postponed && fight.timeStop == 0">vs</span>
+              <span data-ng-show="fight.postponed">X</span>
 							<span data-ng-show="fight.timeStop &gt; 0">({{fight.totalScore().d}})</span>
 						</td>
 						<td class="text-center"><span data-ng-show="fight.timeStop &gt; 0">{{fight.totalScore().b}}</span></td>
-						<td class="text-right">{{fight.fighterB.name}} <span data-ng-show="fight.fighterB.clubCode">({{fight.fighterB.clubCode}})</span></td>
+						<td class="text-right">{{fight.fighterB.name}} <span data-ng-show="fight.fighterB.participant.clubCode">({{fight.fighterB.participant.clubCode}})</span></td>
 					</tr>
 					<tr>
-						<td colspan="7" class="text-center" data-ng-switch data-on="fightsAfter()">
+						<td colspan="8" class="text-center" data-ng-switch data-on="fightsAfter()">
 							<span data-ng-switch-when="true">
 								{{fights | orderBy:'order' | filter:afterRangeFunction | size}} more
 							</span>
 							<span data-ng-switch-default>
-								&mdash; end of pool &mdash;
+								&mdash;
 							</span>
 						</td>
 					</tr>
@@ -53,23 +59,27 @@
 						<ul class="dropdown-menu" role="menu" aria-labelledby="fight-menu">
 							<li><a href="" data-ng-click="correctScore()">Score correction...</a></li>
 							 <li class="divider"></li>
-							<li><a href="" data-ng-click="confirmFight()">Confirm fight</a></li>
+              <li><a href="" data-ng-click="confirmFight()">Confirm fight</a></li>
+              <li><a href="" data-ng-click="postponeFight()">Postpone fight</a></li>
 						</ul>
 					</div>
 				</h3>
 			</div>
 			<div class="panel-body" data-ng-hide="currentFight.started">
-				<button class="btn btn-primary" data-ng-click="startFight()" data-ng-disabled="findNextFight().order &lt; 0">
-					Start fight
-				</button>
+        <button class="btn btn-primary" data-ng-click="startFight()" data-ng-disabled="findNextFight().order &lt; 0">
+          Start fight
+        </button>
+        <button class="btn btn-primary" data-ng-click="postponeFight()" data-ng-disabled="findNextFight().order &lt; 0">
+          Postpone fight
+        </button>
 			</div>
 			<div class="panel-body htm-current-fight-box" data-ng-show="currentFight.started">
 				<div class="row htm-fight-buttons">
 					<div class="col-sm-4 col-md-4 htm-clickable" data-ng-click="toggleTimer()">
-						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{round.timeLimitOfFight | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
+						Time: <big><strong>{{timer.displayTime | minutes}}</strong> of {{currentFight.timeLimit | minutes}} <span data-ng-class="{true: 'glyphicon glyphicon-pause', false: 'glyphicon glyphicon-play'}[timer.running]"></span></big>
 					</div>
 					<div class="col-sm-4 col-md-4 htm-clickable">
-						<big data-ng-click="showExchanges()">Exchange: {{currentFight.totalScore().x}} <span data-ng-show="round.exchangeLimit &gt; 0">of {{round.exchangeLimit}}</span></big>
+						<big data-ng-click="showExchanges()">Exchange: {{currentFight.totalScore().x}} <span data-ng-show="currentFight.exchangeLimit &gt; 0">of {{currentFight.exchangeLimit}}</span></big>
 					</div>
 					<div class="col-sm-2 col-md-2">
 						<button type="button" class="btn btn-sm btn-default" data-ng-click="undoClicked()" data-ng-disabled="currentFight.scores.length == 0">Undo</button>
@@ -194,7 +204,7 @@
 </div>
 
 <div id="score-options" class="btn-group">
-	<button type="button" ng-repeat="score in round.possiblePoints" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
+	<button type="button" ng-repeat="score in currentFight.possiblePoints" ng-click="scoreSelected(score)" data-ng-class="{red: 'btn btn-danger btn-lg', blue: 'btn btn-primary btn-lg'}[scoreSide]">{{score}}</button>
 	<button type="button" ng-click="cancelScoreSelect()" class="btn btn-default btn-lg" title="Cancel">
 		<span class="glyphicon glyphicon-remove-circle"></span>
 	</button>

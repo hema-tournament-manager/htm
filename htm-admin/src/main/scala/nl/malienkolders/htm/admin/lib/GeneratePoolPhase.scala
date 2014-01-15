@@ -40,7 +40,7 @@ class GeneratePoolPhase(tournament: Tournament) {
       case Nil => Unit
       case pt :: pts =>
         ps.head.participants += pt
-        fill(pts, if (ps.head.participants.size.isOdd) ps else ps.tail :+ ps.head)
+        fill(pts, ps.tail :+ ps.head)
     }
     tournament.poolPhase.pools.clear;
     tournament.poolPhase.pools ++= (for (i <- 1 to poolCount) yield { Pool.create(tournament).order(i) })

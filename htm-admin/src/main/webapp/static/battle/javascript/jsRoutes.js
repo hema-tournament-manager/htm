@@ -3,10 +3,15 @@ var _nS = function(c,f,b){var e=c.split(f||"."),g=b||_root,d,a;for(d=0,a=e.lengt
 var _qS = function(items){var qs = ''; for(var i=0;i<items.length;i++) {if(items[i]) qs += (qs ? '&' : '') + items[i]}; return qs ? ('?' + qs) : ''}
 var _s = function(p,s){return p+((s===true||(s&&s.secure))?'s':'')+'://'}
 var _wA = function(r){return {ajax:function(c){c=c||{};c.url=r.url;c.type=r.method;return jQuery.ajax(c)}, method:r.method,type:r.method,url:r.url,absoluteURL: function(s){return _s('http',s)+'localhost:9000'+r.url},webSocketURL: function(s){return _s('ws',s)+'localhost:9000'+r.url}}}
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.event = 
+    function() {
+    return _wA({method:"GET", url:"/" + "api/event"})
+    }
+
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.arena = 
-      function(id) {
-      return _wA({method:"GET", url:"/" + "api/arena/" + (function(k,v) {return v})("id", id)})
-      }
+    function(id) {
+    return _wA({method:"GET", url:"/" + "api/arena/" + (function(k,v) {return v})("id", id)})
+    }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.arenas = 
       function() {
@@ -19,18 +24,23 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.fight =
       }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.fightUpdate = 
-      function() {
-      return _wA({method:"POST", url:"/" + "api/fight/update"})
-      }
+    function() {
+    return _wA({method:"POST", url:"/" + "api/fight/update"})
+    }
+
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.fightPostpone = 
+    function() {
+    return _wA({method:"POST", url:"/" + "api/fight/postpone"})
+    }
 
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.timerUpdate = 
-    function(id) {
-    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("id", id) + "/timer"})
+    function(phase, id) {
+    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("phase", phase) + "/" + (function(k,v) {return v})("id", id) + "/timer"})
     }
 
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.messageUpdate = 
-    function(id) {
-    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("id", id) + "/message"})
+    function(phase, id) {
+    return _wA({method:"POST", url:"/" + "api/fight/update/" + (function(k,v) {return v})("phase", phase) + "/" + (function(k,v) {return v})("id", id) + "/message"})
     }
    
 _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.pool = 

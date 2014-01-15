@@ -3,6 +3,7 @@ package model
 
 import net.liftweb._
 import mapper._
+import nl.malienkolders.htm.lib.rulesets.Scores
 
 case class MarshalledPoolSummary(id: Long, name: String, order: Long, startTime: Long, finished: Boolean, fightCount: Long, participantsCount: Long)
 case class MarshalledPool(id: Long, name: String, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
@@ -26,7 +27,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   def finished_? = fights.map(_.finished_?).toList.forall(_ == true)
 
-  def addFight(a: Participant, b: Participant) = fights += PoolFight.create.fighterAParticipant(a).fighterBParticipant(b).inProgress(false).order(fights.size + 1)
+  def addFight(a: Participant, b: Participant) = fights += PoolFight.create.fighterAFuture(SpecificFighter(Some(a)).format).fighterBFuture(SpecificFighter(Some(b)).format).inProgress(false).order(fights.size + 1)
 
   def toMarshalled = MarshalledPool(id.is, poolName, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
   def toMarshalledSummary = MarshalledPoolSummary(
@@ -43,10 +44,8 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
     ('A'.toInt + (order.get - 1)).toChar.toString;
   }
 
-  def ranked: List[Participant] =
-    // TODO: ranking of participants
-    participants.toList
-
+  def ranked: List[(Participant, Scores)] =
+    phase.foreign.get.rulesetImpl.ranking(this)
 }
 object Pool extends Pool with LongKeyedMetaMapper[Pool] {
   def defaultArena(tournament: Tournament): Arena = {

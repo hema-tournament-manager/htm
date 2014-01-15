@@ -14,14 +14,14 @@
 	</div>
 	<div class="fighter-bar">
 		<div class="fighter red">
-			<img ng-show="fighterA.country" ng-src="/assets/images/fight/flags/{{fighterA.country}}red.png"/>
-			<div class="name">{{fighterA.name}}</div>
-			<div class="club">{{fighterA.club}}</div>
+			<img ng-show="fighterA.participant.country" ng-src="/assets/images/fight/flags/{{fighterA.participant.country}}red.png"/>
+			<div class="name">{{fighterA.participant.name}}</div>
+			<div class="club">{{fighterA.participant.club}}</div>
 		</div>
 		<div class="fighter blue">
-			<img ng-show="fighterB.country" ng-src="/assets/images/fight/flags/{{fighterB.country}}blue.png"/>
-			<div class="name">{{fighterB.name}}</div>
-			<div class="club">{{fighterB.club}}</div>
+			<img ng-show="fighterB.participant.country" ng-src="/assets/images/fight/flags/{{fighterB.participant.country}}blue.png"/>
+			<div class="name">{{fighterB.participant.name}}</div>
+			<div class="club">{{fighterB.participant.club}}</div>
 		</div>
 	</div>
 	<div class="message" ng-show="message" ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}"><div ng-bind-html-unsafe="message"></div></div>
@@ -31,20 +31,17 @@
 		<div class="points blue">Points</div>
 		<div class="doubles">Doubles</div>
 	</div>
-	<div class="exchangeCount" ng-show="poolSummary.round.exchangeLimit &gt; 0">
-		{{ totalScore.x }} of {{ poolSummary.round.exchangeLimit }}
+	<div class="exchangeCount">
+		{{ totalScore.x }} <span ng-show="poolSummary.round.exchangeLimit &gt; 0">of {{ exchangeLimit }}</span>
 	</div>
 	<div class="timer">
 		{{ timer.displayTime | minutes }}
 	</div>
 	<div class="tournament">
-		{{ poolSummary.round.tournament.name }}
+		{{ tournament.name }}
 	</div>
 	<div class="round">
-		{{ poolSummary.round.name }}
-	</div>
-	<div class="pool">
-		Pool {{ poolSummary.name }}
+		{{ name }}
 	</div>
 </div>
 </div>

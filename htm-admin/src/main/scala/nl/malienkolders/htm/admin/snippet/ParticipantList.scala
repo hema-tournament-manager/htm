@@ -74,7 +74,7 @@ object ParticipantList {
           ".clubCode *" #> p.clubCode.is &
           ".tournament" #> p.subscriptions.sortBy(_.primary.get).reverse.map { sub =>
             val tournament = sub.tournament.foreign.get
-            <span class={ "label " + tournament.identifier.get } title={ tournament.name.get }>{ tournament.mnemonic.get + " " + sub.fighterNumber.get }</span>
+            <a class={ "label label-default " + tournament.identifier.get } href={ s"/tournaments/view/${tournament.identifier.get}#participant${p.externalId.is}" } title={ tournament.name.get }>{ tournament.mnemonic.get + " " + sub.fighterNumber.get }</a>
           } &
           ".flag" #> (
             "img [src]" #> (if (c.hasFlag.is) "/images/flags/" + c.code2.get.toLowerCase() + ".png" else "/images/flags/unknown.png") &

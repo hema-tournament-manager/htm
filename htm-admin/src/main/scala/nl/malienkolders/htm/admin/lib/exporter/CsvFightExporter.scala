@@ -18,8 +18,8 @@ object CsvFightExporter extends FightExporter {
       t <- ts
       p <- t.phases
       f <- p.fights
-      red <- f.fighterAParticipant.obj
-      blue <- f.fighterBParticipant.obj
+      red <- f.fighterA.participant
+      blue <- f.fighterB.participant
       s <- Some(f.currentScore)
     } {
       out.println(
