@@ -8,7 +8,10 @@ sealed abstract class Fighter {
   def format: String
   def participant: Option[Participant]
   def sameAs(other: Fighter): Boolean
-  def toMarshalled = MarshalledFighter(toString, participant.map(_.toMarshalled))
+  def toMarshalled(tournament: Tournament) = MarshalledFighter(toString, for {
+    p <- participant
+    s <- p.subscription(tournament)
+  } yield s.toMarshalled)
 }
 object Fighter {
   def parse(s: String): Fighter = Winner.parse(s)

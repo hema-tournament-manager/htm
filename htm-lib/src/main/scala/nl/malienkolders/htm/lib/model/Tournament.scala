@@ -72,5 +72,9 @@ class TournamentParticipant extends LongKeyedMapper[TournamentParticipant] with 
   object primary extends MappedBoolean(this)
   object experience extends MappedInt(this)
   object gearChecked extends MappedBoolean(this)
+
+  def toMarshalled = participant.foreign.get.toMarshalled.copy(
+    fighterNumber = Some(fighterNumber.get),
+    gearChecked = Some(gearChecked.get))
 }
 object TournamentParticipant extends TournamentParticipant with LongKeyedMetaMapper[TournamentParticipant]
