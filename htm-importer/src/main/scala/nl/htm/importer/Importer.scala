@@ -19,6 +19,23 @@ abstract class Importer[Settings] {
 
   def doImport(s: Settings): EventData;
 
+  def normalizeName(nameRaw: String) = {
+    def normalizePart(part: String) = {
+      val subparts = part.split("-")
+      subparts.map(sb => if (sb.length() > 3) sb.take(1).toUpperCase() + sb.drop(1).toLowerCase() else sb).mkString("-")
+    }
+    val name = nameRaw.replaceAll("\\s+", " ").trim()
+    val parts = name.split(" ").toList
+    parts.map(normalizePart _).mkString(" ")
+  }
+
+  def shortenName(name: String) = {
+    val allParts = name.split(" ").filter(_.length > 0)
+    val uppercasedParts = allParts.takeWhile(_.charAt(0).isUpper)
+    val initials = uppercasedParts.take(allParts.length - 1).map(_.charAt(0) + ".")
+    (initials.toList.mkString + " " + allParts.drop(initials.length).mkString(" ")).replace(" van ", " v. ").replace(" von dem ", " v.d. ").replace(" von ", " v. ")
+  }
+
   protected def readTuplesFromFile(filename: String) = Source.fromInputStream(getClass().getResourceAsStream(filename), "UTF-8").getLines().toList.map(line => line.split(" -> ") match {
     case Array(code, name) => code -> name
     case _ => "" -> ""

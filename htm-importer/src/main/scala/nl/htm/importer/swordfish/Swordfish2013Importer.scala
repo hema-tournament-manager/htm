@@ -33,23 +33,6 @@ object Swordfish2013Importer extends Importer[SwordfishSettings] {
 
   def nameReplacements = Map("9" -> "F. v. d. Bussche-H.")
 
-  def normalizeName(nameRaw: String) = {
-    def normalizePart(part: String) = {
-      val subparts = part.split("-")
-      subparts.map(sb => if (sb.length() > 3) sb.take(1).toUpperCase() + sb.drop(1).toLowerCase() else sb).mkString("-")
-    }
-    val name = nameRaw.replaceAll("\\s+", " ").trim()
-    val parts = name.split(" ").toList
-    parts.map(normalizePart _).mkString(" ")
-  }
-
-  def shortenName(name: String) = {
-    val allParts = name.split(" ")
-    val uppercasedParts = allParts.takeWhile(_.charAt(0).isUpper)
-    val initials = uppercasedParts.take(allParts.length - 1).map(_.charAt(0) + ".")
-    (initials.toList.mkString + " " + allParts.drop(initials.length).mkString(" ")).replace(" van ", " v. ").replace(" von dem ", " v.d. ").replace(" von ", " v. ")
-  }
-
   def normalizeClub(clubRaw: String) = {
     def uppercaseWord(word: String) = if (word.length() > 3 && !word.contains(".")) word.take(1).toUpperCase() + word.drop(1) else word
     val club = clubRaw.replaceAll("\\s+", " ").trim()

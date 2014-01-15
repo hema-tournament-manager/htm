@@ -7,13 +7,25 @@ import mapper._
 import util.Helpers._
 import scala.xml.NodeSeq
 import nl.malienkolders.htm.lib.model._
-import nl.htm.importer.{ Importer => ImporterImpl, InputStreamSettings }
+import nl.htm.importer.{ Importer => ImporterImpl, Participant => ImportedParticipant, InputStreamSettings }
 import nl.htm.importer.swordfish._
 import net.liftweb.json._
 import nl.malienkolders.htm.admin.lib.importer.{ Event => EventParser, Tournament => TournamentDef }
 import nl.malienkolders.htm.admin.lib.Utils.DateTimeParserHelper
 
 object Importer {
+
+  def importParticipants(ps: List[ImportedParticipant]): Unit = ps.foreach { p =>
+    if (Participant.find(By(Participant.externalId, p.sourceIds.head.id)).isEmpty) {
+      Participant.create.externalId(p.sourceIds.head.id)
+        .name(p.name)
+        .shortName(p.shortName)
+        .club(p.club)
+        .clubCode(p.clubCode)
+        .country(Country.find(By(Country.code2, p.country)) or Country.find(By(Country.name, p.country)))
+        .save()
+    }
+  }
 
   def render = {
     var url = "http://www.ghfs.se/swordfish-attendee.php"
@@ -22,17 +34,7 @@ object Importer {
     def process(): () => Any = {
       val data = Swordfish2013Importer.doImport(SwordfishSettings(url, Country.findAll.map(c => c.code2.get -> c.name.get)))
 
-      data.participants.foreach { pDef =>
-        if (Participant.find(By(Participant.externalId, pDef.sourceIds.head.id)).isEmpty) {
-          Participant.create.externalId(pDef.sourceIds.head.id)
-            .name(pDef.name)
-            .shortName(pDef.shortName)
-            .club(pDef.club)
-            .clubCode(pDef.clubCode)
-            .country(Country.find(By(Country.code2, pDef.country)))
-            .save()
-        }
-      }
+      importParticipants(data.participants)
 
       S.notice("Import succeeded")
       S.redirectTo("/participants/list")
