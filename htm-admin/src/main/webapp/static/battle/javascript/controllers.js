@@ -25,12 +25,12 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 			var fight = {globalOrder: globalOrder++, started: false, time: f.time};
 			fight = _.extend(fight, f.fight);
 			if (fight.fighterA.participant) {
-				fight.fighterA.name = fight.fighterA.participant.name;
+				fight.fighterA.name = fight.fighterA.participant.shortName;
 			} else {
 				fight.fighterA.name = fight.fighterA.label;
 			}
 			if (fight.fighterB.participant) {
-				fight.fighterB.name = fight.fighterB.participant.name;
+				fight.fighterB.name = fight.fighterB.participant.shortName;
 			} else {
 				fight.fighterB.name = fight.fighterB.label;
 			}
@@ -108,6 +108,34 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	$scope.stopTimer();
     	$scope.timer.currentTime = 0;
     	$scope.timer.displayTime = 0;
+    };
+    
+    $scope.setPresent = function(participant) {
+    	playRoutes.controllers.AdminInterface.setPresent(participant.id).post(true).success(function(data) {
+    		if (data) {
+    			_.each($scope.fights, function(fight) {
+    				if (fight.fighterA.participant.id == participant.id) {
+    					fight.fighterA.participant.isPresent = true;
+    				} else if (fight.fighterB.participant.id == participant.id) {
+    					fight.fighterB.participant.isPresent = true;
+    				}
+    			});
+    		}
+    	});
+    };
+    
+    $scope.setGearChecked = function(tournamentId, participant) {
+    	playRoutes.controllers.AdminInterface.setGearCheck(tournamentId, participant.id).post(true).success(function(data) {
+    		if (data) {
+    			_.each($scope.fights, function(fight) {
+    				if (fight.fighterA.participant.id == participant.id) {
+    					fight.fighterA.participant.gearChecked = true;
+    				} else if (fight.fighterB.participant.id == participant.id) {
+    					fight.fighterB.participant.gearChecked = true;
+    				}
+    			});
+    		}
+    	});
     };
     
     $scope.fightsBefore = function() {
