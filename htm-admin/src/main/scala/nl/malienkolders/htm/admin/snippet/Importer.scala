@@ -7,7 +7,7 @@ import mapper._
 import util.Helpers._
 import scala.xml.NodeSeq
 import nl.malienkolders.htm.lib.model._
-import nl.htm.importer.{ Importer => ImporterImpl, Participant => ImportedParticipant, InputStreamSettings }
+import nl.htm.importer.{ Importer => ImporterImpl, EventData, Participant => ImportedParticipant, InputStreamSettings }
 import nl.htm.importer.swordfish._
 import net.liftweb.json._
 import nl.malienkolders.htm.admin.lib.importer.{ Event => EventParser, Tournament => TournamentDef }
@@ -24,6 +24,23 @@ object Importer {
         .clubCode(p.clubCode)
         .country(Country.find(By(Country.code2, p.country)) or Country.find(By(Country.name, p.country)))
         .save()
+    }
+  }
+
+  def importSubscriptions(d: EventData): Unit = for {
+    (tDef, ss) <- d.subscriptions
+    t <- Tournament.find(By(Tournament.identifier, tDef.id))
+    (sDef, pDef) <- ss
+    p <- Participant.find(By(Participant.externalId, pDef.sourceIds.head.id))
+  } {
+    if (TournamentParticipant.find(By(TournamentParticipant.tournament, t), By(TournamentParticipant.participant, p)).isEmpty) {
+      t.subscriptions += TournamentParticipant.create
+        .participant(p)
+        .primary(sDef.primary)
+        .fighterNumber(sDef.number)
+        .experience(sDef.xp)
+        .gearChecked(false)
+      t.save()
     }
   }
 
