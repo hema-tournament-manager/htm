@@ -25,16 +25,9 @@
 	],
 	"arenas": 2,
 	"tournaments": [
-		{	"id": "dussack",
-			"name": "Dussack Tournament",
-			"mnemonic": "D",
-			"poolPhase": { "calculatePools": { "size": [3, 4] } },
-			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
-			"finalPhase": { }
-		},
-		{	"id": "rapier",
-			"name": "Rapier Tournament",
-			"mnemonic": "R",
+		{	"id": "albion",
+			"name": "Albion Steel Longsword Invitational",
+			"mnemonic": "A",
 			"poolPhase": { "calculatePools": { "size": [3, 4] } },
 			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
 			"finalPhase": { }
@@ -46,9 +39,16 @@
 			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
 			"finalPhase": { }
 		},
-		{	"id": "albion",
-			"name": "Albion Steel Longsword Invitational",
-			"mnemonic": "A",
+		{	"id": "rapier",
+			"name": "Rapier Tournament",
+			"mnemonic": "R",
+			"poolPhase": { "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
+			"finalPhase": { }
+		},
+		{	"id": "dussack",
+			"name": "Dussack Tournament",
+			"mnemonic": "D",
 			"poolPhase": { "calculatePools": { "size": [3, 4] } },
 			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
 			"finalPhase": { }
