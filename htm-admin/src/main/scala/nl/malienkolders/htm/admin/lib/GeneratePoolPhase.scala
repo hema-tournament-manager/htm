@@ -15,7 +15,7 @@ class GeneratePoolPhase(tournament: Tournament) {
   val tournamentSubscriptions = tournament.subscriptions.sortBy(_.experience.is).reverse
   var poolCount: Int = 0;
 
-  private def generatePoolFights() = {
+  def generatePoolFights() = {
     val ruleset = tournament.poolPhase.rulesetImpl
     for (pool <- tournament.poolPhase.pools) {
       val planned = ruleset.planning(pool)

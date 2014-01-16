@@ -93,5 +93,15 @@ _nS('controllers.AdminInterface'); _root.controllers.AdminInterface.countries =
     return _wA({method:"GET", url:"/" + "api/countries"})
     }
  
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.setPresent = 
+    function(participantId) {
+    return _wA({method:"POST", url:"/" + "api/participant/" + (function(k,v) {return v})("participantId", participantId) + "/present"})
+    }
+ 
+_nS('controllers.AdminInterface'); _root.controllers.AdminInterface.setGearCheck = 
+    function(tournamentIdentifier, participantId) {
+    return _wA({method:"POST", url:"/" + "api/tournament/" + (function(k,v) {return v})("tournamentIdentifier", tournamentIdentifier) + "/gearcheck/" + (function(k,v) {return v})("participantId", participantId)})
+    }
+ 
 })(jsRoutes)
           

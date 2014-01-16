@@ -41,6 +41,20 @@ object AdminRest extends RestHelper {
     case "api" :: "tournament" :: AsLong(tournamentId) :: Nil JsonGet _ =>
       Tournament.findByKey(tournamentId).map(t => Extraction.decompose(t.toMarshalled)).getOrElse[JValue](JBool(false))
 
+    case "api" :: "tournament" :: tournamentIdentifier :: "gearcheck" :: AsLong(participantId) :: Nil JsonPost json -> _ =>
+      JBool(json match {
+        case JBool(b) =>
+          val result = for {
+            t <- Tournament.find(By(Tournament.identifier, tournamentIdentifier))
+            s <- t.subscriptions.find(_.participant.is == participantId)
+          } yield {
+            s.gearChecked(b).save()
+            true
+          }
+          result.getOrElse(false)
+        case _ => false
+      })
+
     case "api" :: "pool" :: AsLong(poolId) :: Nil JsonGet _ =>
       Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalled).getOrElse(false))
 
@@ -106,6 +120,18 @@ object AdminRest extends RestHelper {
           JBool(true)
         case _ => JBool(false)
       }
+
+    case "api" :: "participant" :: AsLong(participantId) :: "present" :: Nil JsonPost json -> _ =>
+      JBool(json match {
+        case JBool(present) =>
+          Participant.findByKey(participantId) match {
+            case Full(p) =>
+              p.isPresent(present).save()
+              true
+            case _ => false
+          }
+        case _ => false
+      })
 
     case "api" :: "ping" :: Nil JsonGet _ =>
       JString("pong")
