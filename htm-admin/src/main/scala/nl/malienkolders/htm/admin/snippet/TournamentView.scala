@@ -192,7 +192,7 @@ object TournamentView {
           ".club *" #> Nil &
           ".country *" #> Nil
       case knownFighter => knownFighter.participant match {
-        case Some(pt) => renderParticipant(pt.subscription(t).get) & "* [title]" #> knownFighter.toString
+        case Some(pt) => renderParticipant()(pt.subscription(t).get) & "* [title]" #> knownFighter.toString
         case None =>
           ".label *" #> "?" &
             ".name *" #> knownFighter.toString &
@@ -245,20 +245,45 @@ object TournamentView {
       }
     }
 
-    def errors(sub: TournamentParticipant): List[Elem] = {
-      List(presenceError(sub), gearCheckError(sub)).flatten
+    import TournamentParticipant._
+    implicit class SubscriptionErrorHelper(e: SubscriptionError) {
+      def icon: String = e match {
+        case _: NotPresent => "user"
+        case _: GearNotChecked => "cog"
+        case _: HasDroppedOut => "log-out"
+        case _ => "flash"
+      }
+      def clickText: String = e match {
+        case _: NotPresent => "Click to mark participant as present"
+        case _: GearNotChecked => "Click to mark gear as checked"
+        case _: HasDroppedOut => "Click to let the participant re-enter"
+        case _ => "Click to set this error as resolved"
+      }
     }
 
-    def renderParticipant(sub: TournamentParticipant) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
-      "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "" else "danger") &
+    def errors(sub: TournamentParticipant): List[Elem] = sub.errors.map(e =>
+      if (e.field.is == e.errorValue) {
+        Some(SHtml.a(() => { e.field(!e.errorValue).save(); Reload }, <span><span class={ s"glyphicon glyphicon-${e.icon}" }></span> { e.caption }</span>, "title" -> e.clickText))
+      } else {
+        None
+      }).flatten
+
+    def renderParticipant(long: Boolean = false)(sub: TournamentParticipant) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
+      "* [class+]" #> (if (sub.hasError) "danger" else "") &
       ".register [name]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
       ".register [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
       ".label *" #> sub.fighterNumber.get &
-      ".name *" #> sub.participant.foreign.get.name.get &
-      ".club *" #> sub.participant.foreign.get.clubCode.get &
-      ".club [title]" #> sub.participant.foreign.get.club.get &
-      ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
-      ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
+      (if (long) {
+        ".name *" #> sub.participant.foreign.get.name.get &
+          ".club *" #> sub.participant.foreign.get.club.get &
+          ".country *" #> sub.participant.foreign.get.country.foreign.get.name.get
+      } else {
+        ".name *" #> sub.participant.foreign.get.shortName.get &
+          ".club *" #> sub.participant.foreign.get.clubCode.get &
+          ".club [title]" #> sub.participant.foreign.get.club.get &
+          ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
+          ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get
+      }) &
       ".participant-pick-pool" #> renderPickPool(sub) &
       ".initialRanking *" #> sub.experience.get &
       ".error" #> errors(sub)
@@ -271,7 +296,7 @@ object TournamentView {
         "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
         "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
         "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
-        "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant _)) &
+        "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant(true) _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
         "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool")) &
         "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
@@ -283,7 +308,7 @@ object TournamentView {
             "a [href]" #> s"#ranking${p.id.get}") &
             ".participants" #> (".participant" #> p.ranked.map {
               case (pt, _) =>
-                renderParticipant(pt.subscription(t).get)
+                renderParticipant()(pt.subscription(t).get)
             }) &
             ".modal" #> (
               "* [id]" #> s"ranking${p.id.get}" &
@@ -291,7 +316,7 @@ object TournamentView {
               "thead" #> (".field" #> t.poolPhase.rulesetImpl.emptyScore.header) &
               ".participant" #> p.ranked.map {
                 case (pt, s) =>
-                  renderParticipant(pt.subscription(t).get) &
+                  renderParticipant()(pt.subscription(t).get) &
                     ".field" #> s.row
               })) &
         ".poolPhase" #> t.poolPhase.pools.map(p =>

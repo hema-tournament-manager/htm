@@ -72,9 +72,30 @@ class TournamentParticipant extends LongKeyedMapper[TournamentParticipant] with 
   object primary extends MappedBoolean(this)
   object experience extends MappedInt(this)
   object gearChecked extends MappedBoolean(this)
+  object droppedOut extends MappedBoolean(this) {
+    override val defaultValue = false
+  }
+
+  import TournamentParticipant._
+
+  private def error(error: SubscriptionError): List[SubscriptionError] = error.field.is match {
+    case error.errorValue => List(error)
+    case _ => Nil
+  }
+
+  def errors: List[SubscriptionError] =
+    error(NotPresent(this)) ++ error(GearNotChecked(this)) ++ error(HasDroppedOut(this))
+
+  def hasError: Boolean = !errors.isEmpty
 
   def toMarshalled = participant.foreign.get.toMarshalled.copy(
     fighterNumber = Some(fighterNumber.get),
     gearChecked = Some(gearChecked.get))
 }
-object TournamentParticipant extends TournamentParticipant with LongKeyedMetaMapper[TournamentParticipant]
+object TournamentParticipant extends TournamentParticipant with LongKeyedMetaMapper[TournamentParticipant] {
+  type ErrorField = MappedBoolean[_ <: LongKeyedMapper[_]]
+  sealed class SubscriptionError(val field: ErrorField, val errorValue: Boolean, val caption: String)
+  case class NotPresent(s: TournamentParticipant) extends SubscriptionError(s.participant.foreign.get.isPresent, false, "Not present")
+  case class GearNotChecked(s: TournamentParticipant) extends SubscriptionError(s.gearChecked, false, "Gear not checked")
+  case class HasDroppedOut(s: TournamentParticipant) extends SubscriptionError(s.droppedOut, true, "Dropped out")
+}
