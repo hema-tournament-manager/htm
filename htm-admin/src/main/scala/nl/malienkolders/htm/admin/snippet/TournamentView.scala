@@ -286,6 +286,12 @@ object TournamentView {
       }) &
       ".participant-pick-pool" #> renderPickPool(sub) &
       ".initialRanking *" #> sub.experience.get &
+      ".remove" #> (sub.hasFought match {
+        case true =>
+          SHtml.a(() => Reload, <span class="glyphicon glyphicon-log-out"></span>, "title" -> "Drop out", "data-content" -> "This participant has already finished some fights and can not be removed from the tournament. All fights of this person will be cancelled.")
+        case false =>
+          SHtml.a(() => Reload, <span class="glyphicon glyphicon-remove"></span>, "title" -> "Remove from tournament", "data-content" -> "This participant has not finished any fights and will be removed from the tournament.")
+      }) &
       ".error" #> errors(sub)
 
     val generatePoolPhase = new GeneratePoolPhase(t)

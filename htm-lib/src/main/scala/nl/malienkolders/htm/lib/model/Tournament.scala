@@ -51,6 +51,8 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   def eliminationPhase: EliminationPhase = phases(1).asInstanceOf[EliminationPhase]
 
   def finalsPhase: EliminationPhase = phases(2).asInstanceOf[EliminationPhase]
+
+  def fights = phases.flatMap(_.fights)
 }
 object Tournament extends Tournament with LongKeyedMetaMapper[Tournament] {
 
@@ -87,6 +89,8 @@ class TournamentParticipant extends LongKeyedMapper[TournamentParticipant] with 
     error(NotPresent(this)) ++ error(GearNotChecked(this)) ++ error(HasDroppedOut(this))
 
   def hasError: Boolean = !errors.isEmpty
+
+  def hasFought: Boolean = tournament.foreign.get.fights.exists(f => f.finished_? && f.inFight_?(participant.foreign.get))
 
   def toMarshalled = participant.foreign.get.toMarshalled.copy(
     fighterNumber = Some(fighterNumber.get),
