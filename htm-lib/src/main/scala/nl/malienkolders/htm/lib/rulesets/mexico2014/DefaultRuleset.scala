@@ -111,10 +111,14 @@ abstract class EmagRuleset extends Ruleset {
     val pairings = rawPairings.filter(p => p._1 != -1 && p._2 != -1)
     pairings.zipWithIndex.map {
       case ((a, b), i) =>
+        val subA = pool.participants(a - 1).subscription(pool.tournament)
+        val subB = pool.participants(b - 1).subscription(pool.tournament)
+
         PoolFight.create
           .fighterAFuture(SpecificFighter(Some(pool.participants(a - 1))).format)
           .fighterBFuture(SpecificFighter(Some(pool.participants(b - 1))).format)
           .order(i + 1)
+          .cancelled(List(subA, subB).flatten.exists(_.droppedOut.is))
     }.toList
   }
 
