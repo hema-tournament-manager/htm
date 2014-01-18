@@ -69,6 +69,15 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
     case true =>
       false
   }
+
+  def dropoutParticipant(sub: TournamentParticipant) = {
+    fights.filter(_.inFight_?(sub.participant.foreign.get)).foreach { f =>
+      f.cancelled(true)
+      f.scheduled.foreign.foreach(_.delete_!)
+      f.save()
+    }
+    sub.droppedOut(true).save()
+  }
 }
 object Tournament extends Tournament with LongKeyedMetaMapper[Tournament] {
 

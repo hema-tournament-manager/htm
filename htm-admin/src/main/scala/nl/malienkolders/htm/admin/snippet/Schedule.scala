@@ -23,10 +23,12 @@ class Schedule {
   val df = new SimpleDateFormat("HH:mm")
   df.setTimeZone(TimeZone.getTimeZone("UTC"))
 
+  def schedulableFights(fs: Seq[Fight[_, _]]) = fs.filterNot(_.cancelled.is).filter(_.scheduled.foreign.isEmpty)
+
   def scheduleFight(f: Fight[_, _], ts: ArenaTimeSlot) = scheduleFights(Seq[Fight[_, _]](f), ts)
 
   def scheduleFights(fs: Seq[Fight[_, _]], ts: ArenaTimeSlot) = {
-    fs.filter(_.scheduled.foreign.isEmpty).foreach { f =>
+    schedulableFights(fs).foreach { f =>
       val phase = f.phase.foreign.get
       val fp = phase.rulesetImpl.fightProperties
       val duration = fp.timeLimit + fp.breakDuration + fp.timeBetweenFights
@@ -183,9 +185,9 @@ class Schedule {
           }) &
           ".unscheduledCount *" #> t.phases.flatMap(_.fights.filter(_.scheduled.foreign.isEmpty)).size &
           ".phase" #> (t.poolPhase.pools.map(pool =>
-            renderPhase(s"Pool ${pool.poolName}", pool.fights.filter(_.scheduled.foreign.isEmpty)))
+            renderPhase(s"Pool ${pool.poolName}", schedulableFights(pool.fights)))
             ++ List(t.eliminationPhase, t.finalsPhase).map(p =>
-              renderPhase(p.name.get, p.fights.filter(_.scheduled.foreign.isEmpty)))).flatten))
+              renderPhase(p.name.get, schedulableFights(p.fights)))).flatten))
   }
 
   def tournamentName(implicit t: Tournament) =
