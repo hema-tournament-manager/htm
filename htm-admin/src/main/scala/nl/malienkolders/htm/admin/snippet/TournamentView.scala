@@ -165,7 +165,7 @@ object TournamentView {
     }
 
     def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
-      if (participant.participant.foreign.get.poolForTournament(t).fold(-1l)(_.id.is) != poolId) {
+      if (participant.participant.foreign.get.poolForTournament(t).map(_.id.is).getOrElse(-1) != poolId) {
         t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
 
         t.poolPhase.fights.filter(_.inFight_?(participant.participant.foreign.get)).map(_.delete_!)
@@ -290,7 +290,7 @@ object TournamentView {
         case true =>
           SHtml.a(() => Reload, <span class="glyphicon glyphicon-log-out"></span>, "title" -> "Drop out", "data-content" -> "This participant has already finished some fights and can not be removed from the tournament. All fights of this person will be cancelled.")
         case false =>
-          SHtml.a(() => Reload, <span class="glyphicon glyphicon-remove"></span>, "title" -> "Remove from tournament", "data-content" -> "This participant has not finished any fights and will be removed from the tournament.")
+          SHtml.a(() => { S.notice(s"Removed ${sub.participant.foreign.get.name.get} from this tournament"); t.removeParticipant(sub); Reload }, <span class="glyphicon glyphicon-remove"></span>, "title" -> "Remove from tournament", "data-content" -> "This participant has not finished any fights and will be removed from the tournament.")
       }) &
       ".error" #> errors(sub)
 

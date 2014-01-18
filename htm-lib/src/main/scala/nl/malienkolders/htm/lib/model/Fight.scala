@@ -200,7 +200,13 @@ class PoolFight extends Fight[PoolFight, PoolFightScore] {
     sf
   }
 }
-object PoolFight extends PoolFight with LongKeyedMetaMapper[PoolFight]
+
+object PoolFight extends PoolFight with LongKeyedMetaMapper[PoolFight] {
+  override def delete_! = {
+    scheduled.foreign.foreach(_.delete_!)
+    super.delete_!
+  }
+}
 
 class EliminationFight extends Fight[EliminationFight, EliminationFightScore] {
   def getSingleton = EliminationFight
@@ -219,4 +225,9 @@ class EliminationFight extends Fight[EliminationFight, EliminationFightScore] {
     sf
   }
 }
-object EliminationFight extends EliminationFight with LongKeyedMetaMapper[EliminationFight]
+object EliminationFight extends EliminationFight with LongKeyedMetaMapper[EliminationFight] {
+  override def delete_! = {
+    scheduled.foreign.foreach(_.delete_!)
+    super.delete_!
+  }
+}

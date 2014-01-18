@@ -21,7 +21,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   },
     { p: Phase[_] => p.tournament.asInstanceOf[MappedForeignKey[Long, _, Tournament]] }) with Owned[Phase[_]] with Cascade[Phase[_]]
   object defaultArena extends MappedLongForeignKey(this, Arena)
-  object subscriptions extends MappedOneToMany(TournamentParticipant, TournamentParticipant.tournament, OrderBy(TournamentParticipant.fighterNumber, Ascending))
+  object subscriptions extends MappedOneToMany(TournamentParticipant, TournamentParticipant.tournament, OrderBy(TournamentParticipant.fighterNumber, Ascending)) with Owned[TournamentParticipant] with Cascade[TournamentParticipant]
   def participants = subscriptions.map(_.participant.obj.get)
 
   def rapier_? = name.is.toLowerCase().contains("rapier")
@@ -53,6 +53,22 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   def finalsPhase: EliminationPhase = phases(2).asInstanceOf[EliminationPhase]
 
   def fights = phases.flatMap(_.fights)
+
+  def removeParticipant(sub: TournamentParticipant) = sub.hasFought match {
+    case false =>
+      fights.filter(_.inFight_?(sub.participant.foreign.get)).foreach(_.delete_!)
+      val p = sub.participant.foreign.get
+      p.poolForTournament(sub.tournament.foreign.get).foreach { pool =>
+        pool.participants -= p
+        pool.save
+      }
+      subscriptions -= sub
+      save()
+      sub.delete_!
+      true
+    case true =>
+      false
+  }
 }
 object Tournament extends Tournament with LongKeyedMetaMapper[Tournament] {
 
