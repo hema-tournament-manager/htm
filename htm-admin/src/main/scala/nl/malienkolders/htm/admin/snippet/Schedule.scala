@@ -171,7 +171,12 @@ class Schedule {
                         divider,
                         action("Unschedule", unscheduleFight _))
                   case _ =>
-                    ".name *" #> "???"
+                    ".fight [class+]" #> "danger" &
+                      ".time *" #> df.format(new Date(sf.time.is)) &
+                      ".tournament *" #> "" &
+                      ".name *" #> "Deleted fight" &
+                      ".action" #> List(
+                        action("Unschedule", unscheduleFight _))
                 }
               })) &
       ".unscheduled" #> (".tournament" #> Tournament.findAll().map(t =>
