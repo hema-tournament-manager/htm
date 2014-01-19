@@ -165,7 +165,7 @@ object TournamentView {
     }
 
     def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
-      if (participant.participant.foreign.get.poolForTournament(t).fold(-1l)(_.id.is) != poolId) {
+      if (participant.participant.foreign.get.poolForTournament(t).map(_.id.is).getOrElse(-1) != poolId) {
         t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
 
         t.poolPhase.fights.filter(_.inFight_?(participant.participant.foreign.get)).map(_.delete_!)
@@ -192,7 +192,7 @@ object TournamentView {
           ".club *" #> Nil &
           ".country *" #> Nil
       case knownFighter => knownFighter.participant match {
-        case Some(pt) => renderParticipant(pt.subscription(t).get) & "* [title]" #> knownFighter.toString
+        case Some(pt) => renderParticipant()(pt.subscription(t).get) & "* [title]" #> knownFighter.toString
         case None =>
           ".label *" #> "?" &
             ".name *" #> knownFighter.toString &
@@ -204,20 +204,28 @@ object TournamentView {
     def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
       ".fight-title *" #> f.name.get &
         ".scheduled [name]" #> s"fight${f.id.get}" &
-        (f.finished_? match {
+        (f.cancelled.get match {
           case true =>
-            ".scheduled [class+]" #> "label-success" &
-              ".scheduled [href]" #> "#" &
-              ".scheduled [title]" #> "Results" &
-              ".scheduled *" #> {
-                val s = f.currentScore
-                s"${s.red} (${s.double}) ${s.blue}"
-              }
+            ".scheduled [class+]" #> "label-danger" &
+              ".scheduled [href]" #> "" &
+              ".scheduled *" #> "cancelled"
           case false =>
-            ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
-              ".scheduled [href]" #> s"/schedule#fight${f.id.get}" &
-              ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled")
-        }) &
+            f.finished_? match {
+              case true =>
+                ".scheduled [class+]" #> "label-success" &
+                  ".scheduled [href]" #> "" &
+                  ".scheduled [title]" #> "Results" &
+                  ".scheduled *" #> {
+                    val s = f.currentScore
+                    s"${s.red} (${s.double}) ${s.blue}"
+                  }
+              case false =>
+                ".scheduled [class+]" #> f.scheduled.foreign.map(_ => "label-info").getOrElse("label-warning") &
+                  ".scheduled [href]" #> s"/schedule#fight${f.id.get}" &
+                  ".scheduled *" #> f.scheduled.foreign.map(sf => sf.time.get.hhmm).getOrElse("unscheduled")
+            }
+        })
+        &
         ".participant" #> (f.fighterA :: f.fighterB :: Nil).zipWithIndex.map { case (fighter, i) => renderFighter(f, if (i == 0) "A" else "B", fighter) })
 
     def renderPickPool(sub: TournamentParticipant) = {
@@ -230,37 +238,65 @@ object TournamentView {
         if (!enabled) { "disabled" -> "disabled" } else { "enabled" -> "enabled" })
     }
 
-    def gearCheckError(sub: TournamentParticipant): Option[Elem] = if (!sub.gearChecked.is) {
-      Some(SHtml.a(() => { sub.gearChecked(true).save(); Reload }, <span><span class="glyphicon glyphicon-cog"></span> Gear not checked</span>, "title" -> "Click to mark gear as checked"))
-    } else {
-      None
-    }
-
-    def presenceError(sub: TournamentParticipant): Option[Elem] = {
-      val p = sub.participant.foreign.get
-      if (!p.isPresent.is) {
-        Some(SHtml.a(() => { p.isPresent(true).save(); Reload }, <span><span class="glyphicon glyphicon-user"></span> Not present</span>, "title" -> "Click to mark participant as present"))
-      } else {
-        None
+    import TournamentParticipant._
+    implicit class SubscriptionErrorHelper(e: SubscriptionError) {
+      def icon: String = e match {
+        case _: NotPresent => "user"
+        case _: GearNotChecked => "cog"
+        case _: HasDroppedOut => "log-out"
+        case _ => "flash"
+      }
+      def clickText: String = e match {
+        case _: NotPresent => "Click to mark participant as present"
+        case _: GearNotChecked => "Click to mark gear as checked"
+        case _: HasDroppedOut => "Click to let the participant re-enter"
+        case _ => "Click to set this error as resolved"
       }
     }
 
-    def errors(sub: TournamentParticipant): List[Elem] = {
-      List(presenceError(sub), gearCheckError(sub)).flatten
-    }
+    def errors(sub: TournamentParticipant): List[Elem] = sub.errors.map(e =>
+      if (e.field.is == e.errorValue) {
+        Some(SHtml.a(() => {
+          e match {
+            case _: HasDroppedOut =>
+              t.dropParticipantIn(sub)
+            case _ =>
+              e.field(!e.errorValue).save()
+          }; Reload
+        }, <span><span class={ s"glyphicon glyphicon-${e.icon}" }></span> { e.caption }</span>, "title" -> e.clickText))
+      } else {
+        None
+      }).flatten
 
-    def renderParticipant(sub: TournamentParticipant) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
-      "* [class+]" #> (if (sub.participant.obj.get.isPresent.get && sub.gearChecked.get) "" else "danger") &
+    def renderParticipant(long: Boolean = false)(sub: TournamentParticipant) = "* [class+]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
+      "* [class+]" #> (if (sub.hasError) "danger" else "") &
       ".register [name]" #> s"participant${sub.participant.foreign.get.externalId.get}" &
       ".register [href]" #> s"/participants/register/${sub.participant.obj.get.externalId.get}#tournament${t.id.get}" &
       ".label *" #> sub.fighterNumber.get &
-      ".name *" #> sub.participant.foreign.get.name.get &
-      ".club *" #> sub.participant.foreign.get.clubCode.get &
-      ".club [title]" #> sub.participant.foreign.get.club.get &
-      ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
-      ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get &
+      (if (long) {
+        ".name *" #> sub.participant.foreign.get.name.get &
+          ".club *" #> sub.participant.foreign.get.club.get &
+          ".country *" #> sub.participant.foreign.get.country.foreign.get.name.get
+      } else {
+        ".name *" #> sub.participant.foreign.get.shortName.get &
+          ".club *" #> sub.participant.foreign.get.clubCode.get &
+          ".club [title]" #> sub.participant.foreign.get.club.get &
+          ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
+          ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get
+      }) &
       ".participant-pick-pool" #> renderPickPool(sub) &
       ".initialRanking *" #> sub.experience.get &
+      ".remove" #> (sub.droppedOut.get match {
+        case true =>
+          SHtml.a(() => { S.notice(s"Dropped ${sub.participant.foreign.get.name.get} back in to this tournament"); t.dropParticipantIn(sub); Reload }, <span class="glyphicon glyphicon-log-in"></span>, "title" -> "Drop in", "data-content" -> "This participant be put back in the tournament. Don't forget to reschedule their fights!")
+        case false =>
+          sub.hasFought match {
+            case true =>
+              SHtml.a(() => { S.notice(s"Dropped ${sub.participant.foreign.get.name.get} out of this tournament"); t.dropParticipantOut(sub); Reload }, <span class="glyphicon glyphicon-log-out"></span>, "title" -> "Drop out", "data-content" -> "This participant has already finished some fights and can not be removed from the tournament. All fights of this person will be cancelled.")
+            case false =>
+              SHtml.a(() => { S.notice(s"Removed ${sub.participant.foreign.get.name.get} from this tournament"); t.removeParticipant(sub); Reload }, <span class="glyphicon glyphicon-remove"></span>, "title" -> "Remove from tournament", "data-content" -> "This participant has not finished any fights and will be removed from the tournament.")
+          }
+      }) &
       ".error" #> errors(sub)
 
     val generatePoolPhase = new GeneratePoolPhase(t)
@@ -271,7 +307,7 @@ object TournamentView {
         "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
         "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
         "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
-        "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant _)) &
+        "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant(true) _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
         "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool")) &
         "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
@@ -283,7 +319,7 @@ object TournamentView {
             "a [href]" #> s"#ranking${p.id.get}") &
             ".participants" #> (".participant" #> p.ranked.map {
               case (pt, _) =>
-                renderParticipant(pt.subscription(t).get)
+                renderParticipant()(pt.subscription(t).get)
             }) &
             ".modal" #> (
               "* [id]" #> s"ranking${p.id.get}" &
@@ -291,7 +327,7 @@ object TournamentView {
               "thead" #> (".field" #> t.poolPhase.rulesetImpl.emptyScore.header) &
               ".participant" #> p.ranked.map {
                 case (pt, s) =>
-                  renderParticipant(pt.subscription(t).get) &
+                  renderParticipant()(pt.subscription(t).get) &
                     ".field" #> s.row
               })) &
         ".poolPhase" #> t.poolPhase.pools.map(p =>

@@ -46,6 +46,8 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   def ranked: List[(Participant, Scores)] =
     phase.foreign.get.rulesetImpl.ranking(this)
+
+  def tournament = phase.foreign.get.tournament.foreign.get
 }
 object Pool extends Pool with LongKeyedMetaMapper[Pool] {
   def defaultArena(tournament: Tournament): Arena = {

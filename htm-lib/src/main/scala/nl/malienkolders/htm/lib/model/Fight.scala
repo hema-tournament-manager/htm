@@ -54,13 +54,16 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
   object timeStart extends MappedLong(this)
   object timeStop extends MappedLong(this)
   object netDuration extends MappedLong(this)
+  object cancelled extends MappedBoolean(this) {
+    override val defaultValue = false
+  }
 
   def phaseType: PhaseType
   def phase: MappedLongForeignKey[_, _ <: Phase[_]]
   def scheduled: MappedLongForeignKey[_, _ <: ScheduledFight[_]]
 
   def started_? = timeStart.is > 0 || inProgress.is
-  def finished_? = timeStop.is > 0
+  def finished_? = cancelled.is || timeStop.is > 0
   def grossDuration = timeStop.is - timeStart.is
 
   def addScore = {
@@ -89,17 +92,42 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
   def fighterA: Fighter = Fighter.parse(fighterAFuture.get)
   def fighterB: Fighter = Fighter.parse(fighterBFuture.get)
 
-  def winner = currentScore match {
-    case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterA.participant.get)
-    case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterB.participant.get)
-    case _ => Empty
+  def winner = cancelled.get match {
+    case true =>
+      // cancelled fights cannot be won
+      Empty
+    case false =>
+      currentScore match {
+        case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterA.participant.get)
+        case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterB.participant.get)
+        case _ => Empty
+      }
   }
 
-  def loser = currentScore match {
-    case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterA.participant.get)
-    case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterB.participant.get)
-    case _ => Empty
+  def loser = cancelled.get match {
+    case true =>
+      // cancelled fights cannot be lost
+      Empty
+    case false =>
+      currentScore match {
+        case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterA.participant.get)
+        case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterB.participant.get)
+        case _ => Empty
+      }
   }
+
+  def opponent(fighter: Participant) = (for {
+    a <- fighterA.participant
+    b <- fighterB.participant
+  } yield {
+    if (a.id.get == fighter.id.get) {
+      Some(b)
+    } else if (b.id.get == fighter.id.get) {
+      Some(a)
+    } else {
+      None
+    }
+  }).getOrElse(None)
 
   def shortLabel = fighterA.toString + " vs " + fighterB.toString
 
@@ -200,7 +228,13 @@ class PoolFight extends Fight[PoolFight, PoolFightScore] {
     sf
   }
 }
-object PoolFight extends PoolFight with LongKeyedMetaMapper[PoolFight]
+
+object PoolFight extends PoolFight with LongKeyedMetaMapper[PoolFight] {
+  override def delete_! = {
+    scheduled.foreign.foreach(_.delete_!)
+    super.delete_!
+  }
+}
 
 class EliminationFight extends Fight[EliminationFight, EliminationFightScore] {
   def getSingleton = EliminationFight
@@ -219,4 +253,9 @@ class EliminationFight extends Fight[EliminationFight, EliminationFightScore] {
     sf
   }
 }
-object EliminationFight extends EliminationFight with LongKeyedMetaMapper[EliminationFight]
+object EliminationFight extends EliminationFight with LongKeyedMetaMapper[EliminationFight] {
+  override def delete_! = {
+    scheduled.foreign.foreach(_.delete_!)
+    super.delete_!
+  }
+}

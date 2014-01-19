@@ -47,6 +47,7 @@ abstract class EmagRuleset extends Ruleset {
       case (ParticipantScores(i1, f1, w1, _, lbd1, cr1, cd1, ar1, _, d1, p1), ParticipantScores(i2, f2, w2, _, lbd2, cr2, cd2, ar2, _, d2, p2)) =>
         val effectivePoints1 = p1 - lbd1
         val effectivePoints2 = p2 - lbd2
+
         if (f1 == 0 && f2 == 0) {
           // if both haven't fought yet: order by initial ranking
           i1 > i2
@@ -110,10 +111,14 @@ abstract class EmagRuleset extends Ruleset {
     val pairings = rawPairings.filter(p => p._1 != -1 && p._2 != -1)
     pairings.zipWithIndex.map {
       case ((a, b), i) =>
+        val subA = pool.participants(a - 1).subscription(pool.tournament)
+        val subB = pool.participants(b - 1).subscription(pool.tournament)
+
         PoolFight.create
           .fighterAFuture(SpecificFighter(Some(pool.participants(a - 1))).format)
           .fighterBFuture(SpecificFighter(Some(pool.participants(b - 1))).format)
           .order(i + 1)
+          .cancelled(List(subA, subB).flatten.exists(_.droppedOut.is))
     }.toList
   }
 
@@ -124,9 +129,9 @@ abstract class EmagRuleset extends Ruleset {
     val r = p.phase.obj.get
     val t = r.tournament.obj.get
     val fs = p.fights.filter(_.finished_?)
-    pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
+    val result = pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
       case (ps @ ParticipantScores(i, c, w, l, lbd, hR, hD, aR, aD, d, p), f) =>
-        if (f.inFight_?(pt)) {
+        if (!f.cancelled.is && f.inFight_?(pt)) {
           f.currentScore match {
             case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
@@ -146,6 +151,9 @@ abstract class EmagRuleset extends Ruleset {
           ps
         }
     })).sortWith((pt1, pt2) => compare(pt1._2, pt2._2))
+    def droppedOut(part: Participant) = part.subscription(p.tournament).map(_.droppedOut.is).getOrElse(true)
+    // Always put dropped out fighters last
+    result.filter(r => !droppedOut(r._1)) ++ result.filter(r => droppedOut(r._1))
   }
 
   def lossesByDoubles(doubles: Int): Int = if (doubles >= 5) 1 else 0
