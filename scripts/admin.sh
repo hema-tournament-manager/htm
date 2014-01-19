@@ -40,7 +40,7 @@ function start_admin {
 			echo "Admin: $1 is running on pid: $_pid"
 			_ret=0
 		else
-			echo "Admin: $1 is running not running"
+			echo "Admin: $1 is not running"
 			_ret=1
 		fi
 

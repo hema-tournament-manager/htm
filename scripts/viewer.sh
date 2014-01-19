@@ -42,7 +42,7 @@ function start_viewer {
 			echo "Viewer: $1 is running on pid: $_pid"
 			_ret=0
 		else
-			echo "Viewer: $1 is running not running"
+			echo "Viewer: $1 is not running"
 			_ret=1
 		fi
 
