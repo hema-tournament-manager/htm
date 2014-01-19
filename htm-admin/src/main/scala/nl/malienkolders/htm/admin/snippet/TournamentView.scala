@@ -259,7 +259,7 @@ object TournamentView {
         Some(SHtml.a(() => {
           e match {
             case _: HasDroppedOut =>
-            //TODO: t.dropinParticipant(sub)
+              t.dropParticipantIn(sub)
             case _ =>
               e.field(!e.errorValue).save()
           }; Reload
@@ -288,11 +288,11 @@ object TournamentView {
       ".initialRanking *" #> sub.experience.get &
       ".remove" #> (sub.droppedOut.get match {
         case true =>
-          SHtml.a(() => { S.notice(s"Dropped ${sub.participant.foreign.get.name.get} back in to this tournament"); /* TODO t.dropinParticipant(sub);*/ Reload }, <span class="glyphicon glyphicon-log-in"></span>, "title" -> "Drop in", "data-content" -> "This participant be put back in the tournament. Don't forget to reschedule their fights!")
+          SHtml.a(() => { S.notice(s"Dropped ${sub.participant.foreign.get.name.get} back in to this tournament"); t.dropParticipantIn(sub); Reload }, <span class="glyphicon glyphicon-log-in"></span>, "title" -> "Drop in", "data-content" -> "This participant be put back in the tournament. Don't forget to reschedule their fights!")
         case false =>
           sub.hasFought match {
             case true =>
-              SHtml.a(() => { S.notice(s"Dropped ${sub.participant.foreign.get.name.get} out of this tournament"); t.dropoutParticipant(sub); Reload }, <span class="glyphicon glyphicon-log-out"></span>, "title" -> "Drop out", "data-content" -> "This participant has already finished some fights and can not be removed from the tournament. All fights of this person will be cancelled.")
+              SHtml.a(() => { S.notice(s"Dropped ${sub.participant.foreign.get.name.get} out of this tournament"); t.dropParticipantOut(sub); Reload }, <span class="glyphicon glyphicon-log-out"></span>, "title" -> "Drop out", "data-content" -> "This participant has already finished some fights and can not be removed from the tournament. All fights of this person will be cancelled.")
             case false =>
               SHtml.a(() => { S.notice(s"Removed ${sub.participant.foreign.get.name.get} from this tournament"); t.removeParticipant(sub); Reload }, <span class="glyphicon glyphicon-remove"></span>, "title" -> "Remove from tournament", "data-content" -> "This participant has not finished any fights and will be removed from the tournament.")
           }

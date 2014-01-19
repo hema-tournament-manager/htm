@@ -116,6 +116,19 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
       }
   }
 
+  def opponent(fighter: Participant) = (for {
+    a <- fighterA.participant
+    b <- fighterB.participant
+  } yield {
+    if (a.id.get == fighter.id.get) {
+      Some(b)
+    } else if (b.id.get == fighter.id.get) {
+      Some(a)
+    } else {
+      None
+    }
+  }).getOrElse(None)
+
   def shortLabel = fighterA.toString + " vs " + fighterB.toString
 
   def toMarshalled = MarshalledFight(
