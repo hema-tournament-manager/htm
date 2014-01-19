@@ -309,7 +309,11 @@ object TournamentView {
         "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
         "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant(true) _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
-        "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool")) &
+        (if (t.poolPhase.pools.size.isEven) {
+          "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool"))
+        } else {
+          "#generateElimination-top2" #> Nil
+        }) &
         "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
         "#pool-generation-pool-count" #> SHtml.text(t.poolPhase.pools.size.toString, s => generatePoolPhase.poolCount = s.toInt) &
         "#pool-generation-generate" #> SHtml.submit("Generate", () => { generatePoolPhase.generate(); S.redirectTo("#poolphase") }) &
