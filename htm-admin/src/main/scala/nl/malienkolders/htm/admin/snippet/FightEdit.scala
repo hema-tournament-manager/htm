@@ -10,17 +10,24 @@ import nl.malienkolders.htm.lib.model._
 import java.text.SimpleDateFormat
 import net.liftweb.http.js.JsCmds.Run
 import java.util.Date
+import net.liftweb.http.js.JsCmds._
+
+case class FightEditParams(phaseType: String, fightId: Long);
 
 object FightEdit {
 
-  val menu = (Menu.param[ParamInfo]("Edit Fight", "Edit Fight", s => Full(ParamInfo(s)),
-    pi => pi.param) / "fights" / "edit" >> Hidden)
+  val menu = (Menu.params[FightEditParams]("Edit Fight", "Edit Fight",
+    {
+      case phaseType :: fightId :: Nil => Full(FightEditParams(phaseType, fightId.toLong))
+      case _ => Empty
+    },
+    fep => fep.phaseType :: fep.fightId.toString :: Nil) / "fights" / "edit" / ** >> Hidden)
   lazy val loc = menu.toLoc
 
   def render = {
 
-    val id = FightEdit.loc.currentValue.get.param
-    val f: Fight[_, _] = FightHelper.dao(id.take(1)).findByKey(id.drop(1).toLong).get
+    val params = FightEdit.loc.currentValue.get
+    val f: Fight[_, _] = FightHelper.dao(params.phaseType).findByKey(params.fightId).get
     val totalScore = f.currentScore
 
     val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -33,7 +40,7 @@ object FightEdit {
     def addScoreLine() {
       f.addScore
       f.save()
-      S.redirectTo("/fights/edit/" + f.id.get)
+      Reload
     }
 
     val dateFormatStr = "yy-mm-dd";
