@@ -44,7 +44,7 @@ td.number {
 	padding-top: 15%;
 }
 
-.participant-pick-pool {
+.participant-pick-pool, .participant-seed {
   width: 128px;
 }
 
@@ -103,7 +103,9 @@ td.number {
             <td class="name"></td>
             <td class="country"></td>
             <td class="club"></td>
-            <td class="initialRanking"></td>
+            <td class="initialRanking">
+              <input type="number" class="form-control participant-seed"></input>
+            </td>
             <td>
               <select  class="form-control participant-pick-pool">
                 <option>&mdash; no pool &mdash;</option>
@@ -142,7 +144,7 @@ td.number {
               <div class="modal-body">
                 <p>Participants of this tournament are added to a
                   number of pools</p>
-                <label>Pool count <input id="pool-generation-pool-count" class="form-control" type="text" value="1"/> </label>
+                <label>Pool count <input id="pool-generation-pool-count" class="form-control" type="number" value="1"/> </label>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default"

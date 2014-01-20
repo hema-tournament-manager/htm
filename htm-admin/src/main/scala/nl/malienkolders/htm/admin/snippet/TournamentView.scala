@@ -285,7 +285,7 @@ object TournamentView {
           ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get
       }) &
       ".participant-pick-pool" #> renderPickPool(sub) &
-      ".initialRanking *" #> sub.experience.get &
+      ".initialRanking input" #> SHtml.ajaxText(sub.experience.get.toString, s => { sub.experience(s.toInt); sub.save; Reload }, "type" -> "number") &
       ".remove" #> (sub.droppedOut.get match {
         case true =>
           SHtml.a(() => { S.notice(s"Dropped ${sub.participant.foreign.get.name.get} back in to this tournament"); t.dropParticipantIn(sub); Reload }, <span class="glyphicon glyphicon-log-in"></span>, "title" -> "Drop in", "data-content" -> "This participant be put back in the tournament. Don't forget to reschedule their fights!")
