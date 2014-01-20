@@ -22,7 +22,7 @@ function usage {
 function stop_admin {
 	for admin in "${admins[@]}"; do
 		local _pid=
-		_pid=$(screen -list|grep admin$admin|cut -d"." -f1)
+		_pid=$(ps -ef|grep java|grep admin|grep $admin|awk '{ print $2 }')
 		if [ "x$_pid" != "x" ]; then
 			echo "Screen $admin is running on pid: $_pid"
 			echo "Slaying $_pid"
