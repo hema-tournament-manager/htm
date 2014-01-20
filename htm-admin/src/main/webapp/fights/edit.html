@@ -5,65 +5,85 @@
 <title>Fight</title>
 </head>
 <body class="lift:content_id=main">
+  <div id="main" class="lift:surround?with=default;at=content">
+    <head>
+    <style>
+    .table-input {
+    	width: 70px;
+    	text-align: center;
+    }
+    </style>
+ 
+    </script>
 
-  <link data-lift="head" type="text/css" rel="stylesheet"
-    href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.2/css/smoothness
-          /jquery-ui-1.10.2.custom.min.css">
-  </link>
+    </head>
 
-  <script data-lift="tail"
-    src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js">
-  </script>
+    <form role="form" class="lift:FightEdit?form=post">
+      <h2>Edit Fight</h2>
+      <h3>
+        <span class="red"><span class="name" style="color: red">Red</span> (<span class="club">Red Team</span>)</span> vs <span class="blue"><span class="name" style="color: blue">Blue</span> (<span class="club">Team Blue</span>)</span>
+      </h3>
+      <br />
 
-	<div id="main" class="lift:surround?with=default;at=content">
-		<form class="lift:FightEdit?form=post">
-			<h2>Edit Fight</h2>
-			<h3>
-				<span class="red"><span class="name" style="color:red">Red</span> (<span class="club">Red Team</span>)</span> vs
-				 <span class="blue"><span class="name" style="color:blue">Blue</span> (<span class="club">Team Blue</span>)</span>
-			</h3>
-			<br />
-			
-			<h4 style="margin:3px;">Total Score Red: <b><span id="scoreRed"> Score red</span></b> </h4>
-			<h4 style="margin:3px;">Total Score Blue: <b><span id="scoreBlue"> Score blue</span></b> </h4><br/> <br />
-			
-			Time start: <input name="timeStart"/><br/>
-			Time stop: <input name="timeStop"/><br/>
-			
-			<br />
-			<button id="doAdd" name="add">Add Score</button>
-			<br />
-			<br />
-			
-			<table border="1" style="text-align:center; border-collapse:collapse; border-spacing:5px;">
-			<tr>
-				<th style="color: #fff; background-color: #777; padding:4px;">Exchanges </th>
-				<th style="color: #fff; background-color: #777; padding:4px;">Points Red</th>
-				<th style="color: #fff; background-color: #777; padding:4px;">Points Blue</th>
-				<th style="color: #fff; background-color: #777; padding:4px;">Clean Hits Red</th>
-				<th style="color: #fff; background-color: #777; padding:4px;">Clean Hits Blue</th>
-				<th style="color: #fff; background-color: #777; padding:4px;">Afterblows Red</th>
-				<th style="color: #fff; background-color: #777; padding:4px;">Afterblows Blue</th>
-				<th style="color: #fff; background-color: #777; padding:4px;">Doubles</th>
-				<th style="color: #fff; background-color: #777; padding:4px;">Score Type</th>
-			</tr>
-			<tr class="score">
-				<td><input style="text-align:center" size="3" name="exchanges" /></td>
-				<td><input style="text-align:center" size="3" name="pointsRed" /></td>
-				<td><input style="text-align:center" size="3" name="pointsBlue" /></td>
-				<td><input style="text-align:center" size="3" name="cleanHitsRed" /></td>
-				<td><input style="text-align:center" size="3" name="cleanHitsBlue" /></td>
-				<td><input style="text-align:center" size="3" name="afterblowsRed" /></td>
-				<td><input style="text-align:center" size="3" name="afterblowsBlue" /></td>
-				<td><input style="text-align:center" size="3" name="doubles" /></td>
-				<td><input style="text-align:center" size="5" name="scoreType" /></td>
-				
-			</tr>
-			</table>
-			<br />
-			<button syle="clear:left;" id="doEdit">Save</button>
-		</form>
-	</div>
+      <h4>
+        Total Score Red: <b><span id="scoreRed"> Score red</span></b>
+      </h4>
+      <h4>
+        Total Score Blue: <b><span id="scoreBlue"> Score blue</span></b>
+      </h4>
+
+      <div class="form-group">
+        <label> Time start: <input class="form-control" name="timeStart" /></label>
+      </div>
+      <div class="form-group">
+        <label> Time stop: <input class="form-control" name="timeStop" /></label>
+      </div>
+
+      <button class="btn btn-primary" syle="clear:left;" id="doEdit">Save</button>
+       <br /> <br />
+      
+
+      <table class="table table-condensed">
+        <tr>
+          <th>Exchanges</th>
+          <th>Points Red</th>
+          <th>Points Blue</th>
+          <th>Clean Hits Red</th>
+          <th>Clean Hits Blue</th>
+          <th>Afterblows Red</th>
+          <th>Afterblows Blue</th>
+          <th>Doubles</th>
+          <th>Remark</th>
+        </tr>
+        <tr class="score">
+          <td class="table-input"><p class="exchanges" /></td>
+          <td class="table-input"><p class="pointsRed" /></td>
+          <td class="table-input"><p class="pointsBlue" /></td>
+          <td class="table-input"><p class="cleanHitsRed" /></td>
+          <td class="table-input"><p class="cleanHitsBlue" /></td>
+          <td class="table-input"><p class="afterblowsRed" /></td>
+          <td class="table-input"><p class="afterblowsBlue" /></td>
+          <td class="table-input"><p class="doubles" /></td>
+          <td class="table-input"><p class="scoreType" /></td>
+        </tr>
+       <tr class="newScore">
+          <td class="table-input"><input type="number" class="form-control table-input" size="3" name="exchanges" /></td>
+          <td class="table-input"><input type="number" class="form-control table-input" size="3" name="pointsRed" /></td>
+          <td class="table-input"><input type="number" class="form-control table-input" size="3" name="pointsBlue" /></td>
+          <td class="table-input"><input type="number" class="form-control table-input" size="3" name="cleanHitsRed" /></td>
+          <td class="table-input"><input type="number" class="form-control table-input" size="3" name="cleanHitsBlue" /></td>
+          <td class="table-input"><input type="number" class="form-control table-input" size="3" name="afterblowsRed" /></td>
+          <td class="table-input"><input type="number" class="form-control table-input" size="3" name="afterblowsBlue" /></td>
+          <td class="table-input"><input type="number" class="form-control table-input" size="3" name="doubles" /></td>
+          <td class="table-input"><input type="text" class="form-control" style="text-align: center" size="5" name="scoreType" /></td>
+        </tr>
+      </table>
+           <button class="btn btn-primary" id="doAdd" name="add">Add Score</button>
+      <br />
+      <br />
+
+    </form>
+  </div>
 </body>
 </html>
 
