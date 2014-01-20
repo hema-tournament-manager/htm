@@ -16,52 +16,77 @@ object ScheduleExporter extends ExcelExporter {
   case object ShortHeaders extends PoolHeaderStyle
   case object LongHeaders extends PoolHeaderStyle
 
-  def doExport(header: String, pools: Seq[Pool], poolHeaders: PoolHeaderStyle, outputStream: OutputStream): Unit = {
-    val workbook = loadWorkbook("schedule");
+  case class Block(name: String, fights: Seq[Fight[_, _]])
 
-    val sheet = workbook.getSheetAt(0);
+  def doExport(header: String, blocks: Seq[Block], headerStyle: PoolHeaderStyle, outputStream: OutputStream): Unit = {
+    val workbook = loadWorkbook("schedule")
 
-    sheet.getOrCreateRow(0).getOrCreateCell(0).setCellValue(header);
+    val sheet = workbook.getSheetAt(0)
 
-    var i = 2;
+    sheet.getOrCreateRow(0).getOrCreateCell(0).setCellValue(header)
 
-    for (pool <- pools) {
+    var i = 2
 
-      val phase = pool.phase.obj.get
-      val t = phase.tournament.obj.get
+    for (block <- blocks) {
 
-      if (poolHeaders == ShortHeaders) {
-        i = i + 1;
-        val poolRow = sheet.getOrCreateRow(i);
-        poolRow.getOrCreateCell(0).setCellValue(pool.poolName)
-      } else {
-        if (i == 2)
-          i = i + 1;
-        val headerRow = sheet.getOrCreateRow(i);
-
-        headerRow.getOrCreateCell(0).setCellValue(s"${t.name.get} / Pool ${pool.poolName} / ${phase.name.get}")
-        i = i + 1;
+      if (i == 2) {
+        i = i + 1
       }
+      val headerRow = sheet.getOrCreateRow(i)
 
-      for (fight <- pool.fights) {
+      headerRow.getOrCreateCell(0).setCellValue(block.name)
+      i = i + 1;
 
-        val row = sheet.getOrCreateRow(i);
+      val fights = block.fights.groupBy(_.scheduled.foreign.isDefined)
+
+      for {
+        scheduledFights <- fights.get(true)
+        fight <- scheduledFights
+      } {
+        val row = sheet.getOrCreateRow(i)
 
         row.getOrCreateCell(1).setCellValue(new Date(fight.scheduled.foreign.get.time.get))
-        row.getOrCreateCell(2).setCellValue(fight.fighterA.participant.get.subscription(t).get.fighterNumber.get)
-        row.getOrCreateCell(3).setCellValue(fight.fighterA.participant.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
-        row.getOrCreateCell(4).setCellValue(fight.fighterB.participant.get.subscription(t).get.fighterNumber.get)
-        row.getOrCreateCell(5).setCellValue(fight.fighterB.participant.map(f => f.shortName.get + " (" + f.clubCode.get + ")").get)
+        renderFight(row, fight)
 
-        i = i + 1;
+        i = i + 1
       }
+
+      for {
+        unscheduledFights <- fights.get(false)
+        fight <- unscheduledFights
+      } {
+        val row = sheet.getOrCreateRow(i)
+
+        row.getOrCreateCell(1).setCellValue("??:??")
+        renderFight(row, fight)
+
+        i = i + 1
+      }
+
     }
 
-    workbook.write(outputStream);
+    workbook.write(outputStream)
+  }
+
+  private def renderFight(row: Row, fight: Fight[_, _]) = {
+    val t = fight.tournament
+    row.getOrCreateCell(0).setCellValue(fight match {
+      case pf: PoolFight =>
+        pf.pool.foreign.get.poolName
+      case ef: EliminationFight =>
+        ef.phase.foreign.get.fights.count(_.round.is == ef.round.is) match {
+          case n if n > 1 => s"1/$n"
+          case _ => ""
+        }
+    })
+    row.getOrCreateCell(2).setCellValue(fight.fighterA.participant.map(_.subscription(t).get.fighterNumber.get.toString).getOrElse("?"))
+    row.getOrCreateCell(3).setCellValue(fight.fighterA.participant.map(f => f.shortName.get + " (" + f.clubCode.get + ")").getOrElse(fight.fighterA.toString))
+    row.getOrCreateCell(4).setCellValue(fight.fighterB.participant.map(_.subscription(t).get.fighterNumber.get.toString).getOrElse("?"))
+    row.getOrCreateCell(5).setCellValue(fight.fighterB.participant.map(f => f.shortName.get + " (" + f.clubCode.get + ")").getOrElse(fight.fighterB.toString))
   }
 
   def doExport(tournament: Tournament)(outputStream: OutputStream): Unit = {
-    doExport(tournament.name.get, tournament.poolPhase.pools.sortBy(_.startTime.get), ShortHeaders, outputStream);
+    doExport(tournament.name.get, tournament.phases.map(p => Block(p.name.get, p.fights)), ShortHeaders, outputStream)
   }
 
   def doExport(arena: Arena, onlyUnfinishedPools: Boolean)(outputStream: OutputStream) {

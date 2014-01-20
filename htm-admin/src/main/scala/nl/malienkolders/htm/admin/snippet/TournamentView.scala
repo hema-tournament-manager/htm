@@ -305,7 +305,7 @@ object TournamentView {
       "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
       ".downloadButton" #> Seq(
         "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
-        "a" #> SHtml.link("/download/schedule", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
+        "a" #> SHtml.link("/download/schedule/tournament", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
         "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
         "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant(true) _)) &
         "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
