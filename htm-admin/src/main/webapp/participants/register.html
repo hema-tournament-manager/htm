@@ -19,6 +19,10 @@ form div input[type=text] {
 	display: block;
 }
 
+.bio-fieldset {
+  width: 100%;
+}
+
 /* ]]> */
 </style>
 </head>
@@ -34,7 +38,7 @@ form div input[type=text] {
 				<fieldset>
 					<legend>Photo</legend>
 					<div style="float: left;">
-						<label>New photo <input type="file" name="photo" accept="image/*;capture=camera"</label>
+						<label>New photo <input type="file" name="photo" accept="image/*;capture=camera"  class="form-control"  /></label>
 						<br/>
 						<img class="photo"/>
 					</div>
@@ -44,25 +48,25 @@ form div input[type=text] {
 				<fieldset>
 					<legend>Personalia</legend>
 					<div style="float: left;">
-						<label>Name <input name="name" /></label>
+						<label>Name <input name="name" class="form-control"  /></label>
 					</div>
 					<div style="float: left;">
-						<label>Short Name <input name="shortName" /></label>
+						<label>Short Name <input name="shortName" class="form-control"  /></label>
 					</div>
 					<div style="float: left; clear: left;">
-						<label>Club <input name="club" /></label>
+						<label>Club <input name="club" class="form-control"  /></label>
 					</div>
 					<div style="float: left;">
-						<label>Club Code<input name="clubCode" /></label>
+						<label>Club Code<input name="clubCode" class="form-control"  /></label>
 					</div>
 				</fieldset>
 				<fieldset>
 					<legend>Registration</legend>
 					<div style="float: left;">
-						<label>ID<input name="externalId" /></label>
+						<label>ID<input name="externalId" class="form-control"  /></label>
 					</div>
 					<div style="float: left; clear: left;">
-						<label><input name="present" /> Present</label>
+						<label><input name="present" class="form-control" /> Present</label>
 					</div>
 				</fieldset>
 				<fieldset class="subscription" style="float: left; margin-right: 10px;">
@@ -76,25 +80,25 @@ form div input[type=text] {
 						<label>Pool <span class="pool" /></label>
 					</div>
 					<div style="float: left; clear: left;">
-						<label>Experience<input class="experience" /></label>
+						<label>Seed<input class="experience form-control" /></label>
 					</div>
 					<div style="float: left; clear: left;">
-						<label><input class="gear" /> Gear checked</label>
+						<label><input class="gear form-control" /> Gear checked</label>
 					</div>
 				</fieldset>
-				<fieldset>
+				<fieldset class="bio-fieldset">
 					<legend>Bio</legend>
 					<div style="float: left;">
-						<label>Age <input name="age" /></label>
+						<label>Age <input name="age" class="form-control" /></label>
 					</div>
 					<div style="float: left;">
-						<label>Height (cm)<input name="height" /></label>
+						<label>Height (cm)<input name="height" class="form-control"  /></label>
 					</div>
 					<div style="float: left;">
-						<label>Weight (kg)<input name="weight" /></label>
+						<label>Weight (kg)<input name="weight" class="form-control"  /></label>
 					</div>
 					<div style="float: left;">
-						<label>Previous wins (1 per line)<br/><input name="previousWins" /></label>
+						<label>Previous wins (1 per line)<br/><input name="previousWins" class="form-control" /></label>
 					</div>
 				</fieldset>
 				<div style="clear: left;">
