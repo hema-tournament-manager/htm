@@ -19,7 +19,7 @@ class Arena extends LongKeyedMapper[Arena] with IdPK with CreatedUpdated with Or
   object timeslots extends MappedOneToMany(ArenaTimeSlot, ArenaTimeSlot.arena, OrderBy(ArenaTimeSlot.day, Ascending), OrderBy(ArenaTimeSlot.from, Ascending))
 
   def fights = timeslots.flatMap(_.fights)
-  
+
   def timeslotByDay = timeslots.groupBy(_.day.foreign.get).toList.sortBy(_._1.date.is)
 
   object viewers extends MappedManyToMany(ArenaViewers, ArenaViewers.arena, ArenaViewers.viewer, Viewer)
