@@ -66,6 +66,16 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
   def finished_? = cancelled.is || timeStop.is > 0
   def grossDuration = timeStop.is - timeStart.is
 
+  
+  def createScore: S = {
+    scoreMeta.create
+  }
+  
+  def addScore(score: Any) = {
+    scores += score.asInstanceOf[S]
+    score
+  }
+  
   def addScore = {
     val score = scoreMeta.create
     scores += score

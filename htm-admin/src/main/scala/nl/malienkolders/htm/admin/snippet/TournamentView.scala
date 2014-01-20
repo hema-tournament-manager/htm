@@ -204,7 +204,6 @@ object TournamentView {
     def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
       ".fight-title *" #> f.name.get &
         ".scheduled [name]" #> s"fight${f.id.get}" &
-        ".edit [style]" #> (if (f.finished_?) "" else "display: none") &
         ".edit [href]" #> ("/fights/edit/"+f.phaseType.code+"/"+f.id.get.toString) & 
         (f.cancelled.get match {
           case true =>
