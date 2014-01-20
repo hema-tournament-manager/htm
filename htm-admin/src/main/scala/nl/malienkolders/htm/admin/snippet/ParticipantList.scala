@@ -55,8 +55,8 @@ object ParticipantList {
 
     ".downloadButton *" #> Seq(
       SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), Text("Participants")),
-      SHtml.link("/download/details", () => throw new ResponseShortcutException(downloadDetailsList), Text("Details")),
-      SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), Text("Clubs"))) &
+      SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), Text("Clubs")),
+      SHtml.link("/download/details", () => throw new ResponseShortcutException(downloadDetailsList), Text("Finalist Details"))) &
       "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
         val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
         selectedParticipant = Empty

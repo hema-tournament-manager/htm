@@ -149,7 +149,7 @@ class Schedule {
     ".arena" #> Arena.findAll.map(a =>
       ".arena [class+]" #> ("col-md-" + colspan) &
         ".arenaName" #> a.name.get &
-        ".download-schedule" #> SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadSchedule(a)), Text("Download schedule")) &
+        ".download-schedule" #> SHtml.link("/download/schedule/arena", () => throw new ResponseShortcutException(downloadSchedule(a)), Text("Download schedule")) &
         ".days-panel-group [id]" #> ("arena-days-" + a.id.is.toString) &
         ".day" #> a.timeslotByDay.map(day =>
           ".daydate" #> <a class="daydate" data-toggle="collapse" data-parent={ "#arena-days-" + a.id.is.toString } href={ "#arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString }>{ dayDateFormat.format(new Date(day._1.date.get)) }</a> &
@@ -207,8 +207,8 @@ class Schedule {
       { t.mnemonic.get }
     </a>
 
-  def downloadSchedule(a: Arena, onlyUnfinishedPools: Boolean = true) = {
-    OutputStreamResponse(ScheduleExporter.doExport(a, onlyUnfinishedPools) _, List("content-disposition" -> ("inline; filename=\"schedule_arena_" + a.id.get + ".xls\"")))
+  def downloadSchedule(a: Arena, onlyUnfinishedTimeslots: Boolean = true) = {
+    OutputStreamResponse(ScheduleExporter.doExport(a, onlyUnfinishedTimeslots) _, List("content-disposition" -> ("inline; filename=\"schedule_arena_" + a.id.get + ".xls\"")))
   }
 
 }

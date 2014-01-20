@@ -162,7 +162,7 @@ abstract class EmagRuleset extends Ruleset {
     timeLimit = 3 minutes,
     breakAt = 0,
     breakDuration = 0,
-    timeBetweenFights = 0,
+    timeBetweenFights = 2 minutes,
     exchangeLimit = 10)
 }
 

@@ -60,6 +60,7 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def phaseType: PhaseType
   def phase: MappedLongForeignKey[_, _ <: Phase[_]]
+  def tournament = phase.foreign.get.tournament.foreign.get
   def scheduled: MappedLongForeignKey[_, _ <: ScheduledFight[_]]
 
   def started_? = timeStart.is > 0 || inProgress.is
