@@ -103,14 +103,10 @@ td.number {
             <td class="name"></td>
             <td class="country"></td>
             <td class="club"></td>
-            <td class="initialRanking">
-              <input type="number" class="form-control participant-seed"></input>
-            </td>
-            <td>
-              <select  class="form-control participant-pick-pool">
+            <td class="initialRanking"><input type="number" class="form-control participant-seed"></input></td>
+            <td><select class="form-control participant-pick-pool">
                 <option>&mdash; no pool &mdash;</option>
-              </select>
-            </td>
+            </select></td>
             <td><a href="#" class="remove" rel="popover">remove</a></td>
           </tr>
         </tbody>
@@ -125,30 +121,25 @@ td.number {
       <a name="poolphase-pools"></a>
       <h4>
         Pools
-        <button id="expand-pool-generation-form" type="button"
-          class="btn btn-default" data-toggle="modal"
-          data-target="#pool-generation-dialog">
+        <button id="expand-pool-generation-form" type="button" class="btn btn-default" data-toggle="modal" data-target="#pool-generation-dialog">
           Generate pools</span>
         </button>
       </h4>
-      <div class="modal fade modal-vertical-centered"
-        id="pool-generation-dialog">
+      <div class="modal fade modal-vertical-centered" id="pool-generation-dialog">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"
-                aria-hidden="true">&times;</button>
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
               <h4 class="modal-title">Pool generation parameters</h4>
             </div>
             <form class="form" method="post">
               <div class="modal-body">
-                <p>Participants of this tournament are added to a
-                  number of pools</p>
-                <label>Pool count <input id="pool-generation-pool-count" class="form-control" type="number" value="1"/> </label>
+                <p>Participants of this tournament are added to a number of pools</p>
+                <label>Pool count <input id="pool-generation-pool-count" class="form-control" type="number" value="1" />
+                </label>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                  data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button id="pool-generation-generate" type="submit" class="btn btn-primary">Generate</button>
               </div>
             </form>
@@ -158,8 +149,7 @@ td.number {
       <div class="tournamentPool panel panel-default">
         <div class="panel-heading">
           <h4 class="panel-title">
-            <span class="name">pool</span>
-            <a href="#" class="pull-right" data-toggle="modal" title="Show the ranking"><span class="glyphicon glyphicon-sort-by-attributes-alt"></span></a>
+            <span class="name">pool</span> <a href="#" class="pull-right" data-toggle="modal" title="Show the ranking"><span class="glyphicon glyphicon-sort-by-attributes-alt"></span></a>
           </h4>
         </div>
         <table class="participants table">
@@ -173,43 +163,41 @@ td.number {
           </tbody>
         </table>
         <div class="modal fade" id="ranking999">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"
-                aria-hidden="true">&times;</button>
-              <h4 class="modal-title">Pool X</h4>
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Pool X</h4>
+              </div>
+              <form class="form" method="post">
+                <div class="modal-body">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Nr</th>
+                        <th>Name</th>
+                        <th>Country</th>
+                        <th>Club</th>
+                        <th class="field text-center"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="participant">
+                        <td class="number"><span class="label label-default">999</span></td>
+                        <td class="name">name</td>
+                        <td class="country"></td>
+                        <td class="club"></td>
+                        <td class="field text-center"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </form>
             </div>
-            <form class="form" method="post">
-              <div class="modal-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>Nr</th>
-                      <th>Name</th>
-                      <th>Country</th>
-                      <th>Club</th>
-                      <th class="field text-center"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="participant">
-                      <td class="number"><span class="label label-default">999</span></td>
-				              <td class="name">name</td>
-				              <td class="country"></td>
-				              <td class="club"></td>
-				              <td class="field text-center"></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                  data-dismiss="modal">Close</button>
-              </div>
-            </form>
           </div>
-        </div>
         </div>
       </div>
       <div class="clearfix"></div>
@@ -219,15 +207,17 @@ td.number {
         <div class="fight panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
-              <span class="fight-title">fight</span><a href="#"
-                class="scheduled label pull-right" title="Show schedule">unscheduled</a>
+              <span class="fight-title">fight</span>
+              <span class="pull-right">
+                <a href="#" class="scheduled label" title="Show schedule">unscheduled</a> 
+                <a class="edit" href="#"><span class="glyphicon glyphicon-pencil"></span></a>
+              </span>
             </h4>
           </div>
           <table class="table">
             <tbody>
               <tr class="participant">
-                <td class="number"><span
-                  class="label label-default">999</span></td>
+                <td class="number"><span class="label label-default">999</span></td>
                 <td class="name">name</td>
                 <td class="country"></td>
                 <td class="club"></td>
@@ -241,18 +231,14 @@ td.number {
       <h3>
         Elimination Phase
         <div class="btn-group">
-          <button type="button"
-            class="btn btn-default btn-sm dropdown-toggle"
-            data-toggle="dropdown">
+          <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu">
             <li class="dropdown-submenu"><a tabindex="-1" href="#">Generate</a>
               <ul class="dropdown-menu">
-                <li><a href="#" id="generateElimination-top2">Top
-                    2 per pool</a></li>
-                <li><a href="#" id="generateElimination-4th">Top
-                    2 per pool</a></li>
+                <li><a href="#" id="generateElimination-top2">Top 2 per pool</a></li>
+                <li><a href="#" id="generateElimination-4th">Top 2 per pool</a></li>
               </ul></li>
           </ul>
         </div>
@@ -261,15 +247,17 @@ td.number {
         <div class="fight panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
-              <span class="fight-title">fight</span><a href="#"
-                class="scheduled label pull-right" title="Show schedule">unscheduled</a>
+              <span class="fight-title">fight</span>
+              <span class="pull-right">
+                <a href="#" class="scheduled label" title="Show schedule">unscheduled</a> 
+                <a class="edit" href="#"><span class="glyphicon glyphicon-pencil"></span></a>
+              </span>
             </h4>
           </div>
           <table class="table">
             <tbody>
               <tr class="participant">
-                <td class="number"><span
-                  class="label label-default">999</span></td>
+                <td class="number"><span class="label label-default">999</span></td>
                 <td class="name">name</td>
                 <td class="country"></td>
                 <td class="club"></td>
@@ -286,15 +274,17 @@ td.number {
         <div class="fight panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
-              <span class="fight-title">fight</span><a href="#"
-                class="scheduled label pull-right" title="Show schedule">unscheduled</a>
+              <span class="fight-title">fight</span>
+              <span class="pull-right">
+                <a href="#" class="scheduled label" title="Show schedule">unscheduled</a> 
+                <a class="edit" href="#"><span class="glyphicon glyphicon-pencil"></span></a>
+              </span>
             </h4>
           </div>
           <table class="table">
             <tbody>
               <tr class="participant">
-                <td class="number"><span
-                  class="label label-default">999</span></td>
+                <td class="number"><span class="label label-default">999</span></td>
                 <td class="name">name</td>
                 <td class="country"></td>
                 <td class="club"></td>
@@ -307,15 +297,11 @@ td.number {
       </div>
 
 
-      <nav class="navbar navbar-default navbar-fixed-bottom"
-        role="navigation">
+      <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
         <div class="collapse navbar-collapse navbar-ex1-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="#participants">Participants <span
-                id="tournamentParticipantsCount" class="badge">999</span></a></li>
-            <li class="dropdown"><a href="#"
-              class="dropdown-toggle" data-toggle="dropdown">Pool
-                Phase <b class="caret"></b>
+            <li><a href="#participants">Participants <span id="tournamentParticipantsCount" class="badge">999</span></a></li>
+            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Pool Phase <b class="caret"></b>
             </a>
               <ul class="dropdown-menu">
                 <li><a href="#poolphase-pools">Pools</a></li>
