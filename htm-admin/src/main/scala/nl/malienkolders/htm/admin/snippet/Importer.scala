@@ -95,9 +95,15 @@ object Importer {
           }
       }
 
-      def copyTournament(t: Tournament, tDef: TournamentDef) = t.name(tDef.name)
-        .identifier(tDef.id)
-        .mnemonic(tDef.mnemonic)
+      def copyTournament(t: Tournament, tDef: TournamentDef) = {
+        t.name(tDef.name)
+          .identifier(tDef.id)
+          .mnemonic(tDef.mnemonic)
+        t.poolPhase.ruleset(tDef.poolPhase.ruleset).save()
+        t.eliminationPhase.ruleset(tDef.eliminationPhase.ruleset).save()
+        t.finalsPhase.ruleset(tDef.finalsPhase.ruleset).save()
+        t
+      }
 
       Tournament.findAll().outerJoin(event.tournaments) foreach {
         case (Some(tournament), Some(tournamentDef)) => copyTournament(tournament, tournamentDef).save()

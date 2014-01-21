@@ -156,17 +156,55 @@ abstract class EmagRuleset extends Ruleset {
     result.filter(r => !droppedOut(r._1)) ++ result.filter(r => droppedOut(r._1))
   }
 
-  def lossesByDoubles(doubles: Int): Int = if (doubles >= 5) 1 else 0
+  def lossesByDoubles(doubles: Int): Int = if (fightProperties.doubleHitLimit > 0 && doubles >= fightProperties.doubleHitLimit) 1 else 0
 
-  val fightProperties = FightProperties(
+  val possiblePoints = List(0, 1, 2)
+
+  def fightProperties = FightProperties(
     timeLimit = 3 minutes,
     breakAt = 0,
     breakDuration = 0,
     timeBetweenFights = 2 minutes,
-    exchangeLimit = 10)
+    exchangeLimit = 0,
+    doubleHitLimit = 5)
 }
 
-object DefaultRuleset extends EmagRuleset {
-  val id = "emag-2014-default"
-  val possiblePoints = List(-1, 0, 1, 2)
+trait PoolPhaseRuleset extends EmagRuleset
+
+trait EliminationRuleset extends EmagRuleset {
+  abstract override def fightProperties = super.fightProperties.copy(doubleHitLimit = 0)
+}
+
+trait FinalsRuleset extends EliminationRuleset {
+  abstract override def fightProperties = super.fightProperties.copy(timeLimit = 6 minutes, breakAt = 3 minutes, breakDuration = 1 minute, exchangeLimit = 0)
+}
+
+trait DefaultRuleset extends EmagRuleset
+
+object DefaultPoolPhaseRuleset extends DefaultRuleset with PoolPhaseRuleset {
+  val id = "emag-2014-default-pools"
+}
+
+object DefaultEliminationRuleset extends DefaultRuleset with EliminationRuleset {
+  val id = "emag-2014-default-elimination"
+}
+
+object DefaultFinalsRuleset extends DefaultRuleset with FinalsRuleset {
+  val id = "emag-2014-default-finals"
+}
+
+trait AlbionRuleset extends DefaultRuleset {
+  abstract override def fightProperties = super.fightProperties.copy(exchangeLimit = 10)
+}
+
+object AlbionPoolPhaseRuleset extends AlbionRuleset with PoolPhaseRuleset {
+  val id = "emag-2014-albion-pools"
+}
+
+object AlbionEliminationRuleset extends AlbionRuleset with EliminationRuleset {
+  val id = "emag-2014-albion-elimination"
+}
+
+object AlbionFinalsRuleset extends AlbionRuleset with FinalsRuleset {
+  val id = "emag-2014-albion-finals"
 }

@@ -162,7 +162,8 @@ abstract class SwordfishRuleset extends Ruleset {
     breakAt = 0,
     breakDuration = 0,
     timeBetweenFights = 2 minute,
-    exchangeLimit = 10)
+    exchangeLimit = 10,
+    doubleHitLimit = 3)
 }
 
 object DefaultRuleset extends SwordfishRuleset {

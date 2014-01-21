@@ -43,6 +43,7 @@ object Utils {
   val hhmm = DateTimeFormat.forPattern("HH:mm").withZone(DateTimeZone.UTC)
 
   implicit class TimeRenderHelper(time: Long) {
+    def asMinutes = time / 60 / 1000
     def hhmm = LocalTime.fromMillisOfDay(time).toString(Utils.hhmm)
     def as(format: String) = new SimpleDateFormat(format).format(new Date(time))
   }

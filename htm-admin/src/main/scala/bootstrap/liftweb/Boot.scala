@@ -15,6 +15,12 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.snippet.TournamentView
 import nl.malienkolders.htm.admin.AdminRest
 import nl.malienkolders.htm.lib.rulesets.mexico2014._
+import nl.malienkolders.htm.lib.rulesets.mexico2014.DefaultPoolPhaseRuleset
+import nl.malienkolders.htm.lib.rulesets.mexico2014.DefaultEliminationRuleset
+import nl.malienkolders.htm.lib.rulesets.mexico2014.DefaultFinalsRuleset
+import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionPoolPhaseRuleset
+import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionEliminationRuleset
+import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionFinalsRuleset
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -80,7 +86,12 @@ class Boot {
 
     CountryImporter.doImport
 
-    DefaultRuleset.register(true)
+    DefaultPoolPhaseRuleset.register(true)
+    DefaultEliminationRuleset.register()
+    DefaultFinalsRuleset.register()
+    AlbionPoolPhaseRuleset.register()
+    AlbionEliminationRuleset.register()
+    AlbionFinalsRuleset.register()
 
     val entries: List[ConvertableToMenu] = (Menu.i("Event") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list" submenus (
@@ -97,6 +108,7 @@ class Boot {
         (Menu.i("Export") / "export") ::
         (Menu.i("Battle") / "battle") ::
         (Menu.i("Controller") / "viewer") ::
+        RulesetModal.menu ::
         Nil
 
     // Build SiteMap

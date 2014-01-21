@@ -25,7 +25,7 @@ abstract class Scores {
   }
 }
 
-case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int)
+case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int, doubleHitLimit: Int)
 
 trait Ruleset {
 

@@ -8,15 +8,17 @@ case class Day(date: String, timeslots: List[Timeslot])
 
 case class Timeslot(name: String, from: String, to: String)
 
-case class Tournament(id: String, name: String, mnemonic: String, poolPhase: PoolPhase, eliminationPhase: EliminationPhase)
+case class Tournament(id: String, name: String, mnemonic: String, poolPhase: PoolPhase, eliminationPhase: EliminationPhase, finalsPhase: FinalsPhase)
 
-case class PoolPhase(calculatePools: PoolCalculation)
+case class PoolPhase(ruleset: String, calculatePools: PoolCalculation)
 
 case class PoolCalculation(size: List[Int])
 
-case class EliminationPhase(fighters: Int, pick: EliminationPick)
+case class EliminationPhase(ruleset: String, fighters: Int, pick: EliminationPick)
 
 case class EliminationPick(top: Int)
+
+case class FinalsPhase(ruleset: String)
 
 object Event {
   implicit val formats = DefaultFormats
