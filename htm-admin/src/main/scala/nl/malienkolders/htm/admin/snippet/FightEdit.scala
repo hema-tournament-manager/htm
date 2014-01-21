@@ -29,7 +29,7 @@ object FightEdit {
 
     val params = FightEdit.loc.currentValue.get
     val f: Fight[_, _] = FightHelper.dao(params.phaseType).findByKey(params.fightId).get
-    val newScore: Score[_, _] = f.createScore.asInstanceOf[Score[_,_]]
+    val newScore: Score[_, _] = f.createScore.asInstanceOf[Score[_, _]]
     val totalScore = f.currentScore
 
     val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -45,21 +45,21 @@ object FightEdit {
       f.save()
       Reload
     }
-    
+
     def renderFighter(fighter: Fighter) = (fighter match {
       case UnknownFighter(_) =>
-          ".name *" #> "Unknown fighter" &
+        ".name *" #> "Unknown fighter" &
           ".club [title]" #> "N/A" &
-	      ".club *" #> "N/A"
+          ".club *" #> "N/A"
       case knownFighter => knownFighter.participant match {
-        case Some(pt) => 
-	      ".name *" #> fighter.participant.get.name.is &
-	      ".club [title]" #> fighter.participant.get.club.is &
-	      ".club *" #> fighter.participant.get.clubCode.is
+        case Some(pt) =>
+          ".name *" #> fighter.participant.get.name.is &
+            ".club [title]" #> fighter.participant.get.club.is &
+            ".club *" #> fighter.participant.get.clubCode.is
         case None =>
           ".name *" #> knownFighter.toString &
-          ".club [title]" #> "N/A" &
-	      ".club *" #> "N/A"
+            ".club [title]" #> "N/A" &
+            ".club *" #> "N/A"
       }
     })
 
@@ -71,31 +71,31 @@ object FightEdit {
     S.appendJs(Run("$('#timeStop')." + datetimepickerInitStr) & Run("$('#timeStart')." + datetimepickerInitStr))
     ".red" #> renderFighter(f.fighterA) &
       ".blue" #> renderFighter(f.fighterB) &
-        "#scoreRed" #> totalScore.red &
-        "#scoreBlue" #> totalScore.blue &
-        "#doAdd" #> SHtml.onSubmitUnit(addScoreLine) &
-        "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart.get)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker") &
-        "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop.get)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker") &
-        ".score" #> f.mapScores(score =>
-          ".pointsRed" #> score.pointsRed.get &
-            ".pointsBlue" #> score.pointsBlue.get &
-            ".cleanHitsRed" #> score.cleanHitsRed.get &
-            ".cleanHitsBlue" #> score.cleanHitsBlue.get &
-            ".afterblowsRed" #> score.afterblowsRed.get &
-            ".afterblowsBlue" #> score.afterblowsBlue.get &
-            ".doubles" #> score.doubles.get &
-            ".exchanges" #> score.exchanges.get &
-            ".scoreType" #> score.scoreType.get) &
-        ".newScore" #> (
-            "name=pointsRed" #> newScore.pointsRed.toForm & 
-            "name=pointsBlue" #> newScore.pointsBlue.toForm &
-            "name=cleanHitsRed" #> newScore.cleanHitsRed.toForm &
-            "name=cleanHitsBlue" #> newScore.cleanHitsBlue.toForm &
-            "name=afterblowsRed" #> newScore.afterblowsRed.toForm &
-            "name=afterblowsBlue" #> newScore.afterblowsBlue.toForm &
-            "name=doubles" #> newScore.doubles.toForm &
-            "name=exchanges" #> newScore.exchanges.toForm &
-            "name=scoreType" #> newScore.scoreType.toForm) &
+      "#scoreRed" #> totalScore.red &
+      "#scoreBlue" #> totalScore.blue &
+      "#doAdd" #> SHtml.onSubmitUnit(addScoreLine) &
+      "name=timeStart" #> SHtml.text(df.format(new Date(f.timeStart.get)), s => f.timeStart(df.parse(s).getTime()), "id" -> "timeStart", "class" -> "hasDatePicker") &
+      "name=timeStop" #> SHtml.text(df.format(new Date(f.timeStop.get)), s => f.timeStop(df.parse(s).getTime()), "id" -> "timeStop", "class" -> "hasDatePicker") &
+      ".score" #> f.mapScores(score =>
+        ".pointsRed" #> score.pointsRed.get &
+          ".pointsBlue" #> score.pointsBlue.get &
+          ".cleanHitsRed" #> score.cleanHitsRed.get &
+          ".cleanHitsBlue" #> score.cleanHitsBlue.get &
+          ".afterblowsRed" #> score.afterblowsRed.get &
+          ".afterblowsBlue" #> score.afterblowsBlue.get &
+          ".doubles" #> score.doubles.get &
+          ".exchanges" #> score.exchanges.get &
+          ".scoreType" #> score.scoreType.get) &
+      ".newScore" #> (
+        "name=pointsRed" #> newScore.pointsRed.toForm &
+        "name=pointsBlue" #> newScore.pointsBlue.toForm &
+        "name=cleanHitsRed" #> newScore.cleanHitsRed.toForm &
+        "name=cleanHitsBlue" #> newScore.cleanHitsBlue.toForm &
+        "name=afterblowsRed" #> newScore.afterblowsRed.toForm &
+        "name=afterblowsBlue" #> newScore.afterblowsBlue.toForm &
+        "name=doubles" #> newScore.doubles.toForm &
+        "name=exchanges" #> newScore.exchanges.toForm &
+        "name=scoreType" #> newScore.scoreType.toForm) &
         "#doEdit" #> SHtml.onSubmitUnit(process)
 
   }
