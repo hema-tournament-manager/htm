@@ -28,30 +28,30 @@
 		{	"id": "albion",
 			"name": "Albion Steel Longsword Invitational",
 			"mnemonic": "A",
-			"poolPhase": { "calculatePools": { "size": [3, 4] } },
-			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
-			"finalPhase": { }
+			"poolPhase": { "ruleset": "emag-2014-albion-pools", "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "ruleset": "emag-2014-albion-elimination", "fighters": 8, "pick": { "top": 1 } },
+			"finalsPhase": { "ruleset": "emag-2014-albion-finals" }
 		},
 		{	"id": "longsword",
 			"name": "Longsword Tournament",
 			"mnemonic": "L",
-			"poolPhase": { "calculatePools": { "size": [3, 4] } },
-			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
-			"finalPhase": { }
+			"poolPhase": { "ruleset": "emag-2014-default-pools", "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "ruleset": "emag-2014-default-elimination", "fighters": 8, "pick": { "top": 1 } },
+			"finalsPhase": { "ruleset": "emag-2014-default-finals" }
 		},
 		{	"id": "rapier",
 			"name": "Rapier Tournament",
 			"mnemonic": "R",
-			"poolPhase": { "calculatePools": { "size": [3, 4] } },
-			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
-			"finalPhase": { }
+			"poolPhase": { "ruleset": "emag-2014-default-pools", "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "ruleset": "emag-2014-default-elimination", "fighters": 8, "pick": { "top": 1 } },
+			"finalsPhase": { "ruleset": "emag-2014-default-finals" }
 		},
 		{	"id": "dussack",
 			"name": "Dussack Tournament",
 			"mnemonic": "D",
-			"poolPhase": { "calculatePools": { "size": [3, 4] } },
-			"eliminationPhase": { "fighters": 8, "pick": { "top": 1 } },
-			"finalPhase": { }
+			"poolPhase": { "ruleset": "emag-2014-default-pools", "calculatePools": { "size": [3, 4] } },
+			"eliminationPhase": { "ruleset": "emag-2014-default-elimination", "fighters": 8, "pick": { "top": 1 } },
+			"finalsPhase": { "ruleset": "emag-2014-default-finals" }
 		}
 	]
 }
