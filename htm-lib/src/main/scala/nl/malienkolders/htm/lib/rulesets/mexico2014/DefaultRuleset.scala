@@ -176,7 +176,7 @@ trait EliminationRuleset extends EmagRuleset {
 }
 
 trait FinalsRuleset extends EliminationRuleset {
-  abstract override def fightProperties = super.fightProperties.copy(timeLimit = 6 minutes, breakAt = 3 minutes, breakDuration = 1 minute)
+  abstract override def fightProperties = super.fightProperties.copy(timeLimit = 6 minutes, breakAt = 3 minutes, breakDuration = 1 minute, exchangeLimit = 0)
 }
 
 trait DefaultRuleset extends EmagRuleset
