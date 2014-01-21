@@ -99,9 +99,10 @@ object Importer {
         t.name(tDef.name)
           .identifier(tDef.id)
           .mnemonic(tDef.mnemonic)
-        t.poolPhase.ruleset(tDef.poolPhase.ruleset)
-        t.eliminationPhase.ruleset(tDef.eliminationPhase.ruleset)
-        t.finalsPhase.ruleset(tDef.finalsPhase.ruleset)
+        t.poolPhase.ruleset(tDef.poolPhase.ruleset).save()
+        t.eliminationPhase.ruleset(tDef.eliminationPhase.ruleset).save()
+        t.finalsPhase.ruleset(tDef.finalsPhase.ruleset).save()
+        t
       }
 
       Tournament.findAll().outerJoin(event.tournaments) foreach {

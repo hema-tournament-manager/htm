@@ -108,6 +108,7 @@ class Boot {
         (Menu.i("Export") / "export") ::
         (Menu.i("Battle") / "battle") ::
         (Menu.i("Controller") / "viewer") ::
+        RulesetModal.menu ::
         Nil
 
     // Build SiteMap
