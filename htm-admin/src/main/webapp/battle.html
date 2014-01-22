@@ -1,64 +1,66 @@
 <!DOCTYPE html>
-<html data-ng-app="htm">
-  <head>
-    <title>Battlestation</title>
-    <link rel="stylesheet" media="screen" href="/static/stylesheets/bootstrap.css" />
-    <link rel="stylesheet" media="screen" href="/static/battle/stylesheets/cerulean.min.css">
-    <link rel="stylesheet" media="screen" href="/static/battle/stylesheets/animate-custom.css">
-    <link rel="stylesheet" media="screen" href="/static/battle/stylesheets/main.css">
-    <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico">
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>Export</title>
 </head>
-<body>
+<body class="lift:content_id=main">
+  <div id="main" class="lift:surround?with=default;at=content" data-ng-app="htm">
+    <head>
+<title>Battlestation</title>
+<link rel="stylesheet" media="screen" href="/static/battle/stylesheets/animate-custom.css">
+<link rel="stylesheet" media="screen" href="/static/battle/stylesheets/main.css">
+    </head>
     <header class="container">
       <div class="page-header" data-ng-cloak>
-        <h1>{{title}} <small class="pull-right">{{subtitle}}</small></h1>
+        <h1>
+          {{title}} <small class="pull-right">{{subtitle}}</small>
+        </h1>
       </div>
     </header>
 
-	<div id="main" class="container" ng-view></div>
-	<div id="chatbox" class="panel panel-default" ng-class="chat.state()">
-		<div class="panel-heading" ng-click="chat.toggle()">
-			<h3 class="panel-title">
-				Chat
-				<span class="badge" ng-show="chat.unread"  ng-animate="{show: 'animated flash', hide: 'animated hinge'}">{{ chat.unread }}</span>
-			</h3>
-		</div>
-		<div class="lift:comet?type=ChatActor">
-			<div class="messages">
-				<ul class="list-group">
-					<li class="list-group-item" ng-repeat="message in chat.messages" ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
-						<h6 class="list-group-item-heading">{{ message.time | hours }}</h6>
-						<span ng-bind="message.message">Sample message</span>
-					</li>
-				</ul>
-			</div>
-		</div>
-		<div class="input">
-			<form data-lift="form.ajax?class=navbar-form">
-				<div class="input-group">
-					<input type="text" class="lift:ChatIn form-control" id="chat_in">
-					<span class="input-group-btn">
-						<button type="submit" class="btn btn-primary">Send</button>
-					</span>
-				</div>
-			</form>
-		</div>
-	</div>
+    <div id="main" class="container" ng-view></div>
+    <div id="chatbox" class="panel panel-default" ng-class="chat.state()">
+      <div class="panel-heading" ng-click="chat.toggle()">
+        <h3 class="panel-title">
+          Chat <span class="badge" ng-show="chat.unread" ng-animate="{show: 'animated flash', hide: 'animated hinge'}">{{ chat.unread }}</span>
+        </h3>
+      </div>
+      <div class="lift:comet?type=ChatActor">
+        <div class="messages">
+          <ul class="list-group">
+            <li class="list-group-item" ng-repeat="message in chat.messages" ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}">
+              <h6 class="list-group-item-heading">{{ message.time | hours }}</h6> <span ng-bind="message.message">Sample message</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="input">
+        <form data-lift="form.ajax?class=navbar-form">
+          <div class="input-group">
+            <input type="text" class="lift:ChatIn form-control" id="chat_in"> <span class="input-group-btn">
+              <button type="submit" class="btn btn-primary">Send</button>
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
 
-	<script src="/static/javascript/lib/jquery-1.10.2.js"></script>
+    <script src="/static/javascript/lib/jquery-1.10.2.js"></script>
     <script src="/static/javascript/lib/jquery-ui-1.10.3.js"></script>
     <script src="/static/javascript/lib/bootstrap-3.0.0.js"></script>
     <script src="/static/javascript/lib/angular-1.1.5.js"></script>
     <script src="/static/javascript/lib/angular-ui-bootstrap-tpls-0.6.0.js"></script>
     <script src="/static/javascript/lib/angular-cookies-1.1.5.js"></script>
     <script src="/static/javascript/lib/underscore-1.5.1.js"></script>
-    
-    
-    <script src="/static/battle/javascript/jsRoutes.js"></script> 
+
+
+    <script src="/static/battle/javascript/jsRoutes.js"></script>
     <script src="/static/battle/javascript/controllers.js"></script>
     <script src="/static/battle/javascript/app.js"></script>
     <script src="/static/battle/javascript/filters.js"></script>
     <script src="/static/battle/javascript/services/playRoutes.js"></script>
     <script src="/static/battle/javascript/services/appService.js"></script>
+  </div>
 </body>
 </html>
