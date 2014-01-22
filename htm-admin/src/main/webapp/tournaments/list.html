@@ -1,41 +1,65 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-    <title>Home</title>
-  </head>
-  <body class="lift:content_id=main">
-    <div id="main" class="lift:surround?with=default;at=content">
-      <h2>Tournaments</h2>
-	<div class="lift:TournamentList">
-	  <div id="tournament">
-	  	<h3><span id="tournamentName">Tournament</span> <a id="tournamentEdit" href="edit"><img src="/images/pencil.png" title="Click to edit the tournament name"/></a> <span style="font-family: monospace;">[<span id="tournamentIdentifier">tourn</span>]</span> <span class="label label-default"></span></h3>
-	  	<p><span id="tournamentParticipants">1000</span> participants, <span id="tournamentPools">10</span> pools, <span id="tournamentFights">2000</span> fights</p>
-	  </div>
-	  <form id="newTournament" class="form">
-	  	<h3>New tournament</h3>
-	  	<div class="form-group">
-	  		<label for="name">Name</label>
-	  		<input id="name" type="text" placeholder="Open Longsword" class="form-control"/>
-	  	</div>
-	  	<div class="row">
-		  	<div class="col-xs-8 form-group">
-		  		<label for="identifier">Identifier</label>
-		  		<input id="identifier" type="text" placeholder="open_longsword" class="form-control"/>
-		  	</div>
-		  	<div class="col-xs-4 form-group">
-		  		<label for="label">Label</label>
-		  		<input id="label" type="text" placeholder="LS" class="form-control"/>
-		  	</div>
-	  	</div>
-	  	<div class="form-group">
-	  		<label for="pools">Number of pools</label>
-	  		<input id="pools" type="number" value="8" class="form-control"/>
-	  	</div>
-	  	<button id="submitNewTournament" type="submit" class="btn btn-default">Submit</button>
-	  </form>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>Home</title>
+</head>
+<body class="lift:content_id=main">
+	<div id="main" class="lift:surround?with=default;at=content">
+		<h2>Tournaments</h2>
+		<div class="lift:TournamentList">
+			<div id="tournament">
+				<h3>
+					<span id="tournamentName">Tournament</span> <a id="tournamentEdit"
+						href="edit"><img src="/images/pencil.png"
+						title="Click to edit the tournament name" /></a> <span
+						style="font-family: monospace;">[<span
+						id="tournamentIdentifier">tourn</span>]
+					</span> <span class="label label-default"></span>
+				</h3>
+				<p>
+					<span id="tournamentParticipants">1000</span> participants, <span
+						id="tournamentPools">10</span> pools, <span id="tournamentFights">2000</span>
+					fights
+				</p>
+			</div>
+			<div class="panel-group">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" href="#new-tournament-panel">
+							   <span class="glyphicon glyphicon-plus"></span>
+							   New tournament
+							 </a>
+						</h4>
+					</div>
+					<div class="panel-collapse collapse" id="new-tournament-panel">
+						<div class="panel-body">
+							<form id="newTournament" class="form">
+								<div class="form-group">
+									<label for="name">Name</label> <input id="name" type="text"
+										placeholder="Open Longsword" class="form-control" />
+								</div>
+								<div class="row">
+									<div class="col-xs-8 form-group">
+										<label for="identifier">Identifier</label> <input
+											id="identifier" type="text" placeholder="open_longsword"
+											class="form-control" />
+									</div>
+									<div class="col-xs-4 form-group">
+										<label for="label">Label</label> <input id="label" type="text"
+											placeholder="LS" class="form-control" />
+									</div>
+								</div>
+								<button id="submitNewTournament" type="submit"
+									class="btn btn-default">Submit</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-    </div>
-  </body>
+</body>
 </html>
 

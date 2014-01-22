@@ -13,7 +13,6 @@ class TournamentList {
     var name = ""
     var identifier = ""
     var label = ""
-    var pools = 8
 
     def process(): Unit = {
       if (Arena.count < 1) {
@@ -21,7 +20,6 @@ class TournamentList {
       }
 
       val t = Tournament.create.identifier(identifier).name(name).mnemonic(label)
-      t.poolPhase.pools ++= (for (i <- 1 to pools) yield { Pool.create(t).order(i) })
       t.save()
 
       S.redirectTo("/tournaments/list")
@@ -39,7 +37,6 @@ class TournamentList {
         "#name" #> SHtml.text(name, name = _) &
         "#identifier" #> SHtml.text(identifier, identifier = _) &
         "#label" #> SHtml.text(label, label = _) &
-        "#pools" #> SHtml.number(pools, pools = _, 1, 128) &
         "#submitNewTournament" #> SHtml.submit("Submit", process))
   }
 
