@@ -154,6 +154,7 @@ class Schedule {
         ".day" #> a.timeslotByDay.map(day =>
           ".daydate" #> <a class="daydate" data-toggle="collapse" data-parent={ "#arena-days-" + a.id.is.toString } href={ "#arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString }>{ dayDateFormat.format(new Date(day._1.date.get)) }</a> &
             ".panel-collapse [id]" #> ("arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString) &
+            ".panel-collapse [class+]" #> (if (now.getTime() < (day._1.date.is + 24.hours)) "in" else "out") &
             ".timeslot" #> day._2.map(ts =>
               ".header" #> (
                 ".name *" #> ts.name.get &
