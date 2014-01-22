@@ -1,14 +1,12 @@
-<nav class="navbar navbar-default navbar-static-top">
-	<div class="navbar-header">
-		<a href="/viewers/list" class="navbar-brand">Back to admin</a>
-	</div>
+<nav class="container">
 	<form class="form-inline">
-		<div class="navbar-text navbar-right" ng-repeat="viewer in viewers">
+		<div class="navbar-text navbar-left" ng-repeat="viewer in viewers">
+      <h4>Viewers:
 			<label class="checkbox">
 				<input type="checkbox" ng-model="viewer.selected">
 				{{ viewer.alias }}
 				({{ viewer.lastUpdate }})
-			</label>
+			</label></h4>
 		</div>
 	</form>
 </nav>
