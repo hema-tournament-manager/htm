@@ -21,6 +21,9 @@ angular
 					}).when('/fight', {
 						templateUrl : 'assets/templates/fight.html',
 						controller : 'FightCtrl'
+					}).when('/overview/selected_participants', {
+						templateUrl : 'assets/templates/overview/selected_participants.html',
+						controller : 'SelectedParticipantsCtrl'
 					}).when('/overview/arena', {
 						templateUrl : 'assets/templates/overview/arena.html',
 						controller : 'OverviewArenaCtrl'

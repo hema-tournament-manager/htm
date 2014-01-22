@@ -39,6 +39,8 @@
 				<div class="panel-body">
 					<button type="button" class="btn btn-primary" ng-disabled="!hasViewers()">With names</button>
 					<button type="button" class="btn btn-primary" ng-disabled="!hasViewers()">No names</button>
+					<button type="button" class="btn btn-primary" ng-click="update('Selected participants', 'overview/selected_participants', {message: ''})"  
+					ng-disabled="!hasViewers()">Selected Participants</button>
 				</div>
 			</div>
 		</div>

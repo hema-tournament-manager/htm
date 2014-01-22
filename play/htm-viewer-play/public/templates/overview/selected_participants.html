@@ -1,0 +1,75 @@
+<!-- <div class="overview-arena">
+<header class="container">
+	<div class="page-header" data-ng-cloak>
+		<h1>{{arena || "Arena"}} <span class="pull-right">{{currentTime | hours:true}}</span></h1>
+	</div>
+</header>
+
+<div class="container">
+	<div class="panel panel-primary current-pool">
+		<div class="panel-heading">
+			<h2 class="panel-title">
+        <span>{{currentFight.time | hours}}</span>
+			  <span class="label label-default">{{ currentFight.fight.tournament.memo }}</span>
+				{{ currentFight.fight.name }}
+				<span class="pull-right" ng-show="fight.timeStart &gt; 0 && fight.timeStop == 0">in progress</span>
+			</h2>
+		</div>
+		<table class="table">
+			<tr>
+				<td class="fighter red" width="90%">
+				  <span class="badge">{{currentFight.fight.fighterA.participant.externalId || "?"}}</span>
+				  {{currentFight.fight.fighterA.participant.name || fight.fight.fighterA.label}}</td>
+				<td class="score" width="10%" class="text-center">
+					<span ng-show="fight.timeStop &gt; 0">{{totalScore(currentFight.fight).a}}</span>
+				</td>
+			</tr>
+			<tr>
+				<td class="fighter blue">
+				  <span class="badge">{{currentFight.fight.fighterB.participant.externalId || "?"}}</span>
+				  {{currentFight.fight.fighterB.participant.name || fight.fight.fighterB.label}}
+				</td>
+				<td class="score" width="10%" class="text-center">
+          <span ng-show="fight.timeStop &gt; 0">{{totalScore(currentFight.fight).b}}</span>
+        </td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="panel panel-default pool" ng-repeat="fight in displayedFights track by fight.fight.id" data-ng-animate="{enter: 'animated bounceInLeft', leave: 'animated bounceOutLeft'}">
+		<div class="panel-heading">
+			<h2 class="panel-title">
+				<span>{{fight.time | hours}}</span>
+				<span class="label label-default">{{ fight.fight.tournament.memo }}</span>
+				{{ fight.fight.name }}
+        <span ng-show="fight.timeStart &gt; 0 && fight.timeStop == 0">in progress</span>
+			</h2>
+		</div>
+		<table class="table">
+			<tr>
+				<td class="fighter red" width="90%">
+				  <span class="badge">{{fight.fight.fighterA.participant.externalId || "?"}}</span>
+				  {{fight.fight.fighterA.participant.name || fight.fight.fighterA.label}}
+				</td>
+				<td class="score" width="10%" class="text-center">
+					<span ng-show="fight.timeStop &gt; 0">{{totalScore(fight.fight).a}}</span>
+				</td>
+			</tr>
+			<tr>
+				<td class="fighter blue" width="90%">
+				  <span class="badge">{{fight.fight.fighterB.participant.externalId || "?"}}</span>
+				  {{fight.fight.fighterB.participant.name || fight.fight.fighterB.label}}
+				</td>
+				<td class="score" width="10%" class="text-center">
+					<span ng-show="fight.timeStop &gt; 0">{{totalScore(fight.fight).b}}</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+</div> -->
+
+<img class="background" src="/assets/images/empty/background.jpg"/>
+<div class="background empty" ng-click="change()">
+	<img class="logo" src="/assets/images/empty/logo.png"/>
+</div>

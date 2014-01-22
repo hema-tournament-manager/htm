@@ -163,7 +163,13 @@ object AdminRest extends RestHelper {
               case _ =>
                 false
             }
-
+          } else if (view == "overview/selected_participants") {
+            val fighters: List[Fighter] = Tournament.findByKey(1).get.eliminationPhase.fights.filter(_.round.is == 1).map(f => List(f.fighterA, f.fighterB)).flatten.toList
+            viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
+            Viewer.findByKey(viewerId).foreach(viewer =>
+                viewer.rest.update(view, payload))
+            }
+            true
           } else {
             viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
               Viewer.findByKey(viewerId).foreach(viewer =>
