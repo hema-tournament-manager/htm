@@ -303,7 +303,6 @@ object TournamentView {
     val generatePoolPhase = new GeneratePoolPhase(t)
     // bindings
     "#tournamentName" #> t.name &
-      "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
       ".downloadButton" #> Seq(
         "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
         "a" #> SHtml.link("/download/schedule/tournament", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
