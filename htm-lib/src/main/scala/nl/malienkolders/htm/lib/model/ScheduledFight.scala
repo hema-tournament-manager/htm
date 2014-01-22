@@ -28,6 +28,10 @@ trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] {
     val ts = timeslot.foreign.get
     ts.fights.sortBy(_.time.is).find(_.time.is > time.is)
   }
+  
+  override def save(): Boolean = {
+    return super.save()
+  }
 
   def compare(that: F) = this.time.is.compareTo(that.time.is)
 
