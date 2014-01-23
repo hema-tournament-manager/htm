@@ -188,43 +188,45 @@ class Schedule {
         ".arenaName" #> a.name.get &
         ".download-schedule" #> SHtml.link("/download/schedule/arena", () => throw new ResponseShortcutException(downloadSchedule(a)), Text("Download schedule")) &
         ".days-panel-group [id]" #> ("arena-days-" + a.id.is.toString) &
-        ".day" #> a.timeslotByDay.map(day =>
-          ".daydate" #> <a class="daydate" data-toggle="collapse" data-parent={ "#arena-days-" + a.id.is.toString } href={ "#arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString }>{ dayDateFormat.format(new Date(day._1.date.get)) }</a> &
-            ".panel-collapse [id]" #> ("arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString) &
-            ".panel-collapse [class+]" #> (if (now.getTime() < (day._1.date.is + 24.hours)) "in" else "out") &
-            ".timeslot" #> day._2.map(ts =>
-              ".header" #> (
-                ".name *" #> ts.name.get &
-                ".from *" #> df.format(ts.from.get) &
-                ".to *" #> df.format(ts.to.get) &
-                ".action" #> List(
-                  action("Pack", () => pack(ts)),
-                  divider,
-                  action("Unschedule", () => unscheduleFights(ts.fights)))) &
-                  ".fight" #> ts.fights.sortBy(_.time.is).map { implicit sf =>
-                    sf.fight.foreign match {
-                      case Full(f) =>
-                        implicit val p = f.phase.foreign.get
-                        implicit val t = p.tournament.foreign.get
-                        ".fight [id]" #> s"fight${f.id.get}" &
-                          ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
-                          ".name" #> fightName(f) &
-                          ".time *" #> df.format(new Date(sf.time.is)) &
-                          ".tournament *" #> tournamentName &
-                          ".action" #> List(
-                            action("Move up", moveUp _),
-                            action("Move down", moveDown _),
-                            divider,
-                            action("Unschedule", unscheduleFight _))
-                      case _ =>
-                        ".fight [class+]" #> "danger" &
-                          ".time *" #> df.format(new Date(sf.time.is)) &
-                          ".tournament *" #> "" &
-                          ".name *" #> "Deleted fight" &
-                          ".action" #> List(
-                            action("Unschedule", unscheduleFight _))
-                    }
-                  }))) &
+        ".day" #> a.timeslotByDay.zipWithIndex.map {
+          case (day, i) =>
+            ".daydate" #> <a class="daydate" data-toggle="collapse" data-parent={ "#arena-days-" + a.id.is.toString } href={ "#arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString }>{ s"Day ${i + 1}" } <small>| { dayDateFormat.format(new Date(day._1.date.get)) }</small></a> &
+              ".panel-collapse [id]" #> ("arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString) &
+              ".panel-collapse [class+]" #> (if (now.getTime() < (day._1.date.is + 24.hours)) "in" else "out") &
+              ".timeslot" #> day._2.map(ts =>
+                ".header" #> (
+                  ".name *" #> ts.name.get &
+                  ".from *" #> df.format(ts.from.get) &
+                  ".to *" #> df.format(ts.to.get) &
+                  ".action" #> List(
+                    action("Pack", () => pack(ts)),
+                    divider,
+                    action("Unschedule", () => unscheduleFights(ts.fights)))) &
+                    ".fight" #> ts.fights.sortBy(_.time.is).map { implicit sf =>
+                      sf.fight.foreign match {
+                        case Full(f) =>
+                          implicit val p = f.phase.foreign.get
+                          implicit val t = p.tournament.foreign.get
+                          ".fight [id]" #> s"fight${f.id.get}" &
+                            ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
+                            ".name" #> fightName(f) &
+                            ".time *" #> df.format(new Date(sf.time.is)) &
+                            ".tournament *" #> tournamentName &
+                            ".action" #> List(
+                              action("Move up", moveUp _),
+                              action("Move down", moveDown _),
+                              divider,
+                              action("Unschedule", unscheduleFight _))
+                        case _ =>
+                          ".fight [class+]" #> "danger" &
+                            ".time *" #> df.format(new Date(sf.time.is)) &
+                            ".tournament *" #> "" &
+                            ".name *" #> "Deleted fight" &
+                            ".action" #> List(
+                              action("Unschedule", unscheduleFight _))
+                      }
+                    })
+        }) &
       ".unscheduled" #> (".tournament" #> Tournament.findAll().map(t =>
         ".tournamentLabel *" #> t.mnemonic.get &
           (t.name.get match {
