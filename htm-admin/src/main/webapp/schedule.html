@@ -63,7 +63,16 @@ tr.fight .time {
 	padding-left: 17px;
 }
 </style>
-    </head>
+<script type="text/javascript">
+    $(function () {
+        $("[rel='popover']").popover({
+        	placement:'bottom',
+        	trigger: 'hover',
+        	html: true,
+        	container: 'body'
+        });
+    });
+</script>    </head>
     <div class="lift:Schedule">
       <div class="container">
         <div class="row">

@@ -125,7 +125,8 @@ class Schedule {
           }))
 
     def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
-      ".name *" #> f.name.get &
+      "* [id]" #> f.id.get &
+        ".name *" #> f.name.get &
         ".schedule" #> (
           ".arena" #> Arena.findAll().map(a =>
             ".arenaName *" #> a.name.get &
@@ -144,6 +145,17 @@ class Schedule {
           renderFights(fights))
       case true =>
         None
+    }
+
+    def fightInfo(f: Fight[_, _]): String = {
+      def fighter(fighter: Fighter, side: String) = fighter.participant match {
+        case Some(p) =>
+          s"""<span class="badge">${p.subscription(f.tournament).get.fighterNumber.get}</span> ${p.name.get}"""
+        case None =>
+          s"""<span class="badge">?</span> ${fighter.toString}"""
+      }
+
+      fighter(f.fighterA, "red") + "<br/>" + fighter(f.fighterB, "blue")
     }
 
     ".arena" #> Arena.findAll.map(a =>
@@ -169,15 +181,20 @@ class Schedule {
                       case Full(f) =>
                         implicit val p = f.phase.foreign.get
                         implicit val t = p.tournament.foreign.get
-                        ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
-                          ".time *" #> df.format(new Date(sf.time.is)) &
-                          ".tournament *" #> tournamentName &
-                          ".name *" #> f.name.get &
-                          ".action" #> List(
-                            action("Move up", moveUp _),
-                            action("Move down", moveDown _),
-                            divider,
-                            action("Unschedule", unscheduleFight _))
+                        ".fight [id]" #> s"fight${f.id.get}" &
+                          ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
+                          ".name" #> (
+                            "* [title]" #> s"""${f.name.get}<span class="pull-right label label-default">test</span>""" &
+                            "* [rel]" #> "popover" &
+                            "* [data-content]" #> fightInfo(f) &
+                            "* *" #> f.name.get) &
+                            ".time *" #> df.format(new Date(sf.time.is)) &
+                            ".tournament *" #> tournamentName &
+                            ".action" #> List(
+                              action("Move up", moveUp _),
+                              action("Move down", moveDown _),
+                              divider,
+                              action("Unschedule", unscheduleFight _))
                       case _ =>
                         ".fight [class+]" #> "danger" &
                           ".time *" #> df.format(new Date(sf.time.is)) &
