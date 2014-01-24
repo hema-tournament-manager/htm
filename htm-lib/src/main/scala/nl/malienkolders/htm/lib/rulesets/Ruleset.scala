@@ -25,6 +25,8 @@ abstract class Scores {
   }
 }
 
+case class GenericScores(fields: Seq[((String, Elem), () => AnyVal)]) extends Scores
+
 case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int, doubleHitLimit: Int)
 
 trait Ruleset {

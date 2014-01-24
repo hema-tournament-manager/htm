@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 import net.liftweb.http.js.JsCmds._
 import java.util.Date
 import scala.xml.Text
+import nl.malienkolders.htm.lib.rulesets._
 
 object FightPickFighter {
 
@@ -57,12 +58,25 @@ object FightPickFighter {
       redirect
     }
 
-    "h1 *" #> current.name.get &
-      ".participant" #> t.subscriptions.map { s =>
-        val p = s.participant.foreign.get
-        ".number *" #> s.fighterNumber.get &
-          ".name *" #> SHtml.a(() => pickFighter(p), Text(p.name.get))
-      } &
+    def average(s: Scores): Scores = {
+      GenericScores(s.fields.map { case (label, value) => (label, () => value().toString.toDouble / 2) })
+    }
+
+    def globalRanking = t.poolPhase.rulesetImpl.ranking(t.poolPhase).flatMap {
+      case (pool, poolParticipants) =>
+        poolParticipants.map { case (participant, scores) => (pool, participant, scores, average(scores)) }
+    }
+
+    "#pick-participant" #> (
+      "thead" #> (".score" #> t.poolPhase.rulesetImpl.emptyScore.header) &
+      ".participant" #> globalRanking.map {
+        case (pool, participant, scores, average) =>
+          ".number *" #> participant.subscription(t).get.fighterNumber.get &
+            ".name *" #> SHtml.a(() => pickFighter(participant), Text(participant.name.get)) &
+            ".pool *" #> pool.poolName &
+            ".score" #> scores.fields.zip(average.fields).map { case ((_, value), (_, avg)) => "* *" #> s"${value().toString}/${avg().toString}" }
+
+      }) &
       ".pool" #> t.poolPhase.pools.map(p =>
         ".name *" #> s"Pool ${p.poolName}" &
           ".number" #> (1 to 8).map(i =>
