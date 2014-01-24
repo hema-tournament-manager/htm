@@ -31,7 +31,7 @@ object FightPickFighter {
       case _ => current.fighterBFuture
     }
 
-    def redirect = RedirectTo(s"/tournaments/view/${t.identifier.get}#fight${current.id.get}")
+    def redirect = RedirectTo(s"/tournaments/view/${t.identifier.get}#fight${current.id.get}") & Reload
 
     def pickFighter(p: Participant) = {
       fighter(SpecificFighter(Some(p)).format)
