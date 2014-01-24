@@ -59,12 +59,21 @@ object FightPickFighter {
     }
 
     def average(s: Scores): Scores = {
-      GenericScores(s.fields.map { case (label, value) => (label, () => value().toString.toDouble / 2) })
+      val denominator = s.fields(0)._2().toString.toInt.max(1)
+      GenericScores(s.fields.map {
+        case (label, value) =>
+          (label, () => value().toString.toDouble / denominator)
+      })
     }
 
-    def globalRanking = t.poolPhase.rulesetImpl.ranking(t.poolPhase).flatMap {
-      case (pool, poolParticipants) =>
-        poolParticipants.map { case (participant, scores) => (pool, participant, scores, average(scores)) }
+    def globalRanking = {
+      implicit val random = scala.util.Random
+      val r = t.poolPhase.rulesetImpl
+      val rows = r.ranking(t.poolPhase).flatMap {
+        case (pool, poolParticipants) =>
+          poolParticipants.map { case (participant, scores) => (pool, participant, scores, average(scores)) }
+      }
+      rows.sortWith((p1, p2) => r.compare(p1._3, p2._3))
     }
 
     "#pick-participant" #> (
