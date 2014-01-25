@@ -11,7 +11,7 @@ import net.liftweb.json._
 
 case class MarshalledScheduledFightSummary(time: Long, fight: MarshalledFightSummary)
 
-trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] {
+trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] with SaveMessageBroadcaster[F] {
   self: F =>
 
   object timeslot extends MappedLongForeignKey(this, ArenaTimeSlot)

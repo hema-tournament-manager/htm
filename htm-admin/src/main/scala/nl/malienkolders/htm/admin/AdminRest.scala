@@ -85,6 +85,7 @@ object AdminRest extends RestHelper {
 
     case "api" :: "fight" :: "cancel" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledFight](json)
+      RefreshServer.notifyClients
       JBool((FightServer !! FightResult(FightHelper.dao(m.phaseType).findByKey(m.id).get.fromMarshalled(m).asInstanceOf[Fight[_, _]], false)).map {
         case FightMsg(_) => true
         case _ => false
@@ -106,6 +107,7 @@ object AdminRest extends RestHelper {
     case "api" :: "fight" :: "postpone" :: Nil JsonPost json -> _ =>
       val fight = Extraction.extract[MarshalledFightSummary](json)
       FightServer ! PostponeFight(fight)
+      RefreshServer.notifyClients
       JBool(true)
 
     case "api" :: "fight" :: "update" :: phase :: AsLong(id) :: "timer" :: Nil JsonPost json -> _ =>
