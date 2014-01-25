@@ -134,7 +134,7 @@ class Schedule {
                 case (d, i) =>
                   ".dayName *" #> ("Day " + (i + 1)) &
                     ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
-                      "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="name">{ ts.name.get }</span><span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span>))
+                      "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span><span class="name">{ ts.name.get }</span>))
               })))
 
     def renderPhase(name: String, fights: Seq[Fight[_, _]]): Option[CssSel] = fights.isEmpty match {
