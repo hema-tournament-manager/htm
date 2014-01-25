@@ -9,6 +9,7 @@ import sitemap._
 import util.Helpers._
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.lib.PhotoImporterBackend
+import net.liftweb.http.js.JsCmds.{ Reload, RedirectTo }
 
 object ParticipantRegistration {
 
@@ -40,7 +41,7 @@ object ParticipantRegistration {
       }
       if (p.validate.isEmpty) {
         p.save
-        S.redirectTo("/participants/list")
+        Reload;
       } else {
         S.error(p.validate)
       }
