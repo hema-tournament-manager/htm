@@ -121,7 +121,8 @@ class Boot {
     // each page, just comment this line out.
     LiftRules.setSiteMapFunc(() => sitemap)
 
-    LiftRules.statelessDispatchTable.append(AdminRest)
+   // LiftRules.statelessDispatch.append(AdminRest)
+    LiftRules.dispatch.append(AdminRest)
 
     // Use jQuery 1.4
     LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts

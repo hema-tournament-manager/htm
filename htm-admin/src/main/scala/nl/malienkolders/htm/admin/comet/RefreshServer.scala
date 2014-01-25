@@ -10,9 +10,14 @@ object RefreshServer extends LiftActor with ListenerManager {
 
   SaveListenerRegistry.addListener(notifyClients _)
 
-  def createUpdate = RefreshMessage(S.session.get.httpSession.get.sessionId)
+  def createUpdate = Nil
 
   def notifyClients = {
-    updateListeners();
+
+    for {
+      s <- S.session
+    } {
+      updateListeners(RefreshMessage(s.uniqueId));
+    }
   }
 }

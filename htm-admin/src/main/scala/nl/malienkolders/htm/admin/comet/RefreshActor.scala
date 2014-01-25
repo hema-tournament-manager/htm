@@ -14,9 +14,12 @@ class RefreshActor extends CometActor with CometListener with Loggable {
 
   override def lowPriority = {
 
-    case r: RefreshMessage =>
-      // if (r.sessionId != S.session.get.httpSession.get.sessionId)
-      partialUpdate(r)
+    case r: RefreshMessage => {
+      println("r.sessionId="+r.sessionId)
+      println("S.session.get.uniqueId="+S.session.get.uniqueId)
+      if (r.sessionId != S.session.get.uniqueId)
+        partialUpdate(r)
+    }
   }
 
   def render = {
@@ -25,5 +28,5 @@ class RefreshActor extends CometActor with CometListener with Loggable {
 }
 
 case class RefreshMessage(sessionId: String) extends JsCmd {
-  override val toJsCmd = JsCmds.Alert("Bla!").toJsCmd
+  override val toJsCmd = JE.JsRaw(""" $("#reloadNotifyBox").collapse('show') """).toJsCmd
 }
