@@ -11,7 +11,7 @@ import net.liftweb.json._
 
 case class MarshalledScheduledFightSummary(time: Long, fight: MarshalledFightSummary)
 
-trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] {
+trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] with SaveMessageBroadcaster[F] {
   self: F =>
 
   object timeslot extends MappedLongForeignKey(this, ArenaTimeSlot)
@@ -27,10 +27,6 @@ trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] {
   def next: Option[ScheduledFight[_]] = {
     val ts = timeslot.foreign.get
     ts.fights.sortBy(_.time.is).find(_.time.is > time.is)
-  }
-  
-  override def save(): Boolean = {
-    return super.save()
   }
 
   def compare(that: F) = this.time.is.compareTo(that.time.is)

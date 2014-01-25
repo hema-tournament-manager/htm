@@ -21,6 +21,7 @@ import nl.malienkolders.htm.lib.rulesets.mexico2014.DefaultFinalsRuleset
 import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionPoolPhaseRuleset
 import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionEliminationRuleset
 import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionFinalsRuleset
+import nl.malienkolders.htm.admin.comet.RefreshServer
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -149,5 +150,7 @@ class Boot {
 
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)
+    
+  //  RefreshServer;
   }
 }

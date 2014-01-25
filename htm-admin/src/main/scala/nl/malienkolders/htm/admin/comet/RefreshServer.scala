@@ -3,17 +3,16 @@ package nl.malienkolders.htm.admin.comet
 import net.liftweb._
 import http._
 import actor._
+import nl.malienkolders.htm.lib.model.SavedMessage
+import nl.malienkolders.htm.lib.model.SaveListenerRegistry
 
 object RefreshServer extends LiftActor with ListenerManager {
 
-  def createUpdate = RefreshMessage
-  
-  def scheduleChanged() = {
-    this ! RefreshMessage(S.session.get.httpSession.get.sessionId)    
-  }
+  SaveListenerRegistry.addListener(notifyClients _)
 
-  override def lowPriority = {
-  	case _ =>
-      updateListeners()
+  def createUpdate = RefreshMessage(S.session.get.httpSession.get.sessionId)
+
+  def notifyClients = {
+    updateListeners();
   }
 }
