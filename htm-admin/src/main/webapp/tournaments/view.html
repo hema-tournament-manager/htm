@@ -59,6 +59,10 @@ td.number {
   vertical-align: middle;
 }
 
+.nav-tabs {
+  margin-bottom: 15px;
+}
+
 </style>
 <script type="text/javascript">
     $(function () {
@@ -265,13 +269,14 @@ td.number {
                 <td class="name">name</td>
                 <td class="country"></td>
                 <td class="club"></td>
-                <td><a class="edit pull-right" href="#"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                <td><a class="edit pull-right" data-toggle="modal" data-target="#poolphase-ruleset-modal" href="#"><span class="glyphicon glyphicon-pencil"></span></a></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div style="clear: both; margin-bottom: -20px;"></div>
       </div>
+      <div id="pick-fighter-modal" class="modal fade" role="dialog" tabindex="-1"></div>
       <a name="finals"></a>
       <h3>
         Finals
