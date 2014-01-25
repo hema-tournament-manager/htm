@@ -22,7 +22,7 @@
 						data-ng-mouseleave="fight.hover = false"
 						data-ng-animate="{enter: 'animated fadeIn'}">
 						<td ng-show="fight.loading">Loading...</td>
-						<td ng-show="!fight.loading">{{fight.time | hours}}</td>
+						<td ng-show="!fight.loading" class="text-right">{{fight.time | hours}}</td>
 						<td><span class="label label-default" title="{{fight.tournament.name}}">{{fight.tournament.memo}}</span></td>
 						<td>{{fight.name}}</td>
 						<td class="text-left" ng-class="{danger: !fight.fighterA.participant.gearChecked || !fight.fighterA.participant.isPresent}">

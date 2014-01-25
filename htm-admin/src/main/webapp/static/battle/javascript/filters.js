@@ -19,8 +19,8 @@ angular.module("common.filters", []).
   
   filter("hours", function() { return function(value) {
 	  var date = new Date(value);
-	  var hh = date.getHours();
-	  var mm = date.getMinutes();
+	  var hh = date.getUTCHours();
+	  var mm = date.getUTCMinutes();
 	  if (mm < 10)
 		  mm = "0" + mm;
 	  return hh + ":" + mm;
@@ -29,7 +29,7 @@ angular.module("common.filters", []).
   filter("minutes", function() { return function(value) {
 	  var date = new Date(value);
 	  var mm = date.getUTCMinutes();
-	  var ss = date.getSeconds();
+	  var ss = date.getUTCSeconds();
 	  if (ss < 10)
 		  	ss = "0" + ss;
 	  return mm + ":" + ss;
