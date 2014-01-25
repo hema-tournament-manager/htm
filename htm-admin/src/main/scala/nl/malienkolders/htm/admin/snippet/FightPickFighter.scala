@@ -59,11 +59,9 @@ object FightPickFighter {
     }
 
     def average(s: Scores): Scores = {
-      val denominator = s.fields(0)._2().toString.toInt.max(1)
-      GenericScores(s.fields.map {
-        case (label, value) =>
-          (label, () => value().toString.toDouble / denominator)
-      })
+      val denominator = s.fields(0).value().max(1)
+      GenericScores(s.numberOfFights, s.fields.map(s =>
+        s.copy(value = () => s.value().toString.toDouble / denominator)))
     }
 
     def globalRanking = {
@@ -73,7 +71,7 @@ object FightPickFighter {
         case (pool, poolParticipants) =>
           poolParticipants.map { case (participant, scores) => (pool, participant, scores, average(scores)) }
       }
-      rows.sortWith((p1, p2) => r.compare(p1._3, p2._3))
+      rows.sortBy(_._4)
     }
 
     "#pick-participant" #> (
@@ -83,7 +81,7 @@ object FightPickFighter {
           ".number *" #> participant.subscription(t).get.fighterNumber.get &
             ".name *" #> SHtml.a(() => pickFighter(participant), Text(participant.name.get)) &
             ".pool *" #> pool.poolName &
-            ".score" #> scores.fields.zip(average.fields).map { case ((_, value), (_, avg)) => "* *" #> s"${value().toString}/${avg().toString}" }
+            ".score" #> (("* *" #> scores.numberOfFights) :: (scores.fields.zip(average.fields).map { case (s, avg) => "* *" #> <span><span class="absolute-value">{ s.value().toString }</span>/<span class="average-value">{ avg.value().toString }</span></span> }).toList)
 
       }) &
       ".pool" #> t.poolPhase.pools.map(p =>

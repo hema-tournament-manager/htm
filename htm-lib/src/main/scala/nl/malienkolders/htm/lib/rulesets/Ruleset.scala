@@ -9,23 +9,48 @@ import net.liftweb.util.StringPromotable.intToStrPromo
 import scala.xml.Elem
 import scala.xml.NodeBuffer
 import net.liftweb.util.CssSel
+import scala.util.Random
 
-abstract class Scores {
-  def fields: Seq[((String, Elem), () => AnyVal)]
+case class ScoreField(name: String, header: Elem, sort: ScoreSort, value: () => Double)
 
-  implicit def val2lazyVal(i: AnyVal): () => AnyVal =
-    () => i
-
-  def header: Seq[Elem] = fields.map {
-    case ((name, header), _) => <th title={ name }>{ header }</th>
-  }
-
-  def row: Seq[Elem] = fields.map {
-    case ((name, _), value) => <td title={ name }>{ value() }</td>
-  }
+sealed trait ScoreSort {
+  def compare(a: Double, b: Double): Int
+}
+case object LowestFirst extends ScoreSort {
+  def compare(a: Double, b: Double): Int = a.compare(b)
+}
+case object HighestFirst extends ScoreSort {
+  def compare(a: Double, b: Double): Int = LowestFirst.compare(b, a)
 }
 
-case class GenericScores(fields: Seq[((String, Elem), () => AnyVal)]) extends Scores
+abstract class Scores extends Comparable[Scores] {
+  def numberOfFights: Int
+
+  def fields: Seq[ScoreField]
+
+  implicit def int2lazyDouble(i: Int): () => Double =
+    () => i.toDouble
+
+  def header: Seq[Elem] = <th title="Number of fights">#</th> :: fields.toList.map {
+    case ScoreField(name, header, _, _) => <th title={ name }>{ header }</th>
+  }
+
+  def row: Seq[Elem] = <td title="Number of fights">{ numberOfFights }</td> :: fields.toList.map {
+    case ScoreField(name, _, _, value) => <td title={ name }>{ value() }</td>
+  }
+
+  private def findFirstDifference(fields: List[(ScoreField, ScoreField)]): Int = fields match {
+    case head :: tail => head match {
+      case (a, b) if a == b => findFirstDifference(tail)
+      case (a, b) => a.sort.compare(a.value(), b.value())
+    }
+    case Nil => if (Random.nextBoolean) 1 else -1
+  }
+
+  override def compareTo(other: Scores): Int = findFirstDifference(fields.toList.zip(other.fields.toList))
+}
+
+case class GenericScores(numberOfFights: Int, fields: Seq[ScoreField]) extends Scores
 
 case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int, doubleHitLimit: Int)
 

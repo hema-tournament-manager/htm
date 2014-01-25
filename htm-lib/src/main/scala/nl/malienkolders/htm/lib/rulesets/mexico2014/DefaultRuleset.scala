@@ -28,13 +28,14 @@ case class ParticipantScores(
   def asc(caption: String) = <span><span>{ caption }</span><small class="glyphicon glyphicon-sort-by-attributes"></small></span>
   def desc(caption: String) = <span><span>{ caption }</span><small class="glyphicon glyphicon-sort-by-attributes-alt"></small></span>
 
-  val fields: List[((String, Elem), () => AnyVal)] = List(
-    ("Number of fights", none("#")) -> fights,
-    ("Wins", desc("W")) -> wins,
-    ("Clean hits against", asc("CA")) -> cleanHitsReceived,
-    ("Clean hits", desc("C")) -> cleanHitsDealt,
-    ("Afterblows against", asc("AA")) -> afterblowsReceived,
-    ("Double hits", asc("D")) -> doubleHits)
+  val numberOfFights = fights
+
+  val fields: List[ScoreField] = List(
+    ScoreField("Wins", desc("W"), HighestFirst, wins),
+    ScoreField("Clean hits against", asc("CA"), LowestFirst, cleanHitsReceived),
+    ScoreField("Clean hits", desc("C"), HighestFirst, cleanHitsDealt),
+    ScoreField("Afterblows against", asc("AA"), LowestFirst, afterblowsReceived),
+    ScoreField("Double hits", asc("D"), LowestFirst, doubleHits))
 }
 
 abstract class EmagRuleset extends Ruleset {
