@@ -42,7 +42,7 @@
                 Pool rankings <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li ng-repeat="tournament in tournaments"><a href="" ng-click="update('Pool Rankings', 'overview/pool', {tournament: tournament})"> {{ tournament.name }}</a></li>
+                <li ng-repeat="tournament in tournaments"><a href="" ng-click="update('Pool Rankings', 'overview/pool', {tournamentId: tournament.id})"> {{ tournament.name }}</a></li>
             </ul>
           </div>
 					<button type="button" class="btn btn-primary" ng-disabled="!hasViewers()">With names</button>
