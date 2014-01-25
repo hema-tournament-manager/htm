@@ -38,7 +38,12 @@ form div input[type=text] {
 				<fieldset>
 					<legend>Photo</legend>
 					<div style="float: left;">
-						<label>New photo <input type="file" name="photo" accept="image/*;capture=camera"  class="form-control"  /></label>
+						<label>New photo <input id="photoPicker" type="file" name="photo" accept="image/*;capture=camera"  class="form-control"  /></label>
+            <script type="text/javascript">
+              $("#photoPicker").change(function() {
+                  $("#submitButton").click();
+              });
+            </script>
 						<br/>
 						<img class="photo"/>
 					</div>
@@ -102,7 +107,7 @@ form div input[type=text] {
 					</div>
 				</fieldset>
 				<div style="clear: left;">
-					<input name="save" type="submit" />
+					<input id="submitButton" name="save" type="submit" />
 				</div>
 			</div>
 			</form>
