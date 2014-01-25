@@ -1,0 +1,13 @@
+<div class="overview-pool">
+<header class="container">
+  <div class="page-header" data-ng-cloak>
+    <h1>{{currentPool.name}} <small>{{tournament.name}}</small></h1>
+  </div>
+</header>
+
+<div class="container" data-ng-cloak>
+  <div data-ng-repeat="participant in currentPool.participants track by participant.id">
+    {{participant.name}}
+  </div>
+</div>
+</div>

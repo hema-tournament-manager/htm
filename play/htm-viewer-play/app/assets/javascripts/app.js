@@ -8,6 +8,8 @@ angular.module('htm',
         [ '$scope', '$timeout', 'playRoutes', 'stateService', FightCtrl ])
     .controller('OverviewArenaCtrl',
         [ '$scope', '$timeout', 'stateService', OverviewArenaCtrl ])
+    .controller('OverviewPoolCtrl',
+        [ '$scope', '$timeout', 'stateService', OverviewPoolCtrl ])
     .controller('ImageCtrl',
         [ '$scope', 'stateService', ImageCtrl ])
     .controller('ParticipantFooterCtrl',
@@ -27,6 +29,9 @@ angular.module('htm',
       }).when('/overview/arena', {
         templateUrl : 'assets/templates/overview/arena.html',
         controller : 'OverviewArenaCtrl'
+      }).when('/overview/pool', {
+        templateUrl : 'assets/templates/overview/pool.html',
+        controller : 'OverviewPoolCtrl'
       }).when('/participant/footer', {
         templateUrl : 'assets/templates/participant/footer.html',
         controller : 'ParticipantFooterCtrl'
