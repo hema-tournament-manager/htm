@@ -1,5 +1,5 @@
 #!/bin/sh
-LOGFILE="/tmp/sandbox.log"
+LOGFILE="./sandbox.log"
 if [ -e $LOGFILE ]; then
 	rm $LOGFILE
 fi
@@ -9,7 +9,7 @@ echo "Stop all the servers" >> $LOGFILE
 cd /Users/hematournament/git/sandbox1/scripts
 ./viewer.sh stop 9000 >> $LOGFILE
 ./admin.sh stop 8079 >> $LOGFILE
-#cd /Users/hematournament/git/sandbox2/scripts
+cd /Users/hematournament/git/sandbox2/scripts
 ./viewer.sh stop 9001 >> $LOGFILE
 ./admin.sh stop 8080 >> $LOGFILE
 
