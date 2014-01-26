@@ -1,5 +1,5 @@
 #!/bin/sh
-LOGFILE="./sandbox.log"
+LOGFILE="/tmp/sandbox.log"
 if [ -e $LOGFILE ]; then
 	rm $LOGFILE
 fi
