@@ -7,14 +7,14 @@ import net.liftweb.http.ListenerManager
 
 trait SaveMessageBroadcaster[F <: SaveMessageBroadcaster[F]] extends LongKeyedMapper[F] {
   self: F =>
-    
+
   override def save: Boolean = {
     println("save!")
     val result = super.save
     SaveListenerRegistry.notifyListeners;
     return result;
-  }   
-  
+  }
+
   override def delete_! = {
     println("delete!")
     val result = super.delete_!

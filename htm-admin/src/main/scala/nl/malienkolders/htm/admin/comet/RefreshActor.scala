@@ -15,8 +15,8 @@ class RefreshActor extends CometActor with CometListener with Loggable {
   override def lowPriority = {
 
     case r: RefreshMessage => {
-      println("r.sessionId="+r.sessionId)
-      println("S.session.get.uniqueId="+S.session.get.uniqueId)
+      println("r.sessionId=" + r.sessionId)
+      println("S.session.get.uniqueId=" + S.session.get.uniqueId)
       if (r.sessionId != S.session.get.uniqueId)
         partialUpdate(r)
     }

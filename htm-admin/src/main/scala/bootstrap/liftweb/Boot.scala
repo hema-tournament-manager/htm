@@ -121,7 +121,7 @@ class Boot {
     // each page, just comment this line out.
     LiftRules.setSiteMapFunc(() => sitemap)
 
-   // LiftRules.statelessDispatch.append(AdminRest)
+    // LiftRules.statelessDispatch.append(AdminRest)
     LiftRules.dispatch.append(AdminRest)
 
     // Use jQuery 1.4
@@ -151,7 +151,7 @@ class Boot {
 
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)
-    
-  //  RefreshServer;
+
+    //  RefreshServer;
   }
 }
