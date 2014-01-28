@@ -115,14 +115,23 @@
 				</div>
 				<div class="htm-padding-top">
 					<div data-ng-show="exchangeLimitReached()" class="alert alert-warning">
-						<span class="glyphicon glyphicon-list"></span>
+						<span class="glyphicon glyphicon-list,
+    phase.foreign.get.rulesetImpl.fightProperties.doubleHitLimit"></span>
 						<strong>Limit reached!</strong> The <em>exchange limit</em> has been reached, confirm this fight
 					</div>
-					<div data-ng-show="timeLimitReached()" class="alert alert-warning">
+          <div data-ng-show="currentFight.timeLimit - timer.displayTime < 10000 && currentFight.timeLimit - timer.displayTime > 0" class="alert alert-info">
+            <span class="glyphicon glyphicon-time"></span>
+            <strong>Limit ahead!</strong> The <em>time limit</em> will be reached in {{currentFight.timeLimit - timer.displayTime + 1000 | seconds}} seconds 
+          </div>
+					<div data-ng-show="timer.displayTime >= currentFight.timeLimit" class="alert alert-warning">
 						<span class="glyphicon glyphicon-time"></span>
 						<strong>Limit reached!</strong> The <em>time limit</em> has been reached, confirm this fight
 					</div>
-					<div data-ng-show="doubleHitLimitReached()" class="alert alert-warning">
+          <div data-ng-show="currentFight.doubleHitLimit > 0 && currentFight.doubleHitLimit - currentFight.totalScore().d == 1" class="alert alert-info">
+            <span class="glyphicon glyphicon-transfer"></span>
+            <strong>Limit ahead!</strong> The <em>double hit limit</em> will be reached in 1 double hit 
+          </div>
+					<div data-ng-show="currentFight.doubleHitLimit > 0 && currentFight.totalScore().d >= currentFight.doubleHitLimit" class="alert alert-warning">
 						<span class="glyphicon glyphicon-transfer"></span>
 						<strong>Limit reached!</strong> The <em>double hit limit</em> has been reached, confirm this fight
 					</div>

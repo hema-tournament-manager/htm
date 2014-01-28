@@ -332,14 +332,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	return $scope.currentFight.started && $scope.currentFight.exchangeLimit > 0 && $scope.currentFight.totalScore().x >= $scope.currentFight.exchangeLimit;
     };
     
-    $scope.timeLimitReached = function() {
-    	return $scope.currentFight.started && $scope.timerValue() >= $scope.currentFight.timeLimitOfFight;
-    };
-    
-    $scope.doubleHitLimitReached = function() {
-    	return $scope.currentFight.started && $scope.currentFight.totalScore().d >= 5;
-    };
-    
     $scope.sendUpdate = function() {
     	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
     };

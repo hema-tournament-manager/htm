@@ -23,7 +23,8 @@ case class MarshalledFight(
   scores: List[MarshalledScore],
   timeLimit: Long,
   exchangeLimit: Int,
-  possiblePoints: List[Int])
+  possiblePoints: List[Int],
+  doubleHitLimit: Int)
 case class MarshalledFightSummary(
   tournament: MarshalledTournamentSummary,
   phaseType: String,
@@ -37,7 +38,8 @@ case class MarshalledFightSummary(
   scores: List[MarshalledScore],
   timeLimit: Long,
   exchangeLimit: Int,
-  possiblePoints: List[Int])
+  possiblePoints: List[Int],
+  doubleHitLimit: Int)
 
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {
 
@@ -154,7 +156,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
     scores.map(_.toMarshalled).toList,
     phase.foreign.get.rulesetImpl.fightProperties.timeLimit,
     phase.foreign.get.rulesetImpl.fightProperties.exchangeLimit,
-    phase.foreign.get.rulesetImpl.possiblePoints)
+    phase.foreign.get.rulesetImpl.possiblePoints,
+    phase.foreign.get.rulesetImpl.fightProperties.doubleHitLimit)
   def toMarshalledSummary = MarshalledFightSummary(
     phase.foreign.get.tournament.foreign.get.toMarshalledSummary,
     phaseType.code,
@@ -168,7 +171,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
     scores.map(_.toMarshalled).toList,
     phase.foreign.get.rulesetImpl.fightProperties.timeLimit,
     phase.foreign.get.rulesetImpl.fightProperties.exchangeLimit,
-    phase.foreign.get.rulesetImpl.possiblePoints)
+    phase.foreign.get.rulesetImpl.possiblePoints,
+    phase.foreign.get.rulesetImpl.fightProperties.doubleHitLimit)
   def fromMarshalled(m: MarshalledFight) = {
     timeStart(m.timeStart)
     timeStop(m.timeStop)

@@ -27,11 +27,16 @@ angular.module("common.filters", []).
   }}).
   
   filter("minutes", function() { return function(value) {
-	  var date = new Date(value);
-	  var mm = date.getUTCMinutes();
-	  var ss = date.getUTCSeconds();
-	  if (ss < 10)
-		  	ss = "0" + ss;
-	  return mm + ":" + ss;
+    var date = new Date(value);
+    var mm = date.getUTCMinutes();
+    var ss = date.getUTCSeconds();
+    if (ss < 10)
+        ss = "0" + ss;
+    return mm + ":" + ss;
+  }}).
+  
+  filter("seconds", function() { return function(value) {
+    var date = new Date(value);
+    return date.getUTCSeconds();
   }});
   
