@@ -8,14 +8,30 @@ var OverviewPoolCtrl = function($scope, $timeout, stateService) {
 	// merge the initial state into the $scope
 	_.extend($scope, stateService.get("overview/pool"));
 
-	// TODO: initialization and functions
+  var nextPoolTimeout = false;
+  $scope.nextPool = function() {
+    $scope.pools.push($scope.pools.shift());
+    $scope.currentPool = $scope.pools[0];
+    nextPoolTimeout = $timeout($scope.nextPool, 10000);
+  }
+
+  $scope.onChange = function() {
+	  if (nextPoolTimeout) {
+	    $timeout.cancel(nextPoolTimeout);
+	  }
+	  
+	  $scope.currentPool = $scope.pools[0];
+	  nextPoolTimeout = $timeout($scope.nextPool, 10000);
+	};
 	
 	// get notified on state changes for this view
 	stateService.change(function(view, state) {
 		// merge the new state into the $scope
 		if (view == "overview/pool") {
 			_.extend($scope, state);
-			// TODO: handle state change
+			$scope.onChange();
 		}
 	});
+	
+	$scope.onChange();
 };

@@ -172,7 +172,7 @@ object AdminRest extends RestHelper {
                                 ("participants" -> participants.map {
                                   case (participant, scores) =>
                                     Extraction.decompose(participant.subscription(tournament).get.toMarshalled).asInstanceOf[JObject] ~
-                                      ("scores" -> Extraction.decompose(scores))
+                                      ("scores" -> scores.fields.map(f => ("name" -> f.name) ~ ("header" -> f.header.toString) ~ ("value" -> f.value())).toList)
                                 })
                           }
                           val newPayload = ("tournament" -> Extraction.decompose(tournament.toMarshalledSummary)) ~
