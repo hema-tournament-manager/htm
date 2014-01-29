@@ -8,20 +8,25 @@ var OverviewPoolCtrl = function($scope, $timeout, stateService) {
 	// merge the initial state into the $scope
 	_.extend($scope, stateService.get("overview/pool"));
 
+	$scope.currentPool = new Array();
+	
   var nextPoolTimeout = false;
   $scope.nextPool = function() {
     $scope.pools.push($scope.pools.shift());
-    $scope.currentPool = $scope.pools[0];
-    nextPoolTimeout = $timeout($scope.nextPool, 10000);
+    $scope.currentPool[0] = $scope.pools[0];
+    nextPoolTimeout = $timeout($scope.nextPool, 15000);
   }
 
   $scope.onChange = function() {
+    window.jQuery(".item").first().addClass("active");
+    window.jQuery("li").first().addClass("active");
+    
 	  if (nextPoolTimeout) {
 	    $timeout.cancel(nextPoolTimeout);
 	  }
 	  
-	  $scope.currentPool = $scope.pools[0];
-	  nextPoolTimeout = $timeout($scope.nextPool, 10000);
+	  $scope.currentPool[0] = $scope.pools[0];
+	  nextPoolTimeout = $timeout($scope.nextPool, 15000);
 	};
 	
 	// get notified on state changes for this view
