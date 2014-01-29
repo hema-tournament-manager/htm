@@ -49,6 +49,8 @@ function scroll_if_anchor(event) {
 
 	//Intercept all anchor clicks
 	jQuery(document).ready(function($) {
+	  $('body').show();
+	  
 		//When our page loads, check to see if it contains and anchor
 		scroll_if_anchor(window.location.hash);
 	
@@ -145,6 +147,10 @@ table.poolParticipantList {
 	font-size: 90%;
 	font-weight: normal;
 	margin-right: 2px;
+}
+
+body {
+  display: none;
 }
 
 .dropdown-submenu{position:relative;}
