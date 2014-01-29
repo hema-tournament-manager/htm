@@ -315,7 +315,7 @@ object TournamentView {
           "#generateElimination-top2" #> Nil
         }) &
         "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
-        "#pool-generation-pool-count" #> SHtml.text(t.poolPhase.pools.size.toString, s => generatePoolPhase.poolCount = s.toInt) &
+        "#pool-generation-pool-count" #> SHtml.number(t.poolPhase.pools.size, s => generatePoolPhase.poolCount = s, 1, t.subscriptions.size) &
         "#pool-generation-generate" #> SHtml.submit("Generate", () => { generatePoolPhase.generate(); S.redirectTo("#poolphase") }) &
         ".tournamentPool" #> t.poolPhase.pools.map(p =>
           ".panel-title" #> (
