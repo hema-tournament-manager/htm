@@ -27,7 +27,7 @@ object AdminRest extends RestHelper {
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 
     case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
-      Extraction.decompose(Arena.findByKey(arenaId).map(_.fights.filter(_.fight.foreign.isDefined).sortBy(sf => (sf.timeslot.foreign.get.day.is, sf.time.is)).map(_.toMarshalledSummary)).getOrElse(false))
+      Extraction.decompose(Arena.findByKey(arenaId).map(_.scheduledFights.map(_.toMarshalledSummary)).getOrElse(false))
 
     case "api" :: "participants" :: Nil JsonGet _ =>
       Extraction.decompose(Participant.findAll.map(_.toMarshalled))
@@ -60,15 +60,6 @@ object AdminRest extends RestHelper {
 
     case "api" :: "pool" :: AsLong(poolId) :: "summary" :: Nil JsonGet _ =>
       Extraction.decompose(Pool.findByKey(poolId).map(_.toMarshalledSummary).getOrElse(false))
-
-    case "api" :: "pool" :: AsLong(poolId) :: "viewer" :: Nil JsonGet _ =>
-      val p = Pool.findByKey(poolId)
-      var j = p.map(p => Extraction.decompose(p.toViewer)).getOrElse[JValue](JBool(false))
-      JsonResponse(
-        j,
-        ("Content-Type", "application/json; charset=utf-8") :: Nil,
-        Nil,
-        200)
 
     case "api" :: "pool" :: AsLong(poolId) :: "fight" :: "pop" :: Nil JsonGet _ =>
       (FightServer !! PopFight(Pool.findByKey(poolId).get)).map {
@@ -144,34 +135,61 @@ object AdminRest extends RestHelper {
     case "api" :: "viewer" :: "update" :: Nil JsonPost json -> _ =>
       JBool(json match {
         case JObject(JField("view", JString(view)) :: JField("viewers", JArray(viewers)) :: JField("payload", payload) :: Nil) =>
-          if (view == "overview/arena") {
-            payload match {
-              case p: JObject =>
-                (p \\ "arenaId") match {
-                  case JInt(arenaId) =>
-                    Arena.findByKey(arenaId.toLong) match {
-                      case Full(arena) =>
-                        val fights = arena.fights.filterNot(_.fight.foreign.get.finished_?).sortBy(_.time.is).map(_.toMarshalledSummary)
-                        val newPayload = p ~ ("fights" -> Extraction.decompose(fights))
-                        viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
-                          Viewer.findByKey(viewerId).foreach(viewer =>
-                            viewer.rest.update(view, newPayload))
-                        }
-                        true
-                      case _ => false
-                    }
-                  case _ => false
-                }
-              case _ =>
-                false
-            }
+          def sendPayload(p: JValue) = viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
+            Viewer.findByKey(viewerId).foreach(viewer =>
+              viewer.rest.update(view, p))
+          }
 
-          } else {
-            viewers.map(_ match { case JInt(id) => id.toLong case _ => -1 }).filter(_ > -1).foreach { viewerId =>
-              Viewer.findByKey(viewerId).foreach(viewer =>
-                viewer.rest.update(view, payload))
-            }
-            true
+          view match {
+            case "overview/arena" =>
+              payload match {
+                case p: JObject =>
+                  (p \\ "arenaId") match {
+                    case JInt(arenaId) =>
+                      Arena.findByKey(arenaId.toLong) match {
+                        case Full(arena) =>
+                          val fights = arena.scheduledFights.filterNot(_.fight.foreign.get.finished_?).map(_.toMarshalledSummary)
+                          val newPayload = p ~ ("fights" -> Extraction.decompose(fights))
+                          sendPayload(newPayload)
+                          true
+                        case _ => false
+                      }
+                    case _ => false
+                  }
+                case _ =>
+                  false
+              }
+            case "overview/pool" =>
+              payload match {
+                case p: JObject =>
+                  (p \\ "tournamentId") match {
+                    case JInt(tournamentId) =>
+                      Tournament.findByKey(tournamentId.toLong) match {
+                        case Full(tournament) =>
+                          val ruleset = tournament.poolPhase.rulesetImpl
+                          val pools = ruleset.ranking(tournament.poolPhase)
+                          val marshalledPools = pools.map {
+                            case (pool, participants) =>
+                              Extraction.decompose(pool.toMarshalledSummary).asInstanceOf[JObject] ~
+                                ("participants" -> participants.map {
+                                  case (participant, scores) =>
+                                    Extraction.decompose(participant.subscription(tournament).get.toMarshalled).asInstanceOf[JObject] ~
+                                      ("scores" -> scores.fields.map(f => ("name" -> f.name) ~ ("header" -> f.header.toString) ~ ("value" -> f.value())).toList)
+                                })
+                          }
+                          val newPayload = ("tournament" -> Extraction.decompose(tournament.toMarshalledSummary)) ~
+                            ("pools" -> marshalledPools)
+                          sendPayload(newPayload)
+                          true
+                        case _ => false
+                      }
+                    case _ => false
+                  }
+                case _ => false
+              }
+            case _ =>
+              sendPayload(payload)
+              true
           }
         case _ =>
           false

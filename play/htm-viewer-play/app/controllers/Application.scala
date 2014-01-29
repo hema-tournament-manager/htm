@@ -31,6 +31,7 @@ object Application extends Controller {
     "image" -> Json.obj(),
     "fight" -> Json.obj(),
     "overview/arena" -> Json.obj(),
+    "overview/pool" -> Json.obj(),
     "participant/footer" -> Json.obj(),
     "participant/bio" -> Json.obj(
       "side" -> "left",

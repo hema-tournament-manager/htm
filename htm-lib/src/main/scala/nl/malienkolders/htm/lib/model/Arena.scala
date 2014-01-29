@@ -20,6 +20,11 @@ class Arena extends LongKeyedMapper[Arena] with IdPK with CreatedUpdated with Or
 
   def fights = timeslots.flatMap(_.fights)
 
+  /**
+   * @return List of all the scheduled fights that have an existing fight, sorted by day and time
+   */
+  def scheduledFights = timeslots.flatMap(_.fights).filter(_.fight.foreign.isDefined).sortBy(sf => (sf.timeslot.foreign.get.day.is, sf.time.is))
+
   def timeslotByDay = timeslots.groupBy(_.day.foreign.get).toList.sortBy(_._1.date.is)
 
   object viewers extends MappedManyToMany(ArenaViewers, ArenaViewers.arena, ArenaViewers.viewer, Viewer)
