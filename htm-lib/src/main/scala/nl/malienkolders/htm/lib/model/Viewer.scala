@@ -89,7 +89,7 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
           case f: PoolFight =>
             fightUpdate(arena, Extraction.decompose(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
           case f: EliminationFight =>
-            fightUpdate(arena, Extraction.decompose(Map("eliminationSummary" -> f.phase.foreign.get.fights.map(_.toMarshalledSummary))))
+            fightUpdate(arena, Extraction.decompose(Map("eliminationSummary" -> f.phase.foreign.get.fights.map(_.toMarshalled))))
         }
       }
       fightUpdate(arena, Extraction.decompose(f.toMarshalled))
