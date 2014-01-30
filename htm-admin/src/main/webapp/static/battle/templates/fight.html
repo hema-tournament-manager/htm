@@ -123,6 +123,10 @@
             <span class="glyphicon glyphicon-time"></span>
             <strong>Limit ahead!</strong> The <em>time limit</em> will be reached in {{currentFight.timeLimit - timer.displayTime + 1000 | seconds}} seconds 
           </div>
+          <div data-ng-show="currentFight.breakAt > 0 && currentFight.breakAt - timer.displayTime < 10000 && currentFight.breakAt - timer.displayTime > 0" class="alert alert-info">
+            <span class="glyphicon glyphicon-time"></span>
+            <strong>Limit ahead!</strong> The <em>break</em> (of {{currentFight.breakDuration / 1000}} seconds) will be reached in {{currentFight.breakAt - timer.displayTime + 1000 | seconds}} seconds 
+          </div>
 					<div data-ng-show="timer.displayTime >= currentFight.timeLimit" class="alert alert-warning">
 						<span class="glyphicon glyphicon-time"></span>
 						<strong>Limit reached!</strong> The <em>time limit</em> has been reached, confirm this fight

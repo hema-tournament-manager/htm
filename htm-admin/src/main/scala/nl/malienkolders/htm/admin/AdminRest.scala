@@ -91,12 +91,12 @@ object AdminRest extends RestHelper {
       dao.findByKey(id).map(f => Extraction.decompose(f.toMarshalled)).getOrElse[JValue](JBool(false))
 
     case "api" :: "fight" :: "update" :: Nil JsonPost json -> _ =>
-      val fight = Extraction.extract[MarshalledFightSummary](json)
+      val fight = Extraction.extract[MarshalledFight](json)
       FightServer ! FightUpdate(fight)
       JBool(true)
 
     case "api" :: "fight" :: "postpone" :: Nil JsonPost json -> _ =>
-      val fight = Extraction.extract[MarshalledFightSummary](json)
+      val fight = Extraction.extract[MarshalledFight](json)
       FightServer ! PostponeFight(fight)
       RefreshServer.notifyClients
       JBool(true)
