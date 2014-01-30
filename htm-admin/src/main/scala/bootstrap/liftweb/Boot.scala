@@ -22,6 +22,7 @@ import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionPoolPhaseRuleset
 import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionEliminationRuleset
 import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionFinalsRuleset
 import nl.malienkolders.htm.admin.comet.RefreshServer
+import nl.malienkolders.htm.lib.util.Helpers
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -153,5 +154,7 @@ class Boot {
     S.addAround(DB.buildLoanWrapper)
 
     //  RefreshServer;
+
+    Helpers.openUrlFromSystemProperty("htm.admin.url")
   }
 }
