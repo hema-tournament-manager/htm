@@ -24,7 +24,9 @@ case class MarshalledFight(
   timeLimit: Long,
   exchangeLimit: Int,
   possiblePoints: List[Int],
-  doubleHitLimit: Int)
+  doubleHitLimit: Int,
+  breakAt: Long,
+  breakDuration: Long)
 
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {
 
@@ -128,21 +130,28 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def shortLabel = fighterA.toString + " vs " + fighterB.toString
 
-  def toMarshalled = MarshalledFight(
-    phase.foreign.get.tournament.foreign.get.toMarshalledSummary,
-    phaseType.code,
-    id.is,
-    name.is,
-    fighterA.toMarshalled(phase.foreign.get.tournament.foreign.get),
-    fighterB.toMarshalled(phase.foreign.get.tournament.foreign.get),
-    timeStart.is,
-    timeStop.is,
-    netDuration.is,
-    scores.map(_.toMarshalled).toList,
-    phase.foreign.get.rulesetImpl.fightProperties.timeLimit,
-    phase.foreign.get.rulesetImpl.fightProperties.exchangeLimit,
-    phase.foreign.get.rulesetImpl.possiblePoints,
-    phase.foreign.get.rulesetImpl.fightProperties.doubleHitLimit)
+  def toMarshalled = {
+    val ruleset = phase.foreign.get.rulesetImpl
+    val fp = ruleset.fightProperties
+    MarshalledFight(
+      phase.foreign.get.tournament.foreign.get.toMarshalledSummary,
+      phaseType.code,
+      id.is,
+      name.is,
+      fighterA.toMarshalled(phase.foreign.get.tournament.foreign.get),
+      fighterB.toMarshalled(phase.foreign.get.tournament.foreign.get),
+      timeStart.is,
+      timeStop.is,
+      netDuration.is,
+      scores.map(_.toMarshalled).toList,
+      fp.timeLimit,
+      fp.exchangeLimit,
+      ruleset.possiblePoints,
+      fp.doubleHitLimit,
+      fp.breakAt,
+      fp.breakDuration)
+  }
+
   def fromMarshalled(m: MarshalledFight) = {
     timeStart(m.timeStart)
     timeStop(m.timeStop)
