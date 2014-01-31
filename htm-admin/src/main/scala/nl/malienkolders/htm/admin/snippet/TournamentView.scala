@@ -164,11 +164,14 @@ object TournamentView {
       RedirectTo("#eliminationphase") & Reload
     }
 
-    def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
+    def addParticipantToPool(participant: TournamentParticipant, poolId: Long) = {
       if (participant.participant.foreign.get.poolForTournament(t).map(_.id.is).getOrElse(-1) != poolId) {
-        t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
+        t.poolPhase.pools.foreach { pool =>
+          pool.participants -= participant.participant.foreign.get
+          pool.save
+        }
 
-        t.poolPhase.fights.filter(_.inFight_?(participant.participant.foreign.get)).map(_.delete_!)
+        t.poolPhase.fights.filter(_.inFight_?(participant.participant.foreign.get)).foreach(_.delete_!)
 
         if (poolId >= 0) {
           val poolTo = t.poolPhase.pools.find(_.id.is == poolId).get
@@ -177,8 +180,8 @@ object TournamentView {
         }
         t.save
 
-        val poolPhaseGenerator = new GeneratePoolPhase(t)
-        poolPhaseGenerator.generatePoolFights;
+        GeneratePoolPhase(t).generatePoolFights
+
         Reload
       } else {
         JsCmds.Noop
@@ -300,7 +303,7 @@ object TournamentView {
       }) &
       ".error" #> errors(sub)
 
-    val generatePoolPhase = new GeneratePoolPhase(t)
+    var poolCount = 0
     // bindings
     "#tournamentName" #> t.name &
       ".downloadButton" #> Seq(
@@ -315,8 +318,8 @@ object TournamentView {
           "#generateElimination-top2" #> Nil
         }) &
         "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
-        "#pool-generation-pool-count" #> SHtml.number(t.poolPhase.pools.size, s => generatePoolPhase.poolCount = s, 1, t.subscriptions.size) &
-        "#pool-generation-generate" #> SHtml.submit("Generate", () => { generatePoolPhase.generate(); S.redirectTo("#poolphase") }) &
+        "#pool-generation-pool-count" #> SHtml.number(t.poolPhase.pools.size, s => poolCount = s, 1, t.subscriptions.size) &
+        "#pool-generation-generate" #> SHtml.submit("Generate", () => { GeneratePoolPhase(t).generate(poolCount); S.redirectTo("#poolphase") }) &
         ".tournamentPool" #> t.poolPhase.pools.map(p =>
           ".panel-title" #> (
             ".name *" #> p.poolName &
