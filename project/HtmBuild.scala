@@ -83,6 +83,7 @@ object BuildSettings {
       "Sonatype OSS Public" at "https://oss.sonatype.org/content/groups/public/"),
     autoScalaLibrary := true,
     offline := false,
+    javaOptions := Seq("-Djava.awt.headless=true"),
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource)
 }
 
