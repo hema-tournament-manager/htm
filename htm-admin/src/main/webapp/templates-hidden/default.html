@@ -50,6 +50,29 @@ function scroll_if_anchor(event) {
 	//Intercept all anchor clicks
 	jQuery(document).ready(function($) {
 	  $('body').show();
+
+    var topMenu = $("ul.nav:first");
+    var visibleItemsCount = $("ul.nav:first li").filter(function() {
+      return $(this).offset().top < 20;
+    }).size();
+
+    var lastVisible = $($("ul.nav:first li").get(visibleItemsCount - 1));
+    if (lastVisible.offset().left + lastVisible.width() + 50 >= $( document ).width()) {
+    	visibleItemsCount -= 1;
+    }
+    var overflowItems = $("ul.nav:first li").filter(function(index) {
+        return index >= visibleItemsCount;
+    });
+    
+
+    if (overflowItems.size() > 0) {
+      var overflowMenu = $("<ul></ul>");
+      overflowMenu.addClass("dropdown-menu");
+      var overflowMenuItem = $('<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a></li>');
+      overflowItems.appendTo(overflowMenu);
+      overflowMenuItem.append(overflowMenu); 
+      topMenu.append(overflowMenuItem);
+    }
 	  
 		//When our page loads, check to see if it contains and anchor
 		scroll_if_anchor(window.location.hash);
@@ -159,6 +182,18 @@ body {
 .dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#cccccc;margin-top:5px;margin-right:-10px;}
 .dropdown-submenu:hover>a:after{border-left-color:#ffffff;}
 .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
+
+ul.nav {
+  float: none;
+}
+
+.navbar-header {
+  float: left;
+}
+
+.nav:nth-of-type(1) .dropdown-menu {
+  margin-left: -300%;
+}
 
 /* ]]> */
 </style>
