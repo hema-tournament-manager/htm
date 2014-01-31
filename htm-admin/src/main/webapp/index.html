@@ -26,9 +26,11 @@
    	}
     </style></head>
     <form class="lift:EventView">
-		<h2 class="eventName">Event</h2>
-		<button id="saveAll" class="btn btn-default">Save</button>
-		<div class="clearfix"></div>
+		<h2><span class="eventName">Event</span> <small><a href="/api/qr" title="Show QR-code"><span class="glyphicon glyphicon-qrcode"></span></a></small></h2>
+    
+    
+		<p><button id="saveAll" class="btn btn-default">Save</button></p>
+    
 		<div class="day panel panel-default pull-left">
 			<div class="panel-heading">
 				<h3 class="panel-title"><span class="dayTitle">Day 1</span><input class="date pull-right form-control input-sm" value="test"/></h3>
@@ -65,10 +67,16 @@
 			</table>
 		</div>
 		</form>
+    <div class="clearfix">
+    </div>
+    <div>
       <form class="lift:Home?form=post">
       	<button>Download results</button>
       </form>
-    </div>
+      </div>
+      </div>
+    
+    
   </body>
 </html>
 

@@ -11,6 +11,7 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.comet._
 import net.liftweb.common.Full
 import nl.malienkolders.htm.admin.lib.exporter.JsonFightExporter
+import nl.malienkolders.htm.lib.util.Helpers
 
 object AdminRest extends RestHelper {
 
@@ -197,6 +198,10 @@ object AdminRest extends RestHelper {
 
     case "api" :: "images" :: Nil JsonGet _ =>
       Extraction.decompose(Image.findAll.map(_.toMarshalled).toList)
+
+    case "api" :: "qr" :: Nil JsonGet req =>
+      InMemoryResponse(Helpers.generateQrImage, List("Content-Type" -> "image/png"), Nil, 200)
+
   }
 
 }
