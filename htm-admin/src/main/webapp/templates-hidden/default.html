@@ -57,7 +57,7 @@ function scroll_if_anchor(event) {
     }).size();
 
     var lastVisible = $($("ul.nav:first li").get(visibleItemsCount - 1));
-    if (lastVisible.offset().left + lastVisible.width() + 50 >= $( document ).width()) {
+    if (lastVisible.offset().left + lastVisible.width() + 70 >= $( document ).width()) {
     	visibleItemsCount -= 1;
     }
     var overflowItems = $("ul.nav:first li").filter(function(index) {
@@ -67,7 +67,7 @@ function scroll_if_anchor(event) {
 
     if (overflowItems.size() > 0) {
       var overflowMenu = $("<ul></ul>");
-      overflowMenu.addClass("dropdown-menu");
+      overflowMenu.addClass("dropdown-menu").addClass("overflow-menu");
       var overflowMenuItem = $('<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a></li>');
       overflowItems.appendTo(overflowMenu);
       overflowMenuItem.append(overflowMenu); 
@@ -190,11 +190,11 @@ ul.nav {
 .navbar-header {
   float: left;
 }
-
-.nav:nth-of-type(1) .dropdown-menu {
-  margin-left: -300%;
+@media (min-width: 768px) {
+  .overflow-menu {
+    margin-left: -300%;
+  }
 }
-
 /* ]]> */
 </style>
 </head>
