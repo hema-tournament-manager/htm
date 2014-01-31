@@ -18,7 +18,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   object order extends MappedLong(this)
   object phase extends MappedLongForeignKey(this, PoolPhase)
-  object fights extends MappedOneToMany(PoolFight, PoolFight.pool, OrderBy(PoolFight.id, Ascending)) with Owned[PoolFight] with Cascade[PoolFight]
+  object fights extends MappedOneToMany(PoolFight, PoolFight.pool, OrderBy(PoolFight.order, Ascending)) with Owned[PoolFight] with Cascade[PoolFight]
   object participants extends MappedManyToMany(PoolParticipants, PoolParticipants.pool, PoolParticipants.participant, Participant)
   object arena extends MappedLongForeignKey(this, Arena)
 
