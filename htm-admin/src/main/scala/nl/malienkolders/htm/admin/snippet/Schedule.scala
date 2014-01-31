@@ -17,14 +17,14 @@ import net.liftweb.common.Empty
 import net.liftweb.http.js.JsCmd
 import net.liftweb.common.Full
 import net.liftweb.util.CssSel
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.DateTimeZone
+import org.joda.time.LocalDate
+import nl.malienkolders.htm.admin.lib.Utils.DateTimeRenderHelper
 
 class Schedule {
 
-  val df = new SimpleDateFormat("HH:mm")
-  df.setTimeZone(TimeZone.getTimeZone("UTC"))
-
-  val dayDateFormat = new SimpleDateFormat("MMMM d")
-  dayDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"))
+  val datef = DateTimeFormat.forPattern("MMMM d").withZone(DateTimeZone.UTC)
 
   def schedulableFights(fs: Seq[Fight[_, _]]) = fs.filterNot(_.cancelled.is).filter(_.scheduled.foreign.isEmpty)
 
@@ -121,7 +121,7 @@ class Schedule {
             case (d, i) =>
               ".dayName *" #> ("Day " + (i + 1)) &
                 ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
-                  "a" #> SHtml.a(() => scheduleFights(fights, ts), <span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span><span class="name">{ ts.name.get }</span>))
+                  "a" #> SHtml.a(() => scheduleFights(fights, ts), <span class="from">{ ts.from.get.hhmm }</span><span class="to">{ ts.to.get.hhmm }</span><span class="name">{ ts.name.get }</span>))
           }))
 
     def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
@@ -134,7 +134,7 @@ class Schedule {
                 case (d, i) =>
                   ".dayName *" #> ("Day " + (i + 1)) &
                     ".timeslot" #> a.timeslots.filter(_.day.is == d.id.is).filter(_.fightingTime.is).map(ts =>
-                      "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="from">{ df.format(ts.from.get) }</span><span class="to">{ df.format(ts.to.get) }</span><span class="name">{ ts.name.get }</span>))
+                      "a" #> SHtml.a(() => scheduleFight(f, ts), <span class="from">{ ts.from.get.hhmm }</span><span class="to">{ ts.to.get.hhmm }</span><span class="name">{ ts.name.get }</span>))
               })))
 
     def renderPhase(name: String, fights: Seq[Fight[_, _]]): Option[CssSel] = fights.isEmpty match {
@@ -159,7 +159,7 @@ class Schedule {
     }
 
     def fightLabel(f: Fight[_, _]): String = {
-      import nl.malienkolders.htm.admin.lib.Utils.TimeRenderHelper
+      import nl.malienkolders.htm.admin.lib.Utils.DateTimeRenderHelper
       val classAndText: (String, String) = (f.cancelled.get match {
         case true =>
           "danger" -> "cancelled"
@@ -190,14 +190,14 @@ class Schedule {
         ".days-panel-group [id]" #> ("arena-days-" + a.id.is.toString) &
         ".day" #> a.timeslotByDay.zipWithIndex.map {
           case (day, i) =>
-            ".daydate" #> <a class="daydate" data-toggle="collapse" data-parent={ "#arena-days-" + a.id.is.toString } href={ "#arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString }>{ s"Day ${i + 1}" } <small>| { dayDateFormat.format(new Date(day._1.date.get)) }</small></a> &
+            ".daydate" #> <a class="daydate" data-toggle="collapse" data-parent={ "#arena-days-" + a.id.is.toString } href={ "#arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString }>{ s"Day ${i + 1}" } <small>| { new LocalDate(day._1.date.get).toString(datef) }</small></a> &
               ".panel-collapse [id]" #> ("arena-" + a.id.is.toString + "-day-" + day._1.id.is.toString) &
               ".panel-collapse [class+]" #> (if (now.getTime() < (day._1.date.is + 24.hours)) "in" else "out") &
               ".timeslot" #> day._2.map(ts =>
                 ".header" #> (
                   ".name *" #> ts.name.get &
-                  ".from *" #> df.format(ts.from.get) &
-                  ".to *" #> df.format(ts.to.get) &
+                  ".from *" #> ts.from.get.hhmm &
+                  ".to *" #> ts.to.get.hhmm &
                   ".action" #> List(
                     action("Pack", () => pack(ts)),
                     divider,
@@ -210,7 +210,7 @@ class Schedule {
                           ".fight [id]" #> s"fight${f.id.get}" &
                             ".fight [class+]" #> (if (f.finished_?) "success" else "waiting") &
                             ".name" #> fightName(f) &
-                            ".time *" #> df.format(new Date(sf.time.is)) &
+                            ".time *" #> sf.time.get.hhmm &
                             ".tournament *" #> tournamentName &
                             ".action" #> List(
                               action("Move up", moveUp _),
@@ -219,7 +219,7 @@ class Schedule {
                               action("Unschedule", unscheduleFight _))
                         case _ =>
                           ".fight [class+]" #> "danger" &
-                            ".time *" #> df.format(new Date(sf.time.is)) &
+                            ".time *" #> sf.time.is.hhmm &
                             ".tournament *" #> "" &
                             ".name *" #> "Deleted fight" &
                             ".action" #> List(

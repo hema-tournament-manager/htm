@@ -9,7 +9,7 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Sheet
 import java.util.Date
-import nl.malienkolders.htm.admin.lib.Utils.TimeRenderHelper
+import nl.malienkolders.htm.admin.lib.Utils.DateTimeRenderHelper
 import org.apache.poi.ss.util.WorkbookUtil
 
 object ScheduleExporter extends ExcelExporter {
