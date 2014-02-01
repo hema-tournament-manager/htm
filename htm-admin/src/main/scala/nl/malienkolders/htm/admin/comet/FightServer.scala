@@ -83,6 +83,6 @@ case class PeekFight(pool: Pool)
 case class PopFight(pool: Pool)
 case class FightMsg[F <: Fight[_, _]](fight: F)
 case class FightResult[F <: Fight[_, _]](fight: F, confirm: Boolean)
-case class FightUpdate(fight: MarshalledFightSummary)
-case class PostponeFight(fight: MarshalledFightSummary)
+case class FightUpdate(fight: MarshalledFight)
+case class PostponeFight(fight: MarshalledFight)
 case object NoFightMsg

@@ -31,10 +31,6 @@
 	margin-left: 3px;
 }
 
-.timeslot td .name:after,li.timeslot .name:after {
-	content: ": ";
-}
-
 .timeslot.table {
 	border-top: 1px solid #cccccc;
 }
@@ -66,13 +62,35 @@
 tr.fight .time {
 	padding-left: 17px;
 }
+
+.popover {
+  max-width: 300px;
+  width: 300px;
+}
+
+.popover .red {
+  background-color: red;
+}
+
+.popover .blue {
+  background-color: blue;
+}
 </style>
-    </head>
+<script type="text/javascript">
+    $(function () {
+        $("[rel='popover']").popover({
+        	placement:'bottom',
+        	trigger: 'hover',
+        	html: true,
+        	container: 'body'
+        });
+    });
+</script>    </head>
     <div class="lift:Schedule">
       <div class="container">
         <div class="row">
           <div class="arena">
-            <div class="pull-left panel panel-default" style="width: 100%">
+            <div class="panel panel-default" style="width: 100%">
               <div class="panel-heading">
                 <h3 class="panel-title">
                   <span class="arenaName">Arena</span>

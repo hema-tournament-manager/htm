@@ -17,6 +17,7 @@ import _root_.lib.Unzipper
 import java.io.File
 import play.api.Play.current
 import lib.ImageUtil
+import play.api.libs.iteratee.Enumerator
 
 object Application extends Controller {
 
@@ -31,6 +32,7 @@ object Application extends Controller {
     "image" -> Json.obj(),
     "fight" -> Json.obj(),
     "overview/arena" -> Json.obj(),
+    "overview/pool" -> Json.obj(),
     "overview/selected_participants" -> Json.obj(),
     "participant/footer" -> Json.obj(),
     "participant/bio" -> Json.obj(
@@ -116,25 +118,30 @@ object Application extends Controller {
     val imageFile = new File(s"Images/$resolution/$name")
 
     if (imageFile.exists()) {
-
       if (name.endsWith(".png") && resolution != "1024x768") {
-        Ok.sendFile(new File(ImageUtil.generateThresholded(imageFile.toString())));
+        Ok.sendFile(ImageUtil.generateThresholded(imageFile).getOrElse(imageFile))
+      } else {
+        Ok.sendFile(imageFile)
       }
-      Ok.sendFile(imageFile)
     } else
       Redirect(routes.Assets.at("images/empty.png"))
   }
 
   def publicImage(name: String) = Action { request =>
 
+    val imageStream = Application.getClass().getResourceAsStream(s"/public/images/$name")
     val imageFile = new File(current.path.getAbsolutePath + s"/public/images/$name")
 
     println(request.getQueryString("thresholding"))
 
     if (name.endsWith(".png") && request.getQueryString("thresholding").map(_ == "yes").getOrElse(false)) {
-      Ok.sendFile(new File(ImageUtil.generateThresholded(imageFile.toString())));
+      ImageUtil.generateThresholded(imageFile, imageStream) match {
+        case Some(thresholdedImage) => Ok.sendFile(thresholdedImage)
+        case None => if (imageFile.exists()) Ok.sendFile(imageFile) else { imageStream.reset(); Ok.chunked(Enumerator.fromStream(imageStream)); }
+      }
+
     } else {
-      Ok.sendFile(imageFile);
+      Ok.chunked(Enumerator.fromStream(imageStream));
     }
   }
 

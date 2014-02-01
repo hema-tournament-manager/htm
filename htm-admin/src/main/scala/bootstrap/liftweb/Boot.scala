@@ -21,6 +21,8 @@ import nl.malienkolders.htm.lib.rulesets.mexico2014.DefaultFinalsRuleset
 import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionPoolPhaseRuleset
 import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionEliminationRuleset
 import nl.malienkolders.htm.lib.rulesets.mexico2014.AlbionFinalsRuleset
+import nl.malienkolders.htm.admin.comet.RefreshServer
+import nl.malienkolders.htm.lib.util.Helpers
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -120,7 +122,8 @@ class Boot {
     // each page, just comment this line out.
     LiftRules.setSiteMapFunc(() => sitemap)
 
-    LiftRules.statelessDispatchTable.append(AdminRest)
+    // LiftRules.statelessDispatch.append(AdminRest)
+    LiftRules.dispatch.append(AdminRest)
 
     // Use jQuery 1.4
     LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts
@@ -149,5 +152,9 @@ class Boot {
 
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)
+
+    //  RefreshServer;
+
+    Helpers.openUrlFromSystemProperty("htm.admin.url")
   }
 }

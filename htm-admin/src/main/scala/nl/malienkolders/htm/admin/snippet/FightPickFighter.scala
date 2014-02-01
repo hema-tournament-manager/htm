@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 import net.liftweb.http.js.JsCmds._
 import java.util.Date
 import scala.xml.Text
+import nl.malienkolders.htm.lib.rulesets._
 
 object FightPickFighter {
 
@@ -31,7 +32,7 @@ object FightPickFighter {
       case _ => current.fighterBFuture
     }
 
-    def redirect = RedirectTo(s"/tournaments/view/${t.identifier.get}#fight${current.id.get}")
+    def redirect = RedirectTo(s"/tournaments/view/${t.identifier.get}#fight${current.id.get}") & Reload
 
     def pickFighter(p: Participant) = {
       fighter(SpecificFighter(Some(p)).format)
@@ -57,12 +58,32 @@ object FightPickFighter {
       redirect
     }
 
-    "h1 *" #> current.name.get &
-      ".participant" #> t.subscriptions.map { s =>
-        val p = s.participant.foreign.get
-        ".number *" #> s.fighterNumber.get &
-          ".name *" #> SHtml.a(() => pickFighter(p), Text(p.name.get))
-      } &
+    def average(s: Scores): Scores = {
+      val denominator = s.fields(0).value().max(1)
+      GenericScores(s.numberOfFights, s.fields.map(s =>
+        s.copy(value = () => s.value().toString.toDouble / denominator)))
+    }
+
+    def globalRanking = {
+      implicit val random = scala.util.Random
+      val r = t.poolPhase.rulesetImpl
+      val rows = r.ranking(t.poolPhase).flatMap {
+        case (pool, poolParticipants) =>
+          poolParticipants.map { case (participant, scores) => (pool, participant, scores, average(scores)) }
+      }
+      rows.sortBy(_._4)
+    }
+
+    "#pick-participant" #> (
+      "thead" #> (".score" #> t.poolPhase.rulesetImpl.emptyScore.header) &
+      ".participant" #> globalRanking.map {
+        case (pool, participant, scores, average) =>
+          ".number *" #> participant.subscription(t).get.fighterNumber.get &
+            ".name *" #> SHtml.a(() => pickFighter(participant), Text(participant.name.get)) &
+            ".pool *" #> pool.poolName &
+            ".score" #> (("* *" #> scores.numberOfFights) :: (scores.fields.zip(average.fields).map { case (s, avg) => "* *" #> <span><span class="absolute-value">{ s.value().toString }</span>/<span class="average-value">{ avg.value().toString }</span></span> }).toList)
+
+      }) &
       ".pool" #> t.poolPhase.pools.map(p =>
         ".name *" #> s"Pool ${p.poolName}" &
           ".number" #> (1 to 8).map(i =>

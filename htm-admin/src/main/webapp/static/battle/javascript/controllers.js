@@ -332,14 +332,6 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	return $scope.currentFight.started && $scope.currentFight.exchangeLimit > 0 && $scope.currentFight.totalScore().x >= $scope.currentFight.exchangeLimit;
     };
     
-    $scope.timeLimitReached = function() {
-    	return $scope.currentFight.started && $scope.timerValue() >= $scope.currentFight.timeLimitOfFight;
-    };
-    
-    $scope.doubleHitLimitReached = function() {
-    	return $scope.currentFight.started && $scope.currentFight.totalScore().d >= 5;
-    };
-    
     $scope.sendUpdate = function() {
     	playRoutes.controllers.AdminInterface.fightUpdate().post($scope.currentFight);
     };
@@ -359,7 +351,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 
 	        var next = $scope.findNextFight();
 	    	if (next) {
-	    		$scope.defaultAnnouncements.nextup = "Next up: <span class=\"label label-default\">" + next.tournament.memo + "</span> <span class=\"badge red\">" + next.fighterA.participant.fighterNumber + "</span> <b>" + next.fighterA.name  + "</b> vs <span class=\"badge blue\">" + next.fighterB.participant.fighterNumber + "</span> <b>" + next.fighterB.name + "</b> at " + $filter('hours')(next.time);
+	    		$scope.defaultAnnouncements.nextup = "Next up: <span class=\"label label-default\">" + next.tournament.memo + "</span> <span class=\"badge red\">" + next.fighterA.participant.fighterNumber + "</span> <b>" + next.fighterA.name  + "</b> vs <span class=\"badge blue\">" + next.fighterB.participant.fighterNumber + "</span> <b>" + next.fighterB.name + "</b>";
 	    	} else {
 	    		$scope.defaultAnnouncements.nextup = "";
 	    	}

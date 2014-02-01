@@ -14,7 +14,7 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.util.Helpers._
 import nl.malienkolders.htm.admin.lib._
 import nl.malienkolders.htm.admin.lib.exporter._
-import nl.malienkolders.htm.admin.lib.Utils.TimeRenderHelper
+import nl.malienkolders.htm.admin.lib.Utils.DateTimeRenderHelper
 import nl.malienkolders.htm.lib.util.Helpers._
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.sitemap.LocPath.stringToLocPath
@@ -164,11 +164,14 @@ object TournamentView {
       RedirectTo("#eliminationphase") & Reload
     }
 
-    def addParticipantToPool(participant: TournamentParticipant, poolId: Int) = {
+    def addParticipantToPool(participant: TournamentParticipant, poolId: Long) = {
       if (participant.participant.foreign.get.poolForTournament(t).map(_.id.is).getOrElse(-1) != poolId) {
-        t.poolPhase.pools.foreach(pool => { pool.participants -= participant.participant.foreign.get; pool.save });
+        t.poolPhase.pools.foreach { pool =>
+          pool.participants -= participant.participant.foreign.get
+          pool.save
+        }
 
-        t.poolPhase.fights.filter(_.inFight_?(participant.participant.foreign.get)).map(_.delete_!)
+        t.poolPhase.fights.filter(_.inFight_?(participant.participant.foreign.get)).foreach(_.delete_!)
 
         if (poolId >= 0) {
           val poolTo = t.poolPhase.pools.find(_.id.is == poolId).get
@@ -177,8 +180,8 @@ object TournamentView {
         }
         t.save
 
-        val poolPhaseGenerator = new GeneratePoolPhase(t)
-        poolPhaseGenerator.generatePoolFights;
+        GeneratePoolPhase(t).generatePoolFights
+
         Reload
       } else {
         JsCmds.Noop
@@ -300,10 +303,9 @@ object TournamentView {
       }) &
       ".error" #> errors(sub)
 
-    val generatePoolPhase = new GeneratePoolPhase(t)
+    var poolCount = 0
     // bindings
     "#tournamentName" #> t.name &
-      "name=tournamentArena" #> SHtml.ajaxSelect(Arena.findAll.map(a => a.id.get.toString -> a.name.get), t.defaultArena.box.map(_.toString), { arena => t.defaultArena(arena.toLong); t.save; S.notice("Default arena changed") }) &
       ".downloadButton" #> Seq(
         "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
         "a" #> SHtml.link("/download/schedule/tournament", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
@@ -316,8 +318,8 @@ object TournamentView {
           "#generateElimination-top2" #> Nil
         }) &
         "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
-        "#pool-generation-pool-count" #> SHtml.text(t.poolPhase.pools.size.toString, s => generatePoolPhase.poolCount = s.toInt) &
-        "#pool-generation-generate" #> SHtml.submit("Generate", () => { generatePoolPhase.generate(); S.redirectTo("#poolphase") }) &
+        "#pool-generation-pool-count" #> SHtml.number(t.poolPhase.pools.size, s => poolCount = s, 1, t.subscriptions.size) &
+        "#pool-generation-generate" #> SHtml.submit("Generate", () => { GeneratePoolPhase(t).generate(poolCount); S.redirectTo("#poolphase") }) &
         ".tournamentPool" #> t.poolPhase.pools.map(p =>
           ".panel-title" #> (
             ".name *" #> p.poolName &

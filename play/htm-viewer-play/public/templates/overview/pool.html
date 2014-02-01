@@ -1,0 +1,37 @@
+<div class="overview-pool">
+  <div class="container" data-ng-repeat="pool in currentPool"
+    data-ng-animate="{enter: 'animated bounceInDown', leave: 'animated bounceOutDown'}">
+    <div class="page-header" data-ng-cloak>
+      <h1>
+        Pool <strong>{{pool.name}}</strong> <small>&mdash;
+          {{tournament.name}}</small>
+      </h1>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="text-center">Rank</th>
+          <th class="text-center">Nr</th>
+          <th>Name</th>
+          <th>Club</th>
+          <th>Country</th>
+          <th data-ng-repeat="score in pool.participants[0].scores"
+            class="text-center" data-ng-bind-html-unsafe="score.header"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          data-ng-repeat="participant in pool.participants track by participant.id">
+          <td class="text-center"><strong>{{$index + 1}}</strong></td>
+          <td class="text-center"><span class="badge">{{participant.fighterNumber}}</span></td>
+          <td>{{participant.shortName}}</td>
+          <td>{{participant.clubCode}}</td>
+          <td>{{participant.country}}</td>
+          <td data-ng-repeat="score in participant.scores"
+            class="text-center">{{score.value}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
