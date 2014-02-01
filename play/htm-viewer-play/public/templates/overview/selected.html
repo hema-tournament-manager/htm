@@ -1,4 +1,28 @@
-<img class="background" src="/assets/images/empty/background.jpg"/>
-<div class="background empty" ng-click="change()">
-	<img class="logo" src="/assets/images/empty/logo.png"/>
+<div class="overview-selected">
+  <div class="container">
+    <div class="page-header" data-ng-cloak data-ng-show="tournament" data-ng-animate="{show: 'animated bounceInDown', hide: 'animated bounceOutUp'}">
+      <h1>Elimination Phase <small>{{tournament.name}}</small></h1>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr data-ng-show="fighters" data-ng-animate="{show: 'animated bounceInRight', hide: 'animated bounceOutLeft'}">
+          <th class="text-center">Pool</th>
+          <th class="text-center">Nr</th>
+          <th>Name</th>
+          <th>Club</th>
+          <th>Country</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="fighter in fighters" data-ng-animate="{enter: 'animated bounceInLeft', leave: 'animated bounceOutRight'}">
+          <td class="text-center"><strong>{{fighter.participant.pool || '?'}}</strong></td>
+          <td class="text-center"><span class="badge">{{fighter.participant.fighterNumber || '?'}}</span></td>
+          <td>{{fighter.participant.shortName || fighter.label}}</td>
+          <td>{{fighter.participant.clubCode || ''}}</td>
+          <td>{{fighter.participant.country || ''}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

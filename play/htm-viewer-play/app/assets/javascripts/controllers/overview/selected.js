@@ -5,8 +5,8 @@ var OverviewSelectedCtrl = function($scope, stateService) {
 	_.extend($scope, stateService.get("overview/selected"));
 	
 	stateService.change(function(view, state) {
-		if (view == "overview/selected_participants") {
-		  _.extend($scope, stateService.get("overview/selected"));
+		if (view == "overview/selected") {
+		  _.extend($scope, state);
 		}
 	});
 };

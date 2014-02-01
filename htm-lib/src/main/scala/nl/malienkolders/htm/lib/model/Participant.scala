@@ -24,7 +24,8 @@ case class MarshalledParticipant(
   weight: Int,
   previousWins: List[String],
   fighterNumber: Option[Int],
-  gearChecked: Option[Boolean])
+  gearChecked: Option[Boolean],
+  pool: Option[String])
 
 class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with OneToMany[Long, Participant] {
   def getSingleton = Participant
@@ -72,6 +73,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
     height.is,
     weight.is,
     previousWins.is.split("""(\n|\r)+""").toList,
+    None,
     None,
     None)
 }
