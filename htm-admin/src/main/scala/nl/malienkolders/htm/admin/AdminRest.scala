@@ -28,7 +28,10 @@ object AdminRest extends RestHelper {
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 
     case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
-      Extraction.decompose(Arena.findByKey(arenaId).map(_.scheduledFights.map(_.toMarshalledSummary)).getOrElse(false))
+      Extraction.decompose(Arena.findByKey(arenaId).map { arena =>
+        val firstDay = arena.scheduledFights.find(!_.fight.foreign.get.finished_?).map(_.timeslot.foreign.get.day.get).getOrElse(0)
+        arena.scheduledFights.filter(_.timeslot.foreign.get.day.is == firstDay).map(_.toMarshalledSummary)
+      }.getOrElse(false))
 
     case "api" :: "participants" :: Nil JsonGet _ =>
       Extraction.decompose(Participant.findAll.map(_.toMarshalled))
