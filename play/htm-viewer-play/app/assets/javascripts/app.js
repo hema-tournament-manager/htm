@@ -34,9 +34,9 @@ angular.module('htm',
       }).when('/overview/pool', {
         templateUrl : 'assets/templates/overview/pool.html',
         controller : 'OverviewPoolCtrl'
-      }).when('/overview/selected_participants', {
-        templateUrl : 'assets/templates/overview/selected_participants.html',
-        controller : 'SelectedParticipantsCtrl'
+      }).when('/overview/selected', {
+        templateUrl : 'assets/templates/overview/selected.html',
+        controller : 'OverviewSelectedCtrl'
       }).when('/participant/footer', {
         templateUrl : 'assets/templates/participant/footer.html',
         controller : 'ParticipantFooterCtrl'
