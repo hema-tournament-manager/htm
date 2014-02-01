@@ -66,7 +66,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
     shortName.is,
     club.is,
     clubCode.is,
-    country.obj.get.code2.is,
+    country.obj.map(_.code2.is).getOrElse(""),
     isPresent.is,
     tshirt.is,
     age.is,
