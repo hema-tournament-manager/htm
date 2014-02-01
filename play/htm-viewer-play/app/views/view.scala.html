@@ -10,7 +10,7 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at(s"stylesheets/main${resolution.toString}.css")">
 </head>
 <body>
-	<div id="main" ng-view></div>
+	<div id="main" ng-view ng-animate="{enter: 'animated fadeInFast', leave: 'animated fadeOutFast'}"></div>
 
 	<script>
 		var width = @resolution.width;
@@ -31,6 +31,7 @@
     <script src="@routes.Assets.at("javascripts/controllers/fight.js")"></script>
     <script src="@routes.Assets.at("javascripts/controllers/overview/arena.js")"></script>
     <script src="@routes.Assets.at("javascripts/controllers/overview/pool.js")"></script>
+    <script src="@routes.Assets.at("javascripts/controllers/overview/selected.js")"></script>
     <script src="@routes.Assets.at("javascripts/controllers/participant/footer.js")"></script>
     <script src="@routes.Assets.at("javascripts/controllers/participant/bio.js")"></script>
     <script src="@routes.Assets.at("javascripts/app.js")"></script>

@@ -33,6 +33,7 @@ object Application extends Controller {
     "fight" -> Json.obj(),
     "overview/arena" -> Json.obj(),
     "overview/pool" -> Json.obj(),
+    "overview/selected" -> Json.obj(),
     "participant/footer" -> Json.obj(),
     "participant/bio" -> Json.obj(
       "side" -> "left",

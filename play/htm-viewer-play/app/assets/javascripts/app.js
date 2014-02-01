@@ -10,6 +10,8 @@ angular.module('htm',
         [ '$scope', '$timeout', 'stateService', OverviewArenaCtrl ])
     .controller('OverviewPoolCtrl',
         [ '$scope', '$timeout', 'stateService', OverviewPoolCtrl ])
+    .controller('OverviewSelectedCtrl',
+        [ '$scope', 'stateService', OverviewSelectedCtrl ])
     .controller('ImageCtrl',
         [ '$scope', 'stateService', ImageCtrl ])
     .controller('ParticipantFooterCtrl',
@@ -32,6 +34,9 @@ angular.module('htm',
       }).when('/overview/pool', {
         templateUrl : 'assets/templates/overview/pool.html',
         controller : 'OverviewPoolCtrl'
+      }).when('/overview/selected', {
+        templateUrl : 'assets/templates/overview/selected.html',
+        controller : 'OverviewSelectedCtrl'
       }).when('/participant/footer', {
         templateUrl : 'assets/templates/participant/footer.html',
         controller : 'ParticipantFooterCtrl'
@@ -67,6 +72,5 @@ angular.module('htm',
               $rootScope.updateFeed = new EventSource("/updateFeed");
               $rootScope.updateFeed.addEventListener("message",
                   $rootScope.updateView, false);
-
+              console.log("started listening");
             } ]);
-;

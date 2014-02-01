@@ -188,6 +188,22 @@ object AdminRest extends RestHelper {
                   }
                 case _ => false
               }
+            case "overview/selected" =>
+              payload match {
+                case p: JObject =>
+                  (p \\ "tournamentId") match {
+                    case JInt(tournamentId) =>
+                      val t = Tournament.findByKey(tournamentId.toLong).get
+                      val fighters: List[Fighter] = t.eliminationPhase.fights.filter(_.round.is == 1).map(f => List(f.fighterA, f.fighterB)).flatten.toList
+                      val newPayload = p ~ ("tournament" -> Extraction.decompose(t.toMarshalledSummary)) ~ ("fighters" -> Extraction.decompose(fighters.map(_.toMarshalled(t))))
+                      sendPayload(newPayload)
+                      true
+                    case _ => false
+                  }
+                case _ =>
+                  false
+              }
+
             case _ =>
               sendPayload(payload)
               true

@@ -645,6 +645,29 @@
 	-o-animation-name: fadeIn;
 	animation-name: fadeIn;
 }
+.fadeInFast {
+  -webkit-animation-name: fadeIn;
+  -moz-animation-name: fadeIn;
+  -o-animation-name: fadeIn;
+  animation-name: fadeIn;
+	webkit-animation-duration:0.25s !important;
+	-moz-animation-duration:0.25s !important;
+	-ms-animation-duration:0.25s !important;
+	-o-animation-duration:0.25s !important;
+	animation-duration:0.25s !important;
+}
+.fadeOutFast {
+  -webkit-animation-name: fadeOut;
+  -moz-animation-name: fadeOut;
+  -o-animation-name: fadeOut;
+  animation-name: fadeOut;
+  webkit-animation-duration:0.25s !important;
+  -moz-animation-duration:0.25s !important;
+  -ms-animation-duration:0.25s !important;
+  -o-animation-duration:0.25s !important;
+  animation-duration:0.25s !important;
+}
+
 @-webkit-keyframes fadeInUp {
 	0% {
 		opacity: 0;
