@@ -6,10 +6,10 @@
 <div class="frame" ng-cloak>
 	<div class="score-red">{{ totalScore.a }}</div>
 	<div class="score-blue">{{ totalScore.b }}</div>
-	<div class="score-double" ng-show="totalScore.d &lt;= 3">
-		<span ng-repeat="a in range(totalScore.d) track by $index">X</span>
+	<div class="score-double" ng-show="doubleHitLimit &gt; 0 && totalScore.d &lt;= doubleHitLimit">
+		<div data-ng-repeat="a in range(totalScore.d) track by $index" data-ng-animate="{enter: 'animated tada', leave: 'animated fadeOutDownBig'}">X</div>
 	</div>
-	<div class="score-double" ng-show="totalScore.d &gt; 3">
+	<div class="score-double" ng-show="doubleHitLimit == 0 || totalScore.d &gt; doubleHitLimit" data-ng-animate="{show: 'animated tada', hide: 'animated fadeOutDownBig'}">
 		{{ totalScore.d }}
 	</div>
 	<div class="fighter-bar">
