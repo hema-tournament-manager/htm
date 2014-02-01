@@ -72,5 +72,5 @@ angular.module('htm',
               $rootScope.updateFeed = new EventSource("/updateFeed");
               $rootScope.updateFeed.addEventListener("message",
                   $rootScope.updateView, false);
-
+              console.log("started listening");
             } ]);
