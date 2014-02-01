@@ -16,9 +16,9 @@
       </thead>
       <tbody>
         <tr data-ng-repeat="fighter in fighters" data-ng-animate="{enter: 'animated bounceInLeft', leave: 'animated bounceOutRight'}">
-          <td class="text-center"><strong>{{fighter.participant.pool || '?'}}</strong></td>
+          <td class="text-center"><strong>{{fighter.participant.pool || ''}}</strong></td>
           <td class="text-center"><span class="badge">{{fighter.participant.fighterNumber || '?'}}</span></td>
-          <td>{{fighter.participant.shortName || fighter.label}}</td>
+          <td>{{fighter.participant.shortName || fighter.label || 'To be decided'}}</td>
           <td>{{fighter.participant.clubCode || ''}}</td>
           <td>{{fighter.participant.country || ''}}</td>
         </tr>
