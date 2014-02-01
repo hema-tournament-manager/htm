@@ -94,24 +94,24 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
   def winner = cancelled.get match {
     case true =>
       // cancelled fights cannot be won
-      Empty
+      None
     case false =>
       currentScore match {
-        case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterA.participant.get)
-        case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterB.participant.get)
-        case _ => Empty
+        case TotalScore(a, _, b, _, _, _) if a > b => fighterA.participant
+        case TotalScore(a, _, b, _, _, _) if a < b => fighterB.participant
+        case _ => None
       }
   }
 
   def loser = cancelled.get match {
     case true =>
       // cancelled fights cannot be lost
-      Empty
+      None
     case false =>
       currentScore match {
-        case TotalScore(a, _, b, _, _, _) if a < b => Full(fighterA.participant.get)
-        case TotalScore(a, _, b, _, _, _) if a > b => Full(fighterB.participant.get)
-        case _ => Empty
+        case TotalScore(a, _, b, _, _, _) if a < b => fighterA.participant
+        case TotalScore(a, _, b, _, _, _) if a > b => fighterB.participant
+        case _ => None
       }
   }
 
