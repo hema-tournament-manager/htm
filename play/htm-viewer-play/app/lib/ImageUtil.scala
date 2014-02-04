@@ -2,22 +2,26 @@ package lib
 
 import javax.imageio.ImageIO
 import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 
 object ImageUtil {
 
-  def generateThresholded(filename: String): String = {
-    val newFilename = filename.replace(".png", "-thresholded.png");
+  def generateThresholded(file: File): Option[File] = generateThresholded(file, new FileInputStream(file))
 
-    if (new File(newFilename).exists()) {
-      return newFilename;
+  def generateThresholded(file: File, input: InputStream): Option[File] = {
+    val newFile = new File(file.getAbsolutePath().replace(".png", "-thresholded.png"))
+
+    if (newFile.exists()) {
+      return Some(newFile);
     }
 
-    val image = ImageIO.read(new File(filename))
+    val image = ImageIO.read(input)
 
     val alpha = image.getAlphaRaster()
 
     if (alpha == null) {
-      return filename;
+      return None;
     }
 
     for {
@@ -36,9 +40,9 @@ object ImageUtil {
       alpha.setPixel(x, y, pixel)
     }
 
-    ImageIO.write(image, "png", new File(newFilename))
+    ImageIO.write(image, "png", newFile)
 
-    return newFilename;
+    return Some(newFile)
 
   }
 

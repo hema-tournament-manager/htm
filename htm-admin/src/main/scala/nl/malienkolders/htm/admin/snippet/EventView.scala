@@ -6,11 +6,11 @@ import mapper._
 import util.Helpers._
 import scala.xml.NodeSeq
 import nl.malienkolders.htm.lib.model._
+import nl.malienkolders.htm.admin.lib.Utils.DateTimeRenderHelper
+import nl.malienkolders.htm.admin.lib.Utils.DateTimeParserHelper
 import com.github.nscala_time.time.Imports._
 
 class EventView {
-  val datef = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.UTC)
-  val fmt = DateTimeFormat.forPattern("HH:mm").withZone(DateTimeZone.UTC)
 
   def timeslotMatrix(day: Day) = {
     val timeslotsPerArena = ArenaTimeSlot.findAll(By(ArenaTimeSlot.day, day)).groupBy(_.arena.is)
@@ -23,8 +23,8 @@ class EventView {
     loop(timeslotsPerArena)
   }
 
-  def timeInput(t: ArenaTimeSlot, f: MappedLong[_]) = SHtml.text(LocalTime.fromMillisOfDay(f.get).toString(fmt), s => {
-    f(fmt.parseLocalTime(s).millisOfDay().get)
+  def timeInput(t: ArenaTimeSlot, f: MappedLong[_]) = SHtml.text(f.get.hhmm, s => {
+    f(s.hhmm)
     t.save()
   }, "class" -> "form-control input-sm")
 
@@ -40,7 +40,7 @@ class EventView {
       ".day" #> ds.zipWithIndex.map {
         case (d, i) =>
           ".dayTitle *" #> ("Day " + (i + 1)) &
-            ".date" #> SHtml.text(new LocalDate(d.date.get).toString(datef), s => d.date(datef.parseLocalDate(s).toDate().getTime()).save(), "class" -> "date pull-right form-control input-sm") &
+            ".date" #> SHtml.text(d.date.get.yyyymmdd, s => d.date(s.yyyymmdd).save(), "class" -> "date pull-right form-control input-sm") &
             ".arenaHeader" #> arenas.map(a => "* *" #> a.name.get) &
             ".timeslot" #> timeslotMatrix(d).map(ts =>
               ".arena" #> ts.map {

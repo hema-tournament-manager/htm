@@ -45,8 +45,14 @@
                 <li ng-repeat="tournament in tournaments"><a href="" ng-click="update('Pool Rankings', 'overview/pool', {tournamentId: tournament.id})"> {{ tournament.name }}</a></li>
             </ul>
           </div>
-					<button type="button" class="btn btn-primary" ng-disabled="!hasViewers()">With names</button>
-					<button type="button" class="btn btn-primary" ng-disabled="!hasViewers()">No names</button>
+          <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" data-ng-disabled="!hasViewers()">
+                Selected participants <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li data-ng-repeat="tournament in tournaments"><a href="" data-ng-click="update('Selected Participants', 'overview/selected', {tournamentId: tournament.id})"> {{ tournament.name }}</a></li>
+            </ul>
+          </div>
 				</div>
 			</div>
 		</div>

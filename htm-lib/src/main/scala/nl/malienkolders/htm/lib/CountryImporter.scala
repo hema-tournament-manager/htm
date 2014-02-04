@@ -154,7 +154,7 @@ object CountryImporter {
       Country.create.code2("MR").code3("MRT").name("Mauritania").hasFlag(true).hasViewerFlag(false).save
       Country.create.code2("MU").code3("MUS").name("Mauritius").hasFlag(true).hasViewerFlag(false).save
       Country.create.code2("YT").code3("MYT").name("Mayotte").hasFlag(true).hasViewerFlag(false).save
-      Country.create.code2("MX").code3("MEX").name("Mexico").hasFlag(true).hasViewerFlag(false).save
+      Country.create.code2("MX").code3("MEX").name("Mexico").hasFlag(true).hasViewerFlag(true).save
       Country.create.code2("FM").code3("FSM").name("Micronesia, Federated States of").hasFlag(true).hasViewerFlag(false).save
       Country.create.code2("MD").code3("MDA").name("Moldova, Republic of").hasFlag(true).hasViewerFlag(false).save
       Country.create.code2("MC").code3("MCO").name("Monaco").hasFlag(true).hasViewerFlag(false).save

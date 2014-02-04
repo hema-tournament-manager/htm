@@ -26,7 +26,8 @@ object HtmBuild extends Build {
                "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion,
 							 "org.apache.poi" % "poi" % "3.9",
 							 "org.apache.poi" % "poi-ooxml" % "3.9",
-		"commons-io" % "commons-io" % "2.4" ))
+		"commons-io" % "commons-io" % "2.4"
+))
 		
 	lazy val libSettings = buildSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Lib",
@@ -40,7 +41,9 @@ object HtmBuild extends Build {
                "org.specs2" %% "specs2" % "2.2.3" % "test",
                "com.h2database" % "h2" % "1.2.147",
                "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion,
-               "com.github.nscala-time" %% "nscala-time" % "0.6.0"))
+               "com.github.nscala-time" %% "nscala-time" % "0.6.0",
+		"com.google.zxing" % "core" % "2.3.0",
+		"com.google.zxing" % "javase" % "2.3.0"))
 		
 	lazy val importerSettings = buildSettings ++ Format.settings ++ Seq(
 		name := buildName + "-Importer",
@@ -66,8 +69,9 @@ object HtmBuild extends Build {
 
 object BuildSettings {
   val buildOrganization = "nl.malienkolders"
+
   val buildName = "HTM"
-  val buildVersion = "1.1-SNAPSHOT"
+  val buildVersion = "1.2-SNAPSHOT"
   val buildScalaVersion = "2.10.2"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -83,6 +87,7 @@ object BuildSettings {
       "Sonatype OSS Public" at "https://oss.sonatype.org/content/groups/public/"),
     autoScalaLibrary := true,
     offline := false,
+    javaOptions := Seq("-Djava.awt.headless=true"),
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource)
 }
 

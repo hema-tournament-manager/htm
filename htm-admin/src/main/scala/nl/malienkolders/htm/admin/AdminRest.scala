@@ -11,6 +11,7 @@ import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.admin.comet._
 import net.liftweb.common.Full
 import nl.malienkolders.htm.admin.lib.exporter.JsonFightExporter
+import nl.malienkolders.htm.lib.util.Helpers
 
 object AdminRest extends RestHelper {
 
@@ -27,7 +28,10 @@ object AdminRest extends RestHelper {
       Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 
     case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
-      Extraction.decompose(Arena.findByKey(arenaId).map(_.scheduledFights.map(_.toMarshalledSummary)).getOrElse(false))
+      Extraction.decompose(Arena.findByKey(arenaId).map { arena =>
+        val firstDay = arena.scheduledFights.find(!_.fight.foreign.get.finished_?).map(_.timeslot.foreign.get.day.get).getOrElse(0)
+        arena.scheduledFights.filter(_.timeslot.foreign.get.day.is == firstDay).map(_.toMarshalledSummary)
+      }.getOrElse(false))
 
     case "api" :: "participants" :: Nil JsonGet _ =>
       Extraction.decompose(Participant.findAll.map(_.toMarshalled))
@@ -187,6 +191,22 @@ object AdminRest extends RestHelper {
                   }
                 case _ => false
               }
+            case "overview/selected" =>
+              payload match {
+                case p: JObject =>
+                  (p \\ "tournamentId") match {
+                    case JInt(tournamentId) =>
+                      val t = Tournament.findByKey(tournamentId.toLong).get
+                      val fighters: List[Fighter] = t.eliminationPhase.fights.filter(_.round.is == 1).map(f => List(f.fighterA, f.fighterB)).flatten.toList
+                      val newPayload = p ~ ("tournament" -> Extraction.decompose(t.toMarshalledSummary)) ~ ("fighters" -> Extraction.decompose(fighters.map(_.toMarshalled(t))))
+                      sendPayload(newPayload)
+                      true
+                    case _ => false
+                  }
+                case _ =>
+                  false
+              }
+
             case _ =>
               sendPayload(payload)
               true
@@ -197,6 +217,10 @@ object AdminRest extends RestHelper {
 
     case "api" :: "images" :: Nil JsonGet _ =>
       Extraction.decompose(Image.findAll.map(_.toMarshalled).toList)
+
+    case "api" :: "qr" :: Nil JsonGet req =>
+      InMemoryResponse(Helpers.generateQrImage, List("Content-Type" -> "image/png"), Nil, 200)
+
   }
 
 }

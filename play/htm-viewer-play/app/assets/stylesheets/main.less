@@ -212,12 +212,21 @@ body {
 		
 		.score-double {
 			position: absolute;
-			width: 96px;
+			width: 200px;
 			height: 46px;
-			left: 462px;
+			left: 410px;
 			top: 262px;
 			font-size: 30pt;
 			padding-top: 2px;
+
+      div {
+        display: inline-block;
+        margin-left: -10px;
+      }
+			
+			div:first-child {
+        margin-left: 0;
+			}
 		}
 		
 		.labels {
@@ -383,7 +392,7 @@ body {
 		}
 	}
 	
-  .overview-pool {
+  .overview-pool, .overview-selected {
     background: white;
     height: 100%;
     
