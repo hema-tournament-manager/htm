@@ -74,24 +74,41 @@ object FightPickFighter {
       rows.sortBy(_._4)
     }
 
-    "#pick-participant" #> (
-      "thead" #> (".score" #> t.poolPhase.rulesetImpl.emptyScore.header) &
-      ".participant" #> globalRanking.map {
-        case (pool, participant, scores, average) =>
-          ".number *" #> participant.subscription(t).get.fighterNumber.get &
-            ".name *" #> SHtml.a(() => pickFighter(participant), Text(participant.name.get)) &
-            ".pool *" #> pool.poolName &
-            ".score" #> (("* *" #> scores.numberOfFights) :: (scores.fields.zip(average.fields).map { case (s, avg) => "* *" #> <span><span class="absolute-value">{ s.value().toString }</span>/<span class="average-value">{ avg.value().toString }</span></span> }).toList)
+    if (t.poolPhase.pools.isEmpty) {
+      "#pick-participant" #> (
+          "* [class]" #> "in active" &
+        "thead .pool" #> Nil &
+        "thead .score" #> Nil &
+        ".participant" #> t.subscriptions.map { s =>
+          val p = s.participant.foreign.get
+          ".number *" #> s.fighterNumber.get &
+            ".name *" #> SHtml.a(() => pickFighter(p), Text(p.name.get)) &
+            ".pool" #> Nil &
+            ".score" #> Nil
+        }) &
+        "#pick-pool" #> Nil &
+        "#pick-fight" #> Nil &
+        ".nav *" #> <li class="active"><a href="#pick-participant" data-toggle="tab">Participant</a></li>
+    } else {
+      "#pick-participant" #> (
+        "thead" #> (".score" #> t.poolPhase.rulesetImpl.emptyScore.header) &
+        ".participant" #> globalRanking.map {
+          case (pool, participant, scores, average) =>
+            ".number *" #> participant.subscription(t).get.fighterNumber.get &
+              ".name *" #> SHtml.a(() => pickFighter(participant), Text(participant.name.get)) &
+              ".pool *" #> pool.poolName &
+              ".score" #> (("* *" #> scores.numberOfFights) :: (scores.fields.zip(average.fields).map { case (s, avg) => "* *" #> <span><span class="absolute-value">{ s.value().toString }</span>/<span class="average-value">{ avg.value().toString }</span></span> }).toList)
 
-      }) &
-      ".pool" #> t.poolPhase.pools.map(p =>
-        ".name *" #> s"Pool ${p.poolName}" &
-          ".number" #> (1 to 8).map(i =>
-            "a" #> SHtml.a(() => pickPoolFighter(p, i), Text(i.toString)))) &
-      ".fight" #> t.eliminationPhase.fights.filterNot(_.id.is == current.id.is).map(f =>
-        ".name *" #> f.name.get &
-          ".winner *" #> SHtml.a(() => pickFightWinner(f), Text("Winner")) &
-          ".loser *" #> SHtml.a(() => pickFightLoser(f), Text("Loser")))
+        }) &
+        ".pool" #> t.poolPhase.pools.map(p =>
+          ".name *" #> s"Pool ${p.poolName}" &
+            ".number" #> (1 to 8).map(i =>
+              "a" #> SHtml.a(() => pickPoolFighter(p, i), Text(i.toString)))) &
+        ".fight" #> t.eliminationPhase.fights.filterNot(_.id.is == current.id.is).map(f =>
+          ".name *" #> f.name.get &
+            ".winner *" #> SHtml.a(() => pickFightWinner(f), Text("Winner")) &
+            ".loser *" #> SHtml.a(() => pickFightLoser(f), Text("Loser")))
+    }
   }
 
 }
