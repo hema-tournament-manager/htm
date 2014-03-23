@@ -135,10 +135,14 @@
             <span class="glyphicon glyphicon-transfer"></span>
             <strong>Limit ahead!</strong> The <em>double hit limit</em> will be reached in 1 double hit 
           </div>
-					<div data-ng-show="currentFight.doubleHitLimit > 0 && currentFight.totalScore().d >= currentFight.doubleHitLimit" class="alert alert-warning">
-						<span class="glyphicon glyphicon-transfer"></span>
-						<strong>Limit reached!</strong> The <em>double hit limit</em> has been reached, confirm this fight
-					</div>
+          <div data-ng-show="currentFight.doubleHitLimit > 0 && currentFight.totalScore().d >= currentFight.doubleHitLimit" class="alert alert-warning">
+            <span class="glyphicon glyphicon-transfer"></span>
+            <strong>Limit reached!</strong> The <em>double hit limit</em> has been reached, confirm this fight
+          </div>
+          <div data-ng-show="currentFight.pointLimit > 0 && (currentFight.totalScore().a >= currentFight.pointLimit || currentFight.totalScore().b >= currentFight.pointLimit)" class="alert alert-warning">
+            <span class="glyphicon glyphicon-asterisk"></span>
+            <strong>Limit reached!</strong> The <em>point limit</em> has been reached, confirm this fight
+          </div>
 				</div>
 				<div class="row htm-fight-buttons htm-padding-top">
 					<div class="col-sm-4 col-md-4 text-center">
