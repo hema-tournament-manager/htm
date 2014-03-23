@@ -102,7 +102,7 @@ object LongswordRuleset extends SocalRuleset {
 }
 
 object SwordBucklerRuleset extends SocalRuleset {
-  val id = "socal-2014-swordbuckler"
+  val id = "socal-2014-sword-buckler"
   override def fightProperties = super.fightProperties.copy(pointLimit = 7)
   override val possiblePoints = (0 to 3).toList
 }

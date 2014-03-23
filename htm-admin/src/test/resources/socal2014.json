@@ -1,0 +1,30 @@
+{	"name": "SoCal Swordfight",
+	"days": [
+		{	"date": "2014-03-28",
+			"timeslots": [
+				{ "name": "Stuff", "from": "09:00", "to": "18:00" },
+			]
+		},
+		{	"date": "2014-03-29",
+			"timeslots": [
+				{ "name": "Stuff", "from": "09:00", "to": "18:00" }
+			]
+		},
+		{	"date": "2014-03-30",
+			"timeslots": [{ "name": "Stuff", "from": "09:00", "to": "18:00" }]
+		}
+	],
+	"arenas": 2,
+	"tournaments": [
+		{	"id": "longsword",
+			"name": "Longsword Tournament",
+			"mnemonic": "LS",
+			"finalsPhase": { "ruleset": "socal-2014-longsword" }
+		},
+		{	"id": "sword-buckler",
+			"name": "Sword and Buckler Tournament",
+			"mnemonic": "SB",
+			"finalsPhase": { "ruleset": "socal-2014-sword-buckler" }
+		}
+	]
+}
