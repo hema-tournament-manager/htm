@@ -1,5 +1,5 @@
 package nl.malienkolders.htm.lib.rulesets
-package mexico2014
+package socal2014
 
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.util.Helpers._
@@ -38,90 +38,16 @@ case class ParticipantScores(
     ScoreField("Double hits", asc("D"), LowestFirst, doubleHits))
 }
 
-abstract class EmagRuleset extends Ruleset {
+abstract class SocalRuleset extends Ruleset {
   type Scores = ParticipantScores
 
   val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
-    (s1, s2) match {
-      case (ParticipantScores(i1, f1, w1, _, lbd1, cr1, cd1, ar1, _, d1, p1), ParticipantScores(i2, f2, w2, _, lbd2, cr2, cd2, ar2, _, d2, p2)) =>
-        val effectivePoints1 = p1 - lbd1
-        val effectivePoints2 = p2 - lbd2
-
-        if (f1 == 0 && f2 == 0) {
-          // if both haven't fought yet: order by initial ranking
-          i1 > i2
-        } else if (f1.min(f2) == 0) {
-          // put fighters who have fought before those who haven't
-          f2 == 0
-        } else {
-          // rank according to Mexico 2014 rules
-          if (w1 != w2) {
-            // a. most wins
-            w1 > w2
-          } else if (cr1 != cr2) {
-            // b. fewest clean hits against
-            cr1 < cr2
-          } else if (cd1 != cd2) {
-            // d. most clean hits dealt
-            cd1 > cd2
-          } else if (ar1 != ar2) {
-            // f. fewest afterblows received
-            ar1 < ar2
-          } else if (d1 != d2) {
-            // g. fewest doubles
-            d1 < d2
-          } else {
-            // z. randomly
-            random.nextBoolean
-          }
-        }
-    }
+    s1.wins.compareTo(s2.wins) > 0
   }
 
-  def roundRobinPairing(nrOfPeople: Int, iteration: Int): List[(Int, Int)] = {
-    val pin = 1
-    val (topRow: List[Int], bottomRow: List[Int]) = rotate(topRowForCount(nrOfPeople), bottomRowForCount(nrOfPeople), iteration)
-    val result = (pin +: topRow).zip(bottomRow.reverse)
-    if (nrOfPeople == 5 && (iteration == 3 || iteration == 4))
-      result.reverse
-    else
-      result
-  }
-
-  def topRowForCount(nrOfPeople: Int): List[Int] = (2 to ((nrOfPeople + 1) / 2)).toList
-
-  def bottomRowForCount(nrOfPeople: Int): List[Int] = ((((nrOfPeople + 1) / 2) + 1) to nrOfPeople).toList ++ (if (nrOfPeople.isOdd) List(-1) else List())
-
-  def rotate(topRow: List[Int], bottomRow: List[Int], iterations: Int): (List[Int], List[Int]) = iterations match {
-    case 0 => (topRow, bottomRow)
-    case _ => rotate(
-      bottomRow.takeRight(1) ++ topRow.dropRight(1),
-      topRow.takeRight(1) ++ bottomRow.dropRight(1),
-      iterations - 1)
-  }
-
-  def planning(pool: Pool): List[PoolFight] = {
-    val maxNumberOfRounds = pool.participants.size - (if (pool.participants.size.isEven) 1 else 0)
-
-    // don't generate fights after all fighters have faced each other
-    // with 4 fighters everyone has to fight 3 times, so you need 3 rounds
-    // with 5 fighters everyone has to fight 4 times, but every round one person cannot fight, so you need 5 rounds
-    val rawPairings = (for (i <- 0 to (maxNumberOfRounds - 1)) yield { roundRobinPairing(pool.participants.size, i) }).flatten
-    val pairings = rawPairings.filter(p => p._1 != -1 && p._2 != -1)
-    pairings.zipWithIndex.map {
-      case ((a, b), i) =>
-        val subA = pool.participants(a - 1).subscription(pool.tournament)
-        val subB = pool.participants(b - 1).subscription(pool.tournament)
-
-        PoolFight.create
-          .fighterAFuture(SpecificFighter(Some(pool.participants(a - 1))).format)
-          .fighterBFuture(SpecificFighter(Some(pool.participants(b - 1))).format)
-          .order(i + 1)
-          .cancelled(List(subA, subB).flatten.exists(_.droppedOut.is))
-    }.toList
-  }
+  def planning(pool: Pool): List[PoolFight] = Nil
 
   def ranking(p: Pool): List[(Participant, ParticipantScores)] = {
     // seed the Random with the pool id, so the random ranking is always the same for this pool
@@ -159,54 +85,24 @@ abstract class EmagRuleset extends Ruleset {
 
   def lossesByDoubles(doubles: Int): Int = if (fightProperties.doubleHitLimit > 0 && doubles >= fightProperties.doubleHitLimit) 1 else 0
 
-  val possiblePoints = List(0, 1, 2)
+  val possiblePoints = (0 to 6).toList
 
   def fightProperties = FightProperties(
-    timeLimit = 3 minutes,
+    timeLimit = (2 minutes) + (30 seconds),
     breakAt = 0,
     breakDuration = 0,
-    timeBetweenFights = 2 minutes,
+    timeBetweenFights = (2 minutes) + (30 seconds),
     exchangeLimit = 0,
     doubleHitLimit = 5,
-    pointLimit = 0)
+    pointLimit = 12)
 }
 
-trait PoolPhaseRuleset extends EmagRuleset
-
-trait EliminationRuleset extends EmagRuleset {
-  abstract override def fightProperties = super.fightProperties.copy(doubleHitLimit = 0)
+object LongswordRuleset extends SocalRuleset {
+  val id = "socal-2014-longsword"
 }
 
-trait FinalsRuleset extends EliminationRuleset {
-  abstract override def fightProperties = super.fightProperties.copy(timeLimit = 6 minutes, breakAt = 3 minutes, breakDuration = 1 minute, exchangeLimit = 0)
-}
-
-trait DefaultRuleset extends EmagRuleset
-
-object DefaultPoolPhaseRuleset extends DefaultRuleset with PoolPhaseRuleset {
-  val id = "emag-2014-default-pools"
-}
-
-object DefaultEliminationRuleset extends DefaultRuleset with EliminationRuleset {
-  val id = "emag-2014-default-elimination"
-}
-
-object DefaultFinalsRuleset extends DefaultRuleset with FinalsRuleset {
-  val id = "emag-2014-default-finals"
-}
-
-trait AlbionRuleset extends DefaultRuleset {
-  abstract override def fightProperties = super.fightProperties.copy(exchangeLimit = 10)
-}
-
-object AlbionPoolPhaseRuleset extends AlbionRuleset with PoolPhaseRuleset {
-  val id = "emag-2014-albion-pools"
-}
-
-object AlbionEliminationRuleset extends AlbionRuleset with EliminationRuleset {
-  val id = "emag-2014-albion-elimination"
-}
-
-object AlbionFinalsRuleset extends AlbionRuleset with FinalsRuleset {
-  val id = "emag-2014-albion-finals"
+object SwordBucklerRuleset extends SocalRuleset {
+  val id = "socal-2014-swordbuckler"
+  override def fightProperties = super.fightProperties.copy(pointLimit = 7)
+  override val possiblePoints = (0 to 3).toList
 }
