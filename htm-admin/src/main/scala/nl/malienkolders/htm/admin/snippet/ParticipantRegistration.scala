@@ -41,7 +41,7 @@ object ParticipantRegistration {
       }
       if (p.validate.isEmpty) {
         p.save
-        Reload;
+        S.redirectTo("/participants/register/" + p.externalId.get)
       } else {
         S.error(p.validate)
       }
