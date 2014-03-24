@@ -17,12 +17,16 @@ import nl.malienkolders.htm.admin.AdminRest
 import nl.malienkolders.htm.lib.rulesets.socal2014._
 import nl.malienkolders.htm.admin.comet.RefreshServer
 import nl.malienkolders.htm.lib.util.Helpers
+import java.net.MulticastSocket
+import java.net.DatagramPacket
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
 class Boot {
+  val socket = new MulticastSocket(4446)
+  
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor =
@@ -146,5 +150,15 @@ class Boot {
     //  RefreshServer;
 
     Helpers.openUrlFromSystemProperty("htm.admin.url")
+      val group = Helpers.getMulticastGroup
+    	println("JOINING the multicast group " + group.toString())
+    	socket.joinGroup(group)
+    	println("JOINED the multicast group")
+    	val buffer = new Array[Byte](256)
+    	val packet = new DatagramPacket(buffer, buffer.length)
+    	socket.receive(packet)
+    	
+    	println("RECEIVED: " + new String(buffer, "UTF-8"))
+    	
   }
 }
