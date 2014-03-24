@@ -34,20 +34,28 @@
     </style>
 </head>
 <body>
+  @helper.form(action = routes.Application.setup) {
 	<div class="container">
-		<div class="page-header">
-			<h1>Pick your screen size</h1>
-		</div>
+    <div class="page-header">
+      <h1>Enter a name for this viewer</h1>
+    </div>
+    <div>
+        <input name="name" class="form-control input-lg" type="text"/>
+    </div>
+    <div class="page-header">
+      <h1>Pick your screen size</h1>
+    </div>
     <div class="well">
       <h2>Beamer</h2>
-		  <div><a href="1024x768" class="btn btn-default btn-lg btn-1024">1024x768</a></div>
+		  <div><button name="resolution" value="1024x768" class="btn btn-default btn-lg btn-1024">1024x768</button></div>
     </div>
     <div class="well">
       <h2>Livestream</h2>
-  		<div><a href="1920x1080" class="btn btn-default btn-lg btn-1920">1920x1080</a></div>
-  		<div><a href="1280x720" class="btn btn-default btn-lg btn-1280">1280x720</a></div>
+  		<div><button name="resolution" value="1920x1080" class="btn btn-default btn-lg btn-1920">1920x1080</button></div>
+  		<div><button name="resolution" value="1280x720" class="btn btn-default btn-lg btn-1280">1280x720</button></div>
     </div>
 	</div>
+  }
 	<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.core.js"))"></script>
     <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.ui.position.js"))"></script>

@@ -5,6 +5,8 @@
 # Home page
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 
+POST    /setup                  controllers.Application.setup
+
 GET     /updateFeed				controllers.Application.updateFeed
 
 GET		/initialState			controllers.Application.initialState
