@@ -52,7 +52,7 @@ class ImageUtilSpec extends Specification {
       g.fillRect(1, 1, 1, 1)
       g.dispose()
       ImageIO.write(image, "png", new File("transparent.png"))
-      ImageUtil.generateThresholded("transparent.png")
+      ImageUtil.generateThresholded(new File("transparent.png"))
       val outputFile = new File("transparent-thresholded.png")
 
       outputFile.exists() && checkOutput(outputFile) must beTrue
@@ -71,7 +71,7 @@ class ImageUtilSpec extends Specification {
       g.fillRect(1, 1, 1, 1)
       g.dispose()
       ImageIO.write(image, "png", new File("opaque.png"))
-      ImageUtil.generateThresholded("opaque.png")
+      ImageUtil.generateThresholded(new File("opaque.png"))
       val outputFile = new File("opaque-thresholded.png")
 
       outputFile.exists() must beFalse
