@@ -52,7 +52,7 @@ abstract class Scores extends Comparable[Scores] {
 
 case class GenericScores(numberOfFights: Int, fields: Seq[ScoreField]) extends Scores
 
-case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int, doubleHitLimit: Int)
+case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int, doubleHitLimit: Int, pointLimit: Int)
 
 trait Ruleset {
 

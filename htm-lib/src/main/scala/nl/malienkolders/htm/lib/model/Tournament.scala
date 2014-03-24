@@ -134,7 +134,7 @@ class TournamentParticipant extends LongKeyedMapper[TournamentParticipant] with 
   def toMarshalled = participant.foreign.get.toMarshalled.copy(
     fighterNumber = Some(fighterNumber.get),
     gearChecked = Some(gearChecked.get),
-    pool = Some(participant.foreign.get.poolForTournament(tournament.foreign.get).get.poolName))
+    pool = participant.foreign.get.poolForTournament(tournament.foreign.get).map(_.poolName))
 }
 object TournamentParticipant extends TournamentParticipant with LongKeyedMetaMapper[TournamentParticipant] {
   type ErrorField = MappedBoolean[_ <: LongKeyedMapper[_]]

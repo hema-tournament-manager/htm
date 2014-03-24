@@ -26,7 +26,8 @@ case class MarshalledFight(
   possiblePoints: List[Int],
   doubleHitLimit: Int,
   breakAt: Long,
-  breakDuration: Long)
+  breakDuration: Long,
+  pointLimit: Int)
 
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {
 
@@ -149,7 +150,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
       ruleset.possiblePoints,
       fp.doubleHitLimit,
       fp.breakAt,
-      fp.breakDuration)
+      fp.breakDuration,
+      fp.pointLimit)
   }
 
   def fromMarshalled(m: MarshalledFight) = {
