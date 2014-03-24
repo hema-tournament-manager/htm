@@ -68,7 +68,7 @@ object Application extends Controller {
     val (name, resolution) = setupForm.bindFromRequest.get
     this.name = name
     for (ip <- Helpers.getIpAddress) {
-      Akka.system.scheduler.schedule(0 seconds, 30 seconds, broadcaster, (name, ip))
+      Akka.system.scheduler.schedule(0 seconds, 10 seconds, broadcaster, (name, ip))
     }
     Redirect(routes.Application.view(resolution))
   }
