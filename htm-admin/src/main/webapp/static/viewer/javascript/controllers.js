@@ -102,13 +102,18 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	  if (event.keyCode >= 49 && event.keyCode <= 48 + $scope.viewers.length) {
   	  $scope.$apply(function() {
   	    var viewer = $scope.viewers[event.keyCode - 49];
-  	    if (viewer.queue.length == 0) {
-  	      viewer.queue.push({"summary": "Empty", "data": {"view": "empty", "viewers": [viewer.id], "payload": ""}});
+  	    if (event.ctrlKey) {
+  	      viewer.selected = !viewer.selected;
+  	      event.preventDefault();
+  	    } else {
+    	    if (viewer.queue.length == 0) {
+    	      viewer.queue.push({"summary": "Empty", "data": {"view": "empty", "viewers": [viewer.id], "payload": ""}});
+    	    }
+    	    $scope.showQueuedItem(viewer, 0);
   	    }
-  	    $scope.showQueuedItem(viewer, 0);
   	  });
 	  } 
 	};
 	
-	document.addEventListener('keypress', $scope.onKeypress, false);
+	document.addEventListener('keydown', $scope.onKeypress, false);
 };
