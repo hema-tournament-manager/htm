@@ -1,15 +1,43 @@
-<nav class="container">
-	<form class="form-inline">
-		<div class="navbar-text navbar-left" ng-repeat="viewer in viewers">
-      <h4>Viewers:
-			<label class="checkbox">
-				<input type="checkbox" ng-model="viewer.selected">
-				{{ viewer.alias }}
-				({{ viewer.lastUpdate }})
-			</label></h4>
-		</div>
-	</form>
-</nav>
+<style>
+body {
+  padding-bottom: 100px;
+}
+.viewer {
+  clear: left;
+  margin: 0;
+  margin-top: 5px;
+}
+.viewer div {
+  float: left;
+}
+.viewer .well {
+  margin-left: 5px;
+  width: 100px;
+  height: 75px;
+  text-align: center;
+  margin-bottom: 0;
+}
+.viewer .current-view {
+  border-color: blue;
+  border-width: 2px;
+}
+.viewer .queued-view {
+  position: relative;
+}
+.viewer .queued-view a {
+  display: block;
+  position: absolute;
+  bottom: 5px;
+}
+.viewer .queued-view .action-select {
+  left: 5px;
+}
+.viewer .queued-view .action-remove {
+  right: 5px;
+}
+
+</style>
+
 <div class="container">
 	<div class="row">
 		<div class="col-md-3">
@@ -149,5 +177,26 @@
 			</div>
 		</div>
 	</div>
-	
 </div>
+<nav class="navbar-fixed-bottom">
+  <div class="container">
+    <form class="form-inline">
+      <div class="viewer navbar-text navbar-left" data-ng-repeat="viewer in viewers">
+        <div>
+          <label class="checkbox">
+          <input type="checkbox" data-ng-model="viewer.selected">
+            {{ viewer.alias }}
+          </label>
+        </div>
+        <div class="current-view well well-sm" title="Last update">
+          {{ viewer.lastUpdate }}
+        </div>
+        <div class="queued-view well well-sm" data-ng-repeat="item in viewer.queue" data-ng-animate="{enter:'animated rollIn', leave:'animated rollOut'}">
+          {{ item.summary }}
+          <a href="" class="action-select" data-ng-click="showQueuedItem(viewer, $index)"><span class="glyphicon glyphicon-play"></span></a>
+          <a href="" class="action-remove" data-ng-click="removeQueuedItem(viewer, $index)"><span class="glyphicon glyphicon-trash"></span></a>
+        </div>
+      </div>
+    </form>
+  </div>
+</nav>

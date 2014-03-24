@@ -20,6 +20,7 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	
 	playRoutes.controllers.AdminInterface.viewers().get().success(function(data, status) {
 		$scope.viewers = data;
+		_.each($scope.viewers, function(viewer) { viewer.queue = new Array(); });
 	});
 	
 	playRoutes.controllers.AdminInterface.arenas().get().success(function(data, status) {
@@ -67,14 +68,28 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 		$scope.footer.participantBuffer = {name: "", club: "", country: ""};
 	};
 	
-	$scope.update = function(friendlyLabel, view, payload) {
-		var viewers = _.pluck(_.where($scope.viewers, {selected: true}), 'id');
-		_.each($scope.viewers, function(viewer) { if (viewer.selected) viewer.lastUpdate = friendlyLabel; });
-		var data = {"view": view, "viewers": viewers, "payload": payload};
-		console.log("Sending " + JSON.stringify(data));
-		playRoutes.controllers.AdminInterface.viewerUpdate().post(data);
+	$scope.update = function(summary, view, payload) {
+	  var viewers = _.where($scope.viewers, {selected: true});
+    _.each(viewers, function(viewer) {
+      var data = {"view": view, "viewers": [viewer.id], "payload": payload};
+      viewer.queue.push({"summary": summary, "data": data});
+    });
+//		console.log("Sending " + JSON.stringify(data));
+//		playRoutes.controllers.AdminInterface.viewerUpdate().post(data);
 	};
 	
+  $scope.showQueuedItem = function(viewer, index) {
+    var queuedItem = viewer.queue[index];
+    console.log("Sending " + JSON.stringify(queuedItem.data));
+    playRoutes.controllers.AdminInterface.viewerUpdate().post(queuedItem.data);
+    viewer.lastUpdate = queuedItem.summary;
+    viewer.queue.splice(index, 1);
+  }
+  
+  $scope.removeQueuedItem = function(viewer, index) {
+    viewer.queue.splice(index, 1);
+  }
+  
 	$scope.$watch('announcement', function(newValue, oldValue) {
 		$scope.update("Message", "", {message: newValue});
     });
