@@ -8,6 +8,7 @@ import java.nio.ByteBuffer
 import java.net.DatagramSocket
 import nl.malienkolders.htm.lib.util.Helpers
 import play.Logger
+import scala.util.Properties
 
 class Broadcaster extends Actor {
 
@@ -18,8 +19,9 @@ class Broadcaster extends Actor {
   def receive = {
     case (name: String, ip: String) =>
       val group = Helpers.getMulticastGroup
-      logger.debug("Broadcasting: %s:9000 (%s)" format (ip, name))
-      val buf = (InetAddress.getByName(ip).getAddress() ++ ByteBuffer.allocate(4).putInt(9000).array() ++ name.getBytes("UTF-8")) take 256
+      val port = Properties.propOrElse("http.port", "9000").toInt
+      logger.debug("Broadcasting: %s:%d (%s)" format (ip, port, name))
+      val buf = (InetAddress.getByName(ip).getAddress() ++ ByteBuffer.allocate(4).putInt(port).array() ++ name.getBytes("UTF-8")) take 256
       val packet = new DatagramPacket(buf, buf.length, group, 4446)
       socket.send(packet)
   }
