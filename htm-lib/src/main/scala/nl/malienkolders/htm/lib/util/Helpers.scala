@@ -44,6 +44,8 @@ object Helpers {
     addresses.find(address => localNetworkPrefixes.exists(prefix => address.startsWith(prefix)))
   }
 
+  def getMulticastGroup: InetAddress = InetAddress.getByName("234.123.234.123")
+
   def generateQrImage: Array[Byte] = {
     val hintMap = new Hashtable[EncodeHintType, Any]();
     hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);

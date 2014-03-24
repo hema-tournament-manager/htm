@@ -17,12 +17,17 @@ import nl.malienkolders.htm.admin.AdminRest
 import nl.malienkolders.htm.lib.rulesets.socal2014._
 import nl.malienkolders.htm.admin.comet.RefreshServer
 import nl.malienkolders.htm.lib.util.Helpers
+import java.net.MulticastSocket
+import java.net.DatagramPacket
+import net.liftweb.util.Schedule
+import nl.malienkolders.htm.admin.worker.BroadcastListener
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
 class Boot {
+  
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor =
@@ -146,5 +151,7 @@ class Boot {
     //  RefreshServer;
 
     Helpers.openUrlFromSystemProperty("htm.admin.url")
+    	
+    Schedule.schedule(BroadcastListener.run _, 100)
   }
 }

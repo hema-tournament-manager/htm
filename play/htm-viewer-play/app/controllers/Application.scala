@@ -2,11 +2,14 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import play.api.data._
+import play.api.data.Forms._
 import play.api.libs.concurrent.Akka
 import akka.actor.Actor
 import akka.actor.Props
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
+import scala.concurrent.duration._
 import nl.malienkolders.htm.lib.model._
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.EventSource
@@ -18,6 +21,9 @@ import java.io.File
 import play.api.Play.current
 import lib.ImageUtil
 import play.api.libs.iteratee.Enumerator
+import java.util.UUID
+import actors.Broadcaster
+import nl.malienkolders.htm.lib.util.Helpers
 
 object Application extends Controller {
 
@@ -26,6 +32,10 @@ object Application extends Controller {
   implicit val timeout = Timeout(10000)
 
   val (updateOut, updateChannel) = Concurrent.broadcast[JsValue]
+
+  var name = "Viewer " + UUID.randomUUID().toString()
+
+  val broadcaster = Akka.system.actorOf(Props[Broadcaster], name = "broadcaster")
 
   var clientState = Json.obj(
     "empty" -> Json.obj(),
@@ -46,8 +56,21 @@ object Application extends Controller {
   var timer = TimerInfo(0, System.currentTimeMillis(), "stop");
   var currentView = "empty"
 
+  val setupForm = Form(tuple(
+    "name" -> text,
+    "resolution" -> text))
+
   def index = Action {
     Ok(views.html.index())
+  }
+
+  def setup = Action { implicit request =>
+    val (name, resolution) = setupForm.bindFromRequest.get
+    this.name = name
+    for (ip <- Helpers.getIpAddress) {
+      Akka.system.scheduler.schedule(0 seconds, 10 seconds, broadcaster, (name, ip))
+    }
+    Redirect(routes.Application.view(resolution))
   }
 
   def view(resolution: String) = Action {
