@@ -97,4 +97,18 @@ var ControllerCtrl = function($rootScope, $scope, $timeout, $modal, $location, p
 	$scope.$watch('footer.participant', function(newValue, oldValue) {
 		$scope.update("Footer: " + newValue.name, "participant/footer", {participant: newValue});
     });
+	
+	$scope.onKeypress = function(event) {
+	  if (event.keyCode >= 49 && event.keyCode <= 48 + $scope.viewers.length) {
+  	  $scope.$apply(function() {
+  	    var viewer = $scope.viewers[event.keyCode - 49];
+  	    if (viewer.queue.length == 0) {
+  	      viewer.queue.push({"summary": "Empty", "data": {"view": "empty", "viewers": [viewer.id], "payload": ""}});
+  	    }
+  	    $scope.showQueuedItem(viewer, 0);
+  	  });
+	  } 
+	};
+	
+	document.addEventListener('keypress', $scope.onKeypress, false);
 };
