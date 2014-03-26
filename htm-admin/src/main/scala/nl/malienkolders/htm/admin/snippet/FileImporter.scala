@@ -6,9 +6,10 @@ import common._
 import util.Helpers._
 import scala.xml.NodeSeq
 import nl.malienkolders.htm.lib.model._
-import nl.htm.importer.{ Importer => ImporterImpl, InputStreamSettings }
-import nl.htm.importer.emag._
+import nl.htm.importer.{ Importer => ImporterImpl, InputStreamSettings, DefaultImporter, DefaultSettings }
 import java.io.ByteArrayInputStream
+import nl.malienkolders.htm.admin.lib.exporter.DefaultImporterExporter
+import scala.xml.Text
 
 object FileImporter {
 
@@ -18,7 +19,7 @@ object FileImporter {
     def process() = {
       val data = upload match {
         case Full(FileParamHolder(_, mime, fileName, file)) =>
-          Some(Emag2014Importer.doImport(EmagExcelSettings(new ByteArrayInputStream(file), Country.findAll.map(c => c.code2.get -> c.name.get))))
+          Some(DefaultImporter.doImport(DefaultSettings(new ByteArrayInputStream(file))))
         case _ =>
           S.notice("You have to choose a file")
           None
@@ -40,7 +41,12 @@ object FileImporter {
     }
 
     "#file" #> SHtml.fileUpload(f => upload = Full(f), "class" -> "form-input") &
-      "#doImportFile" #> SHtml.onSubmitUnit(process)
+      "#doImportFile" #> SHtml.onSubmitUnit(process) &
+      "#downloadTemplate" #>  SHtml.link("/download/importer-template", () => throw new ResponseShortcutException(downloadDefaultImporterTemplate), Text("Download template for file import"))
+  }
+
+  def downloadDefaultImporterTemplate() = {
+    OutputStreamResponse(DefaultImporterExporter.doExport _, List("content-disposition" -> "inline; filename=\"importer-template.xls\""))
   }
 
 }
