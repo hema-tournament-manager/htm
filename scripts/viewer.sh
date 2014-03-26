@@ -66,7 +66,7 @@ function start_viewer {
 function _start_viewer {
 	echo "Starting: $1"
 	pushd ../play >/dev/null
-	screen -dmS viewer$1 sbt "project $project" "run $1"
+	screen -dmS viewer$1 sbt "project $project" "run -Dhttp.port=$1"
 	popd >/dev/null
 }
 
