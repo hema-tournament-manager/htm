@@ -13,7 +13,7 @@ import net.liftweb.json._
 import nl.malienkolders.htm.admin.lib.importer.{ Event => EventParser, Tournament => TournamentDef }
 import nl.malienkolders.htm.admin.lib.Utils.DateTimeParserHelper
 
-object Importer {
+object Importer extends Loggable {
 
   def importParticipants(ps: List[ImportedParticipant]): Unit = ps.foreach { p =>
     if (Participant.find(By(Participant.externalId, p.sourceIds.head.id)).isEmpty) {
@@ -99,24 +99,21 @@ object Importer {
         t.name(tDef.name)
           .identifier(tDef.id)
           .mnemonic(tDef.mnemonic)
-        for (phase <- tDef.poolPhase) {
-          t.poolPhase.ruleset(phase.ruleset).save()
-        }
-        for (phase <- tDef.eliminationPhase) {
-          t.eliminationPhase.ruleset(phase.ruleset).save()
-        }
+        t.poolPhase.ruleset(tDef.poolPhase.map(_.ruleset).getOrElse("")).save()
+        t.eliminationPhase.ruleset(tDef.eliminationPhase.map(_.ruleset).getOrElse("")).save()
         t.finalsPhase.ruleset(tDef.finalsPhase.ruleset).save()
         for (generate <- tDef.generate) {
           generate match {
             case "finals" =>
               for (i <- t.finalsPhase.fights.size to 1) {
+                logger.info("Finals phase: " + t.finalsPhase.name)
                 t.finalsPhase.eliminationFights += EliminationFight.create
                 .round(i + 1)
                 .name(i match { case 0 => "3rd Place" case 1 => "1st Place" case _ => ""})
                 .fighterAFuture(SpecificFighter(None).format)
                 .fighterBFuture(SpecificFighter(None).format)
               }
-              t.save()
+              t.finalsPhase.save()
           }
         }
         t
