@@ -16,15 +16,15 @@
   ],
   "arenas": 2,
   "tournaments": [
-    {  "id": "longsword",
-      "name": "Longsword Tournament",
-      "mnemonic": "LS",
+    {  "id": "steel-longsword",
+      "name": "Steel Longsword Tournament",
+      "mnemonic": "SLS",
       "finalsPhase": { "ruleset": "socal-2014-longsword" },
       "generate": "finals"
     },
-    {  "id": "sword-buckler",
-      "name": "Sword and Buckler Tournament",
-      "mnemonic": "SB",
+    {  "id": "steel-sword-buckler",
+      "name": "Steel Sword and Buckler Tournament",
+      "mnemonic": "SSB",
       "finalsPhase": { "ruleset": "socal-2014-sword-buckler" },
       "generate": "finals"
     }
