@@ -25,39 +25,39 @@ object ImageList {
   def importImage(_name: String, resolution: Resolution, fileName: String, mimeType: String, inputStream: InputStream): Unit = {
     var name = _name
     val format = mimeType match {
-          case "image/jpeg" => Some("jpeg")
-          case "image/png" => Some("png")
-          case _ => None
-        }
-        if (format.isDefined) {
-          if (name == "") {
-            name = fileName.reverse.dropWhile(_ != '.').drop(1).reverse
-          }
-          name = name.replaceAll("""(\s|\.)+""", "_")
-          val extension = fileName.reverse.takeWhile(_ != '.').reverse
-          val img = Image.find(By(Image.name, name)).getOrElse(Image.create.name(name).mimeType(mimeType).extension(extension))
-          if (img.mimeType.get == mimeType) {
-            val bitmap = ImageIO.read(inputStream)
-            val dir = new File(s"Images/$resolution/")
-            dir.mkdirs()
-            ImageIO.write(bitmap, format.get, new File(dir, name + "." + extension))
-            val thumb = new BufferedImage(bitmap.getWidth() / 20, bitmap.getHeight() / 20, bitmap.getType())
-            val g = thumb.createGraphics()
-            g.drawImage(bitmap, 0, 0, thumb.getWidth(), thumb.getHeight(), 0, 0, bitmap.getWidth(), bitmap.getHeight(), null)
-            g.dispose
-            val thumbDir = new File(s"Thumbs/$resolution/")
-            thumbDir.mkdirs()
-            ImageIO.write(thumb, format.get, new File(thumbDir, name + "." + extension))
-            img.addResolution(resolution)
-            img.save()
-          } else {
-            S.notice("Image must be of type " + img.mimeType.get)
-          }
-        } else {
-          S.notice("Unsupported file format " + mimeType)
-        }
+      case "image/jpeg" => Some("jpeg")
+      case "image/png" => Some("png")
+      case _ => None
+    }
+    if (format.isDefined) {
+      if (name == "") {
+        name = fileName.reverse.dropWhile(_ != '.').drop(1).reverse
+      }
+      name = name.replaceAll("""(\s|\.)+""", "_")
+      val extension = fileName.reverse.takeWhile(_ != '.').reverse
+      val img = Image.find(By(Image.name, name)).getOrElse(Image.create.name(name).mimeType(mimeType).extension(extension))
+      if (img.mimeType.get == mimeType) {
+        val bitmap = ImageIO.read(inputStream)
+        val dir = new File(s"Images/$resolution/")
+        dir.mkdirs()
+        ImageIO.write(bitmap, format.get, new File(dir, name + "." + extension))
+        val thumb = new BufferedImage(bitmap.getWidth() / 20, bitmap.getHeight() / 20, bitmap.getType())
+        val g = thumb.createGraphics()
+        g.drawImage(bitmap, 0, 0, thumb.getWidth(), thumb.getHeight(), 0, 0, bitmap.getWidth(), bitmap.getHeight(), null)
+        g.dispose
+        val thumbDir = new File(s"Thumbs/$resolution/")
+        thumbDir.mkdirs()
+        ImageIO.write(thumb, format.get, new File(thumbDir, name + "." + extension))
+        img.addResolution(resolution)
+        img.save()
+      } else {
+        S.notice("Image must be of type " + img.mimeType.get)
+      }
+    } else {
+      S.notice("Unsupported file format " + mimeType)
+    }
   }
-  
+
   def render = {
     var name = ""
     var upload: Box[FileParamHolder] = Empty

@@ -154,7 +154,7 @@ class Boot {
     Helpers.openUrlFromSystemProperty("htm.admin.url")
 
     Schedule.schedule(BroadcastListener.run _, 100)
-    
+
     ResourceBundleImporter.run()
   }
 }

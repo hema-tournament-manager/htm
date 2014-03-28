@@ -15,7 +15,7 @@ object ResourceBundleImporter extends Loggable {
       for (reso <- Resolution.supported) {
         val resoDir = new File(root, reso.toString)
         if (resoDir.exists) {
-          for (file <- resoDir.listFiles(new FilenameFilter {override def accept(dir: File, name: String): Boolean = name.toLowerCase().endsWith(".png")})) {
+          for (file <- resoDir.listFiles(new FilenameFilter { override def accept(dir: File, name: String): Boolean = name.toLowerCase().endsWith(".png") })) {
             val in = new FileInputStream(file)
             ImageList.importImage(file.getName.dropRight(4), reso, file.getName(), "image/png", in)
             in.close
@@ -24,5 +24,5 @@ object ResourceBundleImporter extends Loggable {
       }
     }
   }
-  
+
 }
