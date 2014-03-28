@@ -5,7 +5,7 @@ import com.typesafe.sbt.SbtScalariform._
 
 object HtmBuild extends Build {
 	def appName(name: String) = s"htm-${name}-play"
-	val appVersion      = "1.2-SNAPSHOT"
+	val appVersion      = "1.3.0"
 	
 	lazy val appDependencies = Seq(
 		"org.webjars" %% "webjars-play" % "2.2.0",
