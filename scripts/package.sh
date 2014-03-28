@@ -10,6 +10,7 @@ VERSION=$1
 cd ..
 sed -i "s/val buildVersion = \"[^\"]*\"/val buildVersion = \"${VERSION}\"/" project/HtmBuild.scala 
 sbt clean package
+sbt "project lib" publishLocal
 cp htm-admin/target/scala-2.10/htm-admin_2.10-$VERSION.war scripts/package/win/admin/webapps/ROOT.war
 cd scripts/package/win/
 zip -r htm-admin-$VERSION.zip admin "Start Admin.lnk"
