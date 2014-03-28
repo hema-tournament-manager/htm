@@ -18,32 +18,26 @@ import org.apache.commons.io.FileUtils
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
+import java.io.InputStream
 
 object ImageList {
 
-  def render = {
-    var name = ""
-    var upload: Box[FileParamHolder] = Empty
-    var resolution = Resolution.supported.head
-
-    def process() = {
-      if (upload.isEmpty) {
-        S.notice("Choose an image to upload")
-      } else {
-        val format = upload.get.mimeType match {
+  def importImage(_name: String, resolution: Resolution, fileName: String, mimeType: String, inputStream: InputStream): Unit = {
+    var name = _name
+    val format = mimeType match {
           case "image/jpeg" => Some("jpeg")
           case "image/png" => Some("png")
           case _ => None
         }
         if (format.isDefined) {
           if (name == "") {
-            name = upload.get.fileName.reverse.dropWhile(_ != '.').drop(1).reverse
+            name = fileName.reverse.dropWhile(_ != '.').drop(1).reverse
           }
           name = name.replaceAll("""(\s|\.)+""", "_")
-          val extension = upload.get.fileName.reverse.takeWhile(_ != '.').reverse
-          val img = Image.find(By(Image.name, name)).getOrElse(Image.create.name(name).mimeType(upload.get.mimeType).extension(extension))
-          if (img.mimeType.get == upload.get.mimeType) {
-            val bitmap = ImageIO.read(upload.get.fileStream)
+          val extension = fileName.reverse.takeWhile(_ != '.').reverse
+          val img = Image.find(By(Image.name, name)).getOrElse(Image.create.name(name).mimeType(mimeType).extension(extension))
+          if (img.mimeType.get == mimeType) {
+            val bitmap = ImageIO.read(inputStream)
             val dir = new File(s"Images/$resolution/")
             dir.mkdirs()
             ImageIO.write(bitmap, format.get, new File(dir, name + "." + extension))
@@ -60,8 +54,20 @@ object ImageList {
             S.notice("Image must be of type " + img.mimeType.get)
           }
         } else {
-          S.notice("Unsupported file format " + upload.get.mimeType)
+          S.notice("Unsupported file format " + mimeType)
         }
+  }
+  
+  def render = {
+    var name = ""
+    var upload: Box[FileParamHolder] = Empty
+    var resolution = Resolution.supported.head
+
+    def process() = {
+      if (upload.isEmpty) {
+        S.notice("Choose an image to upload")
+      } else {
+        importImage(name, resolution, upload.get.fileName, upload.get.mimeType, upload.get.fileStream)
       }
     }
 

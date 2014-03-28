@@ -21,6 +21,7 @@ import java.net.MulticastSocket
 import java.net.DatagramPacket
 import net.liftweb.util.Schedule
 import nl.malienkolders.htm.admin.worker.BroadcastListener
+import nl.malienkolders.htm.admin.lib.importer.ResourceBundleImporter
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -153,5 +154,7 @@ class Boot {
     Helpers.openUrlFromSystemProperty("htm.admin.url")
 
     Schedule.schedule(BroadcastListener.run _, 100)
+    
+    ResourceBundleImporter.run()
   }
 }

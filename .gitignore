@@ -28,4 +28,5 @@ test*.txt
 /scripts/package/win/viewer
 *.war
 *.swp
+resourcebundle
 
