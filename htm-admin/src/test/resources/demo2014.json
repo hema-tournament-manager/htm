@@ -1,0 +1,37 @@
+{  "name": "Demo Event",
+  "days": [
+    {  "date": "2014-04-01",
+      "timeslots": [
+        { "name": "Check-in", "from": "09:00", "to": "11:00" },
+        { "name": "Pool fights", "from": "11:00", "to": "13:00" },
+        { "name": "Lunch", "from": "13:00", "to": "14:00" },
+        { "name": "Pool fights", "from": "14:00", "to": "18:00" }
+      ]
+    },
+    {  "date": "2014-04-02",
+      "timeslots": [
+        { "name": "Check-in", "from": "09:00", "to": "10:00" },
+        { "name": "Elimination fights", "from": "10:00", "to": "13:00" },
+        { "name": "Lunch", "from": "13:00", "to": "14:00" },
+        { "name": "Finals", "from": "14:00", "to": "15:00" }
+      ]
+    }
+  ],
+  "arenas": 2,
+  "tournaments": [
+    { "id": "longsword",
+      "name": "Longsword Tournament",
+      "mnemonic": "LS",
+      "poolPhase": { "ruleset": "demo-2014-longsword-pools" },
+      "eliminationPhase": { "ruleset": "demo-2014-longsword-elimination", "fighters": 16 },
+      "finalsPhase": { "ruleset": "demo-2014-longsword-finals" }
+    },
+    { "id": "sword-buckler",
+      "name": "Sword and Buckler Tournament",
+      "mnemonic": "SB",
+      "poolPhase": { "ruleset": "demo-2014-swordbuckler-pools" },
+      "eliminationPhase": { "ruleset": "demo-2014-swordbuckler-elimination", "fighters": 8 },
+      "finalsPhase": { "ruleset": "demo-2014-swordbuckler-finals" }
+    }
+  ]
+}
