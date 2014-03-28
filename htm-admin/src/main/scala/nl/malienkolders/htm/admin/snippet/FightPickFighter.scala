@@ -76,7 +76,7 @@ object FightPickFighter {
 
     if (t.poolPhase.pools.isEmpty) {
       "#pick-participant" #> (
-          "* [class]" #> "in active" &
+        "* [class]" #> "in active" &
         "thead .pool" #> Nil &
         "thead .score" #> Nil &
         ".participant" #> t.subscriptions.map { s =>

@@ -27,7 +27,7 @@ import nl.malienkolders.htm.admin.worker.BroadcastListener
  * to modify lift's environment
  */
 class Boot {
-  
+
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor =
@@ -151,7 +151,7 @@ class Boot {
     //  RefreshServer;
 
     Helpers.openUrlFromSystemProperty("htm.admin.url")
-    	
+
     Schedule.schedule(BroadcastListener.run _, 100)
   }
 }

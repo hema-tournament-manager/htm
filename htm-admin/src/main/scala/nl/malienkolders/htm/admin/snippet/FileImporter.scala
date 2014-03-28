@@ -42,7 +42,7 @@ object FileImporter {
 
     "#file" #> SHtml.fileUpload(f => upload = Full(f), "class" -> "form-input") &
       "#doImportFile" #> SHtml.onSubmitUnit(process) &
-      "#downloadTemplate" #>  SHtml.link("/download/importer-template", () => throw new ResponseShortcutException(downloadDefaultImporterTemplate), Text("Download template for file import"))
+      "#downloadTemplate" #> SHtml.link("/download/importer-template", () => throw new ResponseShortcutException(downloadDefaultImporterTemplate), Text("Download template for file import"))
   }
 
   def downloadDefaultImporterTemplate() = {

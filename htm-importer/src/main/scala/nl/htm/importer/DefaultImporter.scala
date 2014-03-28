@@ -16,7 +16,7 @@ object DefaultImporter extends Importer[DefaultSettings] {
     val workbook = WorkbookFactory.create(settings.in)
 
     val participants = workbook.getSheetAt(0)
-    
+
     val headerRow = participants.getRow(0)
 
     val tournaments = (for (i <- 6 to headerRow.getLastCellNum() - 1) yield headerRow.getCell(i).getStringCellValue()).toList
@@ -41,5 +41,5 @@ object DefaultImporter extends Importer[DefaultSettings] {
           Subscription(false, i + 1, 0, None) -> p
       }.toList).toMap)
   }
-  
+
 }

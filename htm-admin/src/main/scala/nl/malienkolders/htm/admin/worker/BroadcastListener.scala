@@ -31,10 +31,8 @@ object BroadcastListener extends Loggable {
       logger.debug("RECEIVED: %s (%s)" format (url, name))
 
       val viewer = Viewer.find(By(Viewer.url, url)).map(viewer =>
-        viewer.alias(name)
-      ).openOr(
-        Viewer.create.alias(name).url(url)
-      )
+        viewer.alias(name)).openOr(
+        Viewer.create.alias(name).url(url))
       viewer.save
     }
   }
