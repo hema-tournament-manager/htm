@@ -29,8 +29,8 @@ object FileImporter {
           implicit class JoinHelper[A](list: Seq[A]) {
             def outerJoin[B](other: Seq[B]) = list.map(Some(_)).zipAll(other.map(Some(_)), None, None)
           }
-          Importer.importParticipants(eventData.participants)
-          Importer.importSubscriptions(eventData)
+          UrlImporter.importParticipants(eventData.participants)
+          UrlImporter.importSubscriptions(eventData)
 
           S.notice("Import succeeded")
           S.redirectTo("/tournaments/list")
