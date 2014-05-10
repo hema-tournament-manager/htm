@@ -30,3 +30,4 @@ test*.txt
 *.swp
 resourcebundle
 
+.history

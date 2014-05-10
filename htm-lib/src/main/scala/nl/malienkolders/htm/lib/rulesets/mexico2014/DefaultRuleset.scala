@@ -171,6 +171,17 @@ abstract class EmagRuleset extends Ruleset {
     pointLimit = 0)
 }
 
+object EmagRuleset {
+  def registerAll(): Unit = {
+    AlbionPoolPhaseRuleset.register()
+    AlbionEliminationRuleset.register()
+    AlbionFinalsRuleset.register()
+    DefaultPoolPhaseRuleset.register()
+    DefaultEliminationRuleset.register()
+    DefaultFinalsRuleset.register()
+  }
+}
+
 trait PoolPhaseRuleset extends EmagRuleset
 
 trait EliminationRuleset extends EmagRuleset {
