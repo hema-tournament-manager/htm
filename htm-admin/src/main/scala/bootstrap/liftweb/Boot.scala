@@ -91,6 +91,7 @@ class Boot {
     LongswordRuleset.register(true)
     SwordBucklerRuleset.register()
     nl.malienkolders.htm.lib.rulesets.mexico2014.EmagRuleset.registerAll()
+    nl.malienkolders.htm.lib.rulesets.kriegesschule2014.KriegesSchuleRuleset.registerAll()
 
     val entries: List[ConvertableToMenu] = (Menu.i("Event") / "index") ::
       (Menu.i("Tournaments") / "tournaments" / "list" submenus (

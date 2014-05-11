@@ -1,0 +1,51 @@
+{ "name": "Krieges-Schule",
+  "days": [
+    { "date": "2014-05-24",
+      "timeslots": [
+        { "name": "Check-in", "from": "08:00", "to": "09:00" },
+        { "name": "Open Nylon Longsword Pools", "from": "09:00", "to": "12:00" },
+        { "name": "Open Nylon Longsword Elimination", "from": "13:00", "to": "14:30" },
+        { "name": "Women's Longsword Pools", "from": "14:30", "to": "15:00" },
+        { "name": "Women's Longsword Elimination", "from": "15:00", "to": "15:30" }
+      ]
+    },
+    { "date": "2014-05-25",
+      "timeslots": [
+        { "name": "Open Steel Longsword Pools", "from": "12:30", "to": "14:30" },
+        { "name": "Open Steel Longsword Elimination", "from": "14:30", "to": "16:00" },
+        { "name": "Open Dussack Pools", "from": "15:00", "to": "16:00" },
+        { "name": "Open Dussack Elimination", "from": "16:00", "to": "17:00" }
+      ]
+    }
+  ],
+  "arenas": 1,
+  "tournaments": [
+    { "id": "steel",
+      "name": "Open Steel Longsword",
+      "mnemonic": "SL",
+      "poolPhase": { "ruleset": "kriegesschule-2014-default-pools" },
+      "eliminationPhase": { "ruleset": "kriegesschule-2014-default-elimination", "fighters": 8, "pick": { "top": 2 } },
+      "finalsPhase": { "ruleset": "kriegesschule-2014-default-finals" }
+    },
+    { "id": "nylon",
+      "name": "Open Nylon Longsword",
+      "mnemonic": "NL",
+      "poolPhase": { "ruleset": "kriegesschule-2014-default-pools" },
+      "eliminationPhase": { "ruleset": "kriegesschule-2014-default-elimination", "fighters": 8, "pick": { "top": 2 } },
+      "finalsPhase": { "ruleset": "kriegesschule-2014-default-finals" }
+    },
+    { "id": "women",
+      "name": "Women's Longsword",
+      "mnemonic": "WL",
+      "poolPhase": { "ruleset": "kriegesschule-2014-default-pools" },
+      "finalsPhase": { "ruleset": "kriegesschule-2014-default-finals" }
+    },
+    { "id": "dussack",
+      "name": "Open Dussack",
+      "mnemonic": "D",
+      "poolPhase": { "ruleset": "kriegesschule-2014-default-pools" },
+      "eliminationPhase": { "ruleset": "kriegesschule-2014-default-elimination", "fighters": 8, "pick": { "top": 2 } },
+      "finalsPhase": { "ruleset": "kriegesschule-2014-default-finals" }
+    }
+  ]
+}
