@@ -91,7 +91,7 @@ object JsonImporter extends Loggable {
       S.redirectTo("/tournaments/list")
     }
 
-      "#json" #> SHtml.textarea(json, json = _, "class" -> "form-input") &
+    "#json" #> SHtml.textarea(json, json = _, "class" -> "form-input") &
       "#doImportJson" #> SHtml.onSubmitUnit(() => processJson())
   }
 

@@ -52,6 +52,13 @@ class PoolPhase extends Phase[PoolPhase] {
     pools += newPool
     newPool
   }
+  
+  def pool(number: Int): Pool = {
+    while (pools.size < number) {
+      addPool
+    }
+    pools(number - 1)
+  }
 
   def fights = pools.flatMap(_.fights)
 
