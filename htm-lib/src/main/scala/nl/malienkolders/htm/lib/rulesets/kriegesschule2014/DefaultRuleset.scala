@@ -145,7 +145,7 @@ abstract class KriegesSchuleRuleset extends Ruleset {
 
   def lossesByDoubles(doubles: Int): Int = if (fightProperties.doubleHitLimit > 0 && doubles >= fightProperties.doubleHitLimit) 1 else 0
 
-  val possiblePoints = List(0, 1, 2, 3)
+  val possiblePoints = (0 to 12).toList
 
   def fightProperties = FightProperties(
     timeLimit = 3 minutes,
