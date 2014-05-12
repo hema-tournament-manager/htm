@@ -14,7 +14,8 @@ case class ParticipantScores(
     cleanHitsDealt: Int,
     cleanHitsReceived: Int,
     doubleHits: Int,
-    exchangePoints: Int) extends Scores {
+    exchangePoints: Int,
+    hitsReceived: Int) extends Scores {
 
   def none(caption: String) = <span>{ caption }</span>
   def asc(caption: String) = <span><span>{ caption }</span><small class="glyphicon glyphicon-sort-by-attributes"></small></span>
@@ -24,45 +25,34 @@ case class ParticipantScores(
 
   val fields: List[ScoreField] = List(
     ScoreField("Wins", desc("W"), HighestFirst, wins),
-    ScoreField("Clean hits", desc("C"), HighestFirst, cleanHitsDealt),
-    ScoreField("Clean hits against", asc("CA"), LowestFirst, cleanHitsReceived),
-    ScoreField("Double hits", asc("D"), LowestFirst, doubleHits),
-    ScoreField("Average score per hit", desc("AS/H"), HighestFirst, exchangePoints),
-    ScoreField("Points", desc("P"), HighestFirst, wins))
+    ScoreField("Points", desc("P"), HighestFirst, wins),
+    ScoreField("hits against", asc("HA"), LowestFirst, hitsReceived),
+    ScoreField("Double hits", asc("D"), LowestFirst, doubleHits))
 }
 
 abstract class KriegesSchuleRuleset extends Ruleset {
   type Scores = ParticipantScores
 
-  val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0)
+  val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0)
 
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {
-      case (ParticipantScores(f1, w1, lbd1, cd1, cr1, d1, ash1), ParticipantScores(f2, w2, lbd2, cd2, cr2, d2, ash2)) =>
-        // TODO: points?
-        val p1 = 0
-        val p2 = 0
-
+      case (ParticipantScores(f1, w1, lbd1, cd1, cr1, d1, p1, hr1), ParticipantScores(f2, w2, lbd2, cd2, cr2, d2, p2, hr2)) =>
+                
+      	// Ranking of people overall should be done by
+        // - number of wins
+        // - overall points
+        // - least number of hits against (how many times they were hit by an opponent, including clean hits and afterblows)
+        // - least number of doubles 
         if (w1 != w2) {
-          // a. most wins
           w1 > w2
-        } else if (cd1 != cd2) {
-          // b. most clean hits dealt
-          cd1 > cd2
-        } else if (cr1 != cr2) {
-          // c. fewest clean hits against
-          cr1 < cr2
-        } else if (d1 != d2) {
-          // d. fewest doubles
-          d1 < d2
-        } else if (ash1 != ash2) {
-          // d. highest average score per hit
-          ash1 > ash2
         } else if (p1 != p2) {
-          // e. most points
           p1 > p2
+        } else if (hr1 != hr2) {
+          hr1 < hr2
+        } else if (d1 != d2) {
+          d1 < d2
         } else {
-          // z. randomly
           random.nextBoolean
         }
     }
@@ -118,23 +108,31 @@ abstract class KriegesSchuleRuleset extends Ruleset {
     val r = p.phase.obj.get
     val t = r.tournament.obj.get
     val fs = p.fights.filter(_.finished_?)
-    val result = pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(0, 0, 0, 0, 0, 0, 0)) {
-      case (ps @ ParticipantScores(c, w, lbd, hD, hR, d, p), f) =>
+    val result = pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0)) {
+      case (ps @ ParticipantScores(
+          c /*fight count*/,
+          w /*wins*/,
+          lbd /*losses by doubles*/,
+          chD /*clean hits dealt*/,
+          chR /*clean hits received*/,
+          d /*double hits*/,
+          p /*points*/,
+          hR /*hits received*/), f) =>
         if (!f.cancelled.is && f.inFight_?(pt)) {
           f.currentScore match {
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), hD + a, hR + b, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), hD + b, hR + a, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(c + 1, w + 1, lbd + lossesByDoubles(double), hD + a, hR + b, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), hD + b, hR + a, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), hD + a, hR + b, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(c + 1, w + 1, lbd + lossesByDoubles(double), hD + b, hR + a, d + double, b + p)
-            case _ => ParticipantScores(c, w, lbd, hD, hR, d, p)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), chD + a, chR + b, d + double, p + a, hR + bclean + bafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), chD + b, chR + a, d + double, b + p, hR + aclean + aafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w + 1, lbd + lossesByDoubles(double), chD + a, chR + b, d + double, a + p, hR + bclean + bafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), chD + b, chR + a, d + double, b + p, hR + aclean + aafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), chD + a, chR + b, d + double, a + p, hR + bclean + bafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w + 1, lbd + lossesByDoubles(double), chD + b, chR + a, d + double, b + p, hR + aclean + aafter)
+            case _ => ParticipantScores(c, w, lbd, chD, chR, d, p, hR)
           }
         } else {
           ps

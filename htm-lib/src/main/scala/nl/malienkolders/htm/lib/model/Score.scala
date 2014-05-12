@@ -28,7 +28,9 @@ case class TotalScore(
   blue: Int,
   blueAfter: Int,
   double: Int,
-  exchangeCount: Int)
+  exchangeCount: Int,
+  cleanHitsRed: Int,
+  cleanHitsBlue: Int)
 
 trait Score[S <: Score[S, F], F <: Fight[F, S]] extends LongKeyedMapper[S] {
   self: S =>

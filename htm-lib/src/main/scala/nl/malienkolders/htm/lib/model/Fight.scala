@@ -74,14 +74,16 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def mapScores[A](map: Score[_, _] => A): Seq[A] = scores.map(map)
 
-  def currentScore = scores.foldLeft(TotalScore(0, 0, 0, 0, 0, 0)) { (sum, score) =>
+  def currentScore = scores.foldLeft(TotalScore(0, 0, 0, 0, 0, 0, 0, 0)) { (sum, score) =>
     TotalScore(
       sum.red + score.pointsRed.get,
       sum.redAfter + score.afterblowsRed.get,
       sum.blue + score.pointsBlue.get,
       sum.blueAfter + score.afterblowsBlue.get,
       sum.double + score.doubles.get,
-      sum.exchangeCount + score.exchanges.get)
+      sum.exchangeCount + score.exchanges.get,
+      sum.cleanHitsRed + score.cleanHitsRed.get,
+      sum.cleanHitsBlue + score.cleanHitsBlue.get)
   }
 
   def inFight_?(p: Participant) = (for {
@@ -98,8 +100,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
       None
     case false =>
       currentScore match {
-        case TotalScore(a, _, b, _, _, _) if a > b => fighterA.participant
-        case TotalScore(a, _, b, _, _, _) if a < b => fighterB.participant
+        case TotalScore(a, _, b, _, _, _, _, _) if a > b => fighterA.participant
+        case TotalScore(a, _, b, _, _, _, _, _) if a < b => fighterB.participant
         case _ => None
       }
   }
@@ -110,8 +112,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
       None
     case false =>
       currentScore match {
-        case TotalScore(a, _, b, _, _, _) if a < b => fighterA.participant
-        case TotalScore(a, _, b, _, _, _) if a > b => fighterB.participant
+        case TotalScore(a, _, b, _, _, _, _, _) if a < b => fighterA.participant
+        case TotalScore(a, _, b, _, _, _, _, _) if a > b => fighterB.participant
         case _ => None
       }
   }

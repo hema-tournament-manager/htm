@@ -134,17 +134,17 @@ abstract class EmagRuleset extends Ruleset {
       case (ps @ ParticipantScores(i, c, w, l, lbd, hR, hD, aR, aD, d, p), f) =>
         if (!f.cancelled.is && f.inFight_?(pt)) {
           f.currentScore match {
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, l + 1, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w, l + 1, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
+            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
               ParticipantScores(i, c + 1, w + 1, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
             case _ => ParticipantScores(i, c, w, l, lbd, hR, hD, aR, aD, d, p)
           }
