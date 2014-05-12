@@ -71,8 +71,8 @@ object BuildSettings {
   val buildOrganization = "nl.malienkolders"
 
   val buildName = "HTM"
-  val buildVersion = "1.3.1"
-  val buildScalaVersion = "2.10.2"
+  val buildVersion = "1.4.0"
+  val buildScalaVersion = "2.10.4"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -105,13 +105,12 @@ object Format {
 }
 
 object Dependencies {
-  val liftVersion = "2.5"
+  val liftVersion = "2.5.1"
   val jettyVersion = "8.0.4.v20111024" //"8.1.12.v20130726"
   val scalaTestVersion = "2.0.M5-B1"
   val junitVersion = "4.7" //"4.11"
   val mockitoVersion = "1.9.0"
-  val jmeVersion = "3.0.0.20120512-SNAPSHOT"
-	val dispatchVersion = "0.11.0"
+  val dispatchVersion = "0.11.0"
 
   val scala = "org.scala-lang" % "scala-library" % BuildSettings.buildScalaVersion % "provided"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % BuildSettings.buildScalaVersion
@@ -129,9 +128,4 @@ object Dependencies {
   val liftMapper = "net.liftweb" %% "lift-mapper" % liftVersion % "compile"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % dispatchVersion
   val junit = "junit" % "junit" % junitVersion
-  val jmeCore = "com.jme3" % "jME3-core" % jmeVersion
-  val jmeDesktop = "com.jme3" % "jME3-desktop" % jmeVersion
-  val jmeLwjgl = "com.jme3" % "jME3-lwjgl" % jmeVersion
-  val jmeLwjglNatives = "com.jme3" % "jME3-lwjgl-natives" % jmeVersion
-  val lwjgl = "com.jme3" % "lwjgl" % jmeVersion
 }
