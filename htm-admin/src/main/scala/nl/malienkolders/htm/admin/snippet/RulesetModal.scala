@@ -55,6 +55,7 @@ object RulesetModal {
         "Break duration" -> renderTime(ruleset.fightProperties.breakDuration),
         "Time between fights" -> renderTime(ruleset.fightProperties.timeBetweenFights),
         "Exchange limit" -> renderNumber(ruleset.fightProperties.exchangeLimit),
+        "Point limit" -> renderNumber(ruleset.fightProperties.pointLimit),
         "Double hit limit" -> renderNumber(ruleset.fightProperties.doubleHitLimit)).map {
           case (key, value) =>
             ".key *" #> key &
