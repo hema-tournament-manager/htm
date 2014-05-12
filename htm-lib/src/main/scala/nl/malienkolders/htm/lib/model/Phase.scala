@@ -24,7 +24,7 @@ trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with IdPK with OneToMany[L
   object breakDuration extends MappedLong(this)
   object timeBetweenFights extends MappedLong(this)
 
-  object ruleset extends MappedString(this, 32)
+  object ruleset extends MappedString(this, 64)
 
   def previousPhase = {
     tournament.foreign.get.phases.find(_.order.is == order.is - 1)
