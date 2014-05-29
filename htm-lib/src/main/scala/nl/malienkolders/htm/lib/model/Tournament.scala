@@ -31,6 +31,21 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
     case _ => subscriptions.map(_.fighterNumber.get).max + 1
   }
 
+  def addParticipant(participantId: Long): Boolean = {
+    val participant = Participant.findByKey(participantId).get
+    
+    if (participants.map(_.id.is).contains(participantId)) {
+      return false;
+    }
+    
+    this.subscriptions += TournamentParticipant.create.
+      participant(participant).
+      experience(0).
+      gearChecked(false).
+      fighterNumber(this.nextFighterNumber)
+    this.save
+  }
+
   def startTime = 0
 
   def toMarshalled = MarshalledTournament(

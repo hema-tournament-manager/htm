@@ -49,13 +49,8 @@ object TournamentView {
     val otherParticipants = Participant.findAll(OrderBy(Participant.name, Ascending)) diff t.subscriptions.map(_.participant.obj.get).toList
 
     def addParticipant(tournament: Tournament, participantId: Long) = {
+      tournament.addParticipant(participantId);
       val participant = Participant.findByKey(participantId).get
-      tournament.subscriptions += TournamentParticipant.create.
-        participant(participant).
-        experience(0).
-        gearChecked(false).
-        fighterNumber(tournament.nextFighterNumber)
-      tournament.save
       RedirectTo("#participant" + participant.externalId.get) & Reload
     }
 

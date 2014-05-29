@@ -45,6 +45,15 @@ object AdminRest extends RestHelper {
     case "api" :: "tournament" :: AsLong(tournamentId) :: Nil JsonGet _ =>
       Tournament.findByKey(tournamentId).map(t => Extraction.decompose(t.toMarshalled)).getOrElse[JValue](JBool(false))
 
+      
+      
+    case "api" :: "tournament" :: AsLong(tournamentId) :: "participants" :: Nil JsonGet _ =>
+      Tournament.findByKey(tournamentId).map(t => Extraction.decompose(t.participants.map(_.toMarshalled)));
+
+    case "api" :: "tournament" :: AsLong(tournamentId) :: "participants" :: AsLong(participantId) :: Nil Put _ =>
+      JBool(Tournament.findByKey(tournamentId).map(_.addParticipant(participantId)).getOrElse(false));
+
+      
     case "api" :: "tournament" :: tournamentIdentifier :: "gearcheck" :: AsLong(participantId) :: Nil JsonPost json -> _ =>
       JBool(json match {
         case JBool(b) =>
