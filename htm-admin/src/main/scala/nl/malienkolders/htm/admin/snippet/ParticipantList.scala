@@ -47,16 +47,17 @@ object ParticipantList {
       S.redirectTo("/participants/register/new")
     }
 
-    def registerAllSubmit = SHtml.submit("register all", () => registerAll(true), "class" -> "btn btn-default")
+    def registerAllLink = SHtml.link("/participants/list",  () => registerAll(true), <span><span class="glyphicon glyphicon-ok"></span> Register All</span>)
 
-    def unregisterAllSubmit = SHtml.submit("unregister all", () => registerAll(false), "class" -> "btn btn-default")
+    def unregisterAllLink = SHtml.link("/participants/list", () => registerAll(false), <span><span class="glyphicon glyphicon-remove"></span> Unregister All</span>)
 
-    def createParticipantSubmit = SHtml.submit("create participant", createParticipant, "class" -> "btn btn-default")
+    def createParticipantLink = SHtml.link("/participants/list", createParticipant, <span><span class="glyphicon glyphicon-plus-sign"></span> New Participant</span>)
 
     ".downloadButton *" #> Seq(
       SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), Text("Participants")),
       SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), Text("Clubs")),
       SHtml.link("/download/details", () => throw new ResponseShortcutException(downloadDetailsList), Text("Finalist Details"))) &
+      ".actionButton *" #> Seq(createParticipantLink, registerAllLink, unregisterAllLink) &
       "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
         val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
         selectedParticipant = Empty
@@ -96,8 +97,7 @@ object ParticipantList {
       ".totals" #> (
         ".people *" #> ps.size &
         ".countries *" #> ps.groupBy(_.country.is).size &
-        ".clubs *" #> ps.groupBy(_.clubCode.is).size &
-        ".actions *" #> Seq(createParticipantSubmit, registerAllSubmit, unregisterAllSubmit))
+        ".clubs *" #> ps.groupBy(_.clubCode.is).size)
   }
 
   def downloadParticipantList() = {

@@ -34,7 +34,20 @@
 		</head>
 		<div class="lift:ParticipantList">
 		<h2>
-			Participants 
+			Participants
+			<small class="totals">
+				<span class="people">0</span> people from
+				<span class="clubs">0</span> clubs in
+				<span class="countries">0</span> countries
+			</small>
+			<div class="btn-group pull-right" title="Actions">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					Actions <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li class="actionButton"><a href="#">Action</a></li>
+				</ul>
+			</div>
 			<div class="btn-group pull-right" title="Download">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 					<span class="glyphicon glyphicon-download"></span> Download <span class="caret"></span>
@@ -65,9 +78,7 @@
 			<tfoot>
 				<tr class="totals">
 					<td colspan="6" class="text-center">
-						<span class="people">0</span> people from
-						<span class="clubs">0</span> clubs in
-						<span class="countries">0</span> countries
+						
 					</td>
 					<td>
 						<form action="/participants/lists" method="post" class="actions">
