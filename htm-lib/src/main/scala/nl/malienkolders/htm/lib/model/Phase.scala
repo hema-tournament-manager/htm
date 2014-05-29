@@ -24,7 +24,7 @@ trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with IdPK with OneToMany[L
   object breakDuration extends MappedLong(this)
   object timeBetweenFights extends MappedLong(this)
 
-  object ruleset extends MappedString(this, 32)
+  object ruleset extends MappedString(this, 64)
 
   def previousPhase = {
     tournament.foreign.get.phases.find(_.order.is == order.is - 1)
@@ -51,6 +51,13 @@ class PoolPhase extends Phase[PoolPhase] {
     val newPool = Pool.create(tournament.obj.get).order(pools.size + 1)
     pools += newPool
     newPool
+  }
+  
+  def pool(number: Int): Pool = {
+    while (pools.size < number) {
+      addPool
+    }
+    pools(number - 1)
   }
 
   def fights = pools.flatMap(_.fights)

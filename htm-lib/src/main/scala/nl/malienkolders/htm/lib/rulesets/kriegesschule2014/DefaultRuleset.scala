@@ -1,5 +1,5 @@
 package nl.malienkolders.htm.lib.rulesets
-package mexico2014
+package kriegesschule2014
 
 import nl.malienkolders.htm.lib.model._
 import nl.malienkolders.htm.lib.util.Helpers._
@@ -8,21 +8,14 @@ import net.liftweb.util.TimeHelpers._
 import scala.xml.Elem
 
 case class ParticipantScores(
-    initialRanking: Int,
     fights: Int,
     wins: Int,
-    losses: Int,
     lossesByDoubles: Int,
-    cleanHitsReceived: Int,
     cleanHitsDealt: Int,
-    afterblowsReceived: Int,
-    afterblowsDealt: Int,
+    cleanHitsReceived: Int,
     doubleHits: Int,
-    exchangePoints: Int) extends Scores {
-  def group = if (fights > 0) exchangePoints else -10 + initialRanking
-  def hitsReceived = cleanHitsReceived + afterblowsReceived + afterblowsDealt + doubleHits
-  def firstHits = cleanHitsDealt + afterblowsDealt
-  def doubleHitsAverage = if (fights == 0) 0 else doubleHits.toDouble / fights
+    exchangePoints: Int,
+    hitsReceived: Int) extends Scores {
 
   def none(caption: String) = <span>{ caption }</span>
   def asc(caption: String) = <span><span>{ caption }</span><small class="glyphicon glyphicon-sort-by-attributes"></small></span>
@@ -32,50 +25,35 @@ case class ParticipantScores(
 
   val fields: List[ScoreField] = List(
     ScoreField("Wins", desc("W"), HighestFirst, wins),
-    ScoreField("Clean hits against", asc("CA"), LowestFirst, cleanHitsReceived),
-    ScoreField("Clean hits", desc("C"), HighestFirst, cleanHitsDealt),
-    ScoreField("Afterblows against", asc("AA"), LowestFirst, afterblowsReceived),
+    ScoreField("Points", desc("P"), HighestFirst, wins),
+    ScoreField("hits against", asc("HA"), LowestFirst, hitsReceived),
     ScoreField("Double hits", asc("D"), LowestFirst, doubleHits))
 }
 
-abstract class EmagRuleset extends Ruleset {
+abstract class KriegesSchuleRuleset extends Ruleset {
   type Scores = ParticipantScores
 
-  val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  val emptyScore = ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0)
 
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {
-      case (ParticipantScores(i1, f1, w1, _, lbd1, cr1, cd1, ar1, _, d1, p1), ParticipantScores(i2, f2, w2, _, lbd2, cr2, cd2, ar2, _, d2, p2)) =>
-        val effectivePoints1 = p1 - lbd1
-        val effectivePoints2 = p2 - lbd2
-
-        if (f1 == 0 && f2 == 0) {
-          // if both haven't fought yet: order by initial ranking
-          i1 > i2
-        } else if (f1.min(f2) == 0) {
-          // put fighters who have fought before those who haven't
-          f2 == 0
+      case (ParticipantScores(f1, w1, lbd1, cd1, cr1, d1, p1, hr1), ParticipantScores(f2, w2, lbd2, cd2, cr2, d2, p2, hr2)) =>
+                
+      	// Ranking of people overall should be done by
+        // - number of wins
+        // - overall points
+        // - least number of hits against (how many times they were hit by an opponent, including clean hits and afterblows)
+        // - least number of doubles 
+        if (w1 != w2) {
+          w1 > w2
+        } else if (p1 != p2) {
+          p1 > p2
+        } else if (hr1 != hr2) {
+          hr1 < hr2
+        } else if (d1 != d2) {
+          d1 < d2
         } else {
-          // rank according to Mexico 2014 rules
-          if (w1 != w2) {
-            // a. most wins
-            w1 > w2
-          } else if (cr1 != cr2) {
-            // b. fewest clean hits against
-            cr1 < cr2
-          } else if (cd1 != cd2) {
-            // d. most clean hits dealt
-            cd1 > cd2
-          } else if (ar1 != ar2) {
-            // f. fewest afterblows received
-            ar1 < ar2
-          } else if (d1 != d2) {
-            // g. fewest doubles
-            d1 < d2
-          } else {
-            // z. randomly
-            random.nextBoolean
-          }
+          random.nextBoolean
         }
     }
   }
@@ -130,23 +108,31 @@ abstract class EmagRuleset extends Ruleset {
     val r = p.phase.obj.get
     val t = r.tournament.obj.get
     val fs = p.fights.filter(_.finished_?)
-    val result = pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(pt.initialRanking(t), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
-      case (ps @ ParticipantScores(i, c, w, l, lbd, hR, hD, aR, aD, d, p), f) =>
+    val result = pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0)) {
+      case (ps @ ParticipantScores(
+          c /*fight count*/,
+          w /*wins*/,
+          lbd /*losses by doubles*/,
+          chD /*clean hits dealt*/,
+          chR /*clean hits received*/,
+          d /*double hits*/,
+          p /*points*/,
+          hR /*hits received*/), f) =>
         if (!f.cancelled.is && f.inFight_?(pt)) {
           f.currentScore match {
-            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w + 1, l, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, l + 1, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w, l + 1, lbd + lossesByDoubles(double), hR + b, hD + a, aR + aafter, aD + bafter, d + double, a + p)
-            case TotalScore(a, aafter, b, bafter, double, _, _, _) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
-              ParticipantScores(i, c + 1, w + 1, l, lbd + lossesByDoubles(double), hR + a, hD + b, aR + bafter, aD + aafter, d + double, b + p)
-            case _ => ParticipantScores(i, c, w, l, lbd, hR, hD, aR, aD, d, p)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), chD + a, chR + b, d + double, p + a, hR + bclean + bafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a == b && f.fighterB.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), chD + b, chR + a, d + double, b + p, hR + aclean + aafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a > b && f.fighterA.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w + 1, lbd + lossesByDoubles(double), chD + a, chR + b, d + double, a + p, hR + bclean + bafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a > b && f.fighterB.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), chD + b, chR + a, d + double, b + p, hR + aclean + aafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a < b && f.fighterA.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w, lbd + lossesByDoubles(double), chD + a, chR + b, d + double, a + p, hR + bclean + bafter)
+            case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a < b && f.fighterB.participant.get.id.is == pt.id.is =>
+              ParticipantScores(c + 1, w + 1, lbd + lossesByDoubles(double), chD + b, chR + a, d + double, b + p, hR + aclean + aafter)
+            case _ => ParticipantScores(c, w, lbd, chD, chR, d, p, hR)
           }
         } else {
           ps
@@ -159,32 +145,29 @@ abstract class EmagRuleset extends Ruleset {
 
   def lossesByDoubles(doubles: Int): Int = if (fightProperties.doubleHitLimit > 0 && doubles >= fightProperties.doubleHitLimit) 1 else 0
 
-  val possiblePoints = List(0, 1, 2)
+  val possiblePoints = (0 to 12).toList
 
   def fightProperties = FightProperties(
     timeLimit = 3 minutes,
     breakAt = 0,
     breakDuration = 0,
-    timeBetweenFights = 2 minutes,
+    timeBetweenFights = 0,
     exchangeLimit = 0,
-    doubleHitLimit = 5,
-    pointLimit = 0)
+    doubleHitLimit = 3,
+    pointLimit = 7)
 }
 
-object EmagRuleset {
+object KriegesSchuleRuleset {
   def registerAll(): Unit = {
-    AlbionPoolPhaseRuleset.register()
-    AlbionEliminationRuleset.register()
-    AlbionFinalsRuleset.register()
     DefaultPoolPhaseRuleset.register()
     DefaultEliminationRuleset.register()
     DefaultFinalsRuleset.register()
   }
 }
 
-trait PoolPhaseRuleset extends EmagRuleset
+trait PoolPhaseRuleset extends KriegesSchuleRuleset
 
-trait EliminationRuleset extends EmagRuleset {
+trait EliminationRuleset extends KriegesSchuleRuleset {
   abstract override def fightProperties = super.fightProperties.copy(doubleHitLimit = 0)
 }
 
@@ -192,32 +175,16 @@ trait FinalsRuleset extends EliminationRuleset {
   abstract override def fightProperties = super.fightProperties.copy(timeLimit = 6 minutes, breakAt = 3 minutes, breakDuration = 1 minute, exchangeLimit = 0)
 }
 
-trait DefaultRuleset extends EmagRuleset
+trait DefaultRuleset extends KriegesSchuleRuleset
 
 object DefaultPoolPhaseRuleset extends DefaultRuleset with PoolPhaseRuleset {
-  val id = "emag-2014-default-pools"
+  val id = "kriegesschule-2014-default-pools"
 }
 
 object DefaultEliminationRuleset extends DefaultRuleset with EliminationRuleset {
-  val id = "emag-2014-default-elimination"
+  val id = "kriegesschule-2014-default-elimination"
 }
 
 object DefaultFinalsRuleset extends DefaultRuleset with FinalsRuleset {
-  val id = "emag-2014-default-finals"
-}
-
-trait AlbionRuleset extends DefaultRuleset {
-  abstract override def fightProperties = super.fightProperties.copy(exchangeLimit = 10)
-}
-
-object AlbionPoolPhaseRuleset extends AlbionRuleset with PoolPhaseRuleset {
-  val id = "emag-2014-albion-pools"
-}
-
-object AlbionEliminationRuleset extends AlbionRuleset with EliminationRuleset {
-  val id = "emag-2014-albion-elimination"
-}
-
-object AlbionFinalsRuleset extends AlbionRuleset with FinalsRuleset {
-  val id = "emag-2014-albion-finals"
+  val id = "kriegesschule-2014-default-finals"
 }

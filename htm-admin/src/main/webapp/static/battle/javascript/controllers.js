@@ -8,6 +8,8 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
 	$rootScope.subtitle = $rootScope.arena.name;
 	var _ = window._;
 	
+	$scope.possiblePointsRows = [[]];
+	
 	$scope.arena = $rootScope.arena;
     $scope.fights = new Array();
     $scope.currentFight = {globalOrder: -1, started: false};
@@ -408,9 +410,11 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	if (newValue && newValue.tournament) {
     		$rootScope.title = newValue.tournament.name;
     	}
-		$scope.fightsShowing[0] = Math.max($scope.currentFight.globalOrder - 2, 1);
+    	$scope.fightsShowing[0] = Math.max($scope.currentFight.globalOrder - 2, 1);
     	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
     	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
+    	$scope.possiblePointsRows = _(newValue.possiblePoints).groupBy(function(e, index) { return Math.floor(index / 7); });
+    	console.log($scope.possiblePointsRows);
     });
     
     $scope.$watch('announcement', function(newValue, oldValue) {
