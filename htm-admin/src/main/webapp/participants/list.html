@@ -7,7 +7,7 @@
 </style>
 </head>
 <body class="lift:content_id=main">
-	<div id="main" class="lift:surround?with=default;at=content">
+	<div id="main" class="lift:surround?with=default;at=content" ng-app="participants">
 		<head>
 			<style>
 			/* <![CDATA[ */
@@ -32,7 +32,7 @@
 			/* ]]> */
 			</style>
 		</head>
-		<div class="lift:ParticipantList">
+		<div class="lift:ParticipantList" ng-controller="ParticipantsCtrl">
 		<h2>
 			Participants
 			<small class="totals">
@@ -58,6 +58,16 @@
 			</div>
 		</h2>
 		<div id="countrySelect"><select><option>Netherlands</option></select></div>
+		<input type="text" class="form-control" placeholder="Search"/>
+		<div class="input-group" style="margin: 10px;">
+			<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+            <input type="text" class="form-control" placeholder="Search">
+        </div>
+        
+        <div ng-repeat="participant in participants">
+        	{{participant}}
+        </div>
+        
 		<table class="table table-condensed table-hover">
 			<tbody>
 				<tr class="participant">
@@ -90,6 +100,8 @@
 		</table>
 		</div>
 	</div>
+	
+
 </body>
 </html>
 
