@@ -195,6 +195,30 @@ ul.nav {
     margin-left: -300%;
   }
 }
+
+
+.stagger-animation.ng-leave-stagger {
+  /* 200ms will be applied between each sucessive enter operation */ 
+  -webkit-transition-delay:0.01s;
+  transition-delay:0.01s;
+
+  /* this is here to avoid accidental CSS inheritance */
+  -webkit-transition-duration:0;
+  transition-duration:0;
+}
+.fade-animation.ng-enter {
+  -webkit-transition:0.2s linear all;
+  transition:0.2s linear all;
+}
+
+.fade-animation.ng-enter,
+.fade-animation.ng-leave.ng-leave-active {
+  opacity:0;
+}
+.fade-animation.ng-leave,
+.fade-animation.ng-enter.ng-enter-active {
+  opacity:1;
+}
 /* ]]> */
 </style>
 </head>
@@ -226,8 +250,9 @@ ul.nav {
 		$('.navbar ul').addClass('nav').addClass('navbar-nav');
 		$('.datetimepicker').datetimepicker({ dateFormat: 'yy-mm-dd', timeFormat: 'HH:mm:ss' });
 	</script>
-	<script src="/static/javascript/lib/angular-1.1.5.js"></script>
-    <script src="/static/javascript/lib/angular-resource-1.1.5.js"></script>
+	<script src="/static/javascript/lib/angular.min.js"></script>
+    <script src="/static/javascript/lib/angular-animate.min.js"></script>
+    <script src="/static/javascript/lib/angular-resource.min.js"></script>
     <script src="/static/javascript/participants.js"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@
 </style>
 </head>
 <body class="lift:content_id=main">
-	<div id="main" class="lift:surround?with=default;at=content" ng-app="participants">
+	<div id="main" class="lift:surround?with=default;at=content" ng-app="htm">
 		<head>
 			<style>
 			/* <![CDATA[ */
@@ -58,26 +58,21 @@
 			</div>
 		</h2>
 		<div id="countrySelect"><select><option>Netherlands</option></select></div>
-		<input type="text" class="form-control" placeholder="Search"/>
 		<div class="input-group" style="margin: 10px;">
 			<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-            <input type="text" class="form-control" placeholder="Search">
-        </div>
-        
-        <div ng-repeat="participant in participants">
-        	{{participant}}
+            <input ng-model="search" type="text" class="form-control" placeholder="Search">
         </div>
         
 		<table class="table table-condensed table-hover">
 			<tbody>
-				<tr class="participant">
+				<tr class="participant fade-animation" ng-repeat="participant in participants | filter:search">
 					<td title="Photo?"><span class="photo glyphicon"></span></td>
-					<td class="id" title="Swordfish ID">1</td>
-					<td class="flag"><img src="/images/flags/ad.png"/></td>
-					<td class="name" title="Name">Naampje</td>
-					<td class="shortName" title="Short Name">Nmpje</td>
-					<td class="club" title="Club">Nmpje</td>
-					<td class="clubCode" title="Club Code">Nmpje</td>
+					<td class="id" title="ID">{{participant.externalId}}</td>
+					<td class="flag"><img ng-src="/images/flags/{{participant.country | lowercase}}.png"/></td>
+					<td class="name" title="Name">{{participant.name}}</td>
+					<td class="shortName" title="Short Name">{{participant.shortName}}</td>
+					<td class="club" title="Club">{{participant.club}}</td>
+					<td class="clubCode" title="Club Code">{{participant.clubCode}}</td>
 					<td class="tournaments" title="Tournaments">
 						<span class="tournament">MNEMONIC</span>
 					</td>

@@ -63,37 +63,6 @@ object ParticipantList {
         selectedParticipant = Empty
         cmd & Run("$('#countrySelect').hide();")
       }, "id" -> "countrySelectDropdown") &
-      ".participant" #> (ps.map { p =>
-        val c = p.country.obj.getOrElse(Country.findAll.head)
-        ".participant [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo("/participants/register/" + p.externalId.is)) &
-          ".participant [class]" #> (if (p.isPresent.is) "success" else "default") &
-          ".photo [class+]" #> (if (p.subscriptions.size > 0) (if (p.hasAvatar) "glyphicon-check" else "glyphicon-unchecked") else "") &
-          ".id *" #> p.externalId.is &
-          ".name *" #> p.name.is &
-          ".shortName *" #> p.shortName.is &
-          ".club *" #> p.club.is &
-          ".clubCode *" #> p.clubCode.is &
-          ".tournament" #> p.subscriptions.sortBy(_.primary.get).reverse.map { sub =>
-            val tournament = sub.tournament.foreign.get
-            <a class={ "label label-default " + tournament.identifier.get } href={ s"/tournaments/view/${tournament.identifier.get}#participant${p.externalId.is}" } title={ tournament.name.get }>{ tournament.mnemonic.get + " " + sub.fighterNumber.get }</a>
-          } &
-          ".flag" #> (
-            "img [src]" #> (if (c.hasFlag.is) "/images/flags/" + c.code2.get.toLowerCase() + ".png" else "/images/flags/unknown.png") &
-            "img [class]" #> (if (c.hasViewerFlag.is) "viewerFlagAvailable" else "") &
-            "img [id]" #> ("flag" + p.id.is) &
-            "img [title]" #> ("%s (click to change)" format c.name.is) &
-            "img [onclick]" #> SHtml.ajaxInvoke { () =>
-              selectedParticipant = Full(p)
-              Run("document.getElementById('countrySelectDropdown').selectedIndex = 0;$('#countrySelect').show();$('#countrySelect').offset($('#flag" + p.id.is + "').offset());") &
-                Focus("countrySelectDropdown")
-
-            }) &
-            ".action" #> <a href={ "/participants/register/" + p.externalId.is } style="margin-right: 10px">register</a> &
-            ".delete" #> SHtml.a({ () =>
-              p.delete_!
-              Reload
-            }, Text("delete"))
-      }) &
       ".totals" #> (
         ".people *" #> ps.size &
         ".countries *" #> ps.groupBy(_.country.is).size &
