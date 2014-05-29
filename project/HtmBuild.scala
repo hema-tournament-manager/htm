@@ -88,7 +88,8 @@ object BuildSettings {
     autoScalaLibrary := true,
     offline := false,
     javaOptions := Seq("-Djava.awt.headless=true"),
-    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource)
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
+	EclipseKeys.withSource := true)
 }
 
 object Format {
