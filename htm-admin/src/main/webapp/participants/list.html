@@ -65,7 +65,7 @@
         
 		<table class="table table-condensed table-hover">
 			<tbody>
-				<tr class="participant fade-animation" ng-repeat="participant in participants | filter:search">
+				<tr class="participant fade-animation" ng-repeat="participant in participants | filter:searchFilter">
 					<td title="Photo?"><span class="photo glyphicon"></span></td>
 					<td class="id" title="ID">{{participant.externalId}}</td>
 					<td class="flag"><img ng-src="/images/flags/{{participant.country | lowercase}}.png"/></td>

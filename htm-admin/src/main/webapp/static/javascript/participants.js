@@ -4,4 +4,9 @@ angular.module('htm', ['ngAnimate', 'ngResource'])
 	}])
 	.controller('ParticipantsCtrl', function($scope, Participant) {
 	  $scope.participants = Participant.query();
+	  
+	  $scope.searchFilter = function(obj) { 
+	    var re = new RegExp($scope.search, 'i');
+	    return !$scope.search || re.test(obj.name) || re.test(obj.externalId) || re.test(obj.club) || re.test(obj.clubCode) || re.test(obj.country);
+	  };
 	});
