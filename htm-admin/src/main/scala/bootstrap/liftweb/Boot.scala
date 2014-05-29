@@ -93,7 +93,9 @@ class Boot {
     nl.malienkolders.htm.lib.rulesets.mexico2014.EmagRuleset.registerAll()
     nl.malienkolders.htm.lib.rulesets.kriegesschule2014.KriegesSchuleRuleset.registerAll()
 
-    val entries: List[ConvertableToMenu] = (Menu.i("Event") / "index") ::
+    val entries: List[ConvertableToMenu] = 
+      (Menu(Loc("index", "index" :: Nil, "Welcome", Hidden))) ::
+      (Menu.i("Event") / "event") ::
       (Menu.i("Tournaments") / "tournaments" / "list" submenus (
         TournamentView.menu,
         TournamentEdit.menu)) ::

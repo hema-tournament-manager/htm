@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+    <title>Event</title>
+  </head>
+  <body class="lift:content_id=main">
+    <div id="main" class="lift:surround?with=default;at=content">
+    <head><style>
+    .date {
+    	margin-left: 10px;
+    }
+    
+    .table tbody > tr > td.arena tr > td {
+    	border: none;
+   	}
+   	
+   	.from input, .to input {
+   		width: 55px;
+   	}
+   	
+   	.form-control.date {
+   		width: 85px;
+   		margin-top: -6px;
+   		margin-right: -12px;
+   	}
+    </style></head>
+    <form class="lift:EventView">
+		<h2><span class="eventName">Event</span> <small><a href="/api/qr" title="Show QR-code"><span class="glyphicon glyphicon-qrcode"></span></a></small></h2>
+    
+    
+		<p><button id="saveAll" class="btn btn-default">Save</button></p>
+    
+		<div class="day panel panel-default pull-left">
+			<div class="panel-heading">
+				<h3 class="panel-title"><span class="dayTitle">Day 1</span><input class="date pull-right form-control input-sm" value="test"/></h3>
+			</div>
+			<table class="table">
+				<thead>
+					<tr>
+						<th class="arenaHeader">Arena 1</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="timeslot">
+						<td class="arena">
+							<table>
+								<tr>
+									<td><span class="from">10:00</span></td>
+									<td><span class="name">Fighting</span></td>
+								</tr>
+								<tr>
+									<td><span class="to">10:00</span></td>
+									<td><button class="remove btn btn-default btn-dm pull-right"><span class="glyphicon glyphicon-trash"></span></button></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr class="newTimeslot">
+						<td class="arena">
+							<button class="btn btn-default">plus</button>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+		</form>
+    <div class="clearfix">
+    </div>
+    <div>
+      <form class="lift:Home?form=post">
+      	<button>Download results</button>
+      </form>
+      </div>
+      </div>
+    
+    
+  </body>
+</html>
+
