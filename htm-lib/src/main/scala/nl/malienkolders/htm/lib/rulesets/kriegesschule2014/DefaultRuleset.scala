@@ -38,8 +38,8 @@ abstract class KriegesSchuleRuleset extends Ruleset {
   def compare(s1: ParticipantScores, s2: ParticipantScores)(implicit random: scala.util.Random) = {
     (s1, s2) match {
       case (ParticipantScores(f1, w1, lbd1, cd1, cr1, d1, p1, hr1), ParticipantScores(f2, w2, lbd2, cd2, cr2, d2, p2, hr2)) =>
-                
-      	// Ranking of people overall should be done by
+
+        // Ranking of people overall should be done by
         // - number of wins
         // - overall points
         // - least number of hits against (how many times they were hit by an opponent, including clean hits and afterblows)
@@ -110,14 +110,14 @@ abstract class KriegesSchuleRuleset extends Ruleset {
     val fs = p.fights.filter(_.finished_?)
     val result = pts.map(pt => (pt -> fs.foldLeft(ParticipantScores(0, 0, 0, 0, 0, 0, 0, 0)) {
       case (ps @ ParticipantScores(
-          c /*fight count*/,
-          w /*wins*/,
-          lbd /*losses by doubles*/,
-          chD /*clean hits dealt*/,
-          chR /*clean hits received*/,
-          d /*double hits*/,
-          p /*points*/,
-          hR /*hits received*/), f) =>
+        c /*fight count*/ ,
+        w /*wins*/ ,
+        lbd /*losses by doubles*/ ,
+        chD /*clean hits dealt*/ ,
+        chR /*clean hits received*/ ,
+        d /*double hits*/ ,
+        p /*points*/ ,
+        hR /*hits received*/ ), f) =>
         if (!f.cancelled.is && f.inFight_?(pt)) {
           f.currentScore match {
             case TotalScore(a, aafter, b, bafter, double, _, aclean, bclean) if a == b && f.fighterA.participant.get.id.is == pt.id.is =>

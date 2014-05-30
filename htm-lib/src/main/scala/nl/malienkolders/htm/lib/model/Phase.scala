@@ -52,7 +52,7 @@ class PoolPhase extends Phase[PoolPhase] {
     pools += newPool
     newPool
   }
-  
+
   def pool(number: Int): Pool = {
     while (pools.size < number) {
       addPool

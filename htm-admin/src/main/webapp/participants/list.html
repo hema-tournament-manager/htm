@@ -74,7 +74,9 @@
 					<td class="club" title="Club">{{participant.club}}</td>
 					<td class="clubCode" title="Club Code">{{participant.clubCode}}</td>
 					<td class="tournaments" title="Tournaments">
-						<span class="tournament">MNEMONIC</span>
+						<span ng-repeat="tournament in participant.tournaments" class="tournament label label-default" title="{{tournament.name}}">
+							{{tournament.memo}}
+						</span>
 					</td>
 					<td><a class="action"></a></td>
 					<td><a class="delete"></a></td>

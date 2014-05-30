@@ -7,6 +7,14 @@ angular.module('htm', ['ngAnimate', 'ngResource'])
 	  
 	  $scope.searchFilter = function(obj) { 
 	    var re = new RegExp($scope.search, 'i');
-	    return !$scope.search || re.test(obj.name) || re.test(obj.externalId) || re.test(obj.club) || re.test(obj.clubCode) || re.test(obj.country);
+	    return !$scope.search
+	    	|| re.test(obj.name)
+	    	|| re.test(obj.externalId)
+	    	|| re.test(obj.club)
+	    	|| re.test(obj.clubCode)
+	    	|| re.test(obj.country)
+	    	|| _(obj.tournaments).some(function(tournament) {
+	    		return re.test(tournament.name);
+	    	});
 	  };
 	});
