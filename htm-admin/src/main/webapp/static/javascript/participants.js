@@ -1,4 +1,4 @@
-angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
+angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'])
   .factory('Participant', ["$resource", function($resource){
     return $resource('/api/participants/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
   }])
@@ -48,7 +48,7 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
       });
     }
   }])
-	.controller('ParticipantsCtrl', function($scope, $http, $modal, Participant, Tournament) {
+	.controller('ParticipantsCtrl', function($scope, $http, $modal, $filter, Participant, Tournament) {
     $scope.participants = Participant.query();
     $scope.tournaments = Tournament.query();
 	  
@@ -86,6 +86,13 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
         });
       } 
       return $scope.participantPictures[participant.id];
+    };
+    
+    $scope.registerSelected = function() {
+      var filtered = $filter('filter')($scope.participants, $scope.searchFilter);
+      if (filtered.length == 1) {
+        $scope.register(filtered[0]);
+      }
     };
     
     $scope.register = function(participant) {
