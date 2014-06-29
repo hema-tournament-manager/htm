@@ -73,8 +73,8 @@
 				<tr class="participant fade-animation" ng-repeat="participant in participants | filter:searchFilter">
 					<td>
             <span class="label" ng-class="participant.isPresent ? 'label-success' : 'label-danger'" title="{{participant.isPresent ? 'Checked in' : 'Not checked in yet'}}"><span class="glyphicon glyphicon-check"></span></span>
-            <span class="label" ng-class="hasPicture(participant) ? 'label-success' : 'label-danger'" title="{{hasPicture(participant) ? 'Picture is available' : 'No picture available yet'}}"><span class="glyphicon glyphicon-picture"></span></span>
-            <span class="label" ng-class="hasDetails(participant) ? 'label-success' : 'label-danger'" title="{{hasDetails(participant) ? 'Details are filled in' : 'No details filled in yet'}}"><span class="glyphicon glyphicon-list"></span></span>
+            <span class="label" ng-class="hasPicture(participant) ? 'label-success' : 'label-warning'" title="{{hasPicture(participant) ? 'Picture is available' : 'No picture available yet'}}"><span class="glyphicon glyphicon-picture"></span></span>
+            <span class="label" ng-class="hasDetails(participant) ? 'label-success' : 'label-default'" title="{{hasDetails(participant) ? 'Details are filled in' : 'No details filled in yet'}}"><span class="glyphicon glyphicon-list"></span></span>
           </td>
 					<td class="id" title="ID">{{participant.externalId}}</td>
 					<td class="flag" title="{{participant.country}}"><img ng-src="/images/flags/{{participant.country | lowercase}}.png"/></td>
