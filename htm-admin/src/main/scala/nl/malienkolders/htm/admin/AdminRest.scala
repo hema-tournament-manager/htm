@@ -51,7 +51,7 @@ object AdminRest extends RestHelper {
       JBool(Participant.findByKey(participantId).map(_.hasAvatar).getOrElse(false))
 
     case "api" :: "countries" :: Nil JsonGet _ =>
-      Extraction.decompose(Country.findAll(By(Country.hasViewerFlag, true)).map(_.toMarshalled))
+      Extraction.decompose(Country.findAll().map(_.toMarshalled))
 
     case "api" :: "tournaments" :: Nil JsonGet _ =>
       Extraction.decompose(Tournament.findAll.map(_.toMarshalled))

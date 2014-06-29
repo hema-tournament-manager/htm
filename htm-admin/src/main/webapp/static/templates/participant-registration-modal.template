@@ -29,6 +29,18 @@
           <label for="clubCode">Club code</label>
           <input ng-model="participant.clubCode" type="text" class="form-control" id="clubCode"/>
         </div>
+        <div class="form-group">
+          <label for="country">Country</label>
+          <div class="input-group">
+            <span class="input-group-addon">
+              <img ng-src="/images/flags/{{participant.country | lowercase}}.png"/>
+            </span>
+            <select ui-select2 ng-model="participant.country" id="country" data-placeholder="Change country" class="form-control">
+              <option value=""></option>
+              <option ng-repeat="country in countries" value="{{country.code2}}">{{country.name}}</option>
+            </select>
+          </div>
+        </div>
       </form>
     </tab>
     <tab>

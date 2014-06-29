@@ -1,9 +1,12 @@
-angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap'])
+angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
   .factory('Participant', ["$resource", function($resource){
     return $resource('/api/participants/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
   }])
   .factory('Tournament', ['$resource', function($resource){
     return $resource('/api/tournaments/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
+  }])
+  .factory('Country', ['$resource', function($resource){
+    return $resource('/api/countries/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
   }])
   .directive('htmSubscriptionLabel', function() {
     return {
@@ -84,10 +87,11 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap'])
     
     
 	})
-	  .controller('ParticipantRegistrationModalCtrl', function($scope, $modalInstance, participant, tournaments) {
+	  .controller('ParticipantRegistrationModalCtrl', function($scope, $modalInstance, participant, tournaments, Country) {
 	    $scope.participant = angular.copy(participant);
 	    $scope.participant.previousWins = _($scope.participant.previousWins).map(function(win) { return {text: win}; });
 	    $scope.tournaments = tournaments;
+	    $scope.countries = Country.query();
 	    
 	    $scope.subscribed = function(participant, tournament) {
 	      return _(participant.subscriptions).some(function(sub) { return sub.tournament.id == tournament.id; });

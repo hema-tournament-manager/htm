@@ -106,6 +106,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
     height(m.height)
     weight(m.weight)
     previousWins(m.previousWins.mkString("\n"))
+    country(Country.find(By(Country.code2, m.country)))
   }
 }
 
