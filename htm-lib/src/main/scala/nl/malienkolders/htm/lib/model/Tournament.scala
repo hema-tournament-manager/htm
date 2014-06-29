@@ -4,7 +4,7 @@ import net.liftweb._
 import mapper._
 
 case class MarshalledTournamentSummary(id: Long, name: String, identifier: String, memo: String)
-case class MarshalledTournament(id: Long, name: String, identifier: String, participants: List[Long])
+case class MarshalledTournament(id: Long, name: String, identifier: String, memo: String, participants: List[Long])
 case class MarshalledTournamentRound(id: Long, finished: Boolean)
 
 class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tournament] with Ordered[Tournament] {
@@ -52,6 +52,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
     id.is,
     name.is,
     identifier.is,
+    mnemonic.is,
     participants.map(_.id.is).toList)
   def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, identifier.is, mnemonic.is)
 
@@ -149,6 +150,7 @@ class TournamentParticipant extends LongKeyedMapper[TournamentParticipant] with 
   def toMarshalled = participant.foreign.get.toMarshalled.copy(
     fighterNumber = Some(fighterNumber.get),
     gearChecked = Some(gearChecked.get),
+    droppedOut = Some(droppedOut.get),
     pool = participant.foreign.get.poolForTournament(tournament.foreign.get).map(_.poolName))
 }
 object TournamentParticipant extends TournamentParticipant with LongKeyedMetaMapper[TournamentParticipant] {

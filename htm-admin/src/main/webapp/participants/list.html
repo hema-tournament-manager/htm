@@ -17,15 +17,6 @@
 				padding: 0;
 				margin: 0;
 			}
-			.flag {
-				cursor: pointer;
-			}
-			.flag img {
-				border: solid 2px red;
-			}
-			.flag img.viewerFlagAvailable {
-				border-color: green;
-			}
 			tr.participant {
 				cursor: pointer;
 			}
@@ -66,36 +57,34 @@
         </div>
         
 		<table class="table table-condensed table-hover">
+      <thead>
+        <tr>
+          <th>Checks</th>
+          <th>ID</th>
+          <th>Country</th>
+          <th>Name</th>
+          <th>Short name</th>
+          <th>Club</th>
+          <th>Club code</th>
+          <th>Subscriptions</th>
+        </tr>
+      </thead>
 			<tbody>
 				<tr class="participant fade-animation" ng-repeat="participant in participants | filter:searchFilter">
 					<td title="Photo?"><span class="photo glyphicon"></span></td>
 					<td class="id" title="ID">{{participant.externalId}}</td>
-					<td class="flag"><img ng-src="/images/flags/{{participant.country | lowercase}}.png"/></td>
+					<td class="flag" title="{{participant.country}}"><img ng-src="/images/flags/{{participant.country | lowercase}}.png"/></td>
 					<td class="name" title="Name">{{participant.name}}</td>
 					<td class="shortName" title="Short Name">{{participant.shortName}}</td>
 					<td class="club" title="Club">{{participant.club}}</td>
 					<td class="clubCode" title="Club Code">{{participant.clubCode}}</td>
 					<td class="tournaments" title="Tournaments">
-						<span ng-repeat="tournament in participant.tournaments" class="tournament label label-default" title="{{tournament.name}}">
+						<span ng-repeat="tournament in tournaments" class="tournament label label-default" title="{{tournament.name}}">
 							{{tournament.memo}}
 						</span>
 					</td>
-					<td><a class="action"></a></td>
-					<td><a class="delete"></a></td>
 				</tr>
 			</tbody>
-			<tfoot>
-				<tr class="totals">
-					<td colspan="6" class="text-center">
-						
-					</td>
-					<td>
-						<form action="/participants/lists" method="post" class="actions">
-							
-						</form>
-					</td>
-				</tr>
-			</tfoot>
 		</table>
 		</div>
 	</div>

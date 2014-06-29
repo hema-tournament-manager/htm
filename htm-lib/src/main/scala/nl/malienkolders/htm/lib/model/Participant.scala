@@ -25,8 +25,16 @@ case class MarshalledParticipant(
   previousWins: List[String],
   fighterNumber: Option[Int],
   gearChecked: Option[Boolean],
+  droppedOut: Option[Boolean],
   pool: Option[String],
-  tournaments: List[MarshalledTournamentSummary])
+  subscriptions: List[MarshalledSubscription])
+
+case class MarshalledSubscription(
+  fighterNumber: Int,
+  gearChecked: Boolean,
+  droppedOut: Boolean,
+  pool: Option[String],
+  tournament: MarshalledTournamentSummary)
 
 class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with OneToMany[Long, Participant] {
   def getSingleton = Participant
@@ -77,7 +85,14 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
     None,
     None,
     None,
-    subscriptions.map(_.tournament.foreign.get.toMarshalledSummary).toList)
+    None,
+    subscriptions.map(sub =>
+      MarshalledSubscription(
+        sub.fighterNumber.get,
+        sub.gearChecked.get,
+        sub.droppedOut.get,
+        poolForTournament(sub.tournament.foreign.get).map(_.poolName),
+        sub.tournament.foreign.get.toMarshalledSummary)).toList)
 }
 
 object Participant extends Participant with LongKeyedMetaMapper[Participant] with CRUDify[Long, Participant] {
