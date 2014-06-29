@@ -47,7 +47,7 @@ object ParticipantList {
       S.redirectTo("/participants/register/new")
     }
 
-    def registerAllLink = SHtml.link("/participants/list",  () => registerAll(true), <span><span class="glyphicon glyphicon-ok"></span> Register All</span>)
+    def registerAllLink = SHtml.link("/participants/list", () => registerAll(true), <span><span class="glyphicon glyphicon-ok"></span> Register All</span>)
 
     def unregisterAllLink = SHtml.link("/participants/list", () => registerAll(false), <span><span class="glyphicon glyphicon-remove"></span> Unregister All</span>)
 
@@ -62,11 +62,7 @@ object ParticipantList {
         val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
         selectedParticipant = Empty
         cmd & Run("$('#countrySelect').hide();")
-      }, "id" -> "countrySelectDropdown") &
-      ".totals" #> (
-        ".people *" #> ps.size &
-        ".countries *" #> ps.groupBy(_.country.is).size &
-        ".clubs *" #> ps.groupBy(_.clubCode.is).size)
+      }, "id" -> "countrySelectDropdown")
   }
 
   def downloadParticipantList() = {

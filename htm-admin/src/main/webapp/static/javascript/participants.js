@@ -17,4 +17,12 @@ angular.module('htm', ['ngAnimate', 'ngResource'])
 	    		return re.test(tournament.name);
 	    	});
 	  };
+    
+    $scope.countClubs = function(participants) {
+      return _(_(participants).groupBy(function (participant) { return participant.clubCode; })).size();
+    };
+    
+    $scope.countCountries = function(participants) {
+      return _(_(participants).groupBy(function (participant) { return participant.country; })).size();
+    };
 	});

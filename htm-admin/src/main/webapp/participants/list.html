@@ -36,9 +36,11 @@
 		<h2>
 			Participants
 			<small class="totals">
-				<span class="people">0</span> people from
-				<span class="clubs">0</span> clubs in
-				<span class="countries">0</span> countries
+        <ng-pluralize count="participants.length" when="{'one': '1 person', 'other': '{} people'}"></ng-pluralize>
+        from
+        <ng-pluralize count="countClubs(participants)" when="{'one': '1 club', 'other': '{} clubs'}"></ng-pluralize>
+        in
+        <ng-pluralize count="countCountries(participants)" when="{'one': '1 country', 'other': '{} countries'}"></ng-pluralize>
 			</small>
 			<div class="btn-group pull-right" title="Actions">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
