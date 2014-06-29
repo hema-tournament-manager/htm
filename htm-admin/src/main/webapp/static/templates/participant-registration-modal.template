@@ -11,7 +11,7 @@
       <form role="form">
         <div class="form-group">
           <label for="id">ID</label>
-          <input ng-model="participant.id" type="text" class="form-control" id="id" required="required"/>
+          <input ng-model="participant.externalId" type="text" class="form-control" id="id" required="required"/>
         </div>
         <div class="form-group">
           <label for="name">Name</label>
@@ -80,6 +80,12 @@
         <span class="glyphicon glyphicon-picture"></span>
         Picture
       </tab-heading>
+      <form role="form">
+        <div class="input-group">
+          <input id="photoPicker" htm-file="picture" type="file" accept="image/*;capture=camera" class="form-control"/>
+        </div>
+        <img ng-src="{{pictureUrl}}"/>
+      </form>
     </tab>
     <tab ng-repeat="tournament in tournaments">
       <tab-heading>

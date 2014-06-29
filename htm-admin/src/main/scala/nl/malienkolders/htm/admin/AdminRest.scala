@@ -50,6 +50,15 @@ object AdminRest extends RestHelper {
     case "api" :: "participants" :: AsLong(participantId) :: "haspicture" :: Nil JsonGet _ =>
       JBool(Participant.findByKey(participantId).map(_.hasAvatar).getOrElse(false))
 
+    case "api" :: "participants" :: AsLong(participantId) :: "picture" :: Nil Post req =>
+      for {
+        uploadedFile <- req.uploadedFiles.headOption
+        participant <- Participant.findByKey(participantId)
+      } yield {
+        nl.malienkolders.htm.admin.lib.PhotoImporterBackend.handlePhoto(participant, uploadedFile.fileStream)
+        JBool(true)
+      }
+
     case "api" :: "countries" :: Nil JsonGet _ =>
       Extraction.decompose(Country.findAll().map(_.toMarshalled))
 

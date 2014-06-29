@@ -21,6 +21,33 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
       template: '<a href="/tournaments/view/{{tournament.identifier}}#participant{{person.id}}" class="label" ng-show="sub" ng-class="sub.gearChecked ? \'label-success\' : \'label-danger\'" title="Fighter number {{sub.fighterNumber}} in {{tournament.name}}"><span class="glyphicon glyphicon-cog" ng-hide="sub.gearChecked"/> {{sub.fighterNumber}}</a>'
     };
   })
+  .directive('htmFile', ['$parse', '$timeout', function ($parse, $timeout) {
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs) {
+        var model = $parse(attrs.htmFile);
+        var modelSetter = model.assign;
+        
+        element.bind('change', function(){
+          scope.$apply(function() {
+            modelSetter(scope, element[0].files[0]);
+            // $watch-ing the model var did not work, so we're emitting a custom change event 
+            scope.$emit('FileChanged', element[0].files[0]);
+          });
+        });
+      }
+    };
+  }])
+  .service('htmFileUpload', ['$http', function ($http) {
+    this.uploadFileToUrl = function(file, uploadUrl){
+      var fd = new FormData();
+      fd.append('file', file);
+      return $http.post(uploadUrl, fd, {
+        transformRequest: angular.identity,
+        headers: {'Content-Type': undefined}
+      });
+    }
+  }])
 	.controller('ParticipantsCtrl', function($scope, $http, $modal, Participant, Tournament) {
     $scope.participants = Participant.query();
     $scope.tournaments = Tournament.query();
@@ -87,7 +114,7 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
     
     
 	})
-	  .controller('ParticipantRegistrationModalCtrl', function($scope, $modalInstance, participant, tournaments, Country) {
+	  .controller('ParticipantRegistrationModalCtrl', function($scope, $modalInstance, $http, htmFileUpload, Country, participant, tournaments) {
 	    $scope.participant = angular.copy(participant);
 	    $scope.participant.previousWins = _($scope.participant.previousWins).map(function(win) { return {text: win}; });
 	    $scope.tournaments = tournaments;
@@ -119,4 +146,14 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
 	    $scope.cancel = function() {
 	      $modalInstance.dismiss('cancel');
 	    };
+	    
+	    $scope.pictureUrl = '/photo/' + participant.externalId + '/l';
+	    $scope.$on('FileChanged', function(event, file) {
+	      if (file) {
+	        $scope.pictureUrl = '';
+	        htmFileUpload.uploadFileToUrl(file, '/api/participants/' + $scope.participant.id + '/picture').success(function(data) {
+	          $scope.pictureUrl = '/photo/' + participant.externalId + '/l';
+	        });
+	      }
+	    });
 	  });
