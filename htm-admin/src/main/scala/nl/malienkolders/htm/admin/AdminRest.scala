@@ -1,6 +1,7 @@
 package nl.malienkolders.htm.admin
 
 import net.liftweb._
+
 import http._
 import rest._
 import json._
@@ -12,6 +13,7 @@ import nl.malienkolders.htm.admin.comet._
 import net.liftweb.common.Full
 import nl.malienkolders.htm.admin.lib.exporter.JsonFightExporter
 import nl.malienkolders.htm.lib.util.Helpers
+import nl.malienkolders.htm.admin.lib.Utils.PimpedParticipant
 
 object AdminRest extends RestHelper {
 
@@ -35,6 +37,9 @@ object AdminRest extends RestHelper {
 
     case "api" :: "participants" :: Nil JsonGet _ =>
       Extraction.decompose(Participant.findAll.map(_.toMarshalled))
+
+    case "api" :: "participants" :: AsLong(participantId) :: "haspicture" :: Nil JsonGet _ =>
+      JBool(Participant.findByKey(participantId).map(_.hasAvatar).getOrElse(false))
 
     case "api" :: "countries" :: Nil JsonGet _ =>
       Extraction.decompose(Country.findAll(By(Country.hasViewerFlag, true)).map(_.toMarshalled))

@@ -17,20 +17,7 @@ import scala.xml.Text
 object ParticipantList {
 
   def render = {
-    val orderField: MappedField[_, Participant] = Participant.name
-    val ps = Participant.findAll(OrderBy(orderField, Ascending))
-    val cs = Country.findAll.map(c => c -> c.name.is)
-    var selectedParticipant: Box[Participant] = Empty
-
-    def changeCountry(p: Participant, c: Country) = {
-      p.country(c).save
-      var cmd = "$('#flag" + p.id.is + "').attr('title', '" + c.name.is + "'); $('#flag" + p.id.is + "').attr('src', '/images/flags/" + (if (c.hasFlag.get) c.code2.get.toLowerCase() else "unknown") + ".png'); $('#flag" + p.id.is + "');"
-      if (c.hasViewerFlag.is)
-        cmd += "$('#flag" + p.id.is + "').addClass('viewerFlagAvailable');"
-      else
-        cmd += "$('#flag" + p.id.is + "').removeClass('viewerFlagAvailable');"
-      Run(cmd)
-    }
+    val ps = Participant.findAll(OrderBy(Participant.name, Ascending))
 
     def registerAll(register: Boolean) = {
       ps foreach { p =>
@@ -57,12 +44,7 @@ object ParticipantList {
       SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), Text("Participants")),
       SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), Text("Clubs")),
       SHtml.link("/download/details", () => throw new ResponseShortcutException(downloadDetailsList), Text("Finalist Details"))) &
-      ".actionButton *" #> Seq(createParticipantLink, registerAllLink, unregisterAllLink) &
-      "#countrySelect *" #> SHtml.ajaxSelectObj(cs, Empty, { c: Country =>
-        val cmd = selectedParticipant.map(p => changeCountry(p, c)) openOr (Noop)
-        selectedParticipant = Empty
-        cmd & Run("$('#countrySelect').hide();")
-      }, "id" -> "countrySelectDropdown")
+      ".actionButton *" #> Seq(createParticipantLink, registerAllLink, unregisterAllLink)
   }
 
   def downloadParticipantList() = {

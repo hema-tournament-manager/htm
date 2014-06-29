@@ -50,7 +50,6 @@
 				</ul>
 			</div>
 		</h2>
-		<div id="countrySelect"><select><option>Netherlands</option></select></div>
 		<div class="input-group" style="margin: 10px;">
 			<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
             <input ng-model="search" type="text" class="form-control" placeholder="Search">
@@ -66,22 +65,24 @@
           <th>Short name</th>
           <th>Club</th>
           <th>Club code</th>
-          <th>Subscriptions</th>
+					<th ng-repeat="tournament in tournaments" title="{{tournament.name}}">{{tournament.memo}}</th>
         </tr>
       </thead>
 			<tbody>
 				<tr class="participant fade-animation" ng-repeat="participant in participants | filter:searchFilter">
-					<td title="Photo?"><span class="photo glyphicon"></span></td>
+					<td>
+            <span class="label" ng-class="participant.isPresent ? 'label-success' : 'label-danger'" title="{{participant.isPresent ? 'Checked in' : 'Not checked in yet'}}"><span class="glyphicon glyphicon-check"></span></span>
+            <span class="label" ng-class="hasPicture(participant) ? 'label-success' : 'label-danger'" title="{{hasPicture(participant) ? 'Picture is available' : 'No picture available yet'}}"><span class="glyphicon glyphicon-picture"></span></span>
+            <span class="label" ng-class="hasDetails(participant) ? 'label-success' : 'label-danger'" title="{{hasDetails(participant) ? 'Details are filled in' : 'No details filled in yet'}}"><span class="glyphicon glyphicon-list"></span></span>
+          </td>
 					<td class="id" title="ID">{{participant.externalId}}</td>
 					<td class="flag" title="{{participant.country}}"><img ng-src="/images/flags/{{participant.country | lowercase}}.png"/></td>
 					<td class="name" title="Name">{{participant.name}}</td>
 					<td class="shortName" title="Short Name">{{participant.shortName}}</td>
 					<td class="club" title="Club">{{participant.club}}</td>
 					<td class="clubCode" title="Club Code">{{participant.clubCode}}</td>
-					<td class="tournaments" title="Tournaments">
-						<span ng-repeat="tournament in tournaments" class="tournament label label-default" title="{{tournament.name}}">
-							{{tournament.memo}}
-						</span>
+					<td class="tournaments" ng-repeat="tournament in tournaments">
+						<htm-subscription-label person="participant" tournament="tournament"/>
 					</td>
 				</tr>
 			</tbody>
