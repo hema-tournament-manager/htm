@@ -107,6 +107,10 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
         return $scope.participant.previousWins.length < 3 && _($scope.participant.previousWins).every(function(win) { return win.text && win.text.length > 0; });
       };
       
+      $scope.removeWin = function(index) {
+        $scope.participant.previousWins.splice(index, 1);
+      };
+      
 	    $scope.ok = function() {
 	      $scope.participant.previousWins = _($scope.participant.previousWins).map(function(win) { return win.text; });
 	      $modalInstance.close($scope.participant);

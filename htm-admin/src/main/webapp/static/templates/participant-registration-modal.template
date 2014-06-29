@@ -64,9 +64,14 @@
         <fieldset>
           <legend>Previous wins</legend>
           <div ng-repeat="win in participant.previousWins" class="form-group">
-            <input ng-model="win.text" type="text" class="form-control" placeholder="2nd - Awesome Event 2014"/>
+            <div class="input-group">
+              <input ng-model="win.text" type="text" class="form-control" placeholder="2nd - Awesome Event 2014"/>
+              <span class="input-group-btn">
+                <button ng-click="removeWin($index)" class="btn btn-default" type="button" title="Remove"><span class="glyphicon glyphicon-remove"/></button>
+              </span>
+            </div>
           </div>
-          <button class="btn btn-default btn-sm" ng-show="canAddWin()" ng-click="addWin()">Add</button>
+          <button class="btn btn-info" ng-show="canAddWin()" ng-click="addWin()"><span class="glyphicon glyphicon-remove"/> Add</button>
         </fieldset>
       </form>
     </tab>
