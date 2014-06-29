@@ -17,8 +17,8 @@
 				padding: 0;
 				margin: 0;
 			}
-			tr.participant {
-				cursor: pointer;
+			tr.participant td {
+				vertical-align: middle !important;
 			}
 			/* ]]> */
 			</style>
@@ -66,6 +66,7 @@
           <th>Club</th>
           <th>Club code</th>
 					<th ng-repeat="tournament in tournaments" title="{{tournament.name}}">{{tournament.memo}}</th>
+          <th></th>
         </tr>
       </thead>
 			<tbody>
@@ -84,13 +85,12 @@
 					<td class="tournaments" ng-repeat="tournament in tournaments">
 						<htm-subscription-label person="participant" tournament="tournament"/>
 					</td>
+          <td><button class="btn btn-default btn-sm" ng-click="register(participant)">Edit</button></td>
 				</tr>
 			</tbody>
 		</table>
 		</div>
 	</div>
-	
-
 </body>
 </html>
 

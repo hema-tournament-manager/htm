@@ -93,6 +93,20 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
         sub.droppedOut.get,
         poolForTournament(sub.tournament.foreign.get).map(_.poolName),
         sub.tournament.foreign.get.toMarshalledSummary)).toList)
+
+  def fromMarshalled(m: MarshalledParticipant) = {
+    externalId(m.externalId)
+    name(m.name)
+    shortName(m.shortName)
+    club(m.club)
+    clubCode(m.clubCode)
+    isPresent(m.isPresent)
+    tshirt(m.tshirt)
+    age(m.age)
+    height(m.height)
+    weight(m.weight)
+    previousWins(m.previousWins.mkString("\n"))
+  }
 }
 
 object Participant extends Participant with LongKeyedMetaMapper[Participant] with CRUDify[Long, Participant] {

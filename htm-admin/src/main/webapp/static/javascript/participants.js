@@ -1,4 +1,4 @@
-angular.module('htm', ['ngAnimate', 'ngResource'])
+angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap'])
   .factory('Participant', ["$resource", function($resource){
     return $resource('/api/participants/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
   }])
@@ -14,18 +14,13 @@ angular.module('htm', ['ngAnimate', 'ngResource'])
       },
       controller: function($scope) {
         $scope.sub = _($scope.person.subscriptions).find(function(sub) { return sub.tournament.id === $scope.tournament.id; });
-        
-        console.log('subscriptionlabel', $scope.person);
       },
       template: '<a href="/tournaments/view/{{tournament.identifier}}#participant{{person.id}}" class="label" ng-show="sub" ng-class="sub.gearChecked ? \'label-success\' : \'label-danger\'" title="Fighter number {{sub.fighterNumber}} in {{tournament.name}}"><span class="glyphicon glyphicon-cog" ng-hide="sub.gearChecked"/> {{sub.fighterNumber}}</a>'
     };
   })
-	.controller('ParticipantsCtrl', function($scope, $http, Participant, Tournament) {
+	.controller('ParticipantsCtrl', function($scope, $http, $modal, Participant, Tournament) {
     $scope.participants = Participant.query();
     $scope.tournaments = Tournament.query();
-    $scope.tournaments.$promise.then(function() {
-      console.log($scope.tournaments);
-    });
 	  
 	  $scope.searchFilter = function(obj) { 
 	    var re = new RegExp($scope.search, 'i');
@@ -63,4 +58,57 @@ angular.module('htm', ['ngAnimate', 'ngResource'])
       return $scope.participantPictures[participant.id];
     };
     
-	});
+    $scope.register = function(participant) {
+      var size = 'lg';
+      var modalInstance = $modal.open({
+        templateUrl: '/static/templates/participant-registration-modal.template',
+        controller: 'ParticipantRegistrationModalCtrl',
+        size: size,
+        resolve: {
+          participant: function () {
+            return participant;
+          },
+          tournaments: function() {
+            return $scope.tournaments;
+          }
+        }
+      });
+      
+      modalInstance.result.then(function(updatedParticipant) {
+        updatedParticipant.$save(function() {
+          angular.copy(updatedParticipant, participant);
+        });
+      });
+      
+    };
+    
+    
+	})
+	  .controller('ParticipantRegistrationModalCtrl', function($scope, $modalInstance, participant, tournaments) {
+	    $scope.participant = angular.copy(participant);
+	    $scope.participant.previousWins = _($scope.participant.previousWins).map(function(win) { return {text: win}; });
+	    $scope.tournaments = tournaments;
+	    
+	    $scope.subscribed = function(participant, tournament) {
+	      return _(participant.subscriptions).some(function(sub) { return sub.tournament.id == tournament.id; });
+	    };
+	    
+      $scope.addWin = function() {
+        if ($scope.canAddWin()) {
+          $scope.participant.previousWins.push({text: ''});
+        }
+      };
+      
+      $scope.canAddWin = function() {
+        return $scope.participant.previousWins.length < 3 && _($scope.participant.previousWins).every(function(win) { return win.text && win.text.length > 0; });
+      };
+      
+	    $scope.ok = function() {
+	      $scope.participant.previousWins = _($scope.participant.previousWins).map(function(win) { return win.text; });
+	      $modalInstance.close($scope.participant);
+	    };
+	    
+	    $scope.cancel = function() {
+	      $modalInstance.dismiss('cancel');
+	    };
+	  });

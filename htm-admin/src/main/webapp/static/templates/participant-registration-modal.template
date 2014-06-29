@@ -1,0 +1,83 @@
+<div class="modal-header">
+  <h3 class="modal-title">{{participant.name}}</h3>
+</div>
+<div class="modal-body">
+  <tabset justified="true">
+    <tab>
+      <tab-heading>
+        <span class="glyphicon glyphicon-user"></span>
+        Personalia
+      </tab-heading>
+      <form role="form">
+        <div class="form-group">
+          <label for="id">ID</label>
+          <input ng-model="participant.id" type="text" class="form-control" id="id" required="required"/>
+        </div>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input ng-model="participant.name" type="text" class="form-control" id="name" required="required"/>
+        </div>
+        <div class="form-group">
+          <label for="shortName">Short name (used in the viewer)</label>
+          <input ng-model="participant.shortName" type="text" class="form-control" id="shortName" required="required"/>
+        </div>
+        <div class="form-group">
+          <label for="club">Club</label>
+          <input ng-model="participant.club" type="text" class="form-control" id="club"/>
+        </div>
+        <div class="form-group">
+          <label for="clubCode">Club code</label>
+          <input ng-model="participant.clubCode" type="text" class="form-control" id="clubCode"/>
+        </div>
+      </form>
+    </tab>
+    <tab>
+      <tab-heading>
+        <span class="glyphicon glyphicon-list"></span>
+        Details
+      </tab-heading>
+      <form role="form">
+        <div class="form-group">
+          <label for="age">Age (in years)</label>
+          <input ng-model="participant.age" type="number" class="form-control" id="age"/>
+        </div>
+        <div class="form-group">
+          <label for="height">Height (in meters)</label>
+          <input ng-model="participant.height" type="number" class="form-control" id="height"/>
+        </div>
+        <div class="form-group">
+          <label for="weight">Weight (in kilograms)</label>
+          <input ng-model="participant.weight" type="number" class="form-control" id="weight"/>
+        </div>
+        <fieldset>
+          <legend>Previous wins</legend>
+          <div ng-repeat="win in participant.previousWins" class="form-group">
+            <input ng-model="win.text" type="text" class="form-control" placeholder="2nd - Awesome Event 2014"/>
+          </div>
+          <button class="btn btn-default btn-sm" ng-show="canAddWin()" ng-click="addWin()">Add</button>
+        </fieldset>
+      </form>
+    </tab>
+    <tab>
+      <tab-heading>
+        <span class="glyphicon glyphicon-picture"></span>
+        Picture
+      </tab-heading>
+    </tab>
+    <tab ng-repeat="tournament in tournaments">
+      <tab-heading>
+        <span title="{{tournament.name}}">
+          <span class="glyphicon" ng-class="subscribed(participant, tournament) ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
+          {{tournament.memo}}
+        </span>
+      </tab-heading>
+      
+      {{tournament.name}}
+    </tab>
+  </tabset>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" ng-click="ok()">Check-in &amp; Save</button>
+  <button class="btn btn-primary" ng-click="ok()">Save</button>
+  <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+</div>
