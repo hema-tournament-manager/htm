@@ -93,25 +93,25 @@ class Boot {
     nl.malienkolders.htm.lib.rulesets.mexico2014.EmagRuleset.registerAll()
     nl.malienkolders.htm.lib.rulesets.kriegesschule2014.KriegesSchuleRuleset.registerAll()
 
-    val entries: List[ConvertableToMenu] = 
+    val entries: List[ConvertableToMenu] =
       (Menu(Loc("index", "index" :: Nil, "Welcome", Hidden))) ::
-      (Menu.i("Event") / "event") ::
-      (Menu.i("Tournaments") / "tournaments" / "list" submenus (
-        TournamentView.menu,
-        TournamentEdit.menu)) ::
-        FightEdit.menu ::
-        FightPickFighter.menu ::
-        (Menu.i("Participants") / "participants" / "list") ::
-        ParticipantRegistration.menu ::
-        (Menu.i("Schedule") / "schedule") ::
-        (Menu.i("Viewers") / "viewers" / "list") ::
-        (Menu.i("Images") / "images" / "list") ::
-        (Menu.i("Import") / "import") ::
-        (Menu.i("Export") / "export") ::
-        (Menu.i("Battle") / "battle") ::
-        (Menu.i("Controller") / "viewer") ::
-        RulesetModal.menu ::
-        Nil
+        (Menu.i("Event") / "event") ::
+        (Menu.i("Tournaments") / "tournaments" / "list" submenus (
+          TournamentView.menu,
+          TournamentEdit.menu)) ::
+          FightEdit.menu ::
+          FightPickFighter.menu ::
+          (Menu.i("Participants") / "participants" / "list") ::
+          ParticipantRegistration.menu ::
+          (Menu.i("Schedule") / "schedule") ::
+          (Menu.i("Viewers") / "viewers" / "list") ::
+          (Menu.i("Images") / "images" / "list") ::
+          (Menu.i("Import") / "import") ::
+          (Menu.i("Export") / "export") ::
+          (Menu.i("Battle") / "battle") ::
+          (Menu.i("Controller") / "viewer") ::
+          RulesetModal.menu ::
+          Nil
 
     // Build SiteMap
     def sitemap = SiteMap(entries: _*)

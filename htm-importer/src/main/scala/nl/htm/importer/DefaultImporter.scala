@@ -30,7 +30,7 @@ object DefaultImporter extends Importer[DefaultSettings] {
         row.getCell(3),
         row.getCell(4),
         row.getCell(5),
-        "") -> (for (colIndex <- 6 to headerRow.getLastCellNum() - 1 if row.getCell(colIndex) != null) yield { tournaments(colIndex - 6) -> cellToString(row.getCell(colIndex))}).toList)
+        "") -> (for (colIndex <- 6 to headerRow.getLastCellNum() - 1 if row.getCell(colIndex) != null) yield { tournaments(colIndex - 6) -> cellToString(row.getCell(colIndex)) }).toList)
     }
 
     val subscriptions = subscriptionsRaw.filter(_._1.name.length() > 0)
@@ -51,5 +51,5 @@ object DefaultImporter extends Importer[DefaultSettings] {
     case letter if letter.length() == 1 => Some(letter.charAt(0).toInt - 'A'.toInt + 1)
     case _ => None
   }
-  
+
 }
