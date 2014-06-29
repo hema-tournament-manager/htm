@@ -117,7 +117,15 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
 	  .controller('ParticipantRegistrationModalCtrl', function($scope, $modalInstance, $http, htmFileUpload, Country, participant, tournaments) {
 	    $scope.participant = angular.copy(participant);
 	    $scope.participant.previousWins = _($scope.participant.previousWins).map(function(win) { return {text: win}; });
-	    $scope.tournaments = tournaments;
+	    $scope.tournaments = _(angular.copy(tournaments)).map(function(tournament) {
+	      var sub = _(participant.subscriptions).find(function(sub) { return sub.tournament.id == tournament.id; });
+	      if (sub) {
+	        return _(tournament).extend({subscription: sub});
+	      } else {
+	        return tournament;
+	      }
+	    });
+	    
 	    $scope.countries = Country.query();
 	    
 	    $scope.subscribed = function(participant, tournament) {
@@ -138,9 +146,14 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2'])
         $scope.participant.previousWins.splice(index, 1);
       };
       
-	    $scope.ok = function() {
+	    $scope.save = function() {
 	      $scope.participant.previousWins = _($scope.participant.previousWins).map(function(win) { return win.text; });
 	      $modalInstance.close($scope.participant);
+	    };
+	    
+	    $scope.checkin = function() {
+	      $scope.participant.isPresent = true;
+	      $scope.save();
 	    };
 	    
 	    $scope.cancel = function() {
