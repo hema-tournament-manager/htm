@@ -1,4 +1,4 @@
-angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'])
+angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress', 'angular-loading-bar'])
   .factory('Participant', ["$resource", function($resource){
     return $resource('/api/participants/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
   }])
