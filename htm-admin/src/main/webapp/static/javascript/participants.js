@@ -53,6 +53,8 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
         scope.myField = field;
         scope.container = containerCtrl.scope;
         
+        element.css({cursor: 'pointer'});
+        
         element.bind('click', function() {
           containerCtrl.setField(field);
         });
