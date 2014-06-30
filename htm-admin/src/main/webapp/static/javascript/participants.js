@@ -21,7 +21,47 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
       template: '<a href="/tournaments/view/{{tournament.identifier}}#participant{{person.id}}" class="label" ng-show="sub" ng-class="sub.gearChecked ? \'label-success\' : \'label-danger\'" title="Fighter number {{sub.fighterNumber}} in {{tournament.name}}"><span class="glyphicon glyphicon-cog" ng-hide="sub.gearChecked"/> {{sub.fighterNumber}}</a>'
     };
   })
-  .directive('htmFile', ['$parse', '$timeout', function ($parse, $timeout) {
+  .directive('htmSortContainer', [function() {
+    return {
+      restrict: 'A',
+      scope: {
+        field: '=',
+        descending: '='
+      },
+      controller: function($scope) {
+        this.setField = function(newField) {
+          $scope.$apply(function() {
+            if (newField == $scope.field) {
+              $scope.descending = !$scope.descending;
+            } else {
+              $scope.field = newField;
+              $scope.descending = false;
+            }
+          });
+        };
+        this.scope = $scope;
+      }
+    }
+  }])
+  .directive('htmSort', [function() {
+    return {
+      require: '^htmSortContainer',
+      restrict: 'A',
+      scope: {},
+      link: function(scope, element, attrs, containerCtrl) {
+        var field = attrs.htmSort;
+        scope.myField = field;
+        scope.container = containerCtrl.scope;
+        
+        element.bind('click', function() {
+          containerCtrl.setField(field);
+        });
+      },
+      transclude: true,
+      template: '<small ng-if="myField == container.field" class="glyphicon" ng-class="container.descending ? \'glyphicon-chevron-up\' : \'glyphicon-chevron-down\'"></small> <span ng-transclude></span>'
+    }
+  }])
+  .directive('htmFile', ['$parse', function ($parse) {
     return {
       restrict: 'A',
       link: function(scope, element, attrs) {
@@ -52,6 +92,19 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
     $scope.participants = Participant.query();
     $scope.tournaments = Tournament.query();
 	  
+    $scope.sort = {
+      field: 'name',
+      descending: false,
+      setField: function(field) {
+        if (field == this.field) {
+          this.descending = !this.descending;
+        } else {
+          this.field = field;
+          this.descending = false;
+        }
+      }
+    };
+    
 	  $scope.searchFilter = function(obj) { 
 	    var re = new RegExp($scope.search, 'i');
 	    return !$scope.search
