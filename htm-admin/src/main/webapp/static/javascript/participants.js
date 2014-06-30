@@ -96,11 +96,10 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
     };
     
     $scope.register = function(participant) {
-      var size = 'lg';
       var modalInstance = $modal.open({
         templateUrl: '/static/templates/participant-registration-modal.template',
         controller: 'ParticipantRegistrationModalCtrl',
-        size: size,
+        size: 'lg',
         resolve: {
           participant: function () {
             return participant;
@@ -134,10 +133,6 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
 	    });
 	    
 	    $scope.countries = Country.query();
-	    
-	    $scope.subscribed = function(participant, tournament) {
-	      return _(participant.subscriptions).some(function(sub) { return sub.tournament.id == tournament.id; });
-	    };
 	    
       $scope.addWin = function() {
         if ($scope.canAddWin()) {

@@ -10,8 +10,10 @@
     <tab>
       <tab-heading>
         <span class="glyphicon glyphicon-user"></span>
-        Personalia
+        <br/>
+        Identification
       </tab-heading>
+      <h3>Identification</h3>
       <form role="form">
         <div class="form-group">
           <label for="id">ID</label>
@@ -50,8 +52,10 @@
     <tab>
       <tab-heading>
         <span class="glyphicon glyphicon-list"></span>
+        <br/>
         Details
       </tab-heading>
+      <h3>Details</h3>
       <form role="form">
         <div class="form-group">
           <label for="age">Age (in years)</label>
@@ -66,10 +70,10 @@
           <input ng-model="participant.weight" type="number" class="form-control" id="weight"/>
         </div>
         <fieldset>
-          <legend>Previous wins</legend>
+          <legend>Achievements</legend>
           <div ng-repeat="win in participant.previousWins" class="form-group">
             <div class="input-group">
-              <input ng-model="win.text" type="text" class="form-control" placeholder="2nd - Awesome Event 2014"/>
+              <input ng-model="win.text" type="text" class="form-control" popover="Enter an achievement in an earlier tournament, something like '2nd, Swordfish 2013'"  popover-trigger="focus" popover-placement="bottom"/>
               <span class="input-group-btn">
                 <button ng-click="removeWin($index)" class="btn btn-default" type="button" title="Remove"><span class="glyphicon glyphicon-remove"/></button>
               </span>
@@ -82,8 +86,10 @@
     <tab>
       <tab-heading>
         <span class="glyphicon glyphicon-picture"></span>
+        <br/>
         Picture
       </tab-heading>
+      <h3>Picture</h3>
       <form role="form">
         <div class="input-group">
           <input id="photoPicker" htm-file="picture" type="file" accept="image/*;capture=camera" class="form-control"/>
@@ -94,7 +100,8 @@
     <tab ng-repeat="tournament in tournaments">
       <tab-heading>
         <span title="{{tournament.name}}">
-          <span class="glyphicon" ng-class="subscribed(participant, tournament) ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
+          <span class="glyphicon" ng-class="tournament.subscription ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
+          <br/>
           {{tournament.memo}}
         </span>
       </tab-heading>
