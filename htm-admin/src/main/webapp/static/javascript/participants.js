@@ -1,4 +1,4 @@
-angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress', 'angular-loading-bar'])
+angular.module('htm', ['ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress', 'angular-loading-bar'])
   .factory('Participant', ["$resource", function($resource){
     return $resource('/api/participants/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
   }])
@@ -133,16 +133,7 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
     };
     
     $scope.participantPictures = {};
-    $scope.hasPicture = function(participant) {
-      if (!_($scope.participantPictures).has(participant.id)) {
-        $scope.participantPictures[participant.id] = null;
-        $http.get('/api/participants/' + participant.id + '/haspicture').success(function(data) {
-          $scope.participantPictures[participant.id] = JSON.parse(data);
-        });
-      } 
-      return $scope.participantPictures[participant.id];
-    };
-    
+
     $scope.registerSelected = function() {
       var filtered = $filter('filter')($scope.participants, $scope.searchFilter);
       if (filtered.length == 1) {
@@ -150,7 +141,7 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
       }
     };
     
-    $scope.register = function(participant) {
+    var showParticipant = function(participant, onSuccess) {
       var modalInstance = $modal.open({
         templateUrl: '/static/templates/participant-registration-modal.template',
         controller: 'ParticipantRegistrationModalCtrl',
@@ -166,11 +157,40 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
       });
       
       modalInstance.result.then(function(updatedParticipant) {
-        updatedParticipant.$save(function() {
-          angular.copy(updatedParticipant, participant);
+        updatedParticipant.$save(function(data) {
+          console.log('save returned ', data);
+          if (!updatedParticipant.id) {
+            updatedParticipant.id = +data.id;
+          }
+          onSuccess(updatedParticipant);
         });
       });
+    };
+    
+    $scope.addParticipant = function() {
+      var p = new Participant({
+        externalId: +_($scope.participants).max(function(p) { return +p.externalId; }).externalId + 1,
+        name: '',
+        shortName: '',
+        club: '',
+        clubCode: '',
+        country: 'NL',
+        isPresent: false,
+        tshirt: '',
+        age: 0,
+        height: 0,
+        weight: 0
+      });
       
+      showParticipant(p, function(updatedParticipant) {
+        $scope.participants.push(updatedParticipant);
+      });
+    };
+    
+    $scope.register = function(participant) {
+      showParticipant(participant, function(updatedParticipant) {
+        angular.copy(updatedParticipant, participant);
+      });
     };
     
     
@@ -223,6 +243,7 @@ angular.module('htm', ['ngAnimate', 'ngResource', 'ui.bootstrap', 'ui.select2', 
 	        $scope.pictureUrl = '';
 	        htmFileUpload.uploadFileToUrl(file, '/api/participants/' + $scope.participant.id + '/picture').success(function(data) {
 	          $scope.pictureUrl = '/photo/' + participant.externalId + '/l';
+	          $scope.participant.hasPicture = true;
 	        });
 	      }
 	    });

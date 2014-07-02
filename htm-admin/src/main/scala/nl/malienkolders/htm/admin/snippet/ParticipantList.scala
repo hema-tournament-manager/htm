@@ -28,23 +28,15 @@ object ParticipantList {
       S.redirectTo("/participants/list")
     }
 
-    def createParticipant() = {
-      Participant.create.externalId("new").country(Country.findAll().find(_.code2.is == "NL").get).save
-
-      S.redirectTo("/participants/register/new")
-    }
-
     def registerAllLink = SHtml.link("/participants/list", () => registerAll(true), <span><span class="glyphicon glyphicon-ok"></span> Register All</span>)
 
     def unregisterAllLink = SHtml.link("/participants/list", () => registerAll(false), <span><span class="glyphicon glyphicon-remove"></span> Unregister All</span>)
-
-    def createParticipantLink = SHtml.link("/participants/list", createParticipant, <span><span class="glyphicon glyphicon-plus-sign"></span> New Participant</span>)
 
     ".downloadButton *" #> Seq(
       SHtml.link("/download/participants", () => throw new ResponseShortcutException(downloadParticipantList), Text("Participants")),
       SHtml.link("/download/clubs", () => throw new ResponseShortcutException(downloadClubsList), Text("Clubs")),
       SHtml.link("/download/details", () => throw new ResponseShortcutException(downloadDetailsList), Text("Finalist Details"))) &
-      ".actionButton *" #> Seq(createParticipantLink, registerAllLink, unregisterAllLink)
+      ".actionButton *" #> Seq(registerAllLink, unregisterAllLink)
   }
 
   def downloadParticipantList() = {

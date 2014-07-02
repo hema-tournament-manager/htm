@@ -1,9 +1,10 @@
 <div class="modal-header">
-  <h3 class="modal-title">
+  <h2 class="modal-title">
     <img ng-src="/images/flags/{{participant.country | lowercase}}.png"/>
+    <i ng-hide="participant.name">New participant</i>
     {{participant.name}}
     <small>{{participant.club}}</small>
-  </h3>
+  </h2>
 </div>
 <div class="modal-body">
   <tabset justified="true">

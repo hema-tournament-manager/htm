@@ -36,7 +36,14 @@ object AdminRest extends RestHelper {
       }.getOrElse(false))
 
     case "api" :: "participants" :: Nil JsonGet _ =>
-      Extraction.decompose(Participant.findAll.map(_.toMarshalled))
+      Extraction.decompose(Participant.findAll.map(p => p.toMarshalled.copy(hasPicture = Some(p.hasAvatar))))
+
+    case "api" :: "participants" :: Nil JsonPost json -> _ =>
+      val m = Extraction.extract[MarshalledParticipant](json)
+      val p = Participant.create
+      p.fromMarshalled(m)
+      p.save()
+      JObject(List(JField("id", p.id.get)))
 
     case "api" :: "participants" :: AsLong(participantId) :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledParticipant](json)

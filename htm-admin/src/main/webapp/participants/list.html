@@ -49,10 +49,15 @@
 					<li class="downloadButton"><a href="#">Action</a></li>
 				</ul>
 			</div>
+      <div class="pull-right">
+				<button ng-click="addParticipant()" type="button" class="btn btn-default">
+					<span class="glyphicon glyphicon-plus"></span> Add</span>
+				</button>
+      </div>
 		</h2>
 		<div class="input-group" style="margin: 10px;">
 			<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-      <input ng-model="search" type="text" class="form-control" placeholder="Search" ui-keypress="{13:'registerSelected()'}"/>
+      <input ng-model="search" ng-model-options="{debounce: 500}" type="text" class="form-control" placeholder="Search" ui-keypress="{13:'registerSelected()'}"/>
     </div>
         
 		<table class="table table-condensed table-hover" htm-sort-container field="sort.field" descending="sort.descending">
@@ -73,7 +78,7 @@
 				<tr class="participant fade-animation" ng-repeat="participant in participants | filter:searchFilter | orderBy:sort.field:sort.descending">
 					<td>
             <span class="label" ng-class="participant.isPresent ? 'label-success' : 'label-danger'" title="{{participant.isPresent ? 'Checked in' : 'Not checked in yet'}}"><span class="glyphicon glyphicon-check"></span></span>
-            <span class="label" ng-class="hasPicture(participant) ? 'label-success' : 'label-warning'" title="{{hasPicture(participant) ? 'Picture is available' : 'No picture available yet'}}"><span class="glyphicon glyphicon-picture"></span></span>
+            <span class="label" ng-class="participant.hasPicture ? 'label-success' : 'label-warning'" title="{{hasPicture(participant) ? 'Picture is available' : 'No picture available yet'}}"><span class="glyphicon glyphicon-picture"></span></span>
             <span class="label" ng-class="hasDetails(participant) ? 'label-success' : 'label-default'" title="{{hasDetails(participant) ? 'Details are filled in' : 'No details filled in yet'}}"><span class="glyphicon glyphicon-list"></span></span>
           </td>
 					<td class="id" title="ID">{{participant.externalId}}</td>

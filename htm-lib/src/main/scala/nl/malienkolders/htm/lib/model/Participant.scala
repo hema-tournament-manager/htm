@@ -10,7 +10,7 @@ import scala.xml._
 import net.liftweb.json._
 
 case class MarshalledParticipant(
-  id: Long,
+  id: Option[Long],
   externalId: String,
   name: String,
   shortName: String,
@@ -27,7 +27,8 @@ case class MarshalledParticipant(
   gearChecked: Option[Boolean],
   droppedOut: Option[Boolean],
   pool: Option[String],
-  subscriptions: List[MarshalledSubscription])
+  subscriptions: List[MarshalledSubscription],
+  hasPicture: Option[Boolean])
 
 case class MarshalledSubscription(
   fighterNumber: Int,
@@ -69,7 +70,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   }
 
   def toMarshalled = MarshalledParticipant(
-    id.is,
+    Some(id.is),
     externalId.is,
     name.is,
     shortName.is,
@@ -92,7 +93,8 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
         sub.gearChecked.get,
         sub.droppedOut.get,
         poolForTournament(sub.tournament.foreign.get).map(_.poolName),
-        sub.tournament.foreign.get.toMarshalledSummary)).toList)
+        sub.tournament.foreign.get.toMarshalledSummary)).toList,
+    None)
 
   def fromMarshalled(m: MarshalledParticipant) = {
     externalId(m.externalId)
