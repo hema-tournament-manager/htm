@@ -51,7 +51,6 @@ object UrlImporter extends Loggable {
 
   def render = {
     var url = "http://www.ghfs.se/swordfish-attendee.php"
-    var json = ""
 
     def process(): () => Any = {
       val data = Swordfish2013Importer.doImport(SwordfishSettings(url, Country.findAll.map(c => c.code2.get -> c.name.get)))
