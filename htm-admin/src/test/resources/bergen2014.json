@@ -1,0 +1,30 @@
+{  "name": "Bergen Open 2014",
+  "days": [
+    {  "date": "2014-08-08",
+      "timeslots": [
+        { "name": "Arrival", "from": "20:00", "to": "23:59" }
+      ]
+    },
+    {  "date": "2014-08-09",
+      "timeslots": [
+        { "name": "Open Longsword Pool Phase", "from": "09:00", "to": "15:00" },
+        { "name": "Open Longsword Elimination Phase", "from": "15:00", "to": "18:00" }
+      ]
+    },
+    {  "date": "2014-08-10",
+      "timeslots": [
+        { "name": "Open Longsword Finals", "from": "09:00", "to": "22:00" }
+      ]
+    }
+  ],
+  "arenas": 2,
+  "tournaments": [
+    { "id": "longsword",
+      "name": "Open Longsword",
+      "mnemonic": "LS",
+      "poolPhase": { "ruleset": "bergen-2014-default-pools" },
+      "eliminationPhase": { "ruleset": "bergen-2014-default-elimination", "fighters": 32 },
+      "finalsPhase": { "ruleset": "bergen-2014-default-finals" }
+    }
+  ]
+}
