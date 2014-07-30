@@ -10,6 +10,16 @@ import scala.xml._
 
 case class FightId(phase: String, id: Long)
 
+sealed abstract class Side(serialized: String)
+case object Left extends Side("left")
+case object Right extends Side("right")
+case object Both extends Side("both")
+case object Neither extends Side("neither")
+
+case class MarshalledScoring(points: String, effect: String)
+
+case class MarshalledHit(name: String, scoreType: String, side: String, scorings: List[MarshalledScoring])
+
 case class MarshalledFight(
   tournament: MarshalledTournamentSummary,
   phaseType: String,
@@ -27,7 +37,8 @@ case class MarshalledFight(
   doubleHitLimit: Int,
   breakAt: Long,
   breakDuration: Long,
-  pointLimit: Int)
+  pointLimit: Int,
+  possibleHits: List[MarshalledHit])
 
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {
 
@@ -153,7 +164,8 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
       fp.doubleHitLimit,
       fp.breakAt,
       fp.breakDuration,
-      fp.pointLimit)
+      fp.pointLimit,
+      fp.possibleHits.map(h => MarshalledHit(h.name, h.scoreType, h.side.serialized, h.scorings.map(s => MarshalledScoring(s.points.serialized, s.effect.serialized)))))
   }
 
   def fromMarshalled(m: MarshalledFight) = {

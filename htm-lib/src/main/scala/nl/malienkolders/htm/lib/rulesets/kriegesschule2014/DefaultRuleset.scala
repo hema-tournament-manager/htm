@@ -154,7 +154,14 @@ abstract class KriegesSchuleRuleset extends Ruleset {
     timeBetweenFights = 0,
     exchangeLimit = 0,
     doubleHitLimit = 3,
-    pointLimit = 7)
+    pointLimit = 7,
+    possibleHits = List(
+      Hit("Clean hit...", "clean", LeftSide, List(Scoring(ExchangePoints, PlusOne), Scoring(CleanHitsLeft, PlusOne), Scoring(PointsLeft, Pick(possiblePoints)))),
+      Hit("Double", "double", CenterSide, List(Scoring(ExchangePoints, PlusOne), Scoring(DoubleHits, PlusOne))),
+      Hit("Clean hit...", "clean", RightSide, List(Scoring(ExchangePoints, PlusOne), Scoring(CleanHitsRight, PlusOne), Scoring(PointsRight, Pick(possiblePoints)))),
+      Hit("Afterblow...", "afterblow", LeftSide, List(Scoring(ExchangePoints, PlusOne), Scoring(AfterblowsLeft, PlusOne), Scoring(PointsLeft, Pick(possiblePoints)), Scoring(PointsRight, Pick(possiblePoints)))),
+      Hit("No hit", "none", CenterSide, List(Scoring(ExchangePoints, PlusOne))),
+      Hit("Afterblow...", "afterblow", RightSide, List(Scoring(ExchangePoints, PlusOne), Scoring(AfterblowsRight, PlusOne), Scoring(PointsRight, Pick(possiblePoints)), Scoring(PointsLeft, Pick(possiblePoints))))))
 }
 
 object KriegesSchuleRuleset {

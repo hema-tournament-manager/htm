@@ -148,12 +148,16 @@ abstract class BergenOpenRuleset extends Ruleset {
     timeBetweenFights = 30 seconds,
     exchangeLimit = 0,
     doubleHitLimit = 0,
-    pointLimit = 0)
+    pointLimit = 0,
+    possibleHits = List(
+      Hit("Hit...", "hit", CenterSide, List(Scoring(ExchangePoints, PlusOne), Scoring(PointsLeft, Pick(possiblePoints)), Scoring(PointsRight, Pick(possiblePoints))))))
 }
 
 object BergenOpenRuleset {
   def registerAll(): Unit = {
-
+    DefaultPoolPhaseRuleset.register()
+    DefaultEliminationRuleset.register()
+    DefaultFinalsRuleset.register()
   }
 }
 

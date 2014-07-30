@@ -212,7 +212,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     		cleanHitsBlue: exchange.cB,
     		doubles: exchange.d,
     		scoreType: exchange.type,
-    		exchanges: 1
+    		exchanges: exchange.x
     	});
     	$scope.sendUpdate();
     };
@@ -234,70 +234,52 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	$scope.sendUpdate();
     };
     
-    $scope.hitButtonClicked = function(scoreType, side) {
-    	$scope.scoreSide = side;
-    	if (scoreType == "clean") {
-	    	$scope.scoreSelected = function(score) {
-	    		$scope.pushExchange({
-		    			time: $scope.timerValue(),
-		    			a: side == "red" ? score : 0, 
-		    			b: side == "blue" ? score : 0,
-		    			cA: side == "red" ? 1 : 0,
-		    			cB: side == "blue" ? 1 : 0,
-		    			aA: 0,
-		    			aB: 0,
-		    			type: scoreType, 
-		    			d: 0});
-	    		$('#score-options').hide();
-	    	}
-    	} else {
-    		$scope.scoreSelected = function(score) {
-    			var firstScore = score;
-    			$scope.scoreSide = side == "red" ? "blue" : "red";
-    			$scope.scoreSelected = function(score) {
-    				$scope.pushExchange({
-    	    			time: $scope.timerValue(), 
-    	    			a: side == "red" ? firstScore : score, 
-    	    			b: side == "blue" ? firstScore : score, 
-    	    			cA: 0,
-    	    			cB: 0,
-    	    			aA: side == "red" ? 1 : 0,
-    	    			aB: side == "blue" ? 1 : 0,
-    	    			type: scoreType, 
-    	    			d: 0});
-    	    		$('#score-options').hide();
-    			}
-    		}
-    	}
-    	$('#score-options').show().position({my: "center center", at: "center center", of: "#" + scoreType + "-" + side + "-btn"});
+    var handleScorings = function(buttonId, exchange, scorings) {
+      if (scorings.length == 0) {
+        $scope.pushExchange(exchange);
+      } else {
+        var scoring = _(scorings).first();
+        if (scoring.effect == 'inc') {
+          // scoring.effect is either 'inc' for (you guessed it) incrementing the score by 1:
+          exchange[scoring.points] += 1;
+          handleScorings(buttonId, exchange, _(scorings).rest());
+        } else {
+          // or an array of possible points for the user to pick from: 
+          var possiblePoints = angular.fromJson(scoring.effect);
+          // here we're assuming that the picking bit is only used for scores 'a' and 'b'
+          $scope.scoreSide = scoring.points == 'a' ? 'red' : 'blue';
+          // let the point buttons wrap every seven buttons
+          $scope.possiblePointsRows = _(possiblePoints).groupBy(function(e, index) { return Math.floor(index / 7); });
+          // register the callback for the point picker
+          $scope.scoreSelected = function(score) {
+            // scoring.points is the name of the exchange field to change
+            exchange[scoring.points] += score;
+            $('#score-options').hide();
+            handleScorings(buttonId, exchange, _(scorings).rest());
+          };
+            
+          $('#score-options').show().position({my: "center center", at: "center center", of: buttonId});
+        }
+      }
+      
     };
     
-    $scope.doubleHitClicked = function() {
-    	$scope.pushExchange({
-			time: $scope.timerValue(), 
-			a: 0, 
-			b: 0, 
-			cA: 0,
-			cB: 0,
-			aA: 0,
-			aB: 0,
-			type: "double", 
-			d: 1});
+    $scope.hitButtonClicked = function(hit) {
+      var exchange = {
+          time: $scope.timerValue(),
+          a: 0, // points left
+          b: 0, // points right
+          cA: 0, // # clean hits left
+          cB: 0, // # clean hits right
+          aA: 0, // # afterblows left
+          aB: 0, // # afterblows right
+          type: hit.scoreType, // type of exchange (eg 'clean', 'afterblow', 'double', ...)
+          d: 0, // double hits
+          x: 0 // # exchanges
+      };
+      handleScorings('#' + hit.scoreType + '-' + hit.side + '-btn', exchange, hit.scorings);
     };
     
-    $scope.noHitClicked = function() {
-    	$scope.pushExchange({
-			time: $scope.timerValue(), 
-			a: 0, 
-			b: 0, 
-			cA: 0,
-			cB: 0,
-			aA: 0,
-			aB: 0,
-			type: "none", 
-			d: 0});
-    };
-
     $scope.showExchanges = function() {
     	var modalInstance = $modal.open({
     	      templateUrl: '/static/battle/templates/exchangeList.html',
@@ -413,8 +395,7 @@ var BattleCtrl = function($rootScope, $scope, $timeout, $modal, $location, $filt
     	$scope.fightsShowing[0] = Math.max($scope.currentFight.globalOrder - 2, 1);
     	$scope.fightsShowing[1] = Math.min($scope.fightsShowing[0] + 4, $scope.fights.length);
     	$scope.fightsShowing[0] = Math.max($scope.fightsShowing[1] - 4, 1);
-    	$scope.possiblePointsRows = _(newValue.possiblePoints).groupBy(function(e, index) { return Math.floor(index / 7); });
-    	console.log($scope.possiblePointsRows);
+    	$scope.hitGroups = _($scope.currentFight.possibleHits).groupBy(function(h, index) { return Math.floor(index / 3); });
     });
     
     $scope.$watch('announcement', function(newValue, oldValue) {

@@ -52,7 +52,30 @@ abstract class Scores extends Comparable[Scores] {
 
 case class GenericScores(numberOfFights: Int, fields: Seq[ScoreField]) extends Scores
 
-case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int, doubleHitLimit: Int, pointLimit: Int)
+sealed abstract class Side(val serialized: String)
+case object LeftSide extends Side("left")
+case object RightSide extends Side("right")
+case object CenterSide extends Side("center")
+
+case class Scoring(points: InfluencedPoints, effect: Effect)
+
+sealed abstract class InfluencedPoints(val serialized: String)
+case object ExchangePoints extends InfluencedPoints("x")
+case object PointsLeft extends InfluencedPoints("a")
+case object PointsRight extends InfluencedPoints("b")
+case object DoubleHits extends InfluencedPoints("d")
+case object CleanHitsLeft extends InfluencedPoints("cA")
+case object CleanHitsRight extends InfluencedPoints("cB")
+case object AfterblowsLeft extends InfluencedPoints("aA")
+case object AfterblowsRight extends InfluencedPoints("aB")
+
+sealed abstract class Effect(val serialized: String)
+case object PlusOne extends Effect("inc")
+case class Pick(points: List[Int]) extends Effect("[" + points.mkString(",") + "]")
+
+case class Hit(name: String, scoreType: String, side: Side, scorings: List[Scoring])
+
+case class FightProperties(timeLimit: Long, breakAt: Long, breakDuration: Long, timeBetweenFights: Long, exchangeLimit: Int, doubleHitLimit: Int, pointLimit: Int, possibleHits: List[Hit])
 
 trait Ruleset {
 

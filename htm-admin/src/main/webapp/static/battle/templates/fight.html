@@ -144,28 +144,13 @@
             <strong>Limit reached!</strong> The <em>point limit</em> has been reached, confirm this fight
           </div>
 				</div>
-				<div class="row htm-fight-buttons htm-padding-top">
-					<div class="col-sm-4 col-md-4 text-center">
-						<button id="clean-red-btn" type="button" class="btn btn-default btn-lg" data-ng-click="hitButtonClicked('clean', 'red')">Clean hit...</button>
-					</div>
-					<div class="col-sm-4 col-md-4 text-center">
-						<button type="button" class="btn btn-default btn-lg" data-ng-click="doubleHitClicked()">Double hit</button>
-					</div>
-					<div class="col-sm-4 col-md-4 text-center">
-						<button id="clean-blue-btn" type="button" class="btn btn-default btn-lg" data-ng-click="hitButtonClicked('clean', 'blue')">Clean hit...</button>
-					</div>
-				</div>
-				<div class="row htm-fight-buttons htm-padding-top">
-					<div class="col-sm-4 col-md-4 text-center">
-						<button id="afterblow-red-btn" type="button" class="btn btn-default btn-lg" data-ng-click="hitButtonClicked('afterblow', 'red')">Afterblow...</button>
-					</div>
-					<div class="col-sm-4 col-md-4 text-center">
-						<button type="button" class="btn btn-default btn-lg" data-ng-click="noHitClicked()">No hit</button>
-					</div>
-					<div class="col-sm-4 col-md-4 text-center">
-						<button id="afterblow-blue-btn" type="button" class="btn btn-default btn-lg" data-ng-click="hitButtonClicked('afterblow', 'blue')">Afterblow...</button>
-					</div>
-				</div>
+        <div data-ng-repeat="hitGroup in hitGroups" class="row htm-fight-buttons htm-padding-top">
+          <div data-ng-repeat="hit in hitGroup" class="col-sm-{{12 / hitGroup.length}} col-md-{{12 / hitGroup.length}} text-center">
+            <button id="{{hit.scoreType}}-{{hit.side}}-btn" type="button" class="btn btn-default btn-lg" data-ng-click="hitButtonClicked(hit)">
+              {{hit.name}}
+            </button>
+          </div>
+        </div>
 			</div>
 		</div>
 	</div>
