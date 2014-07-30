@@ -92,6 +92,7 @@ class Boot {
     SwordBucklerRuleset.register()
     nl.malienkolders.htm.lib.rulesets.mexico2014.EmagRuleset.registerAll()
     nl.malienkolders.htm.lib.rulesets.kriegesschule2014.KriegesSchuleRuleset.registerAll()
+    nl.malienkolders.htm.lib.rulesets.bergen2014.BergenOpenRuleset.registerAll()
 
     val entries: List[ConvertableToMenu] =
       (Menu(Loc("index", "index" :: Nil, "Welcome", Hidden))) ::
