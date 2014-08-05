@@ -312,6 +312,8 @@ object TournamentView {
         } else {
           "#generateElimination-top2" #> Nil
         }) &
+        "#generateElimination-16th" #> SHtml.a(() => generateElimination(16), Text("Sixteenth Finals")) &
+        "#generateElimination-8th" #> SHtml.a(() => generateElimination(8), Text("Eighth Finals")) &
         "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
         "#pool-generation-pool-count" #> SHtml.number(t.poolPhase.pools.size, s => poolCount = s, 1, t.subscriptions.size) &
         "#pool-generation-generate" #> SHtml.submit("Generate", () => { GeneratePoolPhase(t).generate(poolCount); S.redirectTo("#poolphase") }) &
