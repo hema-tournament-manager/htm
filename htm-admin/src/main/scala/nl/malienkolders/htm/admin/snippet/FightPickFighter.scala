@@ -74,7 +74,7 @@ object FightPickFighter {
       rows.sortBy(_._4)
     }
 
-    if (t.poolPhase.pools.isEmpty) {
+    val mappings = if (t.poolPhase.pools.isEmpty) {
       "#pick-participant" #> (
         "* [class]" #> "in active" &
         "thead .pool" #> Nil &
@@ -87,8 +87,8 @@ object FightPickFighter {
             ".score" #> Nil
         }) &
         "#pick-pool" #> Nil &
-        "#pick-fight" #> Nil &
-        ".nav *" #> <li class="active"><a href="#pick-participant" data-toggle="tab">Participant</a></li>
+        ".nav .pool" #> Nil
+
     } else {
       "#pick-participant" #> (
         "thead" #> (".score" #> t.poolPhase.rulesetImpl.emptyScore.header) &
@@ -103,7 +103,16 @@ object FightPickFighter {
         ".pool" #> t.poolPhase.pools.map(p =>
           ".name *" #> s"Pool ${p.poolName}" &
             ".number" #> (1 to 8).map(i =>
-              "a" #> SHtml.a(() => pickPoolFighter(p, i), Text(i.toString)))) &
+              "a" #> SHtml.a(() => pickPoolFighter(p, i), Text(i.toString))))
+    }
+
+    if (t.eliminationPhase.fights.isEmpty) {
+      mappings &
+        "#pick-fight" #> Nil &
+        ".nav .fight" #> Nil
+
+    } else {
+      mappings &
         ".fight" #> t.eliminationPhase.fights.filterNot(_.id.is == current.id.is).map(f =>
           ".name *" #> f.name.get &
             ".winner *" #> SHtml.a(() => pickFightWinner(f), Text("Winner")) &
