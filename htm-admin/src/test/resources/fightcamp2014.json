@@ -1,0 +1,58 @@
+{  "name": "Fightcamp 2014",
+  "days": [
+    { "date": "2014-08-15",
+      "timeslots": [
+        { "name": "Arrival", "from": "20:00", "to": "23:59" }
+      ]
+    },
+    { "date": "2014-08-16",
+      "timeslots": [
+        { "name": "Open Longsword Pool Phase", "from": "09:00", "to": "15:00" },
+        { "name": "Open Longsword Elimination Phase", "from": "15:00", "to": "18:00" }
+      ]
+    },
+    { "date": "2014-08-17",
+      "timeslots": [
+        { "name": "Open Longsword Finals", "from": "09:00", "to": "22:00" }
+      ]
+    }
+  ],
+  "arenas": 2,
+  "tournaments": [
+    { "id": "eggleton",
+      "name": "Eggleton Cup",
+      "mnemonic": "EGG",
+      "poolPhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-default", "fighters": 32 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    },
+    { "id": "assault-at-arms",
+      "name": "Assault at Arms",
+      "mnemonic": "AAA",
+      "poolPhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-default", "fighters": 32 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    },
+    { "id": "rapier",
+      "name": "Rapier Tournament",
+      "mnemonic": "R",
+      "poolPhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-default", "fighters": 32 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    },
+    { "id": "waite-sabre",
+      "name": "Waite Sabre Challenge",
+      "mnemonic": "WSC",
+      "poolPhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-default", "fighters": 32 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    },
+    { "id": "federschwert",
+      "name": "Federschwert Tournament",
+      "mnemonic": "F",
+      "poolPhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-default", "fighters": 32 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    }
+  ]
+}
