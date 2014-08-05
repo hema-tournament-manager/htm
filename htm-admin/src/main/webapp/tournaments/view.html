@@ -135,9 +135,14 @@ td.number {
       <a name="poolphase"></a>
       <h3>
         Pool Phase
-        <a id="poolphase-ruleset" data-toggle="modal" data-target="#poolphase-ruleset-modal" href="#" title="Show ruleset info"><span class="glyphicon glyphicon-flag"></span></a>
+        <a onclick="$('#empty-modal').removeData('bs.modal')" id="poolphase-ruleset" data-toggle="modal" data-target="#empty-modal" href="#" title="Show ruleset info"><span class="glyphicon glyphicon-flag"></span></a>
       </h3>
-      <div id="poolphase-ruleset-modal" class="modal fade" role="dialog" tabindex="-1"></div>
+      <div id="empty-modal" class="modal fade" role="dialog" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+          </div>
+        </div>
+      </div>
       <a name="poolphase-pools"></a>
       <h4>
         Pools
@@ -250,7 +255,7 @@ td.number {
       <a name="eliminationphase"></a>
       <h3>
         Elimination Phase
-        <a id="elimination-ruleset" data-toggle="modal" data-target="#elimination-ruleset-modal" href="#" title="Show ruleset info"><span class="glyphicon glyphicon-flag"></span></a>
+        <a onclick="$('#empty-modal').removeData('bs.modal')" id="elimination-ruleset" data-toggle="modal" data-target="#empty-modal" href="#" title="Show ruleset info"><span class="glyphicon glyphicon-flag"></span></a>
         <div class="btn-group">
           <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
@@ -264,7 +269,6 @@ td.number {
           </ul>
         </div>
       </h3>
-      <div id="elimination-ruleset-modal" class="modal fade" role="dialog" tabindex="-1"></div>
       <div class="eliminationRound well">
         <div class="fight panel panel-default">
           <div class="panel-heading">
@@ -283,20 +287,18 @@ td.number {
                 <td class="name">name</td>
                 <td class="country"></td>
                 <td class="club"></td>
-                <td><a class="edit pull-right" data-toggle="modal" data-target="#poolphase-ruleset-modal" href="#"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                <td><a onclick="$('#empty-modal').removeData('bs.modal')" class="edit pull-right" data-toggle="modal" data-target="#empty-modal" href="#"><span class="glyphicon glyphicon-pencil"></span></a></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div style="clear: both; margin-bottom: -20px;"></div>
       </div>
-      <div id="pick-fighter-modal" class="modal fade" role="dialog" tabindex="-1"></div>
       <a name="finals"></a>
       <h3>
         Finals
-        <a id="finals-ruleset" data-toggle="modal" data-target="#finals-ruleset-modal" href="#" title="Show ruleset info"><span class="glyphicon glyphicon-flag"></span></a>
+        <a onclick="$('#empty-modal').removeData('bs.modal')" id="finals-ruleset" data-toggle="modal" data-target="#empty-modal" href="#" title="Show ruleset info"><span class="glyphicon glyphicon-flag"></span></a>
       </h3>
-      <div id="finals-ruleset-modal" class="modal fade" role="dialog" tabindex="-1"></div>
       <div class="finals well">
         <div class="fight panel panel-default">
           <div class="panel-heading">
@@ -315,7 +317,7 @@ td.number {
                 <td class="name">name</td>
                 <td class="country"></td>
                 <td class="club"></td>
-                <td><a class="edit pull-right" data-toggle="modal" data-target="#poolphase-ruleset-modal" href="#"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                <td><a onclick="$('#empty-modal').removeData('bs.modal')" class="edit pull-right" data-toggle="modal" data-target="#empty-modal" href="#"><span class="glyphicon glyphicon-pencil"></span></a></td>
               </tr>
             </tbody>
           </table>
