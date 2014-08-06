@@ -39,7 +39,7 @@ object JsonImporter extends Loggable {
         case (Some(day), Some(dayDef)) => day.date(dayDef.date.yyyymmdd).save()
         case (None, Some(dayDef)) => Day.create.date(dayDef.date.yyyymmdd).save()
         case (Some(day), None) => day.delete_!
-        case (None, None) => // how did this happen?.map(Some(_)), None, None
+        case (None, None) => // how did this happen?
       }
 
       Day.findAll().zipWithIndex.foreach {
@@ -61,14 +61,23 @@ object JsonImporter extends Loggable {
         t.name(tDef.name)
           .identifier(tDef.id)
           .mnemonic(tDef.mnemonic)
+
+        t.poolPhase.inUse(tDef.poolPhase.isDefined)
         t.poolPhase.ruleset(tDef.poolPhase.map(_.ruleset).getOrElse("")).save()
+
+        t.freeStylePhase.inUse(tDef.freeStylePhase.isDefined)
+        t.freeStylePhase.ruleset(tDef.freeStylePhase.map(_.ruleset).getOrElse("")).save()
+
+        t.eliminationPhase.inUse(tDef.eliminationPhase.isDefined)
         t.eliminationPhase.ruleset(tDef.eliminationPhase.map(_.ruleset).getOrElse("")).save()
+
         t.finalsPhase.ruleset(tDef.finalsPhase.ruleset).save()
+
         for (generate <- tDef.generate) {
           generate match {
             case "finals" =>
               for (i <- t.finalsPhase.fights.size to 1) {
-                logger.info("Finals phase: " + t.finalsPhase.name)
+                logger.info("Finals phase: " + t.finalsPhase.name.get)
                 t.finalsPhase.eliminationFights += EliminationFight.create
                   .round(i + 1)
                   .name(i match { case 0 => "3rd Place" case 1 => "1st Place" case _ => "" })
