@@ -49,6 +49,7 @@ class Boot {
       User,
       Country,
       PoolFightScore,
+      FreeStyleFightScore,
       EliminationFightScore,
       model.Tournament,
       TournamentParticipant,

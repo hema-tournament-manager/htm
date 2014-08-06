@@ -16,7 +16,7 @@ case class PoolPhase(ruleset: String, calculatePools: PoolCalculation)
 
 case class PoolCalculation(size: List[Int])
 
-case class EliminationPhase(ruleset: String, fighters: Int, pick: EliminationPick)
+case class EliminationPhase(ruleset: String, fighters: Int, pick: Option[EliminationPick])
 
 case class EliminationPick(top: Int)
 

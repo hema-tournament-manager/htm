@@ -26,6 +26,9 @@ object JsonImporter extends Loggable {
       }
 
       val event = EventParser.parse(json)
+
+      println("EVENT: " + event)
+
       Event.theOne.name(event.name).save()
 
       val arenas = Arena.findAll()
@@ -62,14 +65,11 @@ object JsonImporter extends Loggable {
           .identifier(tDef.id)
           .mnemonic(tDef.mnemonic)
 
-        t.poolPhase.inUse(tDef.poolPhase.isDefined)
-        t.poolPhase.ruleset(tDef.poolPhase.map(_.ruleset).getOrElse("")).save()
+        t.poolPhase.inUse(tDef.poolPhase.isDefined).ruleset(tDef.poolPhase.map(_.ruleset).getOrElse("")).save()
 
-        t.freeStylePhase.inUse(tDef.freeStylePhase.isDefined)
-        t.freeStylePhase.ruleset(tDef.freeStylePhase.map(_.ruleset).getOrElse("")).save()
+        t.freeStylePhase.inUse(tDef.freeStylePhase.isDefined).ruleset(tDef.freeStylePhase.map(_.ruleset).getOrElse("")).save()
 
-        t.eliminationPhase.inUse(tDef.eliminationPhase.isDefined)
-        t.eliminationPhase.ruleset(tDef.eliminationPhase.map(_.ruleset).getOrElse("")).save()
+        t.eliminationPhase.inUse(tDef.eliminationPhase.isDefined).ruleset(tDef.eliminationPhase.map(_.ruleset).getOrElse("")).save()
 
         t.finalsPhase.ruleset(tDef.finalsPhase.ruleset).save()
 
