@@ -239,7 +239,7 @@ class Schedule {
           ".unscheduledCount *" #> t.phases.flatMap(_.fights.filter(_.scheduled.foreign.isEmpty)).size &
           ".phase" #> (t.poolPhase.pools.map(pool =>
             renderPhase(s"Pool ${pool.poolName}", schedulableFights(pool.fights)))
-            ++ List(t.eliminationPhase, t.finalsPhase).map(p =>
+            ++ List(t.freeStylePhase, t.eliminationPhase, t.finalsPhase).map(p =>
               renderPhase(p.name.get, schedulableFights(p.fights)))).flatten))
   }
 

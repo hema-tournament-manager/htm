@@ -29,7 +29,7 @@ class ArenaTimeSlot extends LongKeyedMapper[ArenaTimeSlot] with IdPK with OneToM
   }
 
   object fights extends MappedOneToManyBase[ScheduledFight[_]]({ () =>
-    ScheduledPoolFight.findAll(By(ScheduledPoolFight.timeslot, this)) ++ ScheduledEliminationFight.findAll(By(ScheduledEliminationFight.timeslot, this)).sortBy(_.time.is)
+    ScheduledPoolFight.findAll(By(ScheduledPoolFight.timeslot, this)) ++ ScheduledFreeStyleFight.findAll(By(ScheduledFreeStyleFight.timeslot, this)) ++ ScheduledEliminationFight.findAll(By(ScheduledEliminationFight.timeslot, this)).sortBy(_.time.is)
   },
     { f: ScheduledFight[_] => f.timeslot.asInstanceOf[MappedForeignKey[Long, _, ArenaTimeSlot]] }) with Owned[ScheduledFight[_]] with Cascade[ScheduledFight[_]]
 
