@@ -6,6 +6,7 @@ import nl.malienkolders.htm.lib.rulesets.Ruleset
 sealed class PhaseType(val code: String)
 case object PoolType extends PhaseType("P")
 case object EliminationType extends PhaseType("E")
+case object FreeStyleType extends PhaseType("F")
 
 trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with IdPK with OneToMany[Long, P] {
 
@@ -76,3 +77,14 @@ class EliminationPhase extends Phase[EliminationPhase] {
 }
 object EliminationPhase extends EliminationPhase with LongKeyedMetaMapper[EliminationPhase]
 
+class FreeStylePhase extends Phase[FreeStylePhase] {
+  
+  def getSingleton = FreeStylePhase
+  
+  object freeStyleFights extends MappedOneToMany(FreeStyleFight, FreeStyleFight.phase, OrderBy(FreeStyleFight.id, Ascending)) with Owned[FreeStyleFight] with Cascade[FreeStyleFight]
+  
+  def fights = freeStyleFights.toSeq
+  
+}
+
+object FreeStylePhase extends FreeStylePhase with LongKeyedMetaMapper[FreeStylePhase]
