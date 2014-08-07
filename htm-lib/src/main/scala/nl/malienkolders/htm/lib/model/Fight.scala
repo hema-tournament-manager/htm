@@ -280,6 +280,8 @@ class FreeStyleFight extends Fight[FreeStyleFight, FreeStyleFightScore] {
 
   object round extends MappedLong(this)
 
+  object fightNr extends MappedLong(this)
+
   object scheduled extends MappedLongForeignKey(this, ScheduledFreeStyleFight)
 
   def schedule(time: Long, duration: Long) = {

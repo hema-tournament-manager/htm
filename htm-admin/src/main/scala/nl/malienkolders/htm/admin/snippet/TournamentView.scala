@@ -84,7 +84,23 @@ object TournamentView {
       val nextRound = t.freeStylePhase.freeStyleFights.foldLeft(0l) { case (acc, fight) => acc.max(fight.round.get) } + 1
       t.freeStylePhase.freeStyleFights += FreeStyleFight.create
         .round(nextRound)
+        .fightNr(1)
         .name("Round " + nextRound + " Fight 1")
+        .fighterAFuture(SpecificFighter(None))
+        .fighterBFuture(SpecificFighter(None))
+
+      t.freeStylePhase.save()
+
+      Reload
+    }
+
+    def addFreeStyleFight(round: Long) = {
+      val fightNr = t.freeStylePhase.fights.filter(_.round.get == round).map(_.fightNr.get).max + 1
+
+      t.freeStylePhase.freeStyleFights += FreeStyleFight.create
+        .round(round)
+        .fightNr(fightNr)
+        .name("Round " + round + " Fight " + fightNr)
         .fighterAFuture(SpecificFighter(None))
         .fighterBFuture(SpecificFighter(None))
 
@@ -344,7 +360,9 @@ object TournamentView {
     val freeStyleBindings = t.freeStylePhase.inUse.get match {
       case true =>
         ".freestyleRound" #> t.freeStylePhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {
-          case (_, fights) => renderFights(fights)
+          case (round, fights) =>
+            ".addFight" #> SHtml.a(() => addFreeStyleFight(round), <span class="glyphicon glyphicon-plus"></span>) &
+              renderFights(fights)
         } &
           "#add-freestyle-round" #> SHtml.a(() => addFreeStyleRound(), Text("Add Round"))
       case false =>
