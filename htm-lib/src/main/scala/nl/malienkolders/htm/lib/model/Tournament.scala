@@ -117,7 +117,7 @@ object Tournament extends Tournament with LongKeyedMetaMapper[Tournament] {
     val t = super.create
     t.phases ++= List(PoolPhase.create, FreeStylePhase.create, EliminationPhase.create, EliminationPhase.create)
     t.poolPhase.name("Pool Phase").inUse(true)
-    t.freeStylePhase.name("Initial Phase").inUse(false)
+    t.freeStylePhase.name("Preliminaries").inUse(false)
     t.eliminationPhase.name("Elimination Phase").inUse(true)
     t.finalsPhase.name("Finals").inUse(true)
     t
