@@ -85,7 +85,13 @@ class FreeStylePhase extends Phase[FreeStylePhase] {
 
   object freeStyleFights extends MappedOneToMany(FreeStyleFight, FreeStyleFight.phase, OrderBy(FreeStyleFight.id, Ascending)) with Owned[FreeStyleFight] with Cascade[FreeStyleFight]
 
-  def fights = freeStyleFights.toSeq
+  def compareFights(left: FreeStyleFight, right: FreeStyleFight) = if (left.round.get == right.round.get) {
+    left.fightNr.get < right.fightNr.get
+  } else {
+    left.round.get < right.round.get
+  }
+
+  def fights = freeStyleFights.sortWith(compareFights).toSeq
 
 }
 
