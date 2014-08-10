@@ -18,7 +18,7 @@ object RandomImporter extends Importer[RandomSettings] {
     val clubNames = readFile("../swordfish/clubcodes").map(_.split(" -> ")).map(x => x(0) -> x(1))
 
     val participants = for (((f, l), i) <- (firstNames zip lastNames) zipWithIndex) yield {
-      val (clubCode, clubName) = clubNames(Random.nextInt(clubNames.size))
+      val (clubName, clubCode) = clubNames(Random.nextInt(clubNames.size))
       Participant(
         List(SourceId("RANDOM", (i + 1).toString)),
         normalizeName(f + " " + l),
