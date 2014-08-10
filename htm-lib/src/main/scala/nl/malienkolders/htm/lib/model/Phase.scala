@@ -93,6 +93,8 @@ class FreeStylePhase extends Phase[FreeStylePhase] {
 
   def fights = freeStyleFights.sortWith(compareFights).toSeq
 
+  def lastRound = freeStyleFights.foldLeft(0l) { case (acc, fight) => acc.max(fight.round.get) }
+
 }
 
 object FreeStylePhase extends FreeStylePhase with LongKeyedMetaMapper[FreeStylePhase]

@@ -80,8 +80,35 @@ object TournamentView {
         case _ => ""
       }.getOrElse(""))
 
+    def generateFreeStyleRound() = {
+      val lastRound = t.freeStylePhase.lastRound
+      val thisRound = lastRound + 1
+      val fighters = if (t.freeStylePhase.freeStyleFights.isEmpty) {
+        t.participants.toList
+      } else {
+        val winners = for (fight <- t.freeStylePhase.freeStyleFights if fight.round.is == lastRound && fight.finished_?) yield {
+          fight.winner
+        }
+        winners.flatten.toList
+      }
+
+      def createFights(fighters: List[Participant], fightNr: Long = 1): List[FreeStyleFight] = fighters.size match {
+        case 0 => Nil
+        case 1 => List(new FreeStyleFight().name("Round " + thisRound + " Fight " + fightNr).round(thisRound).fightNr(fightNr).fighterAFuture(SpecificFighter(fighters.headOption)).fighterBFuture(SpecificFighter(None)))
+        case _ =>
+          new FreeStyleFight().name("Round " + thisRound + " Fight " + fightNr).round(thisRound).fightNr(fightNr).fighterAFuture(SpecificFighter(Some(fighters(0)))).fighterBFuture(SpecificFighter(Some(fighters(1)))) ::
+            createFights(fighters.drop(2), fightNr + 1)
+      }
+
+      t.freeStylePhase.freeStyleFights ++= createFights(Random.shuffle(fighters))
+
+      t.freeStylePhase.save()
+
+      Reload
+    }
+
     def addFreeStyleRound() = {
-      val nextRound = t.freeStylePhase.freeStyleFights.foldLeft(0l) { case (acc, fight) => acc.max(fight.round.get) } + 1
+      val nextRound = t.freeStylePhase.lastRound + 1
       t.freeStylePhase.freeStyleFights += FreeStyleFight.create
         .round(nextRound)
         .fightNr(1)
@@ -364,6 +391,7 @@ object TournamentView {
             ".addFight" #> SHtml.a(() => addFreeStyleFight(round), <span class="glyphicon glyphicon-plus"></span>) &
               renderFights(fights)
         } &
+          "#generate-freestyle-round" #> SHtml.a(() => generateFreeStyleRound(), Text("Generate Round")) &
           "#add-freestyle-round" #> SHtml.a(() => addFreeStyleRound(), Text("Add Round"))
       case false =>
         "#freeStylePhase" #> Nil
