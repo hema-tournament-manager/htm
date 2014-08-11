@@ -22,9 +22,13 @@ object FightPickFighter {
   def render = {
 
     val param = FightPickFighter.loc.currentValue.get.param
-    val id = param.dropRight(1).toLong
+    val fightType = param.take(1)
+    val id = param.drop(1).dropRight(1).toLong
     val side = param.takeRight(1)
-    val current: Fight[_, _] = EliminationFight.findByKey(id).orElse(FreeStyleFight.findByKey(id)).get
+    val current: Fight[_, _] = fightType match {
+      case "E" => EliminationFight.findByKey(id).get
+      case _ => FreeStyleFight.findByKey(id).get
+    }
     val t = current.phase.foreign.get.tournament.foreign.get
 
     def fighter = side match {
@@ -46,14 +50,22 @@ object FightPickFighter {
       redirect
     }
 
-    def pickFightWinner(f: EliminationFight) = {
-      fighter(Winner(f).format)
+    def pickFightWinner(f: Fight[_, _]) = {
+      f match {
+        case ef: EliminationFight => fighter(Winner(ef).format)
+        case ff: FreeStyleFight => fighter(Winner(ff).format)
+        case _ => //ignore
+      }
       current.save()
       redirect
     }
 
-    def pickFightLoser(f: EliminationFight) = {
-      fighter(Loser(f).format)
+    def pickFightLoser(f: Fight[_, _]) = {
+      f match {
+        case ef: EliminationFight => fighter(Loser(ef).format)
+        case ff: FreeStyleFight => fighter(Loser(ff).format)
+        case _ => //ignore
+      }
       current.save()
       redirect
     }
@@ -107,7 +119,7 @@ object FightPickFighter {
                 "a" #> SHtml.a(() => pickPoolFighter(p, i), Text(i.toString)))))
     }
 
-    if (t.eliminationPhase.fights.isEmpty) {
+    if (t.freeStylePhase.fights.isEmpty && t.eliminationPhase.fights.isEmpty) {
       mappings &
         "#pick-fight" #> Nil &
         ".nav .fight" #> Nil
@@ -115,7 +127,7 @@ object FightPickFighter {
     } else {
       mappings &
         "#pick-fight" #> (
-          ".fight" #> t.eliminationPhase.fights.filterNot(_.id.is == current.id.is).map(f =>
+          ".fight" #> (t.freeStylePhase.fights ++ t.eliminationPhase.fights).filterNot(_.id.is == current.id.is).map(f =>
             ".name *" #> f.name.get &
               ".winner *" #> SHtml.a(() => pickFightWinner(f), Text("Winner")) &
               ".loser *" #> SHtml.a(() => pickFightLoser(f), Text("Loser"))))

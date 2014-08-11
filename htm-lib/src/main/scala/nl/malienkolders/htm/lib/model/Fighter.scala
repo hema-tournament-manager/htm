@@ -21,7 +21,7 @@ object Fighter {
     .getOrElse(UnknownFighter(s))
 }
 case class Winner(fight: Either[EliminationFight, FreeStyleFight]) extends Fighter {
-  def format = "F" + fight.fold(_.id, _.id).get + "W"
+  def format = "F" + fight.fold(_.phaseType.code, _.phaseType.code) + fight.fold(_.id, _.id).get + "W"
   def participant = fight.fold(_.finished_?, _.finished_?) match {
     case true => fight.fold(_.winner, _.winner)
     case false => None
@@ -33,41 +33,44 @@ case class Winner(fight: Either[EliminationFight, FreeStyleFight]) extends Fight
   override def toString = "Winner of " + fight.fold(_.name, _.name).is
 }
 object Winner extends (Either[EliminationFight, FreeStyleFight] => Winner) {
-  val re = """^F(\d+)W$""".r
+  val re = """^F(E|F)(\d+)W$""".r
 
   def apply(ef: EliminationFight): Winner = apply(scala.Left(ef))
   def apply(ff: FreeStyleFight): Winner = apply(scala.Right(ff))
 
   def parse(s: String): Option[Winner] = re.findFirstIn(s) match {
-    case Some(re(fightId)) =>
-      EliminationFight.findByKey(fightId.toLong) match {
-        case Full(ef) => Some(Winner(scala.Left(ef)))
-        case _ =>
-          FreeStyleFight.findByKey(fightId.toLong) match {
-            case Full(ff) => Some(Winner(scala.Right(ff)))
-            case _ => None
-          }
+    case Some(re(phaseType, fightId)) =>
+      phaseType match {
+        case "E" => EliminationFight.findByKey(fightId.toLong).toOption.map(f => Winner(f))
+        case "F" => FreeStyleFight.findByKey(fightId.toLong).toOption.map(f => Winner(f))
       }
     case None => None
   }
 }
-case class Loser(fight: EliminationFight) extends Fighter {
-  def format = "F" + fight.id.get + "L"
-  def participant = fight.finished_? match {
-    case true => fight.loser
+case class Loser(fight: Either[EliminationFight, FreeStyleFight]) extends Fighter {
+  def format = "F" + fight.fold(_.phaseType.code, _.phaseType.code) + fight.fold(_.id, _.id).get + "L"
+  def participant = fight.fold(_.finished_?, _.finished_?) match {
+    case true => fight.fold(_.loser, _.loser)
     case false => None
   }
   def sameAs(other: Fighter) = other match {
-    case l: Loser => fight.id.get == l.fight.id.get
+    case l: Loser => fight.fold(_.id, _.id).get == l.fight.fold(_.id, _.id).get
     case _ => false
   }
-  override def toString = "Loser of " + fight.name.is
+  override def toString = "Loser of " + fight.fold(_.name, _.name).get
 }
-object Loser extends (EliminationFight => Loser) {
-  val re = """^F(\d+)L$""".r
+object Loser extends (Either[EliminationFight, FreeStyleFight] => Loser) {
+  val re = """^F(E|F)(\d+)L$""".r
+
+  def apply(ef: EliminationFight): Loser = apply(scala.Left(ef))
+  def apply(ff: FreeStyleFight): Loser = apply(scala.Right(ff))
 
   def parse(s: String): Option[Loser] = re.findFirstIn(s) match {
-    case Some(re(fightId)) => Some(Loser(EliminationFight.findByKey(fightId.toLong).get))
+    case Some(re(phaseType, fightId)) =>
+      phaseType match {
+        case "E" => EliminationFight.findByKey(fightId.toLong).toOption.map(f => Loser(f))
+        case "F" => FreeStyleFight.findByKey(fightId.toLong).toOption.map(f => Loser(f))
+      }
     case None => None
   }
 }

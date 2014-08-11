@@ -276,7 +276,7 @@ class FreeStyleFight extends Fight[FreeStyleFight, FreeStyleFightScore] {
 
   object phase extends MappedLongForeignKey(this, FreeStylePhase)
 
-  val phaseType = EliminationType
+  val phaseType = FreeStyleType
 
   object round extends MappedLong(this)
 
