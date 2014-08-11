@@ -84,19 +84,19 @@ object TournamentView {
       val lastRound = t.freeStylePhase.lastRound
       val thisRound = lastRound + 1
       val fighters = if (t.freeStylePhase.freeStyleFights.isEmpty) {
-        t.participants.toList
+        t.participants.map(p => SpecificFighter(Some(p))).toList
       } else {
-        val winners = for (fight <- t.freeStylePhase.freeStyleFights if fight.round.is == lastRound && fight.finished_?) yield {
-          fight.winner
+        val winners = for (fight <- t.freeStylePhase.freeStyleFights if fight.round.is == lastRound) yield {
+          Winner(fight)
         }
-        winners.flatten.toList
+        winners.toList
       }
 
-      def createFights(fighters: List[Participant], fightNr: Long = 1): List[FreeStyleFight] = fighters.size match {
+      def createFights(fighters: List[Fighter], fightNr: Long = 1): List[FreeStyleFight] = fighters.size match {
         case 0 => Nil
-        case 1 => List(new FreeStyleFight().name("Round " + thisRound + " Fight " + fightNr).round(thisRound).fightNr(fightNr).fighterAFuture(SpecificFighter(fighters.headOption)).fighterBFuture(SpecificFighter(None)))
+        case 1 => List(new FreeStyleFight().name("Round " + thisRound + " Fight " + fightNr).round(thisRound).fightNr(fightNr).fighterAFuture(fighters.head).fighterBFuture(SpecificFighter(None)))
         case _ =>
-          new FreeStyleFight().name("Round " + thisRound + " Fight " + fightNr).round(thisRound).fightNr(fightNr).fighterAFuture(SpecificFighter(Some(fighters(0)))).fighterBFuture(SpecificFighter(Some(fighters(1)))) ::
+          new FreeStyleFight().name("Round " + thisRound + " Fight " + fightNr).round(thisRound).fightNr(fightNr).fighterAFuture(fighters(0)).fighterBFuture(fighters(1)) ::
             createFights(fighters.drop(2), fightNr + 1)
       }
 
