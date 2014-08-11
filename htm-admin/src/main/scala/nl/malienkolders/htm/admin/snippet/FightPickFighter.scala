@@ -24,7 +24,7 @@ object FightPickFighter {
     val param = FightPickFighter.loc.currentValue.get.param
     val id = param.dropRight(1).toLong
     val side = param.takeRight(1)
-    val current: Fight[_, _] = EliminationFight.findByKey(id).get
+    val current: Fight[_, _] = EliminationFight.findByKey(id).orElse(FreeStyleFight.findByKey(id)).get
     val t = current.phase.foreign.get.tournament.foreign.get
 
     def fighter = side match {
