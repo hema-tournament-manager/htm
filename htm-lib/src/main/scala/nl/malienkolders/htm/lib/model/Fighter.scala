@@ -20,23 +20,34 @@ object Fighter {
     .orElse(SpecificFighter.parse(s))
     .getOrElse(UnknownFighter(s))
 }
-case class Winner(fight: EliminationFight) extends Fighter {
-  def format = "F" + fight.id.get + "W"
-  def participant = fight.finished_? match {
-    case true => fight.winner
+case class Winner(fight: Either[EliminationFight, FreeStyleFight]) extends Fighter {
+  def format = "F" + fight.fold(_.id, _.id).get + "W"
+  def participant = fight.fold(_.finished_?, _.finished_?) match {
+    case true => fight.fold(_.winner, _.winner)
     case false => None
   }
   def sameAs(other: Fighter) = other match {
-    case w: Winner => fight.id.get == w.fight.id.get
+    case w: Winner => fight.fold(_.id, _.id).get == w.fight.fold(_.id, _.id).get
     case _ => false
   }
-  override def toString = "Winner of " + fight.name.is
+  override def toString = "Winner of " + fight.fold(_.name, _.name).is
 }
-object Winner extends (EliminationFight => Winner) {
+object Winner extends (Either[EliminationFight, FreeStyleFight] => Winner) {
   val re = """^F(\d+)W$""".r
 
+  def apply(ef: EliminationFight): Winner = apply(scala.Left(ef))
+  def apply(ff: FreeStyleFight): Winner = apply(scala.Right(ff))
+
   def parse(s: String): Option[Winner] = re.findFirstIn(s) match {
-    case Some(re(fightId)) => Some(Winner(EliminationFight.findByKey(fightId.toLong).get))
+    case Some(re(fightId)) =>
+      EliminationFight.findByKey(fightId.toLong) match {
+        case Full(ef) => Some(Winner(scala.Left(ef)))
+        case _ =>
+          FreeStyleFight.findByKey(fightId.toLong) match {
+            case Full(ff) => Some(Winner(scala.Right(ff)))
+            case _ => None
+          }
+      }
     case None => None
   }
 }
