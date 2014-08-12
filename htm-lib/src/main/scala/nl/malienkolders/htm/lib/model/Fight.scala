@@ -199,12 +199,14 @@ object FightHelper {
   def dao(phaseType: PhaseType): LongKeyedMetaMapper[_ <: Fight[_, _]] = phaseType match {
     case PoolType => PoolFight
     case EliminationType => EliminationFight
+    case FreeStyleType => FreeStyleFight
     case _ => PoolFight
   }
 
   def dao(phaseType: String): LongKeyedMetaMapper[_ <: Fight[_, _]] = phaseType match {
     case PoolType.code => PoolFight
     case EliminationType.code => EliminationFight
+    case FreeStyleType.code => FreeStyleFight
     case _ => PoolFight
   }
 }
