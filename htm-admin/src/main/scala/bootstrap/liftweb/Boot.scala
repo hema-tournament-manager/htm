@@ -97,6 +97,7 @@ class Boot {
     nl.malienkolders.htm.lib.rulesets.mexico2014.EmagRuleset.registerAll()
     nl.malienkolders.htm.lib.rulesets.kriegesschule2014.KriegesSchuleRuleset.registerAll()
     nl.malienkolders.htm.lib.rulesets.bergen2014.BergenOpenRuleset.registerAll()
+    nl.malienkolders.htm.lib.rulesets.fightcamp2014.FightcampRuleset.registerAll
 
     val entries: List[ConvertableToMenu] =
       (Menu(Loc("index", "index" :: Nil, "Welcome", Hidden))) ::
