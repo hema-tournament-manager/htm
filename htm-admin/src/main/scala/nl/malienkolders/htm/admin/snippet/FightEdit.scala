@@ -40,6 +40,12 @@ object FightEdit {
       Reload
     }
 
+    def deleteFight() {
+      val tournamentIdentifier = f.tournament.identifier.get
+      f.delete_!
+      S.redirectTo("/tournaments/view/" + tournamentIdentifier)
+    }
+
     def addScoreLine() {
       f.addScore(newScore)
       f.save()
@@ -67,6 +73,13 @@ object FightEdit {
     val timeFormatStr = "HH:mm:ss";
 
     val datetimepickerInitStr = s"datetimepicker({ dateFormat: '$dateFormatStr', timeFormat: '$timeFormatStr' });";
+
+    val deleteMapping = params.phaseType match {
+      case FreeStyleType.code if !f.finished_? =>
+        "#doDelete" #> SHtml.onSubmitUnit(deleteFight)
+      case _ =>
+        "#doDelete" #> Nil
+    }
 
     S.appendJs(Run("$('#timeStop')." + datetimepickerInitStr) & Run("$('#timeStart')." + datetimepickerInitStr))
     ".red" #> renderFighter(f.fighterA) &
@@ -96,7 +109,8 @@ object FightEdit {
         "name=doubles" #> newScore.doubles.toForm &
         "name=exchanges" #> newScore.exchanges.toForm &
         "name=scoreType" #> newScore.scoreType.toForm) &
-        "#doEdit" #> SHtml.onSubmitUnit(process)
+        "#doEdit" #> SHtml.onSubmitUnit(process) &
+        deleteMapping
 
   }
 

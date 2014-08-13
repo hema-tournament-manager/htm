@@ -17,7 +17,7 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
   object mnemonic extends MappedString(this, 8)
   object identifier extends MappedString(this, 32)
   object phases extends MappedOneToManyBase[Phase[_]]({ () =>
-    PoolPhase.findAll(By(PoolPhase.tournament, this)) ++ EliminationPhase.findAll(By(EliminationPhase.tournament, this)).sortBy(_.order.is)
+    PoolPhase.findAll(By(PoolPhase.tournament, this)) ++ FreeStylePhase.findAll(By(FreeStylePhase.tournament, this)) ++ EliminationPhase.findAll(By(EliminationPhase.tournament, this)).sortBy(_.order.is)
   },
     { p: Phase[_] => p.tournament.asInstanceOf[MappedForeignKey[Long, _, Tournament]] }) with Owned[Phase[_]] with Cascade[Phase[_]]
   object defaultArena extends MappedLongForeignKey(this, Arena)
@@ -64,9 +64,11 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
 
   def poolPhase: PoolPhase = phases(0).asInstanceOf[PoolPhase]
 
-  def eliminationPhase: EliminationPhase = phases(1).asInstanceOf[EliminationPhase]
+  def freeStylePhase: FreeStylePhase = phases(1).asInstanceOf[FreeStylePhase]
 
-  def finalsPhase: EliminationPhase = phases(2).asInstanceOf[EliminationPhase]
+  def eliminationPhase: EliminationPhase = phases(2).asInstanceOf[EliminationPhase]
+
+  def finalsPhase: EliminationPhase = phases(3).asInstanceOf[EliminationPhase]
 
   def fights = phases.flatMap(_.fights)
 
@@ -113,10 +115,11 @@ object Tournament extends Tournament with LongKeyedMetaMapper[Tournament] {
 
   override def create = {
     val t = super.create
-    t.phases ++= List(PoolPhase.create, EliminationPhase.create, EliminationPhase.create)
-    t.poolPhase.name("Pool Phase")
-    t.eliminationPhase.name("Elimination Phase")
-    t.finalsPhase.name("Finals")
+    t.phases ++= List(PoolPhase.create, FreeStylePhase.create, EliminationPhase.create, EliminationPhase.create)
+    t.poolPhase.name("Pool Phase").inUse(true)
+    t.freeStylePhase.name("Preliminaries").inUse(false)
+    t.eliminationPhase.name("Elimination Phase").inUse(true)
+    t.finalsPhase.name("Finals").inUse(true)
     t
   }
 }

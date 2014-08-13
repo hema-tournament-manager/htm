@@ -6,6 +6,7 @@ import nl.malienkolders.htm.lib.rulesets.Ruleset
 sealed class PhaseType(val code: String)
 case object PoolType extends PhaseType("P")
 case object EliminationType extends PhaseType("E")
+case object FreeStyleType extends PhaseType("F")
 
 trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with IdPK with OneToMany[Long, P] {
 
@@ -16,6 +17,8 @@ trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with IdPK with OneToMany[L
   object name extends MappedString(this, 128)
 
   object tournament extends MappedLongForeignKey(this, Tournament)
+
+  object inUse extends MappedBoolean(this)
 
   object timeLimitOfFight extends MappedLong(this)
   object breakInFightAt extends MappedLong(this)
@@ -76,3 +79,22 @@ class EliminationPhase extends Phase[EliminationPhase] {
 }
 object EliminationPhase extends EliminationPhase with LongKeyedMetaMapper[EliminationPhase]
 
+class FreeStylePhase extends Phase[FreeStylePhase] {
+
+  def getSingleton = FreeStylePhase
+
+  object freeStyleFights extends MappedOneToMany(FreeStyleFight, FreeStyleFight.phase, OrderBy(FreeStyleFight.id, Ascending)) with Owned[FreeStyleFight] with Cascade[FreeStyleFight]
+
+  def compareFights(left: FreeStyleFight, right: FreeStyleFight) = if (left.round.get == right.round.get) {
+    left.fightNr.get < right.fightNr.get
+  } else {
+    left.round.get < right.round.get
+  }
+
+  def fights = freeStyleFights.sortWith(compareFights).toSeq
+
+  def lastRound = freeStyleFights.foldLeft(0l) { case (acc, fight) => acc.max(fight.round.get) }
+
+}
+
+object FreeStylePhase extends FreeStylePhase with LongKeyedMetaMapper[FreeStylePhase]

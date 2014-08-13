@@ -91,6 +91,12 @@ class EliminationFightScore extends Score[EliminationFightScore, EliminationFigh
 }
 object EliminationFightScore extends EliminationFightScore with LongKeyedMetaMapper[EliminationFightScore]
 
+class FreeStyleFightScore extends Score[FreeStyleFightScore, FreeStyleFight] with IdPK {
+  def getSingleton = FreeStyleFightScore
+  def fightMeta = FreeStyleFight
+}
+object FreeStyleFightScore extends FreeStyleFightScore with LongKeyedMetaMapper[FreeStyleFightScore]
+
 trait FightToScore[F <: Fight[F, S], S <: Score[S, F]] extends OneToMany[Long, F] {
   self: F =>
 

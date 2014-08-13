@@ -53,3 +53,13 @@ class ScheduledEliminationFight extends ScheduledFight[ScheduledEliminationFight
 object ScheduledEliminationFight extends ScheduledEliminationFight with LongKeyedMetaMapper[ScheduledEliminationFight] {
   override def dbTableName = "scheduled_elimination_fight"
 }
+
+class ScheduledFreeStyleFight extends ScheduledFight[ScheduledFreeStyleFight] with IdPK {
+  def getSingleton = ScheduledFreeStyleFight
+
+  object fight extends MappedLongForeignKey(this, FreeStyleFight)
+}
+
+object ScheduledFreeStyleFight extends ScheduledFreeStyleFight with LongKeyedMetaMapper[ScheduledFreeStyleFight] {
+  override def dbTableName = "scheduled_freestyle_fight"
+}

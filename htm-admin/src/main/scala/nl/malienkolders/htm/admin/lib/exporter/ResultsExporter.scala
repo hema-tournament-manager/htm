@@ -50,30 +50,45 @@ object ResultsExporter extends ExcelExporter {
     implicit var rowIndex = config.startRow - 1
     config.tournaments foreach { implicit t =>
       printTournament(t)
-      t.poolPhase.pools.foreach { pool =>
-        printPool(pool)
-        pool.fights foreach { f =>
+      if (t.poolPhase.inUse.get) {
+        t.poolPhase.pools.foreach { pool =>
+          printPool(pool)
+          pool.fights foreach { f =>
+            printFight(f)
+            rowIndex += 1
+          }
+        }
+      }
+      val style = workbook.createCellStyle()
+      style.setAlignment(CellStyle.ALIGN_LEFT)
+      if (t.freeStylePhase.inUse.get) {
+        rowIndex += 1
+        printRow(Map("pool.name" -> "Initial"))
+        dataSheet.getRow(rowIndex).getCell(config.columns("pool.name")).setCellStyle(style)
+        t.freeStylePhase.fights foreach { f =>
           printFight(f)
           rowIndex += 1
         }
       }
-      rowIndex += 1
-      printRow(Map("pool.name" -> "Elimination"))
-      val style = workbook.createCellStyle()
-      style.setAlignment(CellStyle.ALIGN_LEFT)
-      dataSheet.getRow(rowIndex).getCell(config.columns("pool.name")).setCellStyle(style)
-      t.eliminationPhase.fights foreach { f =>
-        printFight(f)
+      if (t.eliminationPhase.inUse.get) {
+        rowIndex += 1
+        printRow(Map("pool.name" -> "Elimination"))
+        dataSheet.getRow(rowIndex).getCell(config.columns("pool.name")).setCellStyle(style)
+        t.eliminationPhase.fights foreach { f =>
+          printFight(f)
+          rowIndex += 1
+        }
+      }
+      if (t.finalsPhase.inUse.get) {
+        rowIndex += 1
+        printRow(Map("pool.name" -> "Finals"))
+        dataSheet.getRow(rowIndex).getCell(config.columns("pool.name")).setCellStyle(style)
+        t.finalsPhase.fights foreach { f =>
+          printFight(f)
+          rowIndex += 1
+        }
         rowIndex += 1
       }
-      rowIndex += 1
-      printRow(Map("pool.name" -> "Finals"))
-      dataSheet.getRow(rowIndex).getCell(config.columns("pool.name")).setCellStyle(style)
-      t.finalsPhase.fights foreach { f =>
-        printFight(f)
-        rowIndex += 1
-      }
-      rowIndex += 1
     }
 
     workbook.write(out)

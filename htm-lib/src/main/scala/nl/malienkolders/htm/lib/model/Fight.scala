@@ -199,12 +199,14 @@ object FightHelper {
   def dao(phaseType: PhaseType): LongKeyedMetaMapper[_ <: Fight[_, _]] = phaseType match {
     case PoolType => PoolFight
     case EliminationType => EliminationFight
+    case FreeStyleType => FreeStyleFight
     case _ => PoolFight
   }
 
   def dao(phaseType: String): LongKeyedMetaMapper[_ <: Fight[_, _]] = phaseType match {
     case PoolType.code => PoolFight
     case EliminationType.code => EliminationFight
+    case FreeStyleType.code => FreeStyleFight
     case _ => PoolFight
   }
 }
@@ -268,3 +270,27 @@ object EliminationFight extends EliminationFight with LongKeyedMetaMapper[Elimin
     super.delete_!
   }
 }
+
+class FreeStyleFight extends Fight[FreeStyleFight, FreeStyleFightScore] {
+  def getSingleton = FreeStyleFight
+
+  def scoreMeta = FreeStyleFightScore
+
+  object phase extends MappedLongForeignKey(this, FreeStylePhase)
+
+  val phaseType = FreeStyleType
+
+  object round extends MappedLong(this)
+
+  object fightNr extends MappedLong(this)
+
+  object scheduled extends MappedLongForeignKey(this, ScheduledFreeStyleFight)
+
+  def schedule(time: Long, duration: Long) = {
+    val sf = ScheduledFreeStyleFight.create.fight(this).time(time).duration(duration)
+    scheduled(sf)
+    sf
+  }
+}
+
+object FreeStyleFight extends FreeStyleFight with LongKeyedMetaMapper[FreeStyleFight]

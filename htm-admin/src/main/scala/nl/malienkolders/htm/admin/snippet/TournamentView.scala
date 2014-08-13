@@ -80,6 +80,62 @@ object TournamentView {
         case _ => ""
       }.getOrElse(""))
 
+    def generateFreeStyleRound() = {
+      val lastRound = t.freeStylePhase.lastRound
+      val thisRound = lastRound + 1
+      val fighters = if (t.freeStylePhase.freeStyleFights.isEmpty) {
+        t.participants.map(p => SpecificFighter(Some(p))).toList
+      } else {
+        val winners = for (fight <- t.freeStylePhase.freeStyleFights if fight.round.is == lastRound) yield {
+          Winner(fight)
+        }
+        winners.toList
+      }
+
+      def createFights(fighters: List[Fighter], fightNr: Long = 1): List[FreeStyleFight] = fighters.size match {
+        case 0 => Nil
+        case 1 => List(new FreeStyleFight().name("Round " + thisRound + " Fight " + fightNr).round(thisRound).fightNr(fightNr).fighterAFuture(fighters.head).fighterBFuture(SpecificFighter(None)))
+        case _ =>
+          new FreeStyleFight().name("Round " + thisRound + " Fight " + fightNr).round(thisRound).fightNr(fightNr).fighterAFuture(fighters(0)).fighterBFuture(fighters(1)) ::
+            createFights(fighters.drop(2), fightNr + 1)
+      }
+
+      t.freeStylePhase.freeStyleFights ++= createFights(Random.shuffle(fighters))
+
+      t.freeStylePhase.save()
+
+      Reload
+    }
+
+    def addFreeStyleRound() = {
+      val nextRound = t.freeStylePhase.lastRound + 1
+      t.freeStylePhase.freeStyleFights += FreeStyleFight.create
+        .round(nextRound)
+        .fightNr(1)
+        .name("Round " + nextRound + " Fight 1")
+        .fighterAFuture(SpecificFighter(None))
+        .fighterBFuture(SpecificFighter(None))
+
+      t.freeStylePhase.save()
+
+      Reload
+    }
+
+    def addFreeStyleFight(round: Long) = {
+      val fightNr = t.freeStylePhase.fights.filter(_.round.get == round).map(_.fightNr.get).max + 1
+
+      t.freeStylePhase.freeStyleFights += FreeStyleFight.create
+        .round(round)
+        .fightNr(fightNr)
+        .name("Round " + round + " Fight " + fightNr)
+        .fighterAFuture(SpecificFighter(None))
+        .fighterBFuture(SpecificFighter(None))
+
+      t.freeStylePhase.save()
+
+      Reload
+    }
+
     def generateFinals() = {
       val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
 
@@ -186,7 +242,7 @@ object TournamentView {
     def renderFighter(f: Fight[_, _], side: String, fighter: Fighter) = (fighter match {
       case UnknownFighter(_) =>
         ".label *" #> "?" &
-          ".name *" #> <a href={ s"/fights/pick/${f.id.is}${side}" }>Pick a fighter</a> &
+          ".name *" #> <a href={ s"/fights/pick/${f.phaseType.code}${f.id.is}${side}" }>Pick a fighter</a> &
           ".club *" #> Nil &
           ".country *" #> Nil
       case knownFighter => knownFighter.participant match {
@@ -197,7 +253,7 @@ object TournamentView {
             ".club *" #> Nil &
             ".country *" #> Nil
       }
-    }) & ".edit [href]" #> s"/fights/pick/${f.id.is}${side}"
+    }) & ".edit [href]" #> s"/fights/pick/${f.phaseType.code}${f.id.is}${side}"
 
     def renderFights(fights: Seq[Fight[_, _]]) = ".fight" #> fights.map(f =>
       ".fight-title *" #> f.name.get &
@@ -283,7 +339,7 @@ object TournamentView {
           ".country *" #> sub.participant.foreign.get.country.foreign.get.code2.get &
           ".country [title]" #> sub.participant.foreign.get.country.foreign.get.name.get
       }) &
-      ".participant-pick-pool" #> renderPickPool(sub) &
+      (if (sub.tournament.foreign.get.poolPhase.inUse.get) { ".participant-pick-pool" #> renderPickPool(sub) } else { ".pool" #> Nil }) &
       ".initialRanking input" #> SHtml.ajaxText(sub.experience.get.toString, s => { sub.experience(s.toInt); sub.save; Reload }, "type" -> "number") &
       ".remove" #> (sub.droppedOut.get match {
         case true =>
@@ -299,59 +355,93 @@ object TournamentView {
       ".error" #> errors(sub)
 
     var poolCount = 0
-    // bindings
-    "#tournamentName" #> t.name &
-      ".downloadButton" #> Seq(
-        "a" #> SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")),
-        "a" #> SHtml.link("/download/schedule/tournament", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
-        "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
-        "#participants" #> (".participant" #> tournamentSubscriptions.map(renderParticipant(true) _)) &
-        "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
-        (if (t.poolPhase.pools.size.isEven) {
-          "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool"))
-        } else {
-          "#generateElimination-top2" #> Nil
-        }) &
-        "#generateElimination-16th" #> SHtml.a(() => generateElimination(16), Text("Sixteenth Finals")) &
-        "#generateElimination-8th" #> SHtml.a(() => generateElimination(8), Text("Eighth Finals")) &
-        "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
+
+    val poolBindings = t.poolPhase.inUse.get match {
+      case true =>
         "#pool-generation-pool-count" #> SHtml.number(t.poolPhase.pools.size, s => poolCount = s, 1, t.subscriptions.size) &
-        "#pool-generation-generate" #> SHtml.submit("Generate", () => { GeneratePoolPhase(t).generate(poolCount); S.redirectTo("#poolphase") }) &
-        ".tournamentPool" #> t.poolPhase.pools.map(p =>
-          ".panel-title" #> (
-            ".name *" #> p.poolName &
-            "a [href]" #> s"#ranking${p.id.get}") &
-            ".participants" #> (".participant" #> p.ranked.map {
-              case (pt, _) =>
-                renderParticipant()(pt.subscription(t).get)
-            }) &
-            ".modal" #> (
-              "* [id]" #> s"ranking${p.id.get}" &
-              ".modal-title *" #> s"Pool ${p.poolName}" &
-              "thead" #> (".field" #> t.poolPhase.rulesetImpl.emptyScore.header) &
-              ".participant" #> p.ranked.map {
-                case (pt, s) =>
-                  renderParticipant()(pt.subscription(t).get) &
-                    ".field" #> s.row
-              })) &
-        ".poolPhase" #> t.poolPhase.pools.map(p =>
-          renderFights(p.fights)) &
+          "#pool-generation-generate" #> SHtml.submit("Generate", () => { GeneratePoolPhase(t).generate(poolCount); S.redirectTo("#poolphase") }) &
+          ".tournamentPool" #> t.poolPhase.pools.map(p =>
+            ".panel-title" #> (
+              ".name *" #> p.poolName &
+              "a [href]" #> s"#ranking${p.id.get}") &
+              ".participants" #> (".participant" #> p.ranked.map {
+                case (pt, _) =>
+                  renderParticipant()(pt.subscription(t).get)
+              }) &
+              ".modal" #> (
+                "* [id]" #> s"ranking${p.id.get}" &
+                ".modal-title *" #> s"Pool ${p.poolName}" &
+                "thead" #> (".field" #> t.poolPhase.rulesetImpl.emptyScore.header) &
+                ".participant" #> p.ranked.map {
+                  case (pt, s) =>
+                    renderParticipant()(pt.subscription(t).get) &
+                      ".field" #> s.row
+                })) &
+          ".poolPhase" #> t.poolPhase.pools.map(p =>
+            renderFights(p.fights))
+      case false =>
+        "#poolPhase" #> Nil &
+          "#poolNav" #> Nil
+    }
+
+    val freeStyleBindings = t.freeStylePhase.inUse.get match {
+      case true =>
+        ".freestyleRound" #> t.freeStylePhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {
+          case (round, fights) =>
+            ".addFight" #> SHtml.a(() => addFreeStyleFight(round), <span class="glyphicon glyphicon-plus"></span>) &
+              renderFights(fights)
+        } &
+          "#generate-freestyle-round" #> SHtml.a(() => generateFreeStyleRound(), Text("Generate Round")) &
+          "#add-freestyle-round" #> SHtml.a(() => addFreeStyleRound(), Text("Add Round"))
+      case false =>
+        "#freeStylePhase" #> Nil
+    }
+
+    val eliminationBindings = t.eliminationPhase.inUse.get match {
+      case true =>
         ".eliminationRound" #> t.eliminationPhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {
           case (_, fights) => renderFights(fights)
         } &
-        ".finals" #> renderFights(t.finalsPhase.fights.reverse) &
-        "#phase" #> t.phases.map(p =>
-          ".phaseAnchor [name]" #> ("phase" + p.id.get) &
-            "#phaseName *" #> <span><a name={ "phase" + p.id.is }></a>{ p.order.is + ": " + p.name.is }</span> &
-            "name=ruleset" #> SHtml.ajaxSelect(Ruleset.rulesets.toList.map(r => r._1 -> r._1), Full(p.ruleset.get), { ruleset => p.ruleset(ruleset); p.save; S.notice("Ruleset changed for " + p.name.is) }) &
-            "name=timeLimit" #> SHtml.ajaxText((p.timeLimitOfFight.get / 1000).toString, { time => p.timeLimitOfFight(time.toLong seconds); p.save; S.notice("Time limit saved") }, "type" -> "number") &
-            "name=fightBreak" #> SHtml.ajaxText((p.breakInFightAt.get / 1000).toString, { time => p.breakInFightAt(time.toLong seconds); p.save; S.notice("Break time saved") }, "type" -> "number") &
-            "name=fightBreakDuration" #> SHtml.ajaxText((p.breakDuration.get / 1000).toString, { time => p.breakDuration(time.toLong seconds); p.save; S.notice("Break duration saved") }, "type" -> "number") &
-            "name=exchangeLimit" #> SHtml.ajaxText(p.exchangeLimit.toString, { time => p.exchangeLimit(time.toInt); p.save; S.notice("Exchange limit saved") }, "type" -> "number") &
-            "name=timeBetweenFights" #> SHtml.ajaxText((p.timeBetweenFights.get / 1000).toString, { time => p.timeBetweenFights(time.toLong seconds); p.save; S.notice("Time between fights saved") }, "type" -> "number")) &
-        "#poolphase-ruleset [href]" #> s"/rulesets/modal/${t.poolPhase.ruleset.get}" &
-        "#elimination-ruleset [href]" #> s"/rulesets/modal/${t.eliminationPhase.ruleset.get}" &
-        "#finals-ruleset [href]" #> s"/rulesets/modal/${t.finalsPhase.ruleset.get}"
+          (if (t.poolPhase.inUse.get && t.poolPhase.pools.size.isEven) {
+            "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool"))
+          } else {
+            "#generateElimination-top2" #> Nil
+          }) &
+          "#generateElimination-16th" #> SHtml.a(() => generateElimination(16), Text("Sixteenth Finals")) &
+          "#generateElimination-8th" #> SHtml.a(() => generateElimination(8), Text("Eighth Finals")) &
+          "#generateElimination-4th" #> SHtml.a(() => generateElimination(4), Text("Quarter Finals")) &
+          "#generateElimination-2nd" #> SHtml.a(() => generateElimination(2), Text("Semi Finals"))
+
+      case false =>
+        "#eliminationPhase" #> Nil
+    }
+
+    // bindings
+    "#tournamentName" #> t.name &
+      ".downloadButton" #> Seq(
+        "a" #> (if (t.poolPhase.inUse.get) { SHtml.link("/download/pools", () => throw new ResponseShortcutException(downloadPools(t)), Text("Pools")) } else { Nil }),
+        "a" #> SHtml.link("/download/schedule/tournament", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
+        "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
+        "#participants" #> (
+          ".participant" #> tournamentSubscriptions.map(renderParticipant(true) _)) &
+          "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
+          poolBindings &
+          freeStyleBindings &
+          eliminationBindings &
+          ".finals" #> renderFights(t.finalsPhase.fights.reverse) &
+          "#phase" #> t.phases.map(p =>
+            ".phaseAnchor [name]" #> ("phase" + p.id.get) &
+              "#phaseName *" #> <span><a name={ "phase" + p.id.is }></a>{ p.order.is + ": " + p.name.is }</span> &
+              "name=ruleset" #> SHtml.ajaxSelect(Ruleset.rulesets.toList.map(r => r._1 -> r._1), Full(p.ruleset.get), { ruleset => p.ruleset(ruleset); p.save; S.notice("Ruleset changed for " + p.name.is) }) &
+              "name=timeLimit" #> SHtml.ajaxText((p.timeLimitOfFight.get / 1000).toString, { time => p.timeLimitOfFight(time.toLong seconds); p.save; S.notice("Time limit saved") }, "type" -> "number") &
+              "name=fightBreak" #> SHtml.ajaxText((p.breakInFightAt.get / 1000).toString, { time => p.breakInFightAt(time.toLong seconds); p.save; S.notice("Break time saved") }, "type" -> "number") &
+              "name=fightBreakDuration" #> SHtml.ajaxText((p.breakDuration.get / 1000).toString, { time => p.breakDuration(time.toLong seconds); p.save; S.notice("Break duration saved") }, "type" -> "number") &
+              "name=exchangeLimit" #> SHtml.ajaxText(p.exchangeLimit.toString, { time => p.exchangeLimit(time.toInt); p.save; S.notice("Exchange limit saved") }, "type" -> "number") &
+              "name=timeBetweenFights" #> SHtml.ajaxText((p.timeBetweenFights.get / 1000).toString, { time => p.timeBetweenFights(time.toLong seconds); p.save; S.notice("Time between fights saved") }, "type" -> "number")) &
+          "#poolphase-ruleset [href]" #> s"/rulesets/modal/${t.poolPhase.ruleset.get}" &
+          "#freestyle-ruleset [href]" #> s"/rulesets/modal/${t.freeStylePhase.ruleset.get}" &
+          "#elimination-ruleset [href]" #> s"/rulesets/modal/${t.eliminationPhase.ruleset.get}" &
+          "#finals-ruleset [href]" #> s"/rulesets/modal/${t.finalsPhase.ruleset.get}"
 
   }
 
