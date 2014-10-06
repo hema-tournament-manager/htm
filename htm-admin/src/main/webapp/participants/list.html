@@ -27,11 +27,11 @@
 		<h2>
 			Participants
 			<small class="totals">
-        <ng-pluralize count="participants.length" when="{'one': '1 person', 'other': '{} people'}"></ng-pluralize>
+        <ng-pluralize count="totals.participants" when="{'one': '1 person', 'other': '{} people'}"></ng-pluralize>
         from
-        <ng-pluralize count="countClubs(participants)" when="{'one': '1 club', 'other': '{} clubs'}"></ng-pluralize>
+        <ng-pluralize count="totals.clubs" when="{'one': '1 club', 'other': '{} clubs'}"></ng-pluralize>
         in
-        <ng-pluralize count="countCountries(participants)" when="{'one': '1 country', 'other': '{} countries'}"></ng-pluralize>
+        <ng-pluralize count="totals.countries" when="{'one': '1 country', 'other': '{} countries'}"></ng-pluralize>
 			</small>
 			<div class="btn-group pull-right" title="Actions">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -57,7 +57,7 @@
 		</h2>
 		<div class="input-group" style="margin: 10px;">
 			<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-      <input ng-model="search" ng-model-options="{debounce: 500}" type="text" class="form-control" placeholder="Search" ui-keypress="{13:'registerSelected()'}"/>
+      <input ng-model="search" ng-model-options="{updateOn: 'blur'}" type="text" class="form-control" placeholder="Search" ui-keypress="{13:'registerSelected()'}"/>
     </div>
         
 		<table class="table table-condensed table-hover" htm-sort-container field="sort.field" descending="sort.descending">
@@ -65,7 +65,7 @@
         <tr>
           <th>Checks</th>
           <th htm-sort="externalId">ID</th>
-          <th htm-sort="country">Country</th>
+          <th>Country</th>
           <th htm-sort="name">Name</th>
           <th htm-sort="shortName">Short name</th>
           <th htm-sort="club">Club</th>
@@ -75,7 +75,7 @@
         </tr>
       </thead>
 			<tbody>
-				<tr class="participant fade-animation" ng-repeat="participant in participants | filter:searchFilter | orderBy:sort.field:sort.descending">
+				<tr class="participant fade-animation" ng-repeat="participant in participants">
 					<td>
             <span class="label" ng-class="participant.isPresent ? 'label-success' : 'label-danger'" title="{{participant.isPresent ? 'Checked in' : 'Not checked in yet'}}"><span class="glyphicon glyphicon-check"></span></span>
             <span class="label" ng-class="participant.hasPicture ? 'label-success' : 'label-warning'" title="{{hasPicture(participant) ? 'Picture is available' : 'No picture available yet'}}"><span class="glyphicon glyphicon-picture"></span></span>
@@ -92,6 +92,10 @@
 					</td>
           <td><button class="btn btn-default btn-sm" ng-click="register(participant)">Edit</button></td>
 				</tr>
+        <tr>
+          <td colspan="{{8 + tournaments.length}}" ng-show="nextPage" ng-click="loadMore(nextPage)" class="text-center" style="cursor: pointer">
+            Show more
+          </td>
 			</tbody>
 		</table>
 		</div>

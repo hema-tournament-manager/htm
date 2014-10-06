@@ -38,6 +38,68 @@ object AdminRest extends RestHelper {
     case "api" :: "participants" :: Nil JsonGet _ =>
       Extraction.decompose(Participant.findAll.map(p => p.toMarshalled.copy(hasPicture = Some(p.hasAvatar))))
 
+    case "api" :: "v2" :: "participants" :: "totals" :: Nil JsonGet _ =>
+      case class TotalsResponse(participants: Long, clubs: List[String], countries: List[String])
+      Extraction.decompose(TotalsResponse(
+        participants = Participant.count,
+        clubs = Participant.findAllFields(Seq(Participant.club), Distinct(), OrderBy(Participant.club, Ascending)).map(_.club.get),
+        countries = Participant.findAllFields(Seq(Participant.country), Distinct()).map(_.country.foreign.get.name.get).sorted))
+
+    case "api" :: "v2" :: "participants" :: Nil JsonGet request =>
+      case class ParticipantResponse(count: Long, previous: Option[String], next: Option[String], participants: List[MarshalledParticipant])
+      val page = request.param("page").map(_.toInt).getOrElse(0)
+      val itemsPerPage = request.param("itemsPerPage").map(_.toInt).getOrElse(20)
+      val q = request.param("q")
+      val order = request.param("order") match {
+        case Full("ASC") =>
+          Ascending
+        case Full("DESC") =>
+          Descending
+        case _ =>
+          Ascending
+      }
+      val orderBy = OrderBy(request.param("orderBy") match {
+        case Full("externalId") =>
+          Participant.externalId
+        case Full("name") =>
+          Participant.name
+        case Full("shortName") =>
+          Participant.shortName
+        case Full("club") =>
+          Participant.club
+        case Full("clubCode") =>
+          Participant.clubCode
+        case _ =>
+          Participant.name
+      }, order)
+      val defaultParams: Seq[QueryParam[Participant]] = Seq(orderBy, StartAt(page * itemsPerPage), MaxRows(itemsPerPage))
+      val queryParams: Seq[QueryParam[Participant]] = q match {
+        case Full(query) if query.trim().length() > 0 =>
+          val cleanQuery = query.toLowerCase().replaceAll("[^a-z0-9 ]", "")
+
+          def sqlToQueryParam(s: String): QueryParam[Participant] = BySql(s, IHaveValidatedThisSQL("jdijkstra", "2014-10-05"))
+          val params: Seq[QueryParam[Participant]] = (for (queryPart <- cleanQuery.split(" ")) yield {
+            if (queryPart forall Character.isDigit) {
+              // only search for id when the query is a number
+              By(Participant.externalId, queryPart)
+            } else {
+              val columns = List("name", "club", "clubCode")
+              val likes = columns.map("LOWER(" + _ + s") LIKE '%$queryPart%'")
+              sqlToQueryParam("(" + likes.mkString(" OR ") + s" OR country IN (SELECT id FROM countries WHERE LOWER(name) LIKE '%$queryPart%' OR  LOWER(code2) LIKE '%$queryPart%'))")
+            }
+          }).toSeq
+          params
+        case _ =>
+          Seq()
+      }
+      val count = Participant.count(queryParams: _*)
+      val response = ParticipantResponse(
+        participants = Participant.findAll((queryParams ++ defaultParams): _*).map(p => p.toMarshalled.copy(hasPicture = Some(p.hasAvatar))),
+        count = count,
+        previous = if (page > 0) Some(s"/api/v2/participants?page=${page - 1}&itemsPerPage=$itemsPerPage&orderBy=${orderBy.field.name}&order=${if (order == Ascending) "ASC" else "DESC"}") else None,
+        next = if ((page + 1) * itemsPerPage < count) Some(s"/api/v2/participants?page=${page + 1}&itemsPerPage=$itemsPerPage") else None)
+      Extraction.decompose(response)
+
     case "api" :: "participants" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledParticipant](json)
       val p = Participant.create

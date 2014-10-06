@@ -91,42 +91,48 @@ angular.module('htm', ['ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'
     }
   }])
 	.controller('ParticipantsCtrl', function($scope, $http, $modal, $filter, Participant, Tournament) {
-    $scope.participants = Participant.query();
+    $scope.participants = [];
+    $scope.nextPage = false;
+    $scope.search = '';
+    $scope.totals = {
+        participants: '?',
+        clubs: '?',
+        countries: '?'
+    };
+    
+    $scope.reload = function() {
+      $scope.participants = [];
+      var first = '/api/v2/participants?itemsPerPage=15&q=' + $scope.search + '&orderBy=' + $scope.sort.field + '&order=' + ($scope.sort.descending ? 'DESC' : 'ASC');
+      console.log('first', first);
+      $scope.loadMore(first);
+    };
+    
+    $scope.loadMore = function(page) {
+      $http.get(page).success(function(data) {
+        $scope.participants = $scope.participants.concat(data.participants);
+        $scope.nextPage = data.next;
+      });
+    };
+    
+    $scope.reloadTotals = function() {
+      $http.get('/api/v2/participants/totals').success(function (data) {
+        $scope.totals.participants = data.participants;
+        $scope.totals.clubs = data.clubs.length;
+        $scope.totals.countries = data.countries.length;
+      });
+    };
+    $scope.reloadTotals();
+    
     $scope.tournaments = Tournament.query();
 	  
     $scope.sort = {
       field: 'name',
-      descending: false,
-      setField: function(field) {
-        if (field == this.field) {
-          this.descending = !this.descending;
-        } else {
-          this.field = field;
-          this.descending = false;
-        }
-      }
+      descending: false
     };
     
-	  $scope.searchFilter = function(obj) { 
-	    var re = new RegExp($scope.search, 'i');
-	    return !$scope.search
-	    	|| re.test(obj.name)
-	    	|| re.test(obj.externalId)
-	    	|| re.test(obj.club)
-	    	|| re.test(obj.clubCode)
-	    	|| re.test(obj.country)
-	    	|| _(obj.subscriptions).some(function(subscription) {
-	    		return re.test(subscription.tournament.name);
-	    	});
-	  };
-    
-    $scope.countClubs = function(participants) {
-      return _(_(participants).groupBy(function (participant) { return participant.clubCode; })).size();
-    };
-    
-    $scope.countCountries = function(participants) {
-      return _(_(participants).groupBy(function (participant) { return participant.country; })).size();
-    };
+    $scope.$watch(function() { return $scope.sort.field + $scope.sort.descending + $scope.search; }, function() {
+      $scope.reload();
+    });
     
     $scope.hasDetails = function(participant) {
       return participant.age || participant.height || participant.weight;
@@ -157,7 +163,7 @@ angular.module('htm', ['ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'
       });
       
       modalInstance.result.then(function(updatedParticipant) {
-        updatedParticipant.$save(function(data) {
+        $http.post('/api/participants/' + updatedParticipant.externalId, updatedParticipant).success(function(data) {
           console.log('save returned ', data);
           if (!updatedParticipant.id) {
             updatedParticipant.id = +data.id;
@@ -169,7 +175,7 @@ angular.module('htm', ['ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'
     
     $scope.addParticipant = function() {
       var p = new Participant({
-        externalId: +_($scope.participants).max(function(p) { return +p.externalId; }).externalId + 1,
+        externalId: $scope.totals.participants + 1,
         name: '',
         shortName: '',
         club: '',
@@ -184,6 +190,7 @@ angular.module('htm', ['ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'
       
       showParticipant(p, function(updatedParticipant) {
         $scope.participants.push(updatedParticipant);
+        $scope.reloadTotals();
       });
     };
     
