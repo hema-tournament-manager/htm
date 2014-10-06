@@ -57,7 +57,7 @@
 		</h2>
 		<div class="input-group" style="margin: 10px;">
 			<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-      <input ng-model="search" ng-model-options="{updateOn: 'blur'}" type="text" class="form-control" placeholder="Search" ui-keypress="{13:'registerSelected()'}"/>
+      <input ng-model="search" ng-model-options="{updateOn: 'blur'}" type="text" class="form-control" placeholder="Search" ui-keypress="{13:'registerSelected()'}" focus-on="search"/>
     </div>
         
 		<table class="table table-condensed table-hover" htm-sort-container field="sort.field" descending="sort.descending">

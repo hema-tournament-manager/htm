@@ -8,6 +8,24 @@ angular.module('htm', ['ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'
   .factory('Country', ['$resource', function($resource){
     return $resource('/api/countries/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
   }])
+  .directive('focusOn', function() {
+    return function(scope, elem, attr) {
+      scope.$on('focusOn', function(e, name) {
+        if (name === attr.focusOn) {
+          elem[0].focus();
+          elem[0].select();
+        }
+      });
+    };
+  })
+  .factory('focus', [ '$rootScope', '$timeout',
+      function($rootScope, $timeout) {
+        return function(name) {
+          $timeout(function() {
+            $rootScope.$broadcast('focusOn', name);
+          });
+        };
+      } ])
   .directive('htmSubscriptionLabel', function() {
     return {
       restrict: 'E',
@@ -90,7 +108,9 @@ angular.module('htm', ['ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'
       });
     }
   }])
-	.controller('ParticipantsCtrl', function($scope, $http, $modal, $filter, Participant, Tournament) {
+	.controller('ParticipantsCtrl', function($scope, $http, $modal, $filter, Participant, Tournament, focus) {
+	  focus('search');
+	  
     $scope.participants = [];
     $scope.nextPage = false;
     $scope.search = '';
@@ -170,6 +190,7 @@ angular.module('htm', ['ngResource', 'ui.bootstrap', 'ui.select2', 'ui.keypress'
           }
           onSuccess(updatedParticipant);
         });
+        focus('search');
       });
     };
     
