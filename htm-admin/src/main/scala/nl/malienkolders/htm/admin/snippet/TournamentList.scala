@@ -25,19 +25,11 @@ class TournamentList {
       S.redirectTo("/tournaments/list")
     }
 
-    "#tournament" #> Tournament.findAll(OrderBy(Tournament.id, Ascending)).map(t =>
-      "#tournamentName" #> <a href={ "view/" + t.identifier.is }>{ t.name }</a> &
-        "#tournamentEdit [href]" #> ("edit/" + t.identifier.is) &
-        "#tournamentIdentifier" #> t.identifier.is &
-        "#tournamentParticipants" #> t.participants.size &
-        "#tournamentPools" #> t.poolPhase.pools.size &
-        "#tournamentFights" #> t.phases.map(_.fights.size).foldLeft(0)(_ + _) &
-        ".label *" #> t.mnemonic.get) &
-      "#newTournament" #> (
-        "#name" #> SHtml.text(name, name = _) &
-        "#identifier" #> SHtml.text(identifier, identifier = _) &
-        "#label" #> SHtml.text(label, label = _) &
-        "#submitNewTournament" #> SHtml.submit("Submit", process))
+    "#newTournament" #> (
+      "#name" #> SHtml.text(name, name = _) &
+      "#identifier" #> SHtml.text(identifier, identifier = _) &
+      "#label" #> SHtml.text(label, label = _) &
+      "#submitNewTournament" #> SHtml.submit("Submit", process))
   }
 
 }

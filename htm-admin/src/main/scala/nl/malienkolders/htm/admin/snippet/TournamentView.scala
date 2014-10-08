@@ -402,7 +402,7 @@ object TournamentView {
         ".eliminationRound" #> t.eliminationPhase.fights.groupBy(_.round.get).toList.sortBy(_._1).map {
           case (_, fights) => renderFights(fights)
         } &
-          (if (t.poolPhase.inUse.get && t.poolPhase.pools.size.isEven) {
+          (if (t.poolPhase.inUse.get) {
             "#generateElimination-top2" #> SHtml.a(generateEliminationTop2 _, Text("Top 2 per pool"))
           } else {
             "#generateElimination-top2" #> Nil

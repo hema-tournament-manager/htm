@@ -134,6 +134,13 @@ object AdminRest extends RestHelper {
     case "api" :: "tournaments" :: Nil JsonGet _ =>
       Extraction.decompose(Tournament.findAll.map(_.toMarshalled))
 
+    case "api" :: "tournaments" :: Nil JsonPost json -> _ =>
+      val m = Extraction.extract[MarshalledTournament](json)
+      val t = Tournament.create
+      t.name(m.name).identifier(m.identifier).mnemonic(m.memo)
+      t.save()
+      JObject(List(JField("id", t.id.get)))
+
     case "api" :: "tournament" :: AsLong(tournamentId) :: Nil JsonGet _ =>
       Tournament.findByKey(tournamentId).map(t => Extraction.decompose(t.toMarshalled)).getOrElse[JValue](JBool(false))
 
