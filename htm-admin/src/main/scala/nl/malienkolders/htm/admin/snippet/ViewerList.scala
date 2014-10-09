@@ -21,7 +21,6 @@ object ViewerList {
   def render = {
     var name = ""
     var url = ""
-    var arena = false
 
     def process(): Unit = {
       Viewer.create.alias(name).url(url).save
