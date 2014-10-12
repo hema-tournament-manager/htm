@@ -24,10 +24,8 @@ play/Avatars
 play/Images
 test*.txt
 *-thresholded.png
-/scripts/package/win/*.zip
-/scripts/package/win/viewer
+/scripts/package/win
 *.war
 *.swp
 resourcebundle
-
 .history
