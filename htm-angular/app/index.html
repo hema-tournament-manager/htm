@@ -1,15 +1,32 @@
 <!doctype html>
-<html lang="en" ng-app>
-<head>
-  <meta charset="utf-8">
-  <title>My HTML File</title>
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
-  <link rel="stylesheet" href="css/app.css">
-  <script src="bower_components/angular/angular.js"></script>
-</head>
-<body>
+<html lang="en" ng-app="htm.App">
+	<head>
+		<meta charset="utf-8">
+		<title>Hema Tournament Manager</title>
+		
+		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+		<link rel="stylesheet" href="css/app.css">
 
-  <p>Nothing here {{'yet' + '!'}}</p>
+		<script src="bower_components/angular/angular.js"></script>
+		<script src="bower_components/angular-resource/angular-resource.js"></script>
+		<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+		<script src="bower_components/angular-route/angular-route.js"></script>
+		
+		<script src="bower_components/jquery/dist/jquery.js"></script>
+		<script src="bower_components/tinycolor/tinycolor.js"></script>
+		<script src="bower_components/underscore/underscore.js"></script>
+		<script src="bower_components/components-bootstrap/js/collapse.js"></script>
+		<script src="bower_components/components-bootstrap/js/dropdown.js"></script>
 
-</body>
+		<script src="js/app.js"></script>
+		<script src="js/controllers.js"></script>
+		<script src="js/directives.js"></script>
+		<script src="js/filters.js"></script>
+		<script src="js/services.js"></script>
+
+	</head>
+	<body>
+		<htm-navigation></htm-navigation>
+  		<div ng-view></div>
+	</body>
 </html>
