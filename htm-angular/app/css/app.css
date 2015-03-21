@@ -1,1 +1,5 @@
 /* app css stylesheet */
+
+
+/*body padding to give the navbar some room*/
+body { padding-top: 70px; }
