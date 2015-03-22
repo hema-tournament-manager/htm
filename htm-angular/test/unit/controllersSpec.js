@@ -58,27 +58,25 @@ describe('TournamentListCtrl', function() {
 	  expect($rootScope.tournaments.length).toBe(tournaments.length);
 	});
 
-	it('should be unresolved and withouth error while quering for results', function() {		
+	it('should be loading while quering for results', function() {		
 	  var controller = createController();
-	  expect($rootScope.tournaments.$resolved).toBe(false);
-  	  expect($rootScope.tournaments.error).toBe(undefined);
+	  expect($rootScope.isLoading()).toBe(true);
 	  $httpBackend.flush();
 	});
 
-	it('should be resolved and withouth error after loading results', function() {		
+	it('should be loaded after loading results', function() {		
 	  var controller = createController();
 	  $httpBackend.flush();
-	  expect($rootScope.tournaments.$resolved).toBe(true);
-  	  expect($rootScope.tournaments.error).toBe(undefined);
+	  expect($rootScope.isLoaded()).toBe(true);
+
   	});
 
-	it('should have status failed when unable to load', function() {		
+	it('should be error when unable to load', function() {		
 	  $httpBackend.expectGET('/api/tournament').respond(404,'Not found');
 
 	  var controller = createController();
 	  $httpBackend.flush();
-	  expect($rootScope.tournaments.$resolved).toBe(true);
-  	  expect($rootScope.tournaments.error).not.toBe(undefined);
+	  expect($rootScope.isError()).toBe(true);
 
 	});
 

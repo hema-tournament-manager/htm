@@ -2,7 +2,7 @@
 
 /* App Module */
 (function(){
-	angular.module('htm.App', ['ngRoute','ui.bootstrap','htm.ui','htm.api','htm.tournament','htm.welcome',])
+	angular.module('htm.App', ['ngRoute','ui.bootstrap','htm.ui','htm.api','htm.tournament','htm.welcome','ngMockE2E'])
 
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider.
@@ -21,13 +21,10 @@
 			});
 	}]);
 
-	if(document.URL.match(/\?nobackend$/)) {
+	// if(document.URL.match(/\?nobackend$/)) {
 		console.log('======== USING STUBBED BACKEND ========');
 
 		 angular.module('htm.App')
-			.config(function($provide) {
-				$provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-			})
 			.run(function($httpBackend) {
 				var tournaments = [];
 
@@ -44,7 +41,7 @@
 			});
 
 
-	}
+	// }
 
 
 })();

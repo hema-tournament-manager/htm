@@ -19,7 +19,7 @@
 			$scope.addNewTournamentVisible = false;
 
 			$scope.isLoading = function(){
-				return $scope.tournaments.$resolved;
+				return !$scope.tournaments.$resolved;
 			}
 			
 			$scope.isError = function(){
