@@ -5,7 +5,6 @@
 // testing controller
 describe('TournamentListCtrl', function() {
 	var $httpBackend, $rootScope, createController, authRequestHandler;
-
 	var tournaments = [{
 						  name: 'Test Tournament 1',
 						  identifier: 'test-tournament-1',
@@ -36,6 +35,13 @@ describe('TournamentListCtrl', function() {
 	  createController = function() {
 		 return $controller('TournamentListCtrl', {'$scope' : $rootScope });
 	  };
+
+ 	$httpBackend.whenGET('/api/tournament').respond(tournaments);
+ 	$httpBackend.whenPOST('/api/tournament').respond(function(method, url, data) {
+														var tournament = angular.fromJson(data);
+														tournaments.push(tournament);
+														return [200, tournament, {}];
+													});
 	}));
 
 	afterEach(function() {
@@ -83,18 +89,38 @@ describe('TournamentListCtrl', function() {
 	it('should create a new tournament', function() {
 		var controller = createController();
 
-		$rootScope.newTournament.name = 'New Tournament'
- 		$httpBackend.expectPOST('/api/tournament').respond(201,'Created');
+ 		$httpBackend.expectPOST('/api/tournament').respond(function(method, url, data) {
+			var tournament = angular.fromJson(data);
+			return [200, tournament, {}];
+		});
 
 		$rootScope.save();
 
 		expect($rootScope.tournaments.length).toBe(0);
-
+ 
 		$httpBackend.flush();
 
 		expect($rootScope.tournaments.length).toBe(1);
 	});
+	it('should create second new tournament', function() {
+		var controller = createController();
 
+		$rootScope.save();
+		$httpBackend.flush();		
+
+
+		$httpBackend.expectPOST('/api/tournament').respond(function(method, url, data) {
+			var tournament = angular.fromJson(data);
+			return [200, tournament, {}];
+		});
+		$rootScope.save();
+
+		expect($rootScope.tournaments.length).toBe(1);
+
+		$httpBackend.flush();		
+
+		expect($rootScope.tournaments.length).toBe(2);
+	});
 
 	it('should have a new tournament with error', function() {
 		var controller = createController();

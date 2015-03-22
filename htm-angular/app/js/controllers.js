@@ -11,7 +11,9 @@
 		.controller('TournamentListCtrl', ['$scope', 'Tournament', function($scope, Tournament) {
 			$scope.tournaments = Tournament.query();
 
-			$scope.tournaments.$promise.catch(function(error){
+			$scope.tournaments.$promise.then(function(tournaments){
+				$scope.newTournament.reset();
+			},function(error){
 				$scope.tournaments.error = error;
 			});
 
@@ -23,7 +25,7 @@
 			}
 			
 			$scope.isError = function(){
-				return $scope.tournaments.$resolved && $scope.tournaments.error;
+				return $scope.tournaments.$resolved && angular.isDefined($scope.tournaments.error);
 			}
 
 			$scope.isLoaded = function(){
@@ -45,6 +47,7 @@
 			};
 
 			$scope.newTournament = {
+				_defaultName : 'Basic Longsword Tournament',
 				name: '',
 				_identifier: undefined,
 				_memo: undefined,
@@ -99,20 +102,21 @@
 					return memo;
 				},
 
+				_generateUniqueName: function(){
+					var i = 2;
+					while($scope._findTournamentWithSameId(this)){
+						this.name =  this._defaultName + " " + i++;
+					}
+				},
+
 				reset: function() {
-					var defaultName = 'Basic Longsword Tournament';
-					this.name = defaultName,
+					this.name = this._defaultName;
 					this.customIdentifier = false;
 					this._identifier = undefined;
 					this.customMemo = false;
 					this._memo = undefined;
-					this.state = 'new';
 					this.error = undefined;
-
-					var i = 2;
-					while($scope._findTournamentWithSameId(this)){
-						this.name =  defaultName + " " + i++;
-					}
+					this._generateUniqueName();
 				}
 			};
 			$scope.newTournament.reset();
@@ -132,8 +136,8 @@
 				});
 
 				$scope.newTournament.state = 'saving';
-				tournament.$save().then(function(success){
-					$scope.tournaments.push(tournament);
+				tournament.$save().then(function(savedTournament){
+					$scope.tournaments.push(savedTournament);
 					$scope.newTournament.reset();
 					$scope.hideAddNewTournament();
 				},function(error){
