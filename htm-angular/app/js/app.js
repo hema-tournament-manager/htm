@@ -2,7 +2,7 @@
 
 /* App Module */
 (function(){
-	angular.module('htm.App', ['ngRoute','htm.tournament'])
+	angular.module('htm.App', ['ngRoute','ui.bootstrap','htm.ui','htm.api','htm.tournament','htm.welcome'])
 
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider.
