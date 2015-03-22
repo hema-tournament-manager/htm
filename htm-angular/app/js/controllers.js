@@ -11,9 +11,25 @@
 		.controller('TournamentListCtrl', ['$scope', 'Tournament', function($scope, Tournament) {
 			$scope.tournaments = Tournament.query();
 
+			$scope.tournaments.$promise.catch(function(error){
+				$scope.tournaments.error = error;
+			});
+
 			/* New tournament form is initially hidden */
 			$scope.addNewTournamentVisible = false;
 
+			$scope.isLoading = function(){
+				return $scope.tournaments.$resolved;
+			}
+			
+			$scope.isError = function(){
+				return $scope.tournaments.$resolved && $scope.tournaments.error;
+			}
+
+			$scope.isLoaded = function(){
+				return $scope.tournaments.$resolved && angular.isUndefined($scope.tournaments.error);
+			}
+			
 			$scope.showAddNewTournament = function(){
 				$scope.addNewTournamentVisible = true;
 			}
@@ -28,34 +44,23 @@
 				});
 			};
 
-			$scope.color = function(tournament) {
-				if(!angular.isDefined(tournament.color)){
-					var str = tournament.name || ''; 	
-
-					var hash = 0;
-					for (var i = 0; i < str.length; i++) {
-						hash = str.charCodeAt(i) * 71 +  ((hash << 5) - hash);
-					}
-					// Work around for javascripts wonky modulo
-					var hue = ((hash % 240) + 240)% 240;
-					
-					tournament.color = tinycolor({h: hue,s: 100,v: 50}).toHexString();					
-				}
-
-				return tournament.color;
-			};
-
 			$scope.newTournament = {
 				name: '',
-				customIdentifier: false,
 				_identifier: undefined,
+				_memo: undefined,
+
+				customIdentifier: false,
+				customMemo: false,
+				error: undefined,
 
 				identifier: function(identifier){
 					if(angular.isDefined(identifier)){
 						this._identifier = identifier;
+						this.customIdentifier = true;
 					}
-			
-					if(!this.customIdentifier){
+
+					// Reset identifier when not custom or undefined
+					if(!this.customIdentifier  || !angular.isDefined(identifier)){
 						this._identifier = this._defaultIdentifier();	
 					}
 
@@ -66,15 +71,15 @@
 					var name = this.name || '';
 					return name.toLowerCase().split(' ').join('-');	
 				},
-				customMemo: false,
-				_memo: undefined,
 
 				memo: function(memo){
 					if(angular.isDefined(memo)){
 						this._memo = memo;
+						this.customMemo = true;
 					};
 
-					if(!this.customMemo){
+					// Reset memo when not custom or undefined
+					if(!this.customMemo || !angular.isDefined(memo)){
 						this._memo = this._defaultMemo();
 					}
 					return this._memo;
@@ -101,6 +106,8 @@
 					this._identifier = undefined;
 					this.customMemo = false;
 					this._memo = undefined;
+					this.state = 'new';
+					this.error = undefined;
 
 					var i = 2;
 					while($scope._findTournamentWithSameId(this)){
@@ -111,25 +118,27 @@
 			$scope.newTournament.reset();
 
 
-
 			$scope.save = function() {
 				if($scope._findTournamentWithSameId($scope.newTournament)){
 					//TODO: Move this to validation directives
-				} else {
-					var t = $scope.newTournament;
-					var tournament = new Tournament({
-						name: t.name,
-						identifier: t.identifier(),
-						memo: t.memo(),
-						participants: []
-					});
+					return;
+				} 
+				var t = $scope.newTournament;
+				var tournament = new Tournament({
+					name: t.name,
+					identifier: t.identifier(),
+					memo: t.memo(),
+					participants: []
+				});
 
+				$scope.newTournament.state = 'saving';
+				tournament.$save().then(function(success){
 					$scope.tournaments.push(tournament);
 					$scope.newTournament.reset();
-
-					tournament.$save();
 					$scope.hideAddNewTournament();
-				}
+				},function(error){
+					$scope.newTournament.error = error;
+				});					
 			};
 		}])
 

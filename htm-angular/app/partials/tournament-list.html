@@ -1,21 +1,25 @@
 <!--tournament-list.html-->
 <div class="col-md-12">
 	<h2>Tournaments</h2>
-		<div class="list-group">
-			<a class="list-group-item" href="#tournament/{{tournament.identifier}}"  ng-repeat="tournament in tournaments" >
-				<h4 class="list-group-item-heading">
-					<span class="label" title="{{tournament.name}}" style="background-color: {{color(tournament)}};">{{tournament.memo}}</span>
-					<span>{{tournament.name}}</span>
-					<span class="badge pull-right">{{tournament.participants.length}}</span>
-				</h4>
+		<div class="alert alert-info" role="alert" ng-hide="isLoading()">
+			Loading...
+		</div>
+		<div class="alert alert-warning" ng-show="isError()">
+			<p>Could not load tournaments because {{tournaments.error.status}}:{{tournaments.error.statusText}}.</p>
+		</div>
+		<div class="list-group" ng-show="isLoaded()">
+
+
+			<a class="list-group-item" href="#/tournament/{{tournament.identifier}}"  ng-repeat="tournament in tournaments" >
+			<htm-tournament-list-item></htm-tournament-list-item>
 			</a>
 			<a class="list-group-item" href="" ng-click="showAddNewTournament()" ng-hide="addNewTournamentVisible" >
-			<h4 class="">
-				<span class="glyphicon glyphicon-plus" ></span>
-				Add Tournament
-			</h4>
-		</a>
-		<div class="panel panel-default" ng-show="addNewTournamentVisible">
+				<h4 class="">
+					<span class="glyphicon glyphicon-plus" ></span>
+					Add Tournament
+				</h4>
+			</a>
+		<div class="panel panel-default" ng-show="addNewTournamentVisible && tournaments.$resolved" >
 			<div class="panel-heading">
 				<h4 class="">
 					<span class="glyphicon glyphicon-plus" ></span>
