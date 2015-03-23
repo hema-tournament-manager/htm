@@ -61,20 +61,92 @@
 		 *
 		 */
 		.directive("htmFocusOn", ['$timeout', function($timeout) {
-		 	return {
+			return {
 				restrict : 'A',
 				link : function($scope,element,attr) {
-	 				
-	 				$(element).focus(function(){this.select();});
+					
+					$(element).focus(function(){this.select();});
 
 					$scope.$watch(attr.htmFocusOn,function(_focusVal) {
 						if(_focusVal){
-						 	$timeout(function() {
+							$timeout(function() {
 								$(element).focus();
 							});
 						}
 					 });
 				}
-		 	}
+			}
 		}])
+
+
+	.directive('htmLowerCase', function(){
+		return {
+			require: 'ngModel',
+			restrict: 'A',
+			type: 'input',
+			link: function($scope, element, attrs, modelCtrl) {
+
+				modelCtrl.$parsers.unshift(function (inputValue) {
+
+					var transformedInput = inputValue.toLowerCase(); 
+
+					if (transformedInput!=inputValue) {
+						modelCtrl.$setViewValue(transformedInput);
+						modelCtrl.$render();
+					}         
+
+					return transformedInput;         
+				});
+			}
+		};
+	})
+
+	.directive('htmUpperCase', function(){
+		return {
+			require: 'ngModel',
+			restrict: 'A',
+			type: 'input',
+			link: function($scope, element, attrs, modelCtrl) {
+
+				modelCtrl.$parsers.unshift(function (inputValue) {
+
+					var transformedInput = inputValue.toUpperCase(); 
+
+					if (transformedInput!=inputValue) {
+						modelCtrl.$setViewValue(transformedInput);
+						modelCtrl.$render();
+					}         
+
+					return transformedInput;         
+				});
+			}
+		};
+	})
+
+	.directive('htmReplaceSpace', function(){
+		return {
+			require: 'ngModel',
+			restrict: 'A',
+			type: 'input',
+			scope: '@',
+			link: function($scope, element, attrs, modelCtrl) {
+
+				var replacement = attrs.htmNoSpace || ""; 
+
+				modelCtrl.$parsers.unshift(function (inputValue) {
+
+					var transformedInput = inputValue.replace(/\s/,replacement);
+
+					if (transformedInput!=inputValue) {
+						modelCtrl.$setViewValue(transformedInput);
+						modelCtrl.$render();
+					}         
+
+					return transformedInput;         
+				});
+			}
+		};
+	})
+	;
+
 })();
