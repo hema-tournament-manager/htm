@@ -63,8 +63,8 @@
 					}
 
 					// Reset identifier when not custom or undefined
-					if(!this.customIdentifier  || !angular.isDefined(identifier)){
-						this._identifier = this._defaultIdentifier();	
+					if(!this.customIdentifier && angular.isUndefined(identifier)){
+						this._identifier = this._defaultIdentifier();
 					}
 
 					return this._identifier;
@@ -82,7 +82,7 @@
 					};
 
 					// Reset memo when not custom or undefined
-					if(!this.customMemo || !angular.isDefined(memo)){
+					if(!this.customMemo && angular.isUndefined(memo)){
 						this._memo = this._defaultMemo();
 					}
 					return this._memo;
