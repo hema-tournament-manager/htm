@@ -11,6 +11,12 @@
 				}
 			);
 		}])
-
+		.factory('Participant', ['$resource', function($resource){
+			return $resource('/api/participant/:id', { "id" : "@id" }, 
+				{ 
+					update: { method: 'PUT' }
+				}
+			);
+		}])
 
 })();

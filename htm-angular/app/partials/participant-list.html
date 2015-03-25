@@ -1,0 +1,56 @@
+<div class="col-md-12" ng-controller="ParticipantListCtrl">
+
+	<h2>
+		Participants
+		<small class="totals">
+	        <ng-pluralize count="totals.participants" when="{'one': '1 person', 'other': '{} people'}"></ng-pluralize>
+	        from
+	        <ng-pluralize count="totals.clubs" when="{'one': '1 club', 'other': '{} clubs'}"></ng-pluralize>
+	        in
+	        <ng-pluralize count="totals.countries" when="{'one': '1 country', 'other': '{} countries'}"></ng-pluralize>
+		</small>
+	</h2>
+	<table class="table table-striped table-condensed table-hover">
+		<thead>
+			<tr>
+				<th>Checks</th>
+				<th htm-sort="externalId">ID</th>
+				<th>Country</th>
+				<th htm-sort="name">Name</th>
+				<th htm-sort="shortName">Short name</th>
+				<th htm-sort="club">Club</th>
+				<th htm-sort="clubCode">Club code</th>
+				<th ng-repeat="tournament in tournaments" title="{{tournament.name}}">
+					<htm-tournament-memo tournament="tournament"></htm-tournament-memo>
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="participant in participants">
+				<td>
+				    <span class="label" ng-class="participant.isPresent ? 'label-success' : 'label-danger'" title="{{participant.isPresent ? 'Checked in' : 'Not checked in yet'}}">
+				    	<span class="glyphicon glyphicon-check"></span>
+				    </span>
+				    <span class="label" ng-class="participant.hasPicture ? 'label-success' : 'label-warning'" title="{{hasPicture(participant) ? 'Picture is available' : 'No picture available yet'}}">
+				    	<span class="glyphicon glyphicon-picture"></span>
+				    </span>
+				    <span class="label" ng-class="hasDetails(participant) ? 'label-success' : 'label-default'" title="{{hasDetails(participant) ? 'Details are filled in' : 'No details filled in yet'}}">
+				    	<span class="glyphicon glyphicon-list"></span>
+			    	</span>
+				</td>
+				<td class="id" title="ID">{{participant.externalId}}</td>
+				<td class="flag" title="{{participant.country}}">
+					<img ng-src="/img/flag/{{participant.country | lowercase}}.png"/></td>
+				<td class="name" title="Name">{{participant.name}}</td>
+				<td class="shortName" title="Short Name">{{participant.shortName}}</td>
+				<td class="club" title="Club">{{participant.club}}</td>
+				<td class="clubCode" title="Club Code">{{participant.clubCode}}</td>
+				<td class="tournaments" ng-repeat="tournament in tournaments">
+					<htm-subscription-label person="participant" tournament="tournament"/>
+				</td>
+	          	<td><button class="btn btn-default btn-sm" ng-click="register(participant)">Edit</button></td>
+			</tr>
+		</tbody>
+	</table>
+<div>

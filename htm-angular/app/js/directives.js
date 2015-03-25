@@ -17,18 +17,19 @@
 				templateUrl:'/partials/navigation.html'
 			}
 		})
+
 		/**
-		 *	Usage:  <htm-tournament-list-item tournament=[data]></htm-tournament-list-item>
+		 *	Usage:  <htm-tournament-memo=[data]></htm-tournament-memo>
 		 *
-		 *	Is replaced the tournment list item bound to data.
+		 *	Is replaced with the a tournament memo
 		 *
 		 */
-		.directive('htmTournamentListItem', function() {
+		.directive('htmTournamentMemo', function() {
 			return {
 				restrict: 'E',
 				replace: true,
-				scope: "=",
-				templateUrl:'/partials/tournament-list-item.html',
+				templateUrl:'/partials/tournament-memo.html',
+				scope:"=" ,
 				controller: function($scope){
 
 					$scope.color = function(tournament) {
@@ -51,8 +52,41 @@
 					};
 
 				}
+			}
+		})
+
+		/**
+		 *	Usage:  <htm-tournament-list-item tournament=[data]></htm-tournament-list-item>
+		 *
+		 *	Is replaced the tournment list item bound to data.
+		 *
+		 */
+		.directive('htmTournamentListItem', function() {
+			return {
+				restrict: 'E',
+				replace: true,
+				scope: "=",
+				templateUrl:'/partials/tournament-list-item.html',
+
 
 			}
+		})
+
+		.directive('htmSubscriptionLabel', function() {
+		  return {
+		    restrict: 'E',
+		    replace: true,
+		    scope: {
+		      person: '=',
+		      tournament: '='
+		    },
+		    controller: function($scope) {
+		      $scope.subscription = _($scope.person.subscriptions).find(function(subscription) { 
+		      	return subscription.tournament.id === $scope.tournament.id;
+		      });
+		    },
+		    templateUrl: '/partials/participant-subscription.html'
+		  };
 		})
 		/**
 		 *	Usage: <ANY htm-focus-on=[binding]></ANY>
@@ -88,14 +122,14 @@
 
 				modelCtrl.$parsers.unshift(function (inputValue) {
 
-					var transformedInput = inputValue.toLowerCase(); 
+					var transformed = inputValue.toLowerCase(); 
 
-					if (transformedInput!=inputValue) {
-						modelCtrl.$setViewValue(transformedInput);
+					if (transformed!=inputValue) {
+						modelCtrl.$setViewValue(transformed);
 						modelCtrl.$render();
 					}         
 
-					return transformedInput;         
+					return transformed;         
 				});
 			}
 		};
@@ -110,14 +144,14 @@
 
 				modelCtrl.$parsers.unshift(function (inputValue) {
 
-					var transformedInput = inputValue.toUpperCase(); 
+					var transformed = inputValue.toUpperCase(); 
 
-					if (transformedInput!=inputValue) {
-						modelCtrl.$setViewValue(transformedInput);
+					if (transformed!=inputValue) {
+						modelCtrl.$setViewValue(transformed);
 						modelCtrl.$render();
 					}         
 
-					return transformedInput;         
+					return transformed;         
 				});
 			}
 		};
@@ -135,14 +169,14 @@
 
 				modelCtrl.$parsers.unshift(function (inputValue) {
 
-					var transformedInput = inputValue.replace(/\s/,replacement);
+					var transformed = inputValue.replace(/\s/,replacement);
 
-					if (transformedInput!=inputValue) {
-						modelCtrl.$setViewValue(transformedInput);
+					if (transformed!=inputValue) {
+						modelCtrl.$setViewValue(transformed);
 						modelCtrl.$render();
 					}         
 
-					return transformedInput;         
+					return transformed;         
 				});
 			}
 		};

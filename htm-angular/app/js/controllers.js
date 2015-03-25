@@ -150,8 +150,26 @@
 
 		}])
 
+	angular.module('htm.particpant', [])
+
+		.controller('ParticipantListCtrl', ['$scope','Tournament','Participant', function($scope,Tournament, Participant) {
+			  
+		  $scope.totals = {
+		  	participants: 100,
+		  	clubs: 1,
+		  	countries: 10
+
+		  }
 
 
+		  $scope.participants = Participant.query();
+		  $scope.tournaments = Tournament.query();
+		
+		}])
+
+		.controller('ParticipantCtrl', ['$scope', function($scope) {
+
+		}])
 	;
 
 })();
