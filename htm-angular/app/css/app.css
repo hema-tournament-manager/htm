@@ -3,3 +3,8 @@
 
 /*body padding to give the navbar some room*/
 body { padding-top: 70px; }
+
+/*smaller font to keep the navbar from overflowing*/
+.navbar{
+  font-size: 10px;
+}
