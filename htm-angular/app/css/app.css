@@ -4,7 +4,12 @@
 /*body padding to give the navbar some room*/
 body { padding-top: 70px; }
 
-/*smaller font to keep the navbar from overflowing*/
+/*smaller font in nav to keep the navbar from overflowing*/
 .navbar{
   font-size: 10px;
+}
+
+/* fix for dropdown menu dropping behind search bar on participants page which has a z-index of 2*/
+.htm-dropdown-menu-z-fix{
+	z-index: 3 !important;
 }
