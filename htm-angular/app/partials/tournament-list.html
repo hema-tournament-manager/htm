@@ -1,11 +1,10 @@
 <!--tournament-list.html-->
 <div class="col-md-12" ng-controller="TournamentListCtrl">
 	<h2>Tournaments</h2>
-	<div class="alert alert-info" role="alert" ng-show="isLoading()">Loading...</div>
 	<div class="alert alert-warning" ng-show="isError()">
 		<p>Could not load tournaments because {{tournaments.error.status}}:{{tournaments.error.statusText}}.</p>
 	</div>
-	<div class="list-group" ng-show="isLoaded()">
+	<div class="list-group">
 		<a class="list-group-item" href="#/tournament/{{tournament.identifier}}"  ng-repeat="tournament in tournaments" >
 		<htm-tournament-list-item></htm-tournament-list-item>
 		</a>
