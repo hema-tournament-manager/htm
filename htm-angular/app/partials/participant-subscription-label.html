@@ -1,6 +1,7 @@
 <a 	href="#/tournaments/{{tournament.identifier}}#participant{{person.id}}" 
 	ng-show="subscription"
 	title="Fighter number {{subscription.fighterNumber}} in {{tournament.name}}">
+	<!--TODO: Fix anchor to participant-->
 	<span class="label" ng-class="subscription.gearChecked && !subscription.droppedOut ? 'label-success' : 'label-danger'">
 		{{subscription.fighterNumber}}
 		<span class="glyphicon glyphicon-cog" ng-hide="subscription.gearChecked"></span>

@@ -85,7 +85,7 @@
 		      	return subscription.tournament.id === $scope.tournament.id;
 		      });
 		    },
-		    templateUrl: '/partials/participant-subscription.html'
+		    templateUrl: '/partials/participant-subscription-label.html'
 		  };
 		})
 		/**

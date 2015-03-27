@@ -14,8 +14,8 @@ module.exports = function(config){
       'app/bower_components/jquery/dist/jquery.js',
       'app/bower_components/underscore/underscore.js',
       'app/bower_components/tinycolor/tinycolor.js',
-      'bower_components/components-bootstrap/js/collapse.js',
-      'bower_components/components-bootstrap/js/dropdown.js',
+      'app/bower_components/components-bootstrap/js/collapse.js',
+      'app/bower_components/components-bootstrap/js/dropdown.js',
 
       'app/js/**/*.js',
       'test/unit/**/*.js'
