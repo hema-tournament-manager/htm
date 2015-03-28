@@ -7,12 +7,10 @@ describe('TournamentListCtrl', function() {
 	var $httpBackend, $rootScope, createController, authRequestHandler;
 	var tournaments = [{
 						  name: 'Test Tournament 1',
-						  identifier: 'test-tournament-1',
 						  memo: 'TT1',
 						  participants: []
 						},{
 						  name: 'Test Tournament 2',
-						  identifier: 'test-tournament-2',
 						  memo: 'TT2',
 						  participants: []
 						}];

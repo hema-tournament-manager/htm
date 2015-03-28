@@ -13,3 +13,20 @@ body { padding-top: 70px; }
 .htm-dropdown-menu-z-fix{
 	z-index: 3 !important;
 }
+
+
+/* Forms */
+.ng-invalid.ng-dirty {
+  border-color: red;
+  outline-color: red;
+}
+.ng-valid.ng-dirty {
+  border-color: green;
+  outline-color: green;
+}
+
+.input-group-addon.btn {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}

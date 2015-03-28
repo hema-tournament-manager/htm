@@ -29,7 +29,7 @@
 				restrict: 'E',
 				replace: true,
 				templateUrl:'/partials/tournament-memo.html',
-				scope:"=" ,
+				scope: { tournament: "="} ,
 				controller: function($scope){
 
 					$scope.color = function(tournament) {
@@ -65,7 +65,7 @@
 			return {
 				restrict: 'E',
 				replace: true,
-				scope: "=",
+				scope: {tournament:"="},
 				templateUrl:'/partials/tournament-list-item.html',
 
 

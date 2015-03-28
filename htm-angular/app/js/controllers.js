@@ -19,6 +19,7 @@
 
 			/* New tournament form is initially hidden */
 			$scope.addNewTournamentVisible = false;
+			$scope.focusOnAddTournament = false;
 
 			$scope.isLoading = function(){
 				return !$scope.tournaments.$resolved;
@@ -34,58 +35,39 @@
 			
 			$scope.showAddNewTournament = function(){
 				$scope.addNewTournamentVisible = true;
+				$scope.focusOnAddTournament = false;
 			}
 
 			$scope.hideAddNewTournament = function(){
 				$scope.addNewTournamentVisible = false;
+				$scope.focusOnAddTournament = true;
 			}
 
-			$scope._findTournamentWithSameId = function(newTournament){
+			$scope._findTournamentWithSameName = function(newTournament){
 				return _.find($scope.tournaments, function(existingTournament){ 
-					return existingTournament.identifier === newTournament.identifier(); 
+					return existingTournament.name === newTournament.name; 
 				});
 			};
 
 			$scope.newTournament = {
 				_defaultName : 'Basic Longsword Tournament',
 				name: '',
-				_identifier: undefined,
-				_memo: undefined,
+				memo: undefined,
 
-				customIdentifier: false,
 				customMemo: false,
 				error: undefined,
 
-				identifier: function(identifier){
-					if(angular.isDefined(identifier)){
-						this._identifier = identifier;
-						this.customIdentifier = true;
-					}
-
-					// Reset identifier when not custom or undefined
-					if(!this.customIdentifier && angular.isUndefined(identifier)){
-						this._identifier = this._defaultIdentifier();
-					}
-
-					return this._identifier;
-				},
-
-				_defaultIdentifier: function() {
-					var name = this.name || '';
-					return name.toLowerCase().split(' ').join('-');	
-				},
-
-				memo: function(memo){
+				updateMemo: function(memo){
 					if(angular.isDefined(memo)){
-						this._memo = memo;
+						this.memo = memo;
 						this.customMemo = true;
 					};
 
 					// Reset memo when not custom or undefined
 					if(!this.customMemo && angular.isUndefined(memo)){
-						this._memo = this._defaultMemo();
+						this.memo = this._defaultMemo();
 					}
-					return this._memo;
+					return this.memo;
 				},
 
 				_defaultMemo: function() {
@@ -104,7 +86,7 @@
 
 				_generateUniqueName: function(){
 					var i = 2;
-					while($scope._findTournamentWithSameId(this)){
+					while($scope._findTournamentWithSameName(this)){
 						this.name =  this._defaultName + " " + i++;
 					}
 				},
@@ -114,24 +96,19 @@
 					this.customIdentifier = false;
 					this._identifier = undefined;
 					this.customMemo = false;
-					this._memo = undefined;
+					this.memo = undefined;
 					this.error = undefined;
 					this._generateUniqueName();
+					this.updateMemo();
 				}
 			};
 			$scope.newTournament.reset();
 
-
 			$scope.save = function() {
-				if($scope._findTournamentWithSameId($scope.newTournament)){
-					//TODO: Move this to validation directives
-					return;
-				} 
 				var t = $scope.newTournament;
 				var tournament = new Tournament({
 					name: t.name,
-					identifier: t.identifier(),
-					memo: t.memo(),
+					memo: t.updateMemo(),
 					participants: []
 				});
 

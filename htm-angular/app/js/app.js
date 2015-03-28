@@ -39,20 +39,17 @@
 			.run(function($httpBackend) {
 				var tournaments = [{
 					id: 1,
-					name: "Longsword" ,
-					identifier: "longsword",
+					name: "Longsword",
 					memo: "LS", 
 					participants: [1,2,3,4,5],
 				},{
 					id: 2,
-					name: "Dagger" ,
-					identifier: "dagger",
+					name: "Dagger",
 					memo: "DG", 
 					participants: [1,2,3],
 				}, {
 					id: 3,
-					name: "Sword and shield" ,
-					identifier: "sword-and-shield",
+					name: "Sword and shield",
 					memo: "SAS", 
 					participants: [],
 				}];
@@ -77,7 +74,7 @@
 							droppedOut: true,
 							pool: 'Swimming',
 							tournament: {
-								id: 1, name: 'Dagger', identifier: 'dagger', memo: 'DG'
+								id: 1, name: 'Dagger', memo: 'DG'
 							}
 						},{
 							fighterNumber: 1,
@@ -85,7 +82,7 @@
 							droppedOut: false,
 							pool: 'Swimming',
 							tournament: {
-								id: 2, name: 'Longsword', identifier: 'longsword', memo: 'LS'
+								id: 2, name: 'Longsword', memo: 'LS'
 							}
 						}],
 						hasPicture: true
@@ -109,7 +106,7 @@
 							droppedOut: false,
 							pool: 'Swimming',
 							tournament: {
-								id: 1, name: 'Longsword', identifier: 'longsword', memo: 'LS'
+								id: 1, name: 'Longsword', memo: 'LS'
 							}
 						},{
 							fighterNumber: 2,
@@ -117,7 +114,7 @@
 							droppedOut: false,
 							pool: 'Swimming',
 							tournament: {
-								id: 2, name: 'Longsword', identifier: 'longsword', memo: 'LS'
+								id: 2, name: 'Longsword', memo: 'LS'
 							}
 						}],
 						hasPicture: false
@@ -142,7 +139,7 @@
 							droppedOut: false,
 							pool: 'Swimming',
 							tournament: {
-								id: 1, name: 'Longsword', identifier: 'longsword', memo: 'LS'
+								id: 1, name: 'Longsword', memo: 'LS'
 							}
 						},{
 							fighterNumber: 3,
@@ -150,7 +147,7 @@
 							droppedOut: false,
 							pool: 'Swimming',
 							tournament: {
-								id: 2, name: 'Longsword', identifier: 'longsword', memo: 'LS'
+								id: 2, name: 'Longsword', memo: 'LS'
 							}
 						}],
 						hasPicture: false
@@ -175,7 +172,7 @@
 							droppedOut: true,
 							pool: 'Swimming',
 							tournament: {
-								id: 1, name: 'Longsword', identifier: 'longsword', memo: 'LS'
+								id: 1, name: 'Longsword', memo: 'LS'
 							}
 						}],
 						hasPicture: false
@@ -198,7 +195,7 @@
 							droppedOut: false,
 							pool: 'Swimming',
 							tournament: {
-								id: 1, name: 'Longsword', identifier: 'longsword', memo: 'LS'
+								id: 1, name: 'Longsword', memo: 'LS'
 							}
 						}],
 						hasPicture: true
