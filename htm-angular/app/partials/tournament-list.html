@@ -27,7 +27,6 @@
 			    <label for="name" class="col-md-1 control-label">Name</label>
 			    <div class="col-md-11">
 					<input ng-model="newTournament.name" class="form-control" type="text" id="name" required="" name="name" htm-focus-on="addNewTournamentVisible">
-				    <span class="help-block">A tournament name is used to identify a tournament.</span>
 			    </div>
 			  	</div>
 				  <div class="form-group">
@@ -50,9 +49,9 @@
 						    	<span class="glyphicon glyphicon-wrench"></span>
 							  </button>
 							</span>
-							<input ng-model="newTournament.memo" class="form-control" type="text" id="memo" name="memo" htm-focus-on="newTournament.customMemo" required="" htm-upper-case="" htm-replace-space="">
+							<input ng-model="newTournament.memo" class="form-control" type="text" id="memo" name="memo" htm-focus-on="newTournament.customMemo" required="" htm-upper-case="" htm-replace-space=""
+							popover="A label is used as a short hand to identify a tournament when the full name can not be displayeds" popover-trigger="focus" popover-placement="bottom">
 						</div>
-						<span class="help-block">A label is used as a short hand to identify a tournament when the full name can not be displayed.</span>
 				    </div>
 				  </div>
 
