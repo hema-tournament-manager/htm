@@ -141,7 +141,20 @@
 
 		  $scope.participants = Participant.query();
 		  $scope.tournaments = Tournament.query();
-		
+
+		  $scope.refresh = function(){
+		  		console.log("Refresh");
+		  };
+		  $scope.registerSelected = function(){
+		  		console.log("registerSelectedParticipants");
+		  };
+		  $scope.unregisterSelected = function(){
+		  		console.log("unregisterSelected");
+		  };
+  		  $scope.add = function(){
+		  		console.log("add");
+		  };
+
 		}])
 
 		.controller('ParticipantCtrl', ['$scope', function($scope) {
