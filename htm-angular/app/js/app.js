@@ -2,9 +2,9 @@
 
 /* App Module */
 (function(){
-	angular.module('htm.App', [
-		'ngRoute','ngMockE2E',
-		'ui.bootstrap',
+	angular.module('htm.App',[
+		'ngRoute','ngMockE2E','ngSanitize',
+		'ui.bootstrap', 'ui.select',
 		'htm.ui','htm.api','htm.tournament','htm.particpant'
 		])
 
@@ -26,7 +26,10 @@
 				redirectTo: '/',
 				templateUrl: '/partials/welcome.html',
 			});
-	}])
+	}]).config(function(uiSelectConfig) {
+		uiSelectConfig.theme = 'bootstrap';
+		uiSelectConfig.resetSearchInput = true;
+	})
 
 
 	// if(document.URL.match(/\?nobackend$/)) {
@@ -37,6 +40,11 @@
 
 
 			.run(function($httpBackend) {
+				var countries = [
+				{code2: "NL", name: "The Netherlands"},
+				{code2: "DE", name: "Germany"}
+				];
+
 				var tournaments = [{
 					id: 1,
 					name: "Longsword",
@@ -60,13 +68,13 @@
 		  				shortName: 'shortName',
 		  				club: 'club',
 		  				clubCode: 'String',
-						country: 'NL',
+						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
 						age: 'Int',
 						height: 'Int',
 						weight: 'Int',
-						previousWins: ['previousWins','previousWins'],
+						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
 						subscriptions: [{
 							fighterNumber: 1,
@@ -92,13 +100,13 @@
 		  				shortName: 'shortName',
 		  				club: 'club',
 		  				clubCode: 'String',
-						country: 'NL',
+						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
 						age: 'Int',
 						height: 'Int',
 						weight: 'Int',
-						previousWins: ['previousWins','previousWins'],
+						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
 						subscriptions: [{
 							fighterNumber: 2,
@@ -124,13 +132,13 @@
 		  				shortName: 'shortName',
 		  				club: 'club',
 		  				clubCode: 'String',
-						country: 'NL',
+						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
 						age: 'Int',
 						height: 'Int',
 						weight: 'Int',
-						previousWins: ['previousWins','previousWins'],
+						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 						fighterNumber: 'fighterNumber',
 
 						subscriptions: [{
@@ -157,13 +165,13 @@
 		  				shortName: 'shortName',
 		  				club: 'club',
 		  				clubCode: 'String',
-						country: 'NL',
+						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
 						age: 'Int',
 						height: 'Int',
 						weight: 'Int',
-						previousWins: ['previousWins','previousWins'],
+						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 						fighterNumber: 'fighterNumber',
 
 						subscriptions: [{
@@ -182,13 +190,13 @@
 		  				shortName: 'shortName',
 		  				club: 'club',
 		  				clubCode: 'String',
-						country: 'NL',
+						country: {code2: "NL", name: "Netherlands"},
 						isPresent: false,
 						tshirt: 'String',
 						age: 'Int',
 						height: 'Int',
 						weight: 'Int',
-						previousWins: ['previousWins','previousWins'],
+						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 						subscriptions: [{
 							fighterNumber: 5,
 							gearChecked: false,
@@ -211,6 +219,7 @@
   				});
 			 	$httpBackend.whenGET('/api/participant').respond(participants);
 
+			 	$httpBackend.whenGET('/api/country').respond(countries);
 
 
 			});

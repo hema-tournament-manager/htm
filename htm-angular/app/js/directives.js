@@ -71,7 +71,16 @@
 
 			}
 		})
-
+		.directive('htmFlag', function() {
+		  return {
+		    restrict: 'E',
+		    replace: true,
+		    scope: {
+		      country: '=',
+		    },
+		    templateUrl: '/partials/flag.html'
+		  };
+		})
 		.directive('htmSubscriptionLabel', function() {
 		  return {
 		    restrict: 'E',

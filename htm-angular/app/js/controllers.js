@@ -129,37 +129,61 @@
 
 	angular.module('htm.particpant', [])
 
-		.controller('ParticipantListCtrl', ['$scope','Tournament','Participant', function($scope,Tournament, Participant) {
+		.controller('ParticipantListCtrl', ['$scope', '$modal','Tournament','Participant', function($scope,$modal,Tournament, Participant) {
 			  
-		  $scope.totals = {
-		  	participants: 100,
-		  	clubs: 1,
-		  	countries: 10
+			$scope.totals = {
+				participants: 100,
+				clubs: 1,
+				countries: 10
+			}
 
-		  }
+			$scope.participants = Participant.query();
+			$scope.tournaments = Tournament.query();
 
+			$scope.refresh = function(){
+					console.log("Refresh");
+			};
+			$scope.registerSelected = function(){
+					console.log("registerSelectedParticipants");
+			};
+			$scope.unregisterSelected = function(){
+					console.log("unregisterSelected");
+			};
+		  	$scope.add = function(){
+					console.log("add");
+			};
 
-		  $scope.participants = Participant.query();
-		  $scope.tournaments = Tournament.query();
+			$scope.show = function(participant, onSuccess) {
+				console.log("show");
 
-		  $scope.refresh = function(){
-		  		console.log("Refresh");
-		  };
-		  $scope.registerSelected = function(){
-		  		console.log("registerSelectedParticipants");
-		  };
-		  $scope.unregisterSelected = function(){
-		  		console.log("unregisterSelected");
-		  };
-  		  $scope.add = function(){
-		  		console.log("add");
-		  };
+				$modal.open({
+				  templateUrl: '/partials/participant-registration.html',
+				  controller: 'ParticipantRegistrationCtrl',
+				  size: 'lg',
+				  resolve: {
+				    participant: function () {
+				      return participant;
+				    },
+				    tournaments: function() {
+				      return $scope.tournaments;
+				    }
+				  }
+				})
+				.result.then(function(updatedParticipant) {
+				  
+				});
+			};
 
 		}])
 
-		.controller('ParticipantCtrl', ['$scope', function($scope) {
+		.controller('ParticipantRegistrationCtrl',function($scope, $modalInstance, Country, participant, tournaments) {
 
-		}])
+			$scope.participant = angular.copy(participant);
+			$scope.tournaments = angular.copy(tournaments);
+			$scope.countries = Country.query();
+
+
+		})
 	;
 
 })();
