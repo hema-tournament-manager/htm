@@ -130,16 +130,26 @@
 
 		.controller('ParticipantListCtrl', ['$scope', '$modal','$routeParams','Tournament','Participant','Statistics',  function($scope,$modal,$routeParams,Tournament, Participant,Statistics) {
 	
-			 //TODO: Get totals
+			var ORDER = {ASC:'ASC',DESC:'DESC'};
+			var ORDER_BY = {NAME:'name',SHORT_NAME:'shortName',CLUB:'club',CLUB_CODE:'clubCode'};
+
+			$scope.searchCriteria = {
+				itemsPerPage:15,
+				query:undefined,
+				orderBy: ORDER_BY.NAME,
+				order: ORDER.ASC,
+			};
+
 			$scope.totals = Statistics.get();
-			$scope.participants = Participant.query();
+			$scope.participants = Participant.query($scope.searchCriteria);
 			$scope.tournaments = Tournament.query();
 
+			$scope.refresh = _.debounce(function(){
+				Participant.query($scope.searchCriteria).$promise.then(function(freshParticipants){
+					$scope.participants = freshParticipants;
+				});
+			}, 500)
 
-
-			$scope.refresh = function(){
-					console.log("Refresh");
-			};
 			$scope.registerSelected = function(){
 					console.log("registerSelectedParticipants");
 			};

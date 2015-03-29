@@ -49,7 +49,7 @@
 							</button>
 						</span>
 						<!--TODO: Focus on-->
-				      	<input ng-model="search" type="text" class="form-control" placeholder="Search"/>
+				      	<input ng-model="searchCriteria.query" ng-keyup="refresh()" type="text" class="form-control" placeholder="Search"/>
 						<span class="input-group-btn">
 							<button role="button" class="btn btn-default" ng-click="registerSelected()">
 								<span class="glyphicon glyphicon-ok" title="Register all selected participants"></span>

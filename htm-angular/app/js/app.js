@@ -297,9 +297,7 @@
     				participants.push(participant);
     				return [200, participant, {}];
   				});
-			 	$httpBackend.whenGET('/api/participant').respond(participants);
 
-			 	$httpBackend.whenGET('/api/country').respond(countries);
 
 			 	$httpBackend.whenGET('/api/participant/statistics').respond(function(){
 
@@ -313,6 +311,16 @@
 					
 					return [200,totals];
 			 	});
+
+			 	
+			 	$httpBackend.whenGET(/\/api\/participant.*/).respond(function(method,url,data,headers){
+   					console.log('participant queried ' + url);
+
+			 		return [200,participants];
+			 	});
+
+			 	$httpBackend.whenGET('/api/country').respond(countries);
+
 
 
 			
