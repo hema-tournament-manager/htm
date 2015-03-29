@@ -75,9 +75,9 @@
 						<th>Checks</th>
 						<th>Country</th>
 						<th htm-sort="name">Name</th>
-						<th htm-sort="shortName">Short name</th>
+						<th htm-sort="shortName">Short</th>
 						<th htm-sort="club">Club</th>
-						<th htm-sort="clubCode">Club code</th>
+						<th htm-sort="clubCode">Code</th>
 						<th ng-repeat="tournament in tournaments" title="{{tournament.name}}">
 							<htm-tournament-memo tournament="tournament"></htm-tournament-memo>
 						</th>
@@ -110,7 +110,7 @@
 						</td>
 					</tr>
 			        <tr>
-			          <td colspan="{{8 + tournaments.length}}" ng-click="more()" class="text-center" style="cursor: pointer">Show more</td>
+			          <td colspan="{{7 + tournaments.length}}" class="text-center"><button role="button" class="btn btn-default btn-block" ng-click="more()" >Show more</button></td>
 		          	</tr>
 				</tbody>
 			</table>

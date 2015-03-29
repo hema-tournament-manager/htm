@@ -168,14 +168,24 @@
 
 			$scope.participants = function(){
 				return _.flatten(pages);
-			}
+			};
 
 			$scope.registerSelected = function(){
-					console.log("registerSelectedParticipants");
+				angular.forEach($scope.participants(), function(participant){
+					participant.isPresent = true;
+					participant.$save();
+
+				});
 			};
+
 			$scope.unregisterSelected = function(){
-					console.log("unregisterSelected");
+				angular.forEach($scope.participants(), function(participant){
+					participant.isPresent = false;
+					participant.$save();
+
+				});
 			};
+
 		  	$scope.add = function(){
 		  		openModal(new Participant({ 
 						country: {},
