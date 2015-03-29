@@ -223,11 +223,13 @@
 			 	$httpBackend.whenGET(/\/api\/participant\/[0-9]+/).respond(participants[0]);
 			 	
 			 	$httpBackend.whenPOST(/\/api\/participant\/[0-9]+/).respond(function(method, url, data) {
+   					var participant = angular.fromJson(data);
+    				participants[participant.id] = participant;
     				return [200];
   				});
 			 	$httpBackend.whenPOST('/api/participant').respond(function(method, url, data) {
    					var participant = angular.fromJson(data);
-   					participant.id = tournaments.length;
+   					participant.id = participants.length;
     				participants.push(participant);
     				return [200, participant, {}];
   				});

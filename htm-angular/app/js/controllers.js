@@ -155,13 +155,15 @@
 					console.log("unregisterSelected");
 			};
 		  	$scope.add = function(){
-		  		openModal({ 
+		  		openModal(new Participant({ 
 						country: {},
 						isPresent: false,
 						previousWins: [ ],
 						subscriptions: [],
 						hasPicture: false
-					});
+					})).then(function(newParticipant) {
+		  				$scope.participants.push(newParticipant);
+		  			});
 			};
 
 		  	$scope.hasDetails = function(participant) {
@@ -174,7 +176,7 @@
 
 			function openModal(participant) {
 
-				$modal.open({
+				return $modal.open({
 				  templateUrl: '/partials/participant-registration.html',
 				  controller: 'ParticipantRegistrationCtrl',
 				  size: 'lg',
@@ -186,24 +188,14 @@
 				      return $scope.tournaments;
 				    }
 				  }
-				})
-				.result.then(function(updatedParticipant) {
-
-					updatedParticipant = new Participant(updatedParticipant);
-
-					updatedParticipant.$save().then(function(savedParticipant){
-						//TODO: Check if already present
-						$scope.participants.push(savedParticipant);
-					}, function(error){
-						//TODO: Handle errors
-					});
-				  
-				});
+				}).result;				
 			};
 
 			if($routeParams.participantId){
 				var participant = Participant.get({id:$routeParams.participantId});
-				openModal(participant)
+				openModal(participant).then(function(updatedParticipant){
+					//TODO: Replace with result from query
+				});
 			}
 
 		}])
@@ -211,7 +203,7 @@
 		.controller('ParticipantRegistrationCtrl',function($scope, $modalInstance, Country, Participant, participant, tournaments) {
 
 			$scope.pictures = {files:[]};
-			$scope.participant = angular.copy(participant);
+			$scope.participant = participant;
 			$scope.tournaments = _.filter(tournaments,function(tournament){
 				return !_.find(participant.subscriptions,function(subscription){
 					return subscription.tournament.id === tournament.id;
@@ -236,7 +228,9 @@
 			};
 
 			$scope.save = function() {
-				$modalInstance.close($scope.participant);
+				$scope.participant.$save(function(savedParticipant){
+					$modalInstance.close(savedParticipant);
+				});
 			};
 
 			$scope.checkin = function() {
@@ -245,6 +239,7 @@
 			};
 
 			$scope.cancel = function() {
+				$scope.participant.$get();
 				$modalInstance.dismiss('cancel');
 			};
 
