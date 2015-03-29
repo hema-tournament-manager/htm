@@ -26,7 +26,7 @@
 				            <span class="caret"></span>
 					    </button>
 	
-					    <ul class="dropdown-menu">
+					    <ul class="dropdown-menu pull-right">
 							<!--TODO: Implement links-->
 							<li><a href="/download/participants">Participant</a></li>
 							<li><a href="/download/clubs">Clubs</a></li>
@@ -44,18 +44,18 @@
 				<div class="form-group" >
 					<div class="input-group">
 						<span class="input-group-btn">
-							<button role="button" class="btn btn-info" ng-click="refresh()">
+							<button role="button" class="btn btn-default" ng-click="refresh()">
 								<span class="glyphicon glyphicon-search" title="Search participants"></span>
 							</button>
 						</span>
 						<!--TODO: Focus on-->
 				      	<input ng-model="search" type="text" class="form-control" placeholder="Search"/>
 						<span class="input-group-btn">
-							<button role="button" class="btn btn-success" ng-click="registerSelected()">
+							<button role="button" class="btn btn-default" ng-click="registerSelected()">
 								<span class="glyphicon glyphicon-ok" title="Register all selected participants"></span>
 							</button>
 
-							<button role="button" class="btn btn-danger" ng-click="unregisterSelected()">
+							<button role="button" class="btn btn-default" ng-click="unregisterSelected()">
 								<span class="glyphicon glyphicon-remove" title="Unregister all selected participants"></span>
 							</button>
 						</span>
