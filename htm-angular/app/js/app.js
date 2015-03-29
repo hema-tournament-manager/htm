@@ -20,7 +20,7 @@
 				templateUrl: '/partials/participant-list.html',
 			})
 			.when('/participant/:participantId', {
-				templateUrl: '/partials/participant.html',
+				templateUrl: '/partials/participant-list.html',
 			})
 			.otherwise({
 				redirectTo: '/',
@@ -45,7 +45,8 @@
 				{code2: "DE", name: "Germany"}
 				];
 
-				var tournaments = [{
+				var tournaments = [
+				{
 					id: 1,
 					name: "Longsword",
 					memo: "LS", 
@@ -63,7 +64,7 @@
 				}];
 
 				var participants = [	{  	id: 1,
-		  				externalId: 'externalId',  				
+  				
 		  				name: 'name',
 		  				shortName: 'shortName',
 		  				club: 'club',
@@ -71,9 +72,9 @@
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
-						age: 'Int',
-						height: 'Int',
-						weight: 'Int',
+						age: 27,
+						height: 188,
+						weight: 82,
 						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
 						subscriptions: [{
@@ -95,7 +96,7 @@
 						}],
 						hasPicture: true
 					},{  id:  2,
-		  				externalId: 'externalId',  				
+  				
 		  				name: 'name',
 		  				shortName: 'shortName',
 		  				club: 'club',
@@ -103,9 +104,9 @@
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
-						age: 'Int',
-						height: 'Int',
-						weight: 'Int',
+						age: 27,
+						height: 188,
+						weight: 82,
 						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
 						subscriptions: [{
@@ -127,7 +128,7 @@
 						}],
 						hasPicture: false
 					},{  id: 3,
-		  				externalId: 'externalId',  				
+  				
 		  				name: 'name',
 		  				shortName: 'shortName',
 		  				club: 'club',
@@ -135,9 +136,9 @@
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
-						age: 'Int',
-						height: 'Int',
-						weight: 'Int',
+						age: 27,
+						height: 188,
+						weight: 82,
 						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 						fighterNumber: 'fighterNumber',
 
@@ -160,7 +161,7 @@
 						}],
 						hasPicture: false
 					},{  id: 4,
-		  				externalId: 'externalId',  				
+  				
 		  				name: 'name',
 		  				shortName: 'shortName',
 		  				club: 'club',
@@ -168,9 +169,9 @@
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
-						age: 'Int',
-						height: 'Int',
-						weight: 'Int',
+						age: 27,
+						height: 188,
+						weight: 82,
 						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 						fighterNumber: 'fighterNumber',
 
@@ -185,7 +186,7 @@
 						}],
 						hasPicture: false
 					},{  id: 5,
-		  				externalId: 'externalId',  				
+  				
 		  				name: 'name',
 		  				shortName: 'shortName',
 		  				club: 'club',
@@ -193,9 +194,9 @@
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: false,
 						tshirt: 'String',
-						age: 'Int',
-						height: 'Int',
-						weight: 'Int',
+						age: 27,
+						height: 188,
+						weight: 82,
 						previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 						subscriptions: [{
 							fighterNumber: 5,
@@ -214,8 +215,21 @@
 			 	$httpBackend.whenGET('/api/tournament').respond(tournaments);
 			 	$httpBackend.whenPOST('/api/tournament').respond(function(method, url, data) {
    					var tournament = angular.fromJson(data);
+   					tournament.id = tournaments.length;
     				tournaments.push(tournament);
     				return [200, tournament, {}];
+  				});
+
+			 	$httpBackend.whenGET(/\/api\/participant\/[0-9]+/).respond(participants[0]);
+			 	
+			 	$httpBackend.whenPOST(/\/api\/participant\/[0-9]+/).respond(function(method, url, data) {
+    				return [200];
+  				});
+			 	$httpBackend.whenPOST('/api/participant').respond(function(method, url, data) {
+   					var participant = angular.fromJson(data);
+   					participant.id = tournaments.length;
+    				participants.push(participant);
+    				return [200, participant, {}];
   				});
 			 	$httpBackend.whenGET('/api/participant').respond(participants);
 

@@ -112,7 +112,6 @@
 					participants: []
 				});
 
-				$scope.newTournament.state = 'saving';
 				tournament.$save().then(function(savedTournament){
 					$scope.tournaments.push(savedTournament);
 					$scope.newTournament.reset();
@@ -129,8 +128,12 @@
 
 	angular.module('htm.particpant', [])
 
-		.controller('ParticipantListCtrl', ['$scope', '$modal','Tournament','Participant', function($scope,$modal,Tournament, Participant) {
+		.controller('ParticipantListCtrl', ['$scope', '$modal','$routeParams','Tournament','Participant', function($scope,$modal,$routeParams,Tournament, Participant) {
 			  
+
+			  //TODO: Fetch totals
+			
+			 //TODO: Get totals
 			$scope.totals = {
 				participants: 100,
 				clubs: 1,
@@ -139,6 +142,8 @@
 
 			$scope.participants = Participant.query();
 			$scope.tournaments = Tournament.query();
+
+
 
 			$scope.refresh = function(){
 					console.log("Refresh");
@@ -150,11 +155,24 @@
 					console.log("unregisterSelected");
 			};
 		  	$scope.add = function(){
-					console.log("add");
+		  		openModal({ 
+						country: {},
+						isPresent: false,
+						previousWins: [ ],
+						subscriptions: [],
+						hasPicture: false
+					});
 			};
 
-			$scope.show = function(participant, onSuccess) {
-				console.log("show");
+		  	$scope.hasDetails = function(participant) {
+		    	return participant.age || participant.height || participant.weight;
+  			};
+
+  			$scope.show = function(participant){
+  				openModal(participant);
+  			}
+
+			function openModal(participant) {
 
 				$modal.open({
 				  templateUrl: '/partials/participant-registration.html',
@@ -170,17 +188,75 @@
 				  }
 				})
 				.result.then(function(updatedParticipant) {
+
+					updatedParticipant = new Participant(updatedParticipant);
+
+					updatedParticipant.$save().then(function(savedParticipant){
+						//TODO: Check if already present
+						$scope.participants.push(savedParticipant);
+					}, function(error){
+						//TODO: Handle errors
+					});
 				  
 				});
 			};
 
+			if($routeParams.participantId){
+				var participant = Participant.get({id:$routeParams.participantId});
+				openModal(participant)
+			}
+
 		}])
 
-		.controller('ParticipantRegistrationCtrl',function($scope, $modalInstance, Country, participant, tournaments) {
+		.controller('ParticipantRegistrationCtrl',function($scope, $modalInstance, Country, Participant, participant, tournaments) {
 
+			$scope.pictures = {files:[]};
 			$scope.participant = angular.copy(participant);
-			$scope.tournaments = angular.copy(tournaments);
+			$scope.tournaments = _.filter(tournaments,function(tournament){
+				return !_.find(participant.subscriptions,function(subscription){
+					return subscription.tournament.id === tournament.id;
+				})
+			});
 			$scope.countries = Country.query();
+
+			$scope.addWin = function() {
+				if ($scope.canAddWin()) {
+				  $scope.participant.previousWins.push({text: ''});
+				}
+			};
+
+			$scope.canAddWin = function() {
+				return $scope.participant.previousWins.length < 3;
+			};
+
+			$scope.removeWin = function(win) {
+				$scope.participant.previousWins = _($scope.participant.previousWins).filter(function(item) {
+   					  return item !== win
+				});
+			};
+
+			$scope.save = function() {
+				$modalInstance.close($scope.participant);
+			};
+
+			$scope.checkin = function() {
+				$scope.participant.isPresent = true;
+				$scope.save();
+			};
+
+			$scope.cancel = function() {
+				$modalInstance.dismiss('cancel');
+			};
+
+			$scope.upload = function(pictures){
+				var picture = new Participant({id:$scope.participant.id,file:pictures[0]});
+				picture.$postPicture().then(function(participant){
+					// TODO: Update participant id with new id assigned by server 
+					// TODO: Set hasPicture = true;
+				},function(error){
+					// TODO: Handle error
+				});
+			};
 
 
 		})

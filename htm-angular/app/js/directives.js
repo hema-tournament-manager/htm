@@ -81,6 +81,16 @@
 		    templateUrl: '/partials/flag.html'
 		  };
 		})
+		.directive('htmParticipantPhoto', function() {
+		  return {
+		    restrict: 'E',
+		    replace: true,
+		    scope: {
+		      participant: '=',
+		    },
+		    templateUrl: '/partials/participant-photo.html'
+		  };
+		})
 		.directive('htmSubscriptionLabel', function() {
 		  return {
 		    restrict: 'E',
@@ -108,7 +118,7 @@
 				restrict : 'A',
 				link : function($scope,element,attr) {
 					
-					$(element).focus(function(){this.select();});
+					$(element).focus(function(){if(this.select)this.select();});
 
 					$scope.$watch(attr.htmFocusOn,function(_focusVal) {
 						if(_focusVal){
@@ -120,7 +130,36 @@
 				}
 			}
 		}])
+		.directive("htmInputFile", ['$parse',function($parse) {
+			return {
+				restrict : 'A',
+				link : function($scope,element,attr) {
 
+			     	var onChangeFun = $parse(attr.htmOnChange);
+			     	var filesFun = $parse(attr.htmInputFile);
+					
+					$(element).on('change', function(event) {
+						var element = this;
+						$scope.$apply(function(){
+
+							var files = angular.copy(element.files);
+
+							files.toString = function(){
+								return _.map(this,function(e){return e.name}).join(', ');
+							};
+
+							filesFun.assign($scope,files);
+						
+
+							onChangeFun($scope)(files);
+							
+
+
+						});
+					});
+				}
+			}
+		}])
 
 	.directive('htmLowerCase', function(){
 		return {

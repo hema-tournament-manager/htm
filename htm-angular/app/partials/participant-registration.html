@@ -4,8 +4,14 @@
     <i ng-hide="participant.name">New participant</i>
     {{participant.name}}
     <small>{{participant.club}}</small>
-    <span class="btn-group pull-right">
-      <button class="btn btn-primary" ng-hide="participant.isPresent" ng-click="checkin()">Check-in &amp; Save</button>
+    <!--Duplicated block because even when invisible the hidden 
+    element still counts as present for the shape of the borders-->
+    <span class="btn-group pull-right" ng-hide="participant.isPresent">
+      <button class="btn btn-primary"  ng-click="checkin()">Check-in &amp; Save</button>
+      <button class="btn btn-primary" ng-click="save()">Save</button>
+      <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </span>
+    <span class="btn-group pull-right" ng-show="participant.isPresent">
       <button class="btn btn-primary" ng-click="save()">Save</button>
       <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
     </span>
@@ -13,6 +19,8 @@
 </div>
 <div class="modal-body">
   <tabset justified="true">
+
+    <!--Identification-->
     <tab>
       <tab-heading>
         <span class="glyphicon glyphicon-user"></span>
@@ -21,10 +29,6 @@
       </tab-heading>
       <h3>Identification</h3>
       <form role="form">
-        <div class="form-group">
-          <label for="id">ID</label>
-          <input ng-model="participant.externalId" type="text" class="form-control" id="id" required="required"/>
-        </div>
         <div class="form-group">
           <label for="name">Name</label>
           <input ng-model="participant.name" type="text" class="form-control" id="name" required="required"/>
@@ -59,6 +63,8 @@
         </div>
       </form>
     </tab>
+
+    <!--Details-->
     <tab>
       <tab-heading>
         <span class="glyphicon glyphicon-list"></span>
@@ -66,33 +72,46 @@
         Details
       </tab-heading>
       <h3>Details</h3>
-      <form role="form">
-        <div class="form-group">
-          <label for="age">Age (in years)</label>
-          <input ng-model="participant.age" type="number" class="form-control" id="age"/>
-        </div>
-        <div class="form-group">
-          <label for="height">Height (in meters)</label>
-          <input ng-model="participant.height" type="number" class="form-control" id="height"/>
-        </div>
-        <div class="form-group">
-          <label for="weight">Weight (in kilograms)</label>
-          <input ng-model="participant.weight" type="number" class="form-control" id="weight"/>
-        </div>
-        <fieldset>
-          <legend>Achievements</legend>
-          <div ng-repeat="win in participant.previousWins" class="form-group">
+      <div class="col-xs=12">
+        <form role="form" class="form">
+          <div class="form-group">
+            <label for="age">Age</label>
             <div class="input-group">
-              <input ng-model="win.text" type="text" class="form-control" popover="Enter an achievement in an earlier tournament, something like '2nd, Swordfish 2013'"  popover-trigger="focus" popover-placement="bottom"/>
-              <span class="input-group-btn">
-                <button ng-click="removeWin($index)" class="btn btn-default" type="button" title="Remove"><span class="glyphicon glyphicon-remove"/></button>
-              </span>
+              <input ng-model="participant.age" type="number" class="form-control" id="age"/>
+              <span class="input-group-addon">Years</span>
             </div>
           </div>
-          <button class="btn btn-info" ng-show="canAddWin()" ng-click="addWin()"><span class="glyphicon glyphicon-plus"/> Add</button>
-        </fieldset>
-      </form>
+          <div class="form-group">
+            <label for="height">Height</label>
+              <div class="input-group">
+                <input ng-model="participant.height" type="number" class="form-control" id="height"/>
+                <span class="input-group-addon">Centimeters</span>
+              </div>
+          </div>
+          <div class="form-group">
+            <label for="weight">Weight</label>
+            <div class="input-group">
+              <input ng-model="participant.weight" type="number" class="form-control" id="weight"/>
+              <span class="input-group-addon">Kilograms</span>
+            </div>
+          </div>
+          <fieldset>
+            <legend>Achievements</legend>
+            <div ng-repeat="win in participant.previousWins" class="form-group">
+              <div class="input-group">
+                <input ng-model="win.text" type="text" class="form-control" popover="Enter an achievement in an earlier tournament, something like '2nd, Swordfish 2013'"  popover-trigger="focus" popover-placement="bottom"/>
+                <span class="input-group-btn">
+                  <button ng-click="removeWin(win)" class="btn btn-default" type="button" title="Remove"><span class="glyphicon glyphicon-remove"/></button>
+                </span>
+              </div>
+            </div>
+            <button class="btn btn-info" ng-show="canAddWin()" ng-click="addWin()"><span class="glyphicon glyphicon-plus"/> Add</button>
+          </fieldset>
+        </form>
+      </div>
     </tab>
+
+    <!--Picture-->
     <tab>
       <tab-heading>
         <span class="glyphicon glyphicon-picture"></span>
@@ -100,41 +119,68 @@
         Picture
       </tab-heading>
       <h3>Picture</h3>
-      <form role="form">
+      <div class="form-group">
         <div class="input-group">
-          <input id="photoPicker" htm-file="picture" type="file" accept="image/*;capture=camera" class="form-control"/>
+            <span class="input-group-btn">
+                <span class="btn btn-primary btn-file">
+                    Browse <input type="file" multiple htm-input-file="pictures.files" accept="image/*;capture=camera"  htm-on-change="upload">
+                </span>
+            </span>
+            <input type="text" class="form-control" ng-model="pictures.files" readonly>
         </div>
-        <img ng-src="{{pictureUrl}}"/>
-      </form>
+      </div>
+      <htm-participant-photo participant="participant"></htm-participant-photo>
     </tab>
-    <tab ng-repeat="tournament in tournaments">
+
+    <!--Tournaments-->
+    <tab>
       <tab-heading>
-        <span title="{{tournament.name}}">
-          <span class="glyphicon" ng-class="tournament.subscription ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
-          <br/>
-          {{tournament.memo}}
-        </span>
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
+        <br/>
+        Tournaments
       </tab-heading>
-      <h3>{{tournament.name}}</h3>
-      <form role="form" ng-show="tournament.subscription">
-        <div class="form-group">
-          <label>Fighter number</label>
-          <p class="form-control-static">{{tournament.subscription.fighterNumber}}</p>
-        </div>
-        <div class="form-group">
-          <label>Pool</label>
-          <p class="form-control-static">{{tournament.subscription.pool || '-'}}</p>
-        </div>
-        <div class="form-group">
-          <label>Gear checked</label>
-          <p class="form-control-static">
-            <span class="label label-success" ng-show="tournament.subscription.gearChecked">Yes</span>
-            <span class="label label-danger" ng-hide="tournament.subscription.gearChecked">No</span>
-          </p>
-        </div>
-      </form>
-      <alert ng-hide="tournament.subscription" type="warning">{{participant.name}} is not participating in {{tournament.name}}</alert>
-      <alert type="info">You can change this in <a class="alert-link" href="/tournaments/view/{{tournament.identifier}}#participant{{participant.externalId}}">tournament management</a></alert>
+      <h3>Tournaments</h3>
+
+      <table class="table table-striped table-condensed table-hover table-responsive">
+          <thead>
+          <tr>
+            <!--TODO: Sort buttons-->
+            <th></th>
+            <th></th>
+            <th class="hidden-xs"></th>
+            <th>Participating</th>
+            <th>Number</th>
+            <th>Pool</th>
+            <th>Gear</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="subscription in participant.subscriptions">
+              <td><a href="#/tournament/{{subscription.tournament.id}}/participant/{{participant.id}}" ng-click="cancel()" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-wrench"></span></a></td>
+              <td><htm-tournament-memo tournament="subscription.tournament"></htm-tournament-memo></td>
+              <td class="hidden-xs"><span>{{subscription.tournament.name}}</span></td>
+              <td><span class="glyphicon glyphicon-ok"></td>
+              <td>{{subscription.fighterNumber || '-' }}</td>
+              <td>{{subscription.pool || '-'}}</td>
+              <td>
+                  <span class="label label-success" ng-show="subscription.gearCheck"><span class="glyphicon glyphicon-ok"></span></span>
+                  <span class="label label-danger" ng-hide="subscription.gearCheck"><span class="glyphicon glyphicon-cog"></span></span>
+              </td>
+          </tr>
+          <tr ng-repeat="tournament in tournaments">
+              <td><a href="#/tournament/{{subscription.tournament.id}}/participant/{{participant.id}}" ng-click="cancel()" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-wrench"></span></a></td>
+              <td><htm-tournament-memo tournament="tournament"></htm-tournament-memo></td>
+              <td class="hidden-xs"><span>{{tournament.name}}</span></td>
+              <td><span class="glyphicon glyphicon-remove"></td>
+              <td></td>
+              <td></td>
+              <td></td>
+          </tr>          
+        </tbody>
+
+
+
+      </table>
     </tab>
   </tabset>
 </div>

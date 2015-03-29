@@ -71,8 +71,8 @@
 				<thead>
 					<tr>
 						<!--TODO: Sort buttons-->
+						<th><!--Edit--></th>
 						<th>Checks</th>
-						<th htm-sort="externalId">ID</th>
 						<th>Country</th>
 						<th htm-sort="name">Name</th>
 						<th htm-sort="shortName">Short name</th>
@@ -81,23 +81,24 @@
 						<th ng-repeat="tournament in tournaments" title="{{tournament.name}}">
 							<htm-tournament-memo tournament="tournament"></htm-tournament-memo>
 						</th>
-						<th><!--Edit--></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr ng-repeat="participant in participants">
+			          	<td><button class="btn btn-default btn-sm" ng-click="show(participant)"><span class="glyphicon glyphicon-wrench"></span></button></td>
 						<td>
-						    <span class="label" ng-class="participant.isPresent ? 'label-success' : 'label-danger'" title="{{participant.isPresent ? 'Checked in' : 'Not checked in yet'}}">
-						    	<span class="glyphicon glyphicon-check"></span>
-						    </span>
-						    <span class="label" ng-class="participant.hasPicture ? 'label-success' : 'label-warning'" title="{{hasPicture(participant) ? 'Picture is available' : 'No picture available yet'}}">
-						    	<span class="glyphicon glyphicon-picture"></span>
-						    </span>
-						    <span class="label" ng-class="hasDetails(participant) ? 'label-success' : 'label-default'" title="{{hasDetails(participant) ? 'Details are filled in' : 'No details filled in yet'}}">
-						    	<span class="glyphicon glyphicon-list"></span>
+							<span>
+							    <span class="label" ng-class="participant.isPresent ? 'label-success' : 'label-danger'" title="{{participant.isPresent ? 'Checked in' : 'Not checked in yet'}}">
+							    	<span class="glyphicon glyphicon-check"></span>
+							    </span>
+							    <span class="label" ng-class="participant.hasPicture ? 'label-success' : 'label-warning'" title="{{participant.hasPicture ? 'Picture is available' : 'No picture available yet'}}">
+							    	<span class="glyphicon glyphicon-picture"></span>
+							    </span>
+							    <span class="label" ng-class="hasDetails(participant) ? 'label-success' : 'label-default'" title="{{hasDetails(participant) ? 'Details are filled in' : 'No details filled in yet'}}">
+							    	<span class="glyphicon glyphicon-list"></span>
+						    	</span>
 					    	</span>
 						</td>
-						<td class="id" title="ID">{{participant.externalId}}</td>
 						<td class="flag" >
 							<htm-flag country="participant.country"></htm-flag></td>
 						<td class="name" title="Name">{{participant.name}}</td>
@@ -107,7 +108,7 @@
 						<td class="tournaments" ng-repeat="tournament in tournaments">
 							<htm-subscription-label person="participant" tournament="tournament"/>
 						</td>
-			          	<td><button role="button" class="btn btn-default btn-sm" ng-click="show(participant)">Edit</button></td>
+
 					</tr>
 				</tbody>
 			</table>
