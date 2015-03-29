@@ -130,16 +130,16 @@
 
 		.controller('ParticipantListCtrl', ['$scope', '$modal','$routeParams','Tournament','Participant','Statistics',  function($scope,$modal,$routeParams,Tournament, Participant,Statistics) {
 	
-			var ORDER = {ASC:'ASC',DESC:'DESC'};
-			var ORDER_BY = {NAME:'name',SHORT_NAME:'shortName',CLUB:'club',CLUB_CODE:'clubCode'};
+			$scope.ORDER = {ASC:'ASC',DESC:'DESC'};
+			$scope.ORDER_BY = {NAME:'name',SHORT_NAME:'shortName',CLUB:'club',CLUB_CODE:'clubCode'};
 			var pages = [];
 
 			$scope.searchCriteria = {
 				page:0,
 				itemsPerPage:15,
 				query:undefined,
-				orderBy: ORDER_BY.NAME,
-				order: ORDER.ASC,
+				orderBy: $scope.ORDER_BY.NAME,
+				order: $scope.ORDER.ASC,
 			};
 
 			pages[0] = Participant.query($scope.searchCriteria);
@@ -203,6 +203,20 @@
 					participant.$save();
 
 				});
+			};
+
+			$scope.sort = function(fieldName){
+				var criteria = $scope.searchCriteria;
+				var ORDER = $scope.ORDER;
+
+				if(criteria.orderBy === fieldName){
+					criteria.order = criteria.order === ORDER.ASC ? ORDER.DESC : ORDER.ASC;
+				} else {
+					criteria.order = ORDER.ASC;
+					criteria.orderBy = fieldName;
+				}
+
+				debouncedRefresh();
 			};
 
 

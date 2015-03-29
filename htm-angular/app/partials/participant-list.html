@@ -73,10 +73,10 @@
 						<th><!--Edit--></th>
 						<th>Checks</th>
 						<th>Country</th>
-						<th htm-sort="name">Name</th>
-						<th htm-sort="shortName">Short</th>
-						<th htm-sort="club">Club</th>
-						<th htm-sort="clubCode">Code</th>
+						<th ng-click="sort('name')">Name</th>
+						<th ng-click="sort('shortName')">Short</th>
+						<th ng-click="sort('club')">Club</th>
+						<th ng-click="sort('clubCode')">Code</th>
 						<th ng-repeat="tournament in tournaments" title="{{tournament.name}}">
 							<htm-tournament-memo tournament="tournament"></htm-tournament-memo>
 						</th>
