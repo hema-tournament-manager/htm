@@ -132,23 +132,43 @@
 	
 			var ORDER = {ASC:'ASC',DESC:'DESC'};
 			var ORDER_BY = {NAME:'name',SHORT_NAME:'shortName',CLUB:'club',CLUB_CODE:'clubCode'};
+			var pages = [];
 
 			$scope.searchCriteria = {
+				page:0,
 				itemsPerPage:15,
 				query:undefined,
 				orderBy: ORDER_BY.NAME,
 				order: ORDER.ASC,
 			};
 
+			pages[0] = Participant.query($scope.searchCriteria);
+
 			$scope.totals = Statistics.get();
-			$scope.participants = Participant.query($scope.searchCriteria);
+			
 			$scope.tournaments = Tournament.query();
 
 			$scope.refresh = _.debounce(function(){
+				$scope.searchCriteria.page = 0;
 				Participant.query($scope.searchCriteria).$promise.then(function(freshParticipants){
-					$scope.participants = freshParticipants;
+					pages = [];
+					pages[0] = freshParticipants;
+				}, function(error){
+					//TODO: Handle error
 				});
-			}, 500)
+			}, 250);
+
+			$scope.more = function(){
+				var newPage = ++$scope.searchCriteria.page;
+				Participant.query($scope.searchCriteria)
+					.$promise.then(function(freshParticipants){
+						pages[newPage] = freshParticipants;
+					});
+			};
+
+			$scope.participants = function(){
+				return _.flatten(pages);
+			}
 
 			$scope.registerSelected = function(){
 					console.log("registerSelectedParticipants");
@@ -164,7 +184,7 @@
 						subscriptions: [],
 						hasPicture: false
 					})).then(function(newParticipant) {
-		  				$scope.participants.push(newParticipant);
+		  				pages[0].unshift(newParticipant);
 						$scope.totals = Statistics.get();
 		  			});
 			};

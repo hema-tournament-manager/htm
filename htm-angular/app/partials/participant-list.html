@@ -84,7 +84,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="participant in participants">
+					<tr ng-repeat="participant in participants()">
 			          	<td><button class="btn btn-default btn-sm" ng-click="show(participant)"><span class="glyphicon glyphicon-wrench"></span></button></td>
 						<td>
 							<span>
@@ -108,8 +108,10 @@
 						<td class="tournaments" ng-repeat="tournament in tournaments">
 							<htm-subscription-label person="participant" tournament="tournament"/>
 						</td>
-
 					</tr>
+			        <tr>
+			          <td colspan="{{8 + tournaments.length}}" ng-click="more()" class="text-center" style="cursor: pointer">Show more</td>
+		          	</tr>
 				</tbody>
 			</table>
 		</div>
