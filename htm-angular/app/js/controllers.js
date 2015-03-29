@@ -145,10 +145,10 @@
 			pages[0] = Participant.query($scope.searchCriteria);
 
 			$scope.totals = Statistics.get();
-			
 			$scope.tournaments = Tournament.query();
+			$scope.modalOpen = false;
 
-			$scope.refresh = _.debounce(function(){
+			function _refresh(){
 				$scope.searchCriteria.page = 0;
 				Participant.query($scope.searchCriteria).$promise.then(function(freshParticipants){
 					pages = [];
@@ -156,9 +156,26 @@
 				}, function(error){
 					//TODO: Handle error
 				});
-			}, 250);
+			};
 
-			$scope.modalOpen = false;
+			var debouncedRefresh = _.debounce(_refresh, 250);
+
+			function registerSingleSelected(){
+				var participants = $scope.participants();
+				if(participants.length === 1){
+					var participant = participants[0];
+					participant.isPresent = true;
+					participant.$save();
+				}
+			};
+
+			$scope.refresh = function($event){
+				if(event.keyCode === 13){
+					registerSingleSelected();
+				} else {
+					debouncedRefresh();
+				}
+			};
 
 			$scope.more = function(){
 				var newPage = ++$scope.searchCriteria.page;
@@ -188,6 +205,25 @@
 				});
 			};
 
+
+			function openModal(participant) {
+				$scope.modalOpen=true;
+				
+				return $modal.open({
+				  templateUrl: '/partials/participant-registration.html',
+				  controller: 'ParticipantRegistrationCtrl',
+				  size: 'lg',
+				  resolve: {
+				    participant: function () {
+				      return participant;
+				    },
+				    tournaments: function() {
+				      return $scope.tournaments;
+				    }
+				  }
+				}).result;				
+			};
+
 		  	$scope.add = function(){
 		  		openModal(new Participant({ 
 						country: {},
@@ -213,23 +249,6 @@
 	  			});
   			}
 
-			function openModal(participant) {
-				$scope.modalOpen=true;
-				
-				return $modal.open({
-				  templateUrl: '/partials/participant-registration.html',
-				  controller: 'ParticipantRegistrationCtrl',
-				  size: 'lg',
-				  resolve: {
-				    participant: function () {
-				      return participant;
-				    },
-				    tournaments: function() {
-				      return $scope.tournaments;
-				    }
-				  }
-				}).result;				
-			};
 
 			if($routeParams.participantId){
 				var participant = Participant.get({id:$routeParams.participantId});

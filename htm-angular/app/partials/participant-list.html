@@ -48,7 +48,7 @@
 								<span class="glyphicon glyphicon-search" title="Search participants"></span>
 							</button>
 						</span>
-				      	<input ng-model="searchCriteria.query" ng-keyup="refresh()" type="text" class="form-control" placeholder="Search" htm-focus-on="!modalOpen"/>
+				      	<input ng-model="searchCriteria.query" ng-keyup="refresh($event)" type="text" class="form-control" placeholder="Search" htm-focus-on="!modalOpen"/>
 						<span class="input-group-btn">
 							<button role="button" class="btn btn-default" ng-click="registerSelected()">
 								<span class="glyphicon glyphicon-ok" title="Register all selected participants"></span>
