@@ -18,6 +18,7 @@
 					postPicture: { 
 						method: 'POST',
 						params:{},
+						url: '/api/participant/picture/:id',
 						transformRequest: function(data){
 							    var fd = new FormData();
 							   	fd.append('file',data.file);
@@ -32,6 +33,10 @@
 		//TODO: Doesn't have to be a service. Countries are enumerable.
 		.factory('Country', ['$resource', function($resource) {
   			return $resource('/api/country/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
+		}])
+
+		.factory('Statistics', ['$resource', function($resource) {
+  			return $resource('/api/participant/statistics');
 		}])
 
 })();

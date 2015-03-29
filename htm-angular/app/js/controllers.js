@@ -128,18 +128,10 @@
 
 	angular.module('htm.particpant', [])
 
-		.controller('ParticipantListCtrl', ['$scope', '$modal','$routeParams','Tournament','Participant', function($scope,$modal,$routeParams,Tournament, Participant) {
-			  
-
-			  //TODO: Fetch totals
-			
+		.controller('ParticipantListCtrl', ['$scope', '$modal','$routeParams','Tournament','Participant','Statistics',  function($scope,$modal,$routeParams,Tournament, Participant,Statistics) {
+	
 			 //TODO: Get totals
-			$scope.totals = {
-				participants: 100,
-				clubs: 1,
-				countries: 10
-			}
-
+			$scope.totals = Statistics.get();
 			$scope.participants = Participant.query();
 			$scope.tournaments = Tournament.query();
 
@@ -163,6 +155,7 @@
 						hasPicture: false
 					})).then(function(newParticipant) {
 		  				$scope.participants.push(newParticipant);
+						$scope.totals = Statistics.get();
 		  			});
 			};
 
@@ -194,7 +187,7 @@
 			if($routeParams.participantId){
 				var participant = Participant.get({id:$routeParams.participantId});
 				openModal(participant).then(function(updatedParticipant){
-					//TODO: Replace with result from query
+					participants[updatedParticipant.id] = updatedParticipant;
 				});
 			}
 
@@ -246,8 +239,8 @@
 			$scope.upload = function(pictures){
 				var picture = new Participant({id:$scope.participant.id,file:pictures[0]});
 				picture.$postPicture().then(function(participant){
-					// TODO: Update participant id with new id assigned by server 
-					// TODO: Set hasPicture = true;
+					$scope.participant.id = participant.id;
+					$scope.participant.hasPicture = participant.hasPicture;
 				},function(error){
 					// TODO: Handle error
 				});
