@@ -30,7 +30,6 @@
 			);
 		}])
 
-		//TODO: Doesn't have to be a service. Countries are enumerable.
 		.factory('Country', ['$resource', function($resource) {
   			return $resource('/api/country/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
 		}])

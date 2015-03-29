@@ -158,6 +158,8 @@
 				});
 			}, 250);
 
+			$scope.modalOpen = false;
+
 			$scope.more = function(){
 				var newPage = ++$scope.searchCriteria.page;
 				Participant.query($scope.searchCriteria)
@@ -196,6 +198,8 @@
 					})).then(function(newParticipant) {
 		  				pages[0].unshift(newParticipant);
 						$scope.totals = Statistics.get();
+		  			}).finally(function(){
+						$scope.modalOpen=false;
 		  			});
 			};
 
@@ -204,11 +208,14 @@
   			};
 
   			$scope.show = function(participant){
-  				openModal(participant);
+  				openModal(participant).finally(function(){
+					$scope.modalOpen=false;
+	  			});
   			}
 
 			function openModal(participant) {
-
+				$scope.modalOpen=true;
+				
 				return $modal.open({
 				  templateUrl: '/partials/participant-registration.html',
 				  controller: 'ParticipantRegistrationCtrl',
@@ -228,7 +235,9 @@
 				var participant = Participant.get({id:$routeParams.participantId});
 				openModal(participant).then(function(updatedParticipant){
 					participants[updatedParticipant.id] = updatedParticipant;
-				});
+				}).finally(function(){
+					$scope.modalOpen=false;
+	  			});
 			}
 
 		}])
@@ -272,7 +281,10 @@
 			};
 
 			$scope.cancel = function() {
-				$scope.participant.$get();
+				if($scope.participant.id){
+					$scope.participant.$get();
+				}
+				
 				$modalInstance.dismiss('cancel');
 			};
 
