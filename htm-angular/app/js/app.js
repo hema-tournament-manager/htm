@@ -42,9 +42,9 @@
 			.run(function($httpBackend) {
 
 				var clubs = [
-					{code: "NW", name: "Noorderwind"},
-					{code: "HTM", name: "H.T.M"},
-					{code: "AMEK", name: "Academie voor Middeleeuwse Krijgskunst"}
+					{id: 0, code: "NW", name: "Noorderwind"},
+					{id: 1, code: "HTM", name: "H.T.M"},
+					{id: 2, code: "AMEK", name: "Academie voor Middeleeuwse Krijgskunst"}
 				];
 
 				var countries = [
@@ -74,7 +74,7 @@
   				
 		  				name: 'Jack',
 		  				shortName: '0',
-		  				club: {name:'H.T.M',code:'HTM'},
+		  				club: {id: 0, code: "NW", name: "Noorderwind"},
 		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
@@ -106,7 +106,7 @@
   				
 		  				name: 'Jones',
 		  				shortName: '1',
-		  				club: {name:'H.T.M',code:'HTM'},
+		  				club: {id: 1, name:'H.T.M',code:'HTM'},
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
@@ -137,7 +137,7 @@
   				
 		  				name: 'Lumber',
 		  				shortName: '2',
-		  				club: {name:'H.T.M',code:'HTM'},
+		  				club: {id: 1, name:'H.T.M',code:'HTM'},
 		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
@@ -169,7 +169,7 @@
   				
 		  				name: 'Jack',
 		  				shortName: '3',
-		  				club: {name:'H.T.M',code:'HTM'},
+		  				club: {id: 1, name:'H.T.M',code:'HTM'},
 		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
@@ -202,7 +202,7 @@
   				
 		  				name: 'Had',
 		  				shortName: '4',
-		  				club: {name:'H.T.M',code:'HTM'},
+		  				club: {id: 1, name:'H.T.M',code:'HTM'},
 		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
@@ -227,7 +227,7 @@
   				
 		  				name: 'A',
 		  				shortName: '5',
-		  				club: {name:'H.T.M',code:'HTM'},
+		  				club: {id: 2, code: "AMEK", name: "Academie voor Middeleeuwse Krijgskunst"},
 		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: false,
@@ -289,6 +289,13 @@
 
    					var participant = angular.fromJson(data);
     				participants[participant.id] = participant;
+
+					var club = participant.club;
+   					if(angular.isUndefined(club.id)){
+   						club.id = clubs.length;
+   						clubs.push(angular.copy(club));
+   					}
+
     				return [200];
   				});
 			 	$httpBackend.whenPOST('/api/participant').respond(function(method, url, data) {
@@ -298,6 +305,13 @@
 
 
    					participant.id = participants.length;
+
+					var club = participant.club;
+   					if(angular.isUndefined(club.id)){
+   						club.id = clubs.length;
+   						clubs.push(angular.copy(club));
+   					}
+
     				participants.push(participant);
     				return [200, participant, {}];
   				});
@@ -306,12 +320,10 @@
 			 	$httpBackend.whenGET('/api/participant/statistics').respond(function(method, url, data){
 
 		 			var totals = {
-						participants: 100,
-						clubs: 1,
-						countries: 1
+						participants: participants.length,
+						clubs: clubs.length,
+						countries: countries.length
 					};
-
-					totals.participants = participants.length;
 					
 					return [200,totals];
 			 	});
@@ -326,9 +338,9 @@
 			 	$httpBackend.whenGET('/api/country').respond(countries);
 
 			 	$httpBackend.whenGET('/api/club').respond(function(method,url,data,headers){
-   					console.log('participant queried ' + url);
+   					console.log('clus queried ' + url);
 
-			 		return [200,participants];
+			 		return [200,clubs];
 			 	});
 			
 
