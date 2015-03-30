@@ -177,7 +177,7 @@
 			$scope.participants = function(){
 				return _.flatten(pages);
 			};
-			
+
 			function registerSingleSelected(){
 				var participants = $scope.participants();
 				if(participants.length === 1){
@@ -217,7 +217,7 @@
 				  size: 'lg',
 				  resolve: {
 				    participant: function () {
-				      return participant.$promise;
+				      return participant;
 				    },
 				    tournaments: function() {
 				      return $scope.tournaments.$promise;
@@ -229,6 +229,7 @@
 		  	$scope.add = function(){
 		  		openModal(new Participant({ 
 						country: {},
+						club: {},
 						isPresent: false,
 						previousWins: [ ],
 						subscriptions: [],
@@ -256,7 +257,7 @@
    			 */
 			if($routeParams.participantId){
 				var participant = Participant.get({id:$routeParams.participantId});
-				openModal(participant).then(function(updatedParticipant){
+				openModal(participant.$promise).then(function(updatedParticipant){
 					participants[updatedParticipant.id] = updatedParticipant;
 				}).finally(function(){
 					$scope.modalOpen=false;
@@ -265,7 +266,7 @@
 
 		}])
 
-		.controller('ParticipantRegistrationCtrl',function($scope, $modalInstance, Country, Participant, participant, tournaments) {
+		.controller('ParticipantRegistrationCtrl',function($scope, $modalInstance, Country, Participant, Club, participant, tournaments) {
 
 			$scope.pictures = {files:[]};
 			$scope.participant = participant;
@@ -275,6 +276,25 @@
 				})
 			});
 			$scope.countries = Country.query();
+			$scope.clubs = Club.query();
+
+			$scope.addNewClubVisible = false;
+
+			$scope.showAddNewClub = function(){
+				$scope.oldClub = angular.copy($scope.participant.club);
+				//Clean by individual property names so watchers see the update				
+				$scope.participant.club.id = undefined;
+				$scope.participant.club.name = undefined;
+				$scope.participant.club.code = undefined;
+				$scope.addNewClubVisible = true;
+			}
+			$scope.hideAddNewClub = function(){
+				$scope.addNewClubVisible = false;
+				//Restore by individual property names so watchers see the update
+				$scope.participant.club.id = $scope.oldClub.id;
+				$scope.participant.club.name = $scope.oldClub.name;
+				$scope.participant.club.code = $scope.oldClub.code;
+			}
 
 			$scope.addWin = function() {
 				if ($scope.canAddWin()) {
@@ -293,8 +313,11 @@
 			};
 
 			$scope.save = function() {
+
 				$scope.participant.$save(function(savedParticipant){
 					$modalInstance.close(savedParticipant);
+				},function(error){
+					//TODO: Handle error.
 				});
 			};
 

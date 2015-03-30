@@ -41,6 +41,11 @@
 
 			.run(function($httpBackend) {
 
+				var clubs = [
+					{code: "NW", name: "Noorderwind"},
+					{code: "HTM", name: "H.T.M"},
+					{code: "AMEK", name: "Academie voor Middeleeuwse Krijgskunst"}
+				];
 
 				var countries = [
 				{code2: "NL", name: "The Netherlands"},
@@ -69,8 +74,8 @@
   				
 		  				name: 'Jack',
 		  				shortName: '0',
-		  				club: 'club',
-		  				clubCode: 'String',
+		  				club: {name:'H.T.M',code:'HTM'},
+		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
@@ -101,8 +106,7 @@
   				
 		  				name: 'Jones',
 		  				shortName: '1',
-		  				club: 'club',
-		  				clubCode: 'String',
+		  				club: {name:'H.T.M',code:'HTM'},
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
@@ -133,8 +137,8 @@
   				
 		  				name: 'Lumber',
 		  				shortName: '2',
-		  				club: 'club',
-		  				clubCode: 'String',
+		  				club: {name:'H.T.M',code:'HTM'},
+		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
@@ -165,8 +169,8 @@
   				
 		  				name: 'Jack',
 		  				shortName: '3',
-		  				club: 'club',
-		  				clubCode: 'String',
+		  				club: {name:'H.T.M',code:'HTM'},
+		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
@@ -198,8 +202,8 @@
   				
 		  				name: 'Had',
 		  				shortName: '4',
-		  				club: 'club',
-		  				clubCode: 'String',
+		  				club: {name:'H.T.M',code:'HTM'},
+		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: true,
 						tshirt: 'String',
@@ -223,8 +227,8 @@
   				
 		  				name: 'A',
 		  				shortName: '5',
-		  				club: 'club',
-		  				clubCode: 'String',
+		  				club: {name:'H.T.M',code:'HTM'},
+		  				
 						country: {code2: "NL", name: "Netherlands"},
 						isPresent: false,
 						tshirt: 'String',
@@ -321,8 +325,11 @@
 
 			 	$httpBackend.whenGET('/api/country').respond(countries);
 
+			 	$httpBackend.whenGET('/api/club').respond(function(method,url,data,headers){
+   					console.log('participant queried ' + url);
 
-
+			 		return [200,participants];
+			 	});
 			
 
 

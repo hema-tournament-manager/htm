@@ -31,7 +31,11 @@
 		}])
 
 		.factory('Country', ['$resource', function($resource) {
-  			return $resource('/api/country/:id', { "id" : "@id" }, { update: { method: 'PUT' }});
+  			return $resource('/api/country');
+		}])
+
+		.factory('Club', ['$resource', function($resource) {
+  			return $resource('/api/club');
 		}])
 
 		.factory('Statistics', ['$resource', function($resource) {

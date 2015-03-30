@@ -100,11 +100,11 @@
 						</td>
 						<td class="flag" >
 							<htm-flag country="participant.country"></htm-flag></td>
-						<td class="name" title="Name">{{participant.name}}</td>
-						<td class="shortName" title="Short Name">{{participant.shortName}}</td>
-						<td class="club" title="Club">{{participant.club}}</td>
-						<td class="clubCode" title="Club Code">{{participant.clubCode}}</td>
-						<td class="tournaments" ng-repeat="tournament in tournaments">
+						<td title="Name">{{participant.name}}</td>
+						<td title="Short Name">{{participant.shortName}}</td>
+						<td title="Club">{{participant.club.name}}</td>
+						<td title="Club Code">{{participant.club.code}}</td>
+						<td ng-repeat="tournament in tournaments">
 							<htm-subscription-label person="participant" tournament="tournament"/>
 						</td>
 					</tr>

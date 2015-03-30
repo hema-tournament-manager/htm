@@ -3,7 +3,7 @@
     <htm-flag country="participant.country"></htm-flag>
     <i ng-hide="participant.name">New participant</i>
     {{participant.name}}
-    <small>{{participant.club}}</small>
+    <small>{{participant.club.name}}</small>
     <!--Duplicated block because even when invisible the hidden 
     element still counts as present for the shape of the borders-->
     <span class="btn-group pull-right" ng-hide="participant.isPresent">
@@ -39,12 +39,31 @@
         </div>
         <div class="form-group">
           <label for="club">Club</label>
-          <input ng-model="participant.club" type="text" class="form-control" id="club"/>
+          <div class="input-group" ng-hide="addNewClubVisible">
+            <span class="input-group-btn">
+              <button ng-click="showAddNewClub()" class="btn btn-default" type="button" title="Add new club"><span class="glyphicon glyphicon-plus"/></button>
+            </span>
+            <ui-select ng-model="participant.club" ng-disabled="disabled">
+              <ui-select-match placeholder="Select or search a club in the list...">{{$select.selected.name}}</ui-select-match>
+              <ui-select-choices repeat="club in clubs | filter: $select.search">
+                <span ng-bind-html="club.code | highlight: $select.search"></span> - <span ng-bind-html="club.name | highlight: $select.search"></span>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+          <div class="input-group" ng-show="addNewClubVisible">
+            <span class="input-group-btn">
+                <button ng-click="hideAddNewClub()" class="btn btn-success" type="button" title="Cancel add new club"><span class="glyphicon glyphicon-plus"/></button>
+            </span>
+            <input ng-model="participant.club.name" type="text" class="form-control" />
+          </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" ng-show="addNewClubVisible">
           <label for="clubCode">Club code</label>
-          <input ng-model="participant.clubCode" type="text" class="form-control" id="clubCode"/>
+          <div class="form-group">
+              <input ng-model="participant.club.code" type="text" class="form-control" popover="The club code is used as a short hand to identify a club when the full name can not be displayed"/>
+          </div>
         </div>
+
         <div class="form-group">
           <label for="country">Country</label>
           <div class="input-group">
