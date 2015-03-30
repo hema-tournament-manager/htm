@@ -130,16 +130,12 @@
 
 		.controller('ParticipantListCtrl', ['$scope', '$modal','$routeParams','Tournament','Participant','Statistics',  function($scope,$modal,$routeParams,Tournament, Participant,Statistics) {
 	
-			$scope.ORDER = {ASC:'ASC',DESC:'DESC'};
-			$scope.ORDER_BY = {NAME:'name',SHORT_NAME:'shortName',CLUB:'club',CLUB_CODE:'clubCode'};
 			var pages = [];
 
 			$scope.searchCriteria = {
 				page:0,
 				itemsPerPage:15,
 				query:undefined,
-				orderBy: $scope.ORDER_BY.NAME,
-				order: $scope.ORDER.ASC,
 			};
 
 			pages[0] = Participant.query($scope.searchCriteria);
@@ -160,14 +156,7 @@
 
 			var debouncedRefresh = _.debounce(_refresh, 250);
 
-			function registerSingleSelected(){
-				var participants = $scope.participants();
-				if(participants.length === 1){
-					var participant = participants[0];
-					participant.isPresent = true;
-					participant.$save();
-				}
-			};
+
 
 			$scope.refresh = function($event){
 				if(event.keyCode === 13){
@@ -188,6 +177,15 @@
 			$scope.participants = function(){
 				return _.flatten(pages);
 			};
+			
+			function registerSingleSelected(){
+				var participants = $scope.participants();
+				if(participants.length === 1){
+					var participant = participants[0];
+					participant.isPresent = true;
+					participant.$save();
+				}
+			};
 
 			$scope.registerSelected = function(){
 				angular.forEach($scope.participants(), function(participant){
@@ -205,21 +203,11 @@
 				});
 			};
 
-			$scope.sort = function(fieldName){
-				var criteria = $scope.searchCriteria;
-				var ORDER = $scope.ORDER;
 
-				if(criteria.orderBy === fieldName){
-					criteria.order = criteria.order === ORDER.ASC ? ORDER.DESC : ORDER.ASC;
-				} else {
-					criteria.order = ORDER.ASC;
-					criteria.orderBy = fieldName;
-				}
-
-				debouncedRefresh();
-			};
-
-
+			/*
+			 * Opens modal with the particpant and tournament promises
+			 * this will delay opening of modal until they are resolved.
+			 */
 			function openModal(participant) {
 				$scope.modalOpen=true;
 				
@@ -229,10 +217,10 @@
 				  size: 'lg',
 				  resolve: {
 				    participant: function () {
-				      return participant;
+				      return participant.$promise;
 				    },
 				    tournaments: function() {
-				      return $scope.tournaments;
+				      return $scope.tournaments.$promise;
 				    }
 				  }
 				}).result;				
@@ -263,7 +251,9 @@
 	  			});
   			}
 
-
+  			/*
+			 * Opens modal when particpants are viewed through /participant/:id
+   			 */
 			if($routeParams.participantId){
 				var participant = Participant.get({id:$routeParams.participantId});
 				openModal(participant).then(function(updatedParticipant){

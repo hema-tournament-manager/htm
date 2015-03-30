@@ -299,7 +299,7 @@
   				});
 
 
-			 	$httpBackend.whenGET('/api/participant/statistics').respond(function(){
+			 	$httpBackend.whenGET('/api/participant/statistics').respond(function(method, url, data){
 
 		 			var totals = {
 						participants: 100,
