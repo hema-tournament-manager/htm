@@ -51,7 +51,7 @@ object TournamentView {
     def addParticipant(tournament: Tournament, participantId: Long) = {
       tournament.addParticipant(participantId);
       val participant = Participant.findByKey(participantId).get
-      RedirectTo("#participant" + participant.externalId.get) & Reload
+      RedirectTo("#participant" + participant.id.get) & Reload
     }
 
     def deleteParticipantFromTournament(tournament: Tournament, participant: Participant) {

@@ -97,6 +97,7 @@ object AdminRest extends RestHelper {
       Extraction.decompose(Country.findAll().map(_.toMarshalled))      
  
   case "api" :: "v3" :: "club" :: Nil JsonGet _ =>
+    //TODO: Refactor clubs to actuall data object
      val clubs = Participant.findAllFields(Seq(Participant.club, Participant.clubCode), Distinct(), OrderBy(Participant.club, Ascending))
  									.map(p => MarshalledClub(None, p.clubCode, p.club))
       Extraction.decompose(clubs)        
