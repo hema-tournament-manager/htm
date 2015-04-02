@@ -34,11 +34,11 @@
 		}])
 
 		.factory('Country', ['$resource', function($resource) {
-  			return $resource('/api/country');
+  			return $resource(api + 'country');
 		}])
 
 		.factory('Club', ['$resource', function($resource) {
-  			return $resource('/api/club');
+  			return $resource(api + 'club');
 		}])
 
 		.factory('Statistics', ['$resource', function($resource) {
