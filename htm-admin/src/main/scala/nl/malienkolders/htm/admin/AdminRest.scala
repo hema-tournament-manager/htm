@@ -20,6 +20,19 @@ object AdminRest extends RestHelper {
   override implicit val formats = Serialization.formats(NoTypeHints)
 
   serve {
+    
+    case "api" :: "v3" :: "tournament" :: Nil JsonGet _ =>
+      Extraction.decompose(Tournament.findAll.map(_.toMarshalled))
+
+    case "api" :: "v3" :: "tournament" :: Nil JsonPost json -> _ =>
+      val m = Extraction.extract[MarshalledTournament](json)
+      val t = Tournament.create.name(m.name).mnemonic(m.memo)
+      t.save()
+      Extraction.decompose(t.toMarshalled)
+
+      
+    //=== Old API's ==================================================
+    
     case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>
       JsonFightExporter.createExport
 
@@ -134,12 +147,12 @@ object AdminRest extends RestHelper {
     case "api" :: "tournaments" :: Nil JsonGet _ =>
       Extraction.decompose(Tournament.findAll.map(_.toMarshalled))
 
-    case "api" :: "tournaments" :: Nil JsonPost json -> _ =>
-      val m = Extraction.extract[MarshalledTournament](json)
-      val t = Tournament.create
-      t.name(m.name).identifier(m.identifier).mnemonic(m.memo)
-      t.save()
-      JObject(List(JField("id", t.id.get)))
+//    case "api" :: "tournaments" :: Nil JsonPost json -> _ =>
+//      val m = Extraction.extract[MarshalledTournament](json)
+//      val t = Tournament.create
+//      t.name(m.name).identifier(m.identifier).mnemonic(m.memo)
+//      t.save()
+//      JObject(List(JField("id", t.id.get)))
 
     case "api" :: "tournament" :: AsLong(tournamentId) :: Nil JsonGet _ =>
       Tournament.findByKey(tournamentId).map(t => Extraction.decompose(t.toMarshalled)).getOrElse[JValue](JBool(false))

@@ -249,6 +249,8 @@
 					}]
 
 		  		$httpBackend.whenGET(/^\/partials\//).passThrough();
+		  		$httpBackend.whenGET(/^http:\/\/localhost:8080\/api\/v3\//).passThrough();
+		  		$httpBackend.whenPOST(/^http:\/\/localhost:8080\/api\/v3\//).passThrough();
 
 			 	$httpBackend.whenGET('/api/tournament').respond(tournaments);
 			 	$httpBackend.whenPOST('/api/tournament').respond(function(method, url, data) {

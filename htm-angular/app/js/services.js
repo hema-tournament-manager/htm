@@ -2,23 +2,25 @@
 (function(){
 	/* Services */
 	
+	var api  = 'http://localhost:8080/api/v3/';
+
 	angular.module('htm.api', ['ngResource'])
 	
 		.factory('Tournament', ['$resource', function($resource){
-			return $resource('/api/tournament/:id', { "id" : "@id" }, 
+			return $resource(api + 'tournament/:id', { "id" : "@id" }, 
 				{ 
 					update: { method: 'PUT' }
 				}
 			);
 		}])
 		.factory('Participant', ['$resource', function($resource){
-			return $resource('/api/participant/:id', { "id" : "@id" }, 
+			return $resource(api + 'participant/:id', { "id" : "@id" }, 
 				{ 
 					update: { method: 'PUT' },
 					postPicture: { 
 						method: 'POST',
 						params:{},
-						url: '/api/participant/picture/:id',
+						url: api+'participant/picture/:id',
 						transformRequest: function(data){
 							    var fd = new FormData();
 							   	fd.append('file',data.file);
@@ -39,7 +41,7 @@
 		}])
 
 		.factory('Statistics', ['$resource', function($resource) {
-  			return $resource('/api/participant/statistics');
+  			return $resource(api+'participant/totals');
 		}])
 
 })();
