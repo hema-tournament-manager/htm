@@ -3,6 +3,7 @@
 	/* Services */
 	
 	var api  = 'http://localhost:8080/api/v3/';
+	// var api  = '/api/';
 
 	angular.module('htm.api', ['ngResource'])
 	

@@ -300,6 +300,8 @@
 
     				return [200];
   				});
+
+
 			 	$httpBackend.whenPOST('/api/participant').respond(function(method, url, data) {
    					
    					console.log('new participant posted ' + data);
@@ -319,7 +321,7 @@
   				});
 
 
-			 	$httpBackend.whenGET('/api/participant/statistics').respond(function(method, url, data){
+			 	$httpBackend.whenGET('/api/participant/totals').respond(function(method, url, data){
 
 		 			var totals = {
 						participants: participants.length,

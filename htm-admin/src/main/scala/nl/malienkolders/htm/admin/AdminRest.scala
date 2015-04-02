@@ -22,15 +22,77 @@ object AdminRest extends RestHelper {
   serve {
     
     case "api" :: "v3" :: "tournament" :: Nil JsonGet _ =>
-      Extraction.decompose(Tournament.findAll.map(_.toMarshalled))
+      Extraction.decompose(Tournament.findAll.map(_.toMarshalledV3))
 
     case "api" :: "v3" :: "tournament" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledTournament](json)
       val t = Tournament.create.name(m.name).mnemonic(m.memo)
       t.save()
-      Extraction.decompose(t.toMarshalled)
+      Extraction.decompose(t.toMarshalledV3)
 
-      
+    case "api" :: "v3" :: "participant" :: "totals" :: Nil JsonGet _ =>
+      case class TotalsResponseV3(participants: Long, clubs: Long, countries: Long)
+      Extraction.decompose(TotalsResponseV3(
+        participants = Participant.count,
+        clubs = Participant.findAllFields(Seq(Participant.club), Distinct(), OrderBy(Participant.club, Ascending)).length,
+        countries = Participant.findAllFields(Seq(Participant.country), Distinct()).length))
+
+    case "api" :: "v3" :: "participant" :: Nil JsonGet request =>
+      val page = request.param("page").map(_.toInt).getOrElse(0)
+      val itemsPerPage = request.param("items").map(_.toInt).getOrElse(20)
+      val q = request.param("query")
+      val order = request.param("order") match {
+        case Full("ASC") =>
+          Ascending
+        case Full("DESC") =>
+          Descending
+        case _ =>
+          Ascending
+      }
+      val orderBy = OrderBy(request.param("orderBy") match {
+        case Full("externalId") =>
+          Participant.externalId
+        case Full("name") =>
+          Participant.name
+        case Full("shortName") =>
+          Participant.shortName
+        case Full("club") =>
+          Participant.club
+        case Full("clubCode") =>
+          Participant.clubCode
+        case _ =>
+          Participant.name
+      }, order)
+      val defaultParams: Seq[QueryParam[Participant]] = Seq(orderBy, StartAt(page * itemsPerPage), MaxRows(itemsPerPage))
+      val queryParams: Seq[QueryParam[Participant]] = q match {
+        case Full(query) if query.trim().length() > 0 =>
+          val cleanQuery = query.toLowerCase().replaceAll("[^a-z0-9 ]", "")
+
+          def sqlToQueryParam(s: String): QueryParam[Participant] = BySql(s, IHaveValidatedThisSQL("jdijkstra", "2014-10-05"))
+          val params: Seq[QueryParam[Participant]] = (for (queryPart <- cleanQuery.split(" ")) yield {
+            if (queryPart forall Character.isDigit) {
+              // only search for id when the query is a number
+              By(Participant.externalId, queryPart)
+            } else {
+              val columns = List("name", "club", "clubCode")
+              val likes = columns.map("LOWER(" + _ + s") LIKE '%$queryPart%'")
+              sqlToQueryParam("(" + likes.mkString(" OR ") + s" OR country IN (SELECT id FROM countries WHERE LOWER(name) LIKE '%$queryPart%' OR  LOWER(code2) LIKE '%$queryPart%'))")
+            }
+          }).toSeq
+          params
+        case _ =>
+          Seq()
+      }
+      val response =  Participant.findAll((queryParams ++ defaultParams): _*).map(p => p.toMarshalledV3.copy(hasPicture = p.hasAvatar))
+      Extraction.decompose(response)
+   
+  case "api" :: "v3" :: "participant" :: Nil JsonPost json -> _ =>
+      val m = Extraction.extract[MarshalledParticipantV3](json)
+      val p = Participant.create
+      p.fromMarshalledV3(m)
+      p.save()
+      Extraction.decompose(p.toMarshalledV3)
+        
     //=== Old API's ==================================================
     
     case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>

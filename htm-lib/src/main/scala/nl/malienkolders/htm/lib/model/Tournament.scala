@@ -7,6 +7,9 @@ case class MarshalledTournamentSummary(id: Long, name: String, memo: String)
 case class MarshalledTournament(id: Option[Long], name: String, memo: String, participants: List[Long])
 case class MarshalledTournamentRound(id: Long, finished: Boolean)
 
+case class MarshalledTournamentV3(id: Option[Long], name: String, memo: String, participants: List[Long])
+
+
 class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tournament] with Ordered[Tournament] {
 
   def getSingleton = Tournament
@@ -53,6 +56,13 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
     name.is,
     mnemonic.is,
     participants.map(_.id.is).toList)
+ 
+  def toMarshalledV3 = MarshalledTournamentV3(
+    Some(id.is),
+    name.is,
+    mnemonic.is,
+    participants.map(_.id.is).toList)   
+    
   def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, mnemonic.is)
 
   def compare(that: Tournament) = (this.id.is - that.id.is) match {

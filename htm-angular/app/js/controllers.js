@@ -134,7 +134,7 @@
 
 			$scope.searchCriteria = {
 				page:0,
-				itemsPerPage:15,
+				items:15,
 				query:undefined,
 			};
 
