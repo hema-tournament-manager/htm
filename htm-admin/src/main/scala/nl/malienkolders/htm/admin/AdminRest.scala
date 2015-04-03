@@ -288,8 +288,8 @@ object AdminRest extends RestHelper {
         case _ => false
       }.getOrElse[Boolean](false))
 
-    case "api" :: "fight" :: phase :: AsLong(id) :: Nil JsonGet _ =>
-      FightHelper.dao(phase).findByKey(id).map(f => Extraction.decompose(f.toMarshalled)).getOrElse[JValue](JBool(false))
+//    case "api" :: "fight" :: phase :: AsLong(id) :: Nil JsonGet _ =>
+//      FightHelper.dao(phase).findByKey(id).map(f => Extraction.decompose(f.toMarshalled)).getOrElse[JValue](JBool(false))
 
     case "api" :: "fight" :: "update" :: Nil JsonPost json -> _ =>
       val fight = Extraction.extract[MarshalledFight](json)

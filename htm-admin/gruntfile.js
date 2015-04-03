@@ -31,6 +31,8 @@
 
 		
 		grunt.registerTask('test', ['karma','jshint']);
+
+		// Called during the Maven generate-resource phase
 		grunt.registerTask('maven', []);
 
 
