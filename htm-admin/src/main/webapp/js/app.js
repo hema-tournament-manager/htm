@@ -249,6 +249,10 @@
 						hasPicture: false
 					}];
 
+		  		$httpBackend.whenGET(/^.*/).passThrough();
+		  		$httpBackend.whenPOST(/^.*/).passThrough();
+
+
 		  		$httpBackend.whenGET(/^\/partials\//).passThrough();
 		  		$httpBackend.whenGET(/^http:\/\/localhost:8080\/api\/v3\//).passThrough();
 		  		$httpBackend.whenPOST(/^http:\/\/localhost:8080\/api\/v3\//).passThrough();
