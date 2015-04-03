@@ -1,3 +1,10 @@
+/* Filters */
+
+(function(){
 'use strict';
 
-/* Filters */
+
+
+})();
+
+

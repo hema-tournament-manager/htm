@@ -1,9 +1,9 @@
-'use strict';
 (function(){
+	'use strict';
+
 	/* Services */
 	
-	var api  = 'http://localhost:8080/api/v3/';
-	// var api  = '/api/';
+	var api  = '/api/v3/';
 
 	angular.module('htm.api', ['ngResource'])
 	
@@ -44,5 +44,7 @@
 		.factory('Statistics', ['$resource', function($resource) {
   			return $resource(api+'participant/totals');
 		}])
+
+		;
 
 })();

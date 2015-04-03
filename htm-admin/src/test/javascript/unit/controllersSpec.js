@@ -22,7 +22,7 @@ describe('TournamentListCtrl', function() {
 	  // Set up the mock http service responses
 	  $httpBackend = $injector.get('$httpBackend');
 	  // backend definition common for all tests
-	  authRequestHandler = $httpBackend.when('GET', '/api/tournament')
+	  authRequestHandler = $httpBackend.when('GET', '/api/v3/tournament')
 									 .respond([]);
 
 	  // Get hold of a scope (i.e. the root scope)
@@ -34,8 +34,8 @@ describe('TournamentListCtrl', function() {
 		 return $controller('TournamentListCtrl', {'$scope' : $rootScope });
 	  };
 
- 	$httpBackend.whenGET('/api/tournament').respond(tournaments);
- 	$httpBackend.whenPOST('/api/tournament').respond(function(method, url, data) {
+ 	$httpBackend.whenGET('/api/v3/tournament').respond(tournaments);
+ 	$httpBackend.whenPOST('/api/v3/tournament').respond(function(method, url, data) {
 														var tournament = angular.fromJson(data);
 														tournaments.push(tournament);
 														return [200, tournament, {}];
@@ -49,13 +49,13 @@ describe('TournamentListCtrl', function() {
 
 
 	it('should query for tournaments', function() {		
-	  $httpBackend.expectGET('/api/tournament');
+	  $httpBackend.expectGET('/api/v3/tournament');
 	  var controller = createController();
 	  $httpBackend.flush();
 	});
 
 	it('should update tournaments with query results', function() {		
-	  $httpBackend.expectGET('/api/tournament').respond(tournaments);
+	  $httpBackend.expectGET('/api/v3/tournament').respond(tournaments);
 	  var controller = createController();
 	  expect($rootScope.tournaments.length).toBe(0);
 	  $httpBackend.flush();
@@ -76,7 +76,7 @@ describe('TournamentListCtrl', function() {
   	});
 
 	it('should be error when unable to load', function() {		
-	  $httpBackend.expectGET('/api/tournament').respond(404,'Not found');
+	  $httpBackend.expectGET('/api/v3/tournament').respond(404,'Not found');
 
 	  var controller = createController();
 	  $httpBackend.flush();
@@ -87,7 +87,7 @@ describe('TournamentListCtrl', function() {
 	it('should create a new tournament', function() {
 		var controller = createController();
 
- 		$httpBackend.expectPOST('/api/tournament').respond(function(method, url, data) {
+ 		$httpBackend.expectPOST('/api/v3/tournament').respond(function(method, url, data) {
 			var tournament = angular.fromJson(data);
 			return [200, tournament, {}];
 		});
@@ -107,7 +107,7 @@ describe('TournamentListCtrl', function() {
 		$httpBackend.flush();		
 
 
-		$httpBackend.expectPOST('/api/tournament').respond(function(method, url, data) {
+		$httpBackend.expectPOST('/api/v3/tournament').respond(function(method, url, data) {
 			var tournament = angular.fromJson(data);
 			return [200, tournament, {}];
 		});
@@ -123,8 +123,8 @@ describe('TournamentListCtrl', function() {
 	it('should have a new tournament with error', function() {
 		var controller = createController();
 
-		$rootScope.newTournament.name = 'New Tournament'
- 		$httpBackend.expectPOST('/api/tournament').respond(404,'Not found');
+		$rootScope.newTournament.name = 'New Tournament';
+ 		$httpBackend.expectPOST('/api/v3/tournament').respond(404,'Not found');
 
 		$rootScope.save();
   	  	expect($rootScope.newTournament.error).toBe(undefined);
@@ -137,14 +137,14 @@ describe('TournamentListCtrl', function() {
 	it('should have a new tournament without error on second try', function() {
 		var controller = createController();
 
-		$rootScope.newTournament.name = 'New Tournament'
- 		$httpBackend.expectPOST('/api/tournament').respond(404,'Not found');
+		$rootScope.newTournament.name = 'New Tournament';
+ 		$httpBackend.expectPOST('/api/v3/tournament').respond(404,'Not found');
 
 		$rootScope.save();
 		$httpBackend.flush();
   	 	expect($rootScope.newTournament.error).not.toBe(undefined);
  		
- 		$httpBackend.expectPOST('/api/tournament').respond(201,'Created');
+ 		$httpBackend.expectPOST('/api/v3/tournament').respond(201,'Created');
 		$rootScope.save();
 		$httpBackend.flush();
 

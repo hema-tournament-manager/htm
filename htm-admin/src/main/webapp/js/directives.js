@@ -1,5 +1,5 @@
-'use strict';
 (function(){
+'use strict';
 
 /* Directives */
 	angular.module('htm.ui', [])
@@ -15,7 +15,7 @@
 				restrict: 'E',
 				replace: true,
 				templateUrl:'/partials/navigation.html'
-			}
+			};
 		})
 
 		/**
@@ -52,7 +52,7 @@
 					};
 
 				}
-			}
+			};
 		})
 
 		/**
@@ -69,7 +69,7 @@
 				templateUrl:'/partials/tournament-list-item.html',
 
 
-			}
+			};
 		})
 		.directive('htmFlag', function() {
 		  return {
@@ -128,7 +128,7 @@
 						}
 					 });
 				}
-			}
+			};
 		}])
 		.directive("htmInputFile", ['$parse',function($parse) {
 			return {
@@ -145,7 +145,7 @@
 							var files = angular.copy(element.files);
 
 							files.toString = function(){
-								return _.map(this,function(e){return e.name}).join(', ');
+								return _.map(this,function(e){return e.name;}).join(', ');
 							};
 
 							filesFun.assign($scope,files);
@@ -158,7 +158,7 @@
 						});
 					});
 				}
-			}
+			};
 		}])
 
 	.directive('htmLowerCase', function(){

@@ -1,7 +1,8 @@
-'use strict';
-
 /* App Module */
 (function(){
+'use strict';
+
+
 	angular.module('htm.App',[
 		'ngRoute','ngMockE2E','ngSanitize',
 		'ui.bootstrap', 'ui.select',
@@ -29,7 +30,7 @@
 	}]).config(function(uiSelectConfig) {
 		uiSelectConfig.theme = 'bootstrap';
 		uiSelectConfig.resetSearchInput = true;
-	})
+	});
 
 
 	// if(document.URL.match(/\?nobackend$/)) {
@@ -246,7 +247,7 @@
 							}
 						}],
 						hasPicture: false
-					}]
+					}];
 
 		  		$httpBackend.whenGET(/^\/partials\//).passThrough();
 		  		$httpBackend.whenGET(/^http:\/\/localhost:8080\/api\/v3\//).passThrough();

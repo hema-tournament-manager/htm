@@ -124,7 +124,7 @@
 						<args>
 							<arg>-unchecked</arg>
 							<arg>-deprecation</arg>
-							<arg>-explaintypes</arg>
+							<!--  arg>-explaintypes</arg>  -->
 							<arg>-encoding</arg>
 							<arg>UTF-8</arg>
 						</args>

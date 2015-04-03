@@ -1,10 +1,10 @@
-'use strict';
 (function(){
+'use strict';
 
 	angular.module('htm.welcome', [])
 
 		.controller('WelcomeCtrl', ['$scope', function($scope) {
-		}])
+		}]);
 
 	angular.module('htm.tournament', ['htm.api'])
 
@@ -23,25 +23,25 @@
 
 			$scope.isLoading = function(){
 				return !$scope.tournaments.$resolved;
-			}
+			};
 			
 			$scope.isError = function(){
 				return $scope.tournaments.$resolved && angular.isDefined($scope.tournaments.error);
-			}
+			};
 
 			$scope.isLoaded = function(){
 				return $scope.tournaments.$resolved && angular.isUndefined($scope.tournaments.error);
-			}
+			};
 			
 			$scope.showAddNewTournament = function(){
 				$scope.addNewTournamentVisible = true;
 				$scope.focusOnAddTournament = false;
-			}
+			};
 
 			$scope.hideAddNewTournament = function(){
 				$scope.addNewTournamentVisible = false;
 				$scope.focusOnAddTournament = true;
-			}
+			};
 
 			$scope._findTournamentWithSameName = function(newTournament){
 				return _.find($scope.tournaments, function(existingTournament){ 
@@ -61,7 +61,7 @@
 					if(angular.isDefined(memo)){
 						this.memo = memo;
 						this.customMemo = true;
-					};
+					}
 
 					// Reset memo when not custom or undefined
 					if(!this.customMemo && angular.isUndefined(memo)){
@@ -124,7 +124,7 @@
 
 		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', function($scope, $routeParams, Tournament) {
 
-		}])
+		}]);
 
 	angular.module('htm.particpant', [])
 
@@ -152,7 +152,7 @@
 				}, function(error){
 					//TODO: Handle error
 				});
-			};
+			}
 
 			var debouncedRefresh = _.debounce(_refresh, 250);
 
@@ -185,7 +185,7 @@
 					participant.isPresent = true;
 					participant.$save();
 				}
-			};
+			}
 
 			$scope.registerSelected = function(){
 				angular.forEach($scope.participants(), function(participant){
@@ -224,7 +224,7 @@
 				    }
 				  }
 				}).result;				
-			};
+			}
 
 		  	$scope.add = function(){
 		  		openModal(new Participant({ 
@@ -250,7 +250,7 @@
   				openModal(participant).finally(function(){
 					$scope.modalOpen=false;
 	  			});
-  			}
+  			};
 
   			/*
 			 * Opens modal when particpants are viewed through /participant/:id
@@ -273,7 +273,7 @@
 			$scope.tournaments = _.filter(tournaments,function(tournament){
 				return !_.find(participant.subscriptions,function(subscription){
 					return subscription.tournament.id === tournament.id;
-				})
+				});
 			});
 			$scope.countries = Country.query();
 			$scope.clubs = Club.query();
@@ -287,14 +287,15 @@
 				$scope.participant.club.name = undefined;
 				$scope.participant.club.code = undefined;
 				$scope.addNewClubVisible = true;
-			}
+			};
+
 			$scope.hideAddNewClub = function(){
 				$scope.addNewClubVisible = false;
 				//Restore by individual property names so watchers see the update
 				$scope.participant.club.id = $scope.oldClub.id;
 				$scope.participant.club.name = $scope.oldClub.name;
 				$scope.participant.club.code = $scope.oldClub.code;
-			}
+			};
 
 			$scope.addWin = function() {
 				if ($scope.canAddWin()) {
@@ -308,7 +309,7 @@
 
 			$scope.removeWin = function(win) {
 				$scope.participant.previousWins = _($scope.participant.previousWins).filter(function(item) {
-   					  return item !== win
+   					  return item !== win;
 				});
 			};
 
@@ -327,12 +328,12 @@
 			};
 
 			$scope.cancel = function() {
-				if(angular.isUndefined($scope.participant.id){
+				if(angular.isUndefined($scope.participant.id)){
 					$modalInstance.dismiss('cancel');
 					return;
 				}
 
-				$scope.participant.$get().(function(refreshedParticipant){
+				$scope.participant.$get(function(refreshedParticipant){
 					$modalInstance.dismiss('cancel');
 				}, function(error){
 					//TODO: Handle error.
