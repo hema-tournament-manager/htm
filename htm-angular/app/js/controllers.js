@@ -327,11 +327,18 @@
 			};
 
 			$scope.cancel = function() {
-				if($scope.participant.id){
-					$scope.participant.$get();
+				if(angular.isUndefined($scope.participant.id){
+					$modalInstance.dismiss('cancel');
+					return;
 				}
+
+				$scope.participant.$get().(function(refreshedParticipant){
+					$modalInstance.dismiss('cancel');
+				}, function(error){
+					//TODO: Handle error.
+				});
+
 				
-				$modalInstance.dismiss('cancel');
 			};
 
 			$scope.upload = function(pictures){

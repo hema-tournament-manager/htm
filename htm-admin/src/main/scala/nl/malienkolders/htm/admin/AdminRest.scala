@@ -1,7 +1,6 @@
 package nl.malienkolders.htm.admin
 
 import net.liftweb._
-
 import http._
 import rest._
 import json._
@@ -14,6 +13,7 @@ import net.liftweb.common.Full
 import nl.malienkolders.htm.admin.lib.exporter.JsonFightExporter
 import nl.malienkolders.htm.lib.util.Helpers
 import nl.malienkolders.htm.admin.lib.Utils.PimpedParticipant
+import net.liftweb.common.Empty
 
 object AdminRest extends RestHelper {
 
@@ -88,8 +88,7 @@ object AdminRest extends RestHelper {
    
   case "api" :: "v3" :: "participant" :: Nil JsonPost json -> _ =>
       val m = Extraction.extract[MarshalledParticipantV3](json)
-      val p = Participant.create
-      p.fromMarshalledV3(m)
+      val p = Participant.create.fromMarshalledV3(m)
       p.save()
       Extraction.decompose(p.toMarshalledV3)
 
@@ -97,11 +96,25 @@ object AdminRest extends RestHelper {
       Extraction.decompose(Country.findAll().map(_.toMarshalled))      
  
   case "api" :: "v3" :: "club" :: Nil JsonGet _ =>
-    //TODO: Refactor clubs to actuall data object
      val clubs = Participant.findAllFields(Seq(Participant.club, Participant.clubCode), Distinct(), OrderBy(Participant.club, Ascending))
  									.map(p => MarshalledClub(None, p.clubCode, p.club))
       Extraction.decompose(clubs)        
-      
+
+  case "api" :: "v3" :: "participant" :: AsLong(participantId) :: Nil JsonPost json -> _ =>
+     Participant.findByKey(participantId) match {
+        case Full(p) => 
+    		val m = Extraction.extract[MarshalledParticipantV3](json) 
+    			p.fromMarshalledV3(m).save()
+    			Extraction.decompose(p.toMarshalledV3)
+        case _ =>  NotFoundResponse()
+     }  
+     
+   case "api" :: "v3" :: "participant" :: AsLong(participantId) :: Nil JsonGet  _ =>
+     Participant.findByKey(participantId) match {
+        case Full(p) => 
+    		Extraction.decompose(p.toMarshalledV3)
+        case _ =>  NotFoundResponse()
+    }  
     //=== Old API's ==================================================
     
     case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>
