@@ -20,8 +20,8 @@ under the License.
 package bootstrap.liftweb
 
 import net.liftweb._
-import util._
-import Helpers._
+import util.Props
+import util.Helpers._
 import common._
 import http._
 import sitemap._

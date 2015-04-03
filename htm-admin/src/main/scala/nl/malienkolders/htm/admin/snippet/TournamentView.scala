@@ -423,8 +423,8 @@ object TournamentView {
         "a" #> SHtml.link("/download/schedule/tournament", () => throw new ResponseShortcutException(downloadSchedule(t)), Text("Schedule"))) &
         "#tournamentParticipantsCount *" #> tournamentSubscriptions.size &
         "#participants" #> (
-          ".participant" #> tournamentSubscriptions.map(renderParticipant(true) _)) &
-          "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString, pt.name.is)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
+          ".participant" #> tournamentSubscriptions.map(renderParticipant(true) _)) &   
+//FIXME:          "#addParticipant" #> (if (otherParticipants.isEmpty) Nil else SHtml.ajaxSelect(("-1", "-- Add Participant --") :: otherParticipants.map(pt => (pt.id.is.toString ++ pt.name.is.toString)).toList, Full("-1"), id => addParticipant(t, id.toLong), "class" -> "form-control")) &
           poolBindings &
           freeStyleBindings &
           eliminationBindings &

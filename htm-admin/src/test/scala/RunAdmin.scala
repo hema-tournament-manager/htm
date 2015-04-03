@@ -1,19 +1,15 @@
-import org.mortbay.jetty.Server
-import org.mortbay.jetty.webapp.WebAppContext
-import org.mortbay.jetty.nio._
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.webapp.WebAppContext
 
 object RunAdmin extends App {
-  val server = new Server
-  val scc = new SelectChannelConnector
-  scc.setPort(8080)
-  server.setConnectors(Array(scc))
+  val server = new Server(8080)
 
   val context = new WebAppContext()
   context.setServer(server)
   context.setContextPath("/")
   context.setWar("src/main/webapp")
 
-  server.addHandler(context)
+  server.setHandler(context)
 
   try {
     println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP")
