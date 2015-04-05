@@ -1,3 +1,11 @@
+/*
+  Javascript unit test configuration for development 
+  use. Watches a directory when started and executes
+  tests when needed.
+
+  For build system and CI specific use karma.conf.ci.js.
+*/
+
 (function(){
 'use strict';
 
