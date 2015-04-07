@@ -227,14 +227,7 @@
 			}
 
 		  	$scope.add = function(){
-		  		openModal(new Participant({ 
-						country: {},
-						club: {},
-						isPresent: false,
-						previousWins: [ ],
-						subscriptions: [],
-						hasPicture: false
-					})).then(function(newParticipant) {
+		  		openModal().then(function(newParticipant) {
 		  				pages[0].unshift(newParticipant);
 						$scope.totals = Statistics.get();
 		  			}).finally(function(){
@@ -269,9 +262,9 @@
 		.controller('ParticipantRegistrationCtrl',function($scope, $modalInstance, Country, Participant, Club, participant, tournaments) {
 
 			$scope.pictures = {files:[]};
-			$scope.participant = participant;
+			$scope.participant = participant || new Participant({club: {}, isPresent: false, previousWins: [], subscriptions: [], hasPicture: false });
 			$scope.tournaments = _.filter(tournaments,function(tournament){
-				return !_.find(participant.subscriptions,function(subscription){
+				return !_.find($scope.participant.subscriptions,function(subscription){
 					return subscription.tournament.id === tournament.id;
 				});
 			});
