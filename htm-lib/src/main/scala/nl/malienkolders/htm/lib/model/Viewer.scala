@@ -83,19 +83,19 @@ class Viewer extends LongKeyedMapper[Viewer] with IdPK with CreatedUpdated with 
       update(arena, "fight", data)
     }
 
-    def fightUpdate[F <: Fight[_, _]](arena: Arena, f: F): Boolean = {
-      if (state != "fight") {
-        f match {
-          case f: PoolFight =>
-            fightUpdate(arena, Extraction.decompose(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
-          case f: EliminationFight =>
-            fightUpdate(arena, Extraction.decompose(Map("eliminationSummary" -> f.phase.foreign.get.fights.map(_.toMarshalled))))
-          case f: FreeStyleFight =>
-            fightUpdate(arena, Extraction.decompose(Map("freestyleSummary" -> f.phase.foreign.get.fights.filter(_.round.get == f.round.get).map(_.toMarshalled))))
-        }
-      }
-      fightUpdate(arena, Extraction.decompose(f.toMarshalled))
-    }
+//    def fightUpdate[F <: Fight[_, _]](arena: Arena, f: F): Boolean = {
+//      if (state != "fight") {
+//        f match {
+//          case f: PoolFight =>
+//            fightUpdate(arena, Extraction.decompose(Map("poolSummary" -> f.pool.obj.get.toMarshalledSummary)))
+//          case f: EliminationFight =>
+//            fightUpdate(arena, Extraction.decompose(Map("eliminationSummary" -> f.phase.foreign.get.fights.map(_.toMarshalled))))
+//          case f: FreeStyleFight =>
+//            fightUpdate(arena, Extraction.decompose(Map("freestyleSummary" -> f.phase.foreign.get.fights.filter(_.round.get == f.round.get).map(_.toMarshalled))))
+//        }
+//      }
+//      fightUpdate(arena, Extraction.decompose(f.toMarshalled))
+//    }
 
     def message(arena: Arena, message: String): Boolean = update(arena, Extraction.decompose(
       Map("message" -> message)))

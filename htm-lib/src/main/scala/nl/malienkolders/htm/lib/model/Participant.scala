@@ -9,48 +9,6 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
-case class MarshalledParticipantV3(
-  id: Option[Long],
-  name: String,
-  shortName: String,
-  club: MarshalledClub,
-  country: MarshalledCountry,
-  isPresent: Boolean,
-  tshirt: Option[String],
-  age: Option[Int],
-  height: Option[Int],
-  weight: Option[Int],
-  previousWins: List[String],
-  subscriptions: List[MarshalledSubscription],
-  hasPicture: Boolean)
-
-case class MarshalledParticipant(
-  id: Option[Long],
-  externalId: String,
-  name: String,
-  shortName: String,
-  club: String,
-  clubCode: String,
-  country: String,
-  isPresent: Boolean,
-  tshirt: String,
-  age: Int,
-  height: Int,
-  weight: Int,
-  previousWins: List[String],
-  fighterNumber: Option[Int],
-  gearChecked: Option[Boolean],
-  droppedOut: Option[Boolean],
-  pool: Option[String],
-  subscriptions: List[MarshalledSubscription],
-  hasPicture: Option[Boolean])
-
-case class MarshalledSubscription(
-  fighterNumber: Int,
-  gearChecked: Boolean,
-  droppedOut: Boolean,
-  pool: Option[String],
-  tournament: MarshalledTournamentSummary)
 
 class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with OneToMany[Long, Participant] {
   def getSingleton = Participant
@@ -84,82 +42,7 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
     t.poolPhase.pools.find(_.participants.exists(_.id.is == id.is))
   }
   
-  def toMarshalledV3 = MarshalledParticipantV3(
-    Some(id.is),
-    name.is,
-    shortName.is,
-    MarshalledClub(None,clubCode.is, club.is),
-    country.obj.map(_.toMarshalled).get,
-    isPresent.is,
-    Some(tshirt.is),
-    Some(age.is),
-    Some(height.is),
-    Some(weight.is),
-    previousWins.is.split("""(\n|\r)+""").toList,
-    subscriptions.map(sub =>
-      MarshalledSubscription(
-        sub.fighterNumber.get,
-        sub.gearChecked.get,
-        sub.droppedOut.get,
-        poolForTournament(sub.tournament.foreign.get).map(_.poolName),
-        sub.tournament.foreign.get.toMarshalledSummary)).toList,
-    false)
 
-  def toMarshalled = MarshalledParticipant(
-    Some(id.is),
-    externalId.is,
-    name.is,
-    shortName.is,
-    club.is,
-    clubCode.is,
-    country.obj.map(_.code2.is).getOrElse(""),
-    isPresent.is,
-    tshirt.is,
-    age.is,
-    height.is,
-    weight.is,
-    previousWins.is.split("""(\n|\r)+""").toList,
-    None,
-    None,
-    None,
-    None,
-    subscriptions.map(sub =>
-      MarshalledSubscription(
-        sub.fighterNumber.get,
-        sub.gearChecked.get,
-        sub.droppedOut.get,
-        poolForTournament(sub.tournament.foreign.get).map(_.poolName),
-        sub.tournament.foreign.get.toMarshalledSummary)).toList,
-    None)
-
-  def fromMarshalled(m: MarshalledParticipant) = {
-    externalId(m.externalId)
-    name(m.name)
-    shortName(m.shortName)
-    club(m.club)
-    clubCode(m.clubCode)
-    isPresent(m.isPresent)
-    tshirt(m.tshirt)
-    age(m.age)
-    height(m.height)
-    weight(m.weight)
-    previousWins(m.previousWins.mkString("\n"))
-    country(Country.find(By(Country.code2, m.country)))
-  }
-  
-  def fromMarshalledV3(m: MarshalledParticipantV3) = {
-    name(m.name)
-    shortName(m.shortName)
-    club(m.club.name)
-    clubCode(m.club.code)
-    isPresent(m.isPresent)
-    m.tshirt.map(t => tshirt(t)) 
-    m.age.map(a => age(a))
-    m.height.map(h => height(h))
-    m.weight.map(w => weight(w))
-    previousWins(m.previousWins.mkString("\n"))
-    country(Country.find(By(Country.code2, m.country.code2)))
-  }
 }
 
 object Participant extends Participant with LongKeyedMetaMapper[Participant] with CRUDify[Long, Participant] {
