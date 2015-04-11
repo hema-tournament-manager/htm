@@ -1,0 +1,22 @@
+{
+  "globalstrict": true,
+  "globals": {
+    "angular": false,
+    "jasmine": false,
+
+
+    "browser": false,
+    "element": false,
+    "by": false,
+
+    "module": false,
+
+
+    "describe": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "inject": false,
+    "it": false,
+    "expect": false
+  }
+}

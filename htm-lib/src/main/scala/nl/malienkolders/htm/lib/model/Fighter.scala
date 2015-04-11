@@ -2,16 +2,12 @@ package nl.malienkolders.htm.lib.model
 
 import net.liftweb.common._
 
-case class MarshalledFighter(label: String, participant: Option[MarshalledParticipant])
 
 sealed abstract class Fighter {
   def format: String
   def participant: Option[Participant]
   def sameAs(other: Fighter): Boolean
-  def toMarshalled(tournament: Tournament) = MarshalledFighter(toString, for {
-    p <- participant
-    s <- p.subscription(tournament)
-  } yield s.toMarshalled)
+ 
 }
 object Fighter {
   def parse(s: String): Fighter = Winner.parse(s)

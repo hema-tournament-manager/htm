@@ -9,33 +9,6 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
-case class MarshalledParticipant(
-  id: Option[Long],
-  externalId: String,
-  name: String,
-  shortName: String,
-  club: String,
-  clubCode: String,
-  country: String,
-  isPresent: Boolean,
-  tshirt: String,
-  age: Int,
-  height: Int,
-  weight: Int,
-  previousWins: List[String],
-  fighterNumber: Option[Int],
-  gearChecked: Option[Boolean],
-  droppedOut: Option[Boolean],
-  pool: Option[String],
-  subscriptions: List[MarshalledSubscription],
-  hasPicture: Option[Boolean])
-
-case class MarshalledSubscription(
-  fighterNumber: Int,
-  gearChecked: Boolean,
-  droppedOut: Boolean,
-  pool: Option[String],
-  tournament: MarshalledTournamentSummary)
 
 class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with OneToMany[Long, Participant] {
   def getSingleton = Participant
@@ -68,48 +41,8 @@ class Participant extends LongKeyedMapper[Participant] with CreatedUpdated with 
   def poolForTournament(t: Tournament): Option[Pool] = {
     t.poolPhase.pools.find(_.participants.exists(_.id.is == id.is))
   }
+  
 
-  def toMarshalled = MarshalledParticipant(
-    Some(id.is),
-    externalId.is,
-    name.is,
-    shortName.is,
-    club.is,
-    clubCode.is,
-    country.obj.map(_.code2.is).getOrElse(""),
-    isPresent.is,
-    tshirt.is,
-    age.is,
-    height.is,
-    weight.is,
-    previousWins.is.split("""(\n|\r)+""").toList,
-    None,
-    None,
-    None,
-    None,
-    subscriptions.map(sub =>
-      MarshalledSubscription(
-        sub.fighterNumber.get,
-        sub.gearChecked.get,
-        sub.droppedOut.get,
-        poolForTournament(sub.tournament.foreign.get).map(_.poolName),
-        sub.tournament.foreign.get.toMarshalledSummary)).toList,
-    None)
-
-  def fromMarshalled(m: MarshalledParticipant) = {
-    externalId(m.externalId)
-    name(m.name)
-    shortName(m.shortName)
-    club(m.club)
-    clubCode(m.clubCode)
-    isPresent(m.isPresent)
-    tshirt(m.tshirt)
-    age(m.age)
-    height(m.height)
-    weight(m.weight)
-    previousWins(m.previousWins.mkString("\n"))
-    country(Country.find(By(Country.code2, m.country)))
-  }
 }
 
 object Participant extends Participant with LongKeyedMetaMapper[Participant] with CRUDify[Long, Participant] {

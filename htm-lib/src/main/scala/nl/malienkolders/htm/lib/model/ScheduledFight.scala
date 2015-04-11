@@ -9,7 +9,6 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
-case class MarshalledScheduledFightSummary(time: Long, fight: MarshalledFight)
 
 trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] with SaveMessageBroadcaster[F] {
   self: F =>
@@ -31,7 +30,6 @@ trait ScheduledFight[F <: ScheduledFight[F]] extends LongKeyedMapper[F] with Sav
 
   def compare(that: F) = this.time.is.compareTo(that.time.is)
 
-  def toMarshalledSummary = MarshalledScheduledFightSummary(time.is, fight.foreign.get.toMarshalled)
 }
 
 class ScheduledPoolFight extends ScheduledFight[ScheduledPoolFight] with IdPK {

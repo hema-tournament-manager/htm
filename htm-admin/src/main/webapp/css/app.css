@@ -1,0 +1,58 @@
+/* app css stylesheet */
+
+
+/*body padding to give the navbar some room*/
+body { padding-top: 70px; }
+
+/*smaller font in nav to keep the navbar from overflowing*/
+.navbar{
+  font-size: 10px;
+}
+
+/* fix for dropdown menu dropping behind search bar on participants page which has a z-index of 2*/
+.htm-dropdown-menu-z-fix{
+	z-index: 3 !important;
+}
+
+
+/* A colors to forms */
+.ng-invalid.ng-dirty {
+  border-color: red;
+  outline-color: red;
+}
+.ng-valid.ng-dirty {
+  border-color: green;
+  outline-color: green;
+}
+
+.input-group-addon.btn {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+
+/** Remove ugly link colour on tabs */
+.nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+  color: #777;
+}
+
+/** Remove ugly file import*/
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}

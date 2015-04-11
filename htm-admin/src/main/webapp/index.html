@@ -1,69 +1,42 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-    <title>Welcome</title>
-  </head>
-  <body class="lift:content_id=main">
-    <div id="main" class="lift:surround?with=default;at=content" style="font-size: 15pt">
-    <head>
-      <style>
-        li {
-          list-style-type: none;
-          margin-bottom: 15pt;
-        }
-        
-        h1 {
-          margin-top: 30pt;
-        }
-      
-      </style>
-    </head>
-    
-     <img style="float: right" src="images/screenshot.png" />
-    
-    <h1>Welcome to HTM</h1>
-    
-    <p>To get started, it is recommended to read the <a href="http://jira.htm-project.org:9002/display/DOC/Documentation">documentation</a></p>
-    
-    <p>HTM provides easy-to-use HEMA tournament management tools for:</p>
-    
-    <ul>
-      <li>
-        <a href="event">
-        <span class="glyphicon glyphicon-arrow-right"> </span>
-         Event planning
-        </a>
-      </li>
-      <li>
-        <a href="schedule">
-        <span class="glyphicon glyphicon-arrow-right"> </span>
-         Fight scheduling
-        </a>
-      </li>
-      <li> 
-        <a href="participants/list">
-        <span class="glyphicon glyphicon-arrow-right"> </span>
-         Participant management
-        </a>
-      </li>
-      <li>
-        <a href="battle">
-        <span class="glyphicon glyphicon-arrow-right"> </span>
-         Fight recording (battlestation)
-        </a>
-      </li>
-      <li>
-        <a href="http://hematournament.com/">
-        <span class="glyphicon glyphicon-arrow-right"> </span>
-         And many more...
-        </a>
-      </li>
-    </ul>
-    
-   
-    
-    </div>
-  </body>
-</html>
+<!doctype html>
+<html lang="en" ng-app="htm.App">
+	<head>
+		<meta charset="utf-8">
+		<title>Hema Tournament Manager</title>
+		
+		<link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css">
+		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+		<link rel="stylesheet" href="css/app.css">
 
+		<script src="bower_components/angular/angular.js"></script>
+		<script src="bower_components/angular-resource/angular-resource.js"></script>
+		<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+		<script src="bower_components/angular-route/angular-route.js"></script>
+		<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+		<script src="bower_components/angular-ui-select/dist/select.js"></script>
+
+
+		
+		<script src="bower_components/jquery/dist/jquery.js"></script>
+		<script src="bower_components/tinycolor/tinycolor.js"></script>
+		<script src="bower_components/underscore/underscore.js"></script>
+		<script src="bower_components/components-bootstrap/js/collapse.js"></script>
+		<script src="bower_components/components-bootstrap/js/dropdown.js"></script>
+
+		<script src="js/app.js"></script>
+		<script src="js/controllers.js"></script>
+		<script src="js/directives.js"></script>
+		<script src="js/filters.js"></script>
+		<script src="js/services.js"></script>
+
+		<!--Stubbed backend-->
+		<script src="bower_components/angular-mocks/angular-mocks.js"></script>
+		<script src="js/stubbed-backend.js"></script>
+
+
+	</head>
+	<body>
+		<htm-navigation></htm-navigation>
+  		<div ng-view></div>
+	</body>
+</html>

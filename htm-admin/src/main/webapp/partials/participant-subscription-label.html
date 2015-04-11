@@ -1,0 +1,8 @@
+<a 	href="#/tournament/{{tournament.id}}/{{person.id}}" 
+	ng-show="subscription"
+	title="Fighter number {{subscription.fighterNumber}} in {{tournament.name}}">
+	<span class="label" ng-class="subscription.gearChecked ? 'label-success' : 'label-danger'">
+		{{subscription.fighterNumber}}
+		<span class="glyphicon glyphicon-cog" ng-hide="subscription.gearChecked"></span>
+	</span>
+</a>

@@ -3,9 +3,7 @@ package nl.malienkolders.htm.lib.model
 import net.liftweb._
 import mapper._
 
-case class MarshalledTournamentSummary(id: Long, name: String, identifier: String, memo: String)
-case class MarshalledTournament(id: Option[Long], name: String, identifier: String, memo: String, participants: List[Long])
-case class MarshalledTournamentRound(id: Long, finished: Boolean)
+
 
 class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tournament] with Ordered[Tournament] {
 
@@ -48,13 +46,6 @@ class Tournament extends LongKeyedMapper[Tournament] with OneToMany[Long, Tourna
 
   def startTime = 0
 
-  def toMarshalled = MarshalledTournament(
-    Some(id.is),
-    name.is,
-    identifier.is,
-    mnemonic.is,
-    participants.map(_.id.is).toList)
-  def toMarshalledSummary = MarshalledTournamentSummary(id.is, name.is, identifier.is, mnemonic.is)
 
   def compare(that: Tournament) = (this.id.is - that.id.is) match {
     case d if d > 0 => 1
@@ -150,11 +141,7 @@ class TournamentParticipant extends LongKeyedMapper[TournamentParticipant] with 
 
   def hasFought: Boolean = tournament.foreign.get.fights.exists(f => f.finished_? && f.inFight_?(participant.foreign.get))
 
-  def toMarshalled = participant.foreign.get.toMarshalled.copy(
-    fighterNumber = Some(fighterNumber.get),
-    gearChecked = Some(gearChecked.get),
-    droppedOut = Some(droppedOut.get),
-    pool = participant.foreign.get.poolForTournament(tournament.foreign.get).map(_.poolName))
+ 
 }
 object TournamentParticipant extends TournamentParticipant with LongKeyedMetaMapper[TournamentParticipant] {
   type ErrorField = MappedBoolean[_ <: LongKeyedMapper[_]]

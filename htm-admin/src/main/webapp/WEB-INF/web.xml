@@ -15,7 +15,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 
 <filter-mapping>
   <filter-name>LiftFilter</filter-name>
-  <url-pattern>/*</url-pattern>
+  <url-pattern>/api/*</url-pattern>
 </filter-mapping>
 
 </web-app>

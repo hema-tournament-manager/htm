@@ -1,3 +1,3 @@
-db.url=jdbc:h2:mem:htm_admin
+db.url=jdbc:h2:file:htm_admin
 db.user=sa
 db.password=masterkey

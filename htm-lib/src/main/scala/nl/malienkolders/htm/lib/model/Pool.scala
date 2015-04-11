@@ -5,8 +5,6 @@ import net.liftweb._
 import mapper._
 import nl.malienkolders.htm.lib.rulesets.Scores
 
-case class MarshalledPoolSummary(id: Long, name: String, order: Long, startTime: Long, finished: Boolean, fightCount: Long, participantsCount: Long)
-case class MarshalledPool(id: Long, name: String, startTime: Long, order: Long, fights: List[Long], participants: List[MarshalledParticipant])
 
 class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToMany {
   def getSingleton = Pool
@@ -28,16 +26,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 
   def addFight(a: Participant, b: Participant) = fights += PoolFight.create.fighterAFuture(SpecificFighter(Some(a)).format).fighterBFuture(SpecificFighter(Some(b)).format).inProgress(false).order(fights.size + 1)
 
-  def toMarshalled = MarshalledPool(id.is, poolName, startTime.is, order.is, fights.map(_.id.is).toList, participants.map(_.toMarshalled).toList)
-  def toMarshalledSummary = MarshalledPoolSummary(
-    id.is,
-    poolName,
-    order.is,
-    startTime.is,
-    finished_?,
-    fights.size,
-    participants.size)
-
+  
   def poolName: String = {
     ('A'.toInt + (order.get - 1)).toChar.toString;
   }

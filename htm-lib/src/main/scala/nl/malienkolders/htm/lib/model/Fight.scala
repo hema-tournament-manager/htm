@@ -16,30 +16,6 @@ case object Right extends Side("right")
 case object Both extends Side("both")
 case object Neither extends Side("neither")
 
-case class MarshalledScoring(points: String, effect: String)
-
-case class MarshalledHit(name: String, scoreType: String, side: String, scorings: List[MarshalledScoring])
-
-case class MarshalledFight(
-  tournament: MarshalledTournamentSummary,
-  phaseType: String,
-  id: Long,
-  name: String,
-  fighterA: MarshalledFighter,
-  fighterB: MarshalledFighter,
-  timeStart: Long,
-  timeStop: Long,
-  netDuration: Long,
-  scores: List[MarshalledScore],
-  timeLimit: Long,
-  exchangeLimit: Int,
-  possiblePoints: List[Int],
-  doubleHitLimit: Int,
-  breakAt: Long,
-  breakDuration: Long,
-  pointLimit: Int,
-  possibleHits: List[MarshalledHit])
-
 trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with IdPK with FightToScore[F, S] {
 
   self: F =>
@@ -144,47 +120,7 @@ trait Fight[F <: Fight[F, S], S <: Score[S, F]] extends LongKeyedMapper[F] with 
 
   def shortLabel = fighterA.toString + " vs " + fighterB.toString
 
-  def toMarshalled = {
-    val ruleset = phase.foreign.get.rulesetImpl
-    val fp = ruleset.fightProperties
-    MarshalledFight(
-      phase.foreign.get.tournament.foreign.get.toMarshalledSummary,
-      phaseType.code,
-      id.is,
-      name.is,
-      fighterA.toMarshalled(phase.foreign.get.tournament.foreign.get),
-      fighterB.toMarshalled(phase.foreign.get.tournament.foreign.get),
-      timeStart.is,
-      timeStop.is,
-      netDuration.is,
-      scores.map(_.toMarshalled).toList,
-      fp.timeLimit,
-      fp.exchangeLimit,
-      ruleset.possiblePoints,
-      fp.doubleHitLimit,
-      fp.breakAt,
-      fp.breakDuration,
-      fp.pointLimit,
-      fp.possibleHits.map(h => MarshalledHit(h.name, h.scoreType, h.side.serialized, h.scorings.map(s => MarshalledScoring(s.points.serialized, s.effect.serialized)))))
-  }
 
-  def fromMarshalled(m: MarshalledFight) = {
-    timeStart(m.timeStart)
-    timeStop(m.timeStop)
-    netDuration(m.netDuration)
-    scores.clear
-    m.scores.foreach(s => scores += scoreMeta.create.fromMarshalled(s))
-    this
-  }
-  def fromMarshalledSummary(m: MarshalledFight) = {
-    if (timeStart.get == 0) {
-      timeStart(m.timeStart)
-    }
-    timeStop(m.timeStop)
-    netDuration(m.netDuration)
-    m.scores.drop(scores.size).foreach(s => scores += scoreMeta.create.fromMarshalled(s))
-    this
-  }
 
   def schedule(time: Long, duration: Long): ScheduledFight[_]
 
@@ -211,7 +147,6 @@ object FightHelper {
   }
 }
 
-case class MarshalledViewerPoolFightSummary(order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, started: Boolean, finished: Boolean, score: TotalScore)
 
 class PoolFight extends Fight[PoolFight, PoolFightScore] {
   def getSingleton = PoolFight
@@ -224,14 +159,6 @@ class PoolFight extends Fight[PoolFight, PoolFightScore] {
 
   def phase = pool.foreign.get.phase
   val phaseType = PoolType
-
-  def toViewerSummary = MarshalledViewerPoolFightSummary(
-    order.is,
-    fighterA.participant.get.toMarshalled,
-    fighterB.participant.get.toMarshalled,
-    started_?,
-    finished_?,
-    currentScore)
 
   def schedule(time: Long, duration: Long) = {
     val sf = ScheduledPoolFight.create.fight(this).time(time).duration(duration)
