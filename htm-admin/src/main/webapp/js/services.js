@@ -8,11 +8,16 @@
 	angular.module('htm.api', ['ngResource'])
 	
 		.factory('Tournament', ['$resource', function($resource){
-			return $resource(api + 'tournament/:id', { "id" : "@id" }, 
-				{ 
-					update: { method: 'PUT' }
-				}
-			);
+			return $resource(api + 'tournament/:id', { "id" : "@id" });
+		}])
+		.factory('Fight', ['$resource', function($resource) {
+			return $resource(api + 'tournament/:id/fight/:fightId', { "id" : "@id", "fightId":"@fightId" });
+		}])		
+		.factory('Fighter', ['$resource', function($resource) {
+			return $resource(api + 'tournament/:id/fighter/:fighterNumber', { "id" : "@id", "fighterNumber":"@fighterNumber" });
+		}])
+		.factory('Phase', ['$resource', function($resource) {
+			return $resource(api + 'tournament/:id/phase', { "id" : "@id"});
 		}])
 		.factory('Participant', ['$resource', function($resource){
 			return $resource(api + 'participant/:id', { "id" : "@id" }, 

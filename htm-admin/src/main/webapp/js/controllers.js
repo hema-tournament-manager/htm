@@ -122,140 +122,169 @@
 			};
 		}])
 
-		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', function($scope, $routeParams, Tournament) {
+		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', 'Fighter','Fight','Phase',
+			function($scope, $routeParams, Tournament, Fighter, Fight, Phase) {
+				$scope.tournament = Tournament.get({id:$routeParams.tournamentId});
+				$scope.fights = Fight.query({id:$routeParams.tournamentId});
 
+				$scope.fighters = Fighter.query({id:$routeParams.tournamentId});
+				$scope.phases = Phase.query({id:$routeParams.tournamentId});
+
+				$scope.getFighter = function(fighterRef){
+					if(fighterRef.fighterNumber){
+						return _.find($scope.fighters, function(fighter){
+							return fighter.fighterNumber === fighterRef.fighterNumber;
+						});
+					}
+
+					var fightId = fighterRef.winnerOf || fighterRef.loserOf;
+					return $scope.getFight(fightId);
+				};
+
+				$scope.getFight = function(fightId){
+					return _.find($scope.fights, function(fight){
+						return fight.id === fightId;
+					});
+				};	
+
+				$scope.getFights = function(fightIds){
+					return _.filter($scope.fights, function(fight){
+						return _.contains(fightIds,fight.id);
+					});
+				};	
 		}]);
 
 	angular.module('htm.particpant', [])
 
-		.controller('ParticipantListCtrl', ['$scope', '$modal','$routeParams','Tournament','Participant','Statistics',  function($scope,$modal,$routeParams,Tournament, Participant,Statistics) {
-	
-			var pages = [];
+		.controller('ParticipantListCtrl', ['$scope', '$modal','$routeParams','Tournament','Participant','Statistics',
+			function($scope,$modal,$routeParams,Tournament, Participant,Statistics) {
+		
+				var pages = [];
 
-			$scope.searchCriteria = {
-				page:0,
-				items:15,
-				query:undefined,
-			};
+				$scope.searchCriteria = {
+					page:0,
+					items:15,
+					query:undefined,
+				};
 
-			pages[0] = Participant.query($scope.searchCriteria);
+				pages[0] = Participant.query($scope.searchCriteria);
 
-			$scope.totals = Statistics.get();
-			$scope.tournaments = Tournament.query();
-			$scope.modalOpen = false;
+				$scope.totals = Statistics.get();
+				$scope.tournaments = Tournament.query();
+				$scope.modalOpen = false;
 
-			function _refresh(){
-				$scope.searchCriteria.page = 0;
-				Participant.query($scope.searchCriteria).$promise.then(function(freshParticipants){
-					pages = [];
-					pages[0] = freshParticipants;
-				}, function(error){
-					//TODO: Handle error
-				});
-			}
-
-			var debouncedRefresh = _.debounce(_refresh, 250);
-
-
-
-			$scope.refresh = function($event){
-				if(event.keyCode === 13){
-					registerSingleSelected();
-				} else {
-					debouncedRefresh();
-				}
-			};
-
-			$scope.more = function(){
-				var newPage = ++$scope.searchCriteria.page;
-				Participant.query($scope.searchCriteria)
-					.$promise.then(function(freshParticipants){
-						pages[newPage] = freshParticipants;
+				function _refresh(){
+					$scope.searchCriteria.page = 0;
+					Participant.query($scope.searchCriteria).$promise.then(function(freshParticipants){
+						pages = [];
+						pages[0] = freshParticipants;
+					}, function(error){
+						//TODO: Handle error
 					});
-			};
-
-			$scope.participants = function(){
-				return _.flatten(pages);
-			};
-
-			function registerSingleSelected(){
-				var participants = $scope.participants();
-				if(participants.length === 1){
-					var participant = participants[0];
-					participant.isPresent = true;
-					participant.$save();
 				}
-			}
 
-			$scope.registerSelected = function(){
-				angular.forEach($scope.participants(), function(participant){
-					participant.isPresent = true;
-					participant.$save();
-
-				});
-			};
-
-			$scope.unregisterSelected = function(){
-				angular.forEach($scope.participants(), function(participant){
-					participant.isPresent = false;
-					participant.$save();
-
-				});
-			};
+				var debouncedRefresh = _.debounce(_refresh, 250);
 
 
-			/*
-			 * Opens modal with the particpant and tournament promises
-			 * this will delay opening of modal until they are resolved.
-			 */
-			function openModal(participant) {
-				$scope.modalOpen=true;
-				
-				return $modal.open({
-				  templateUrl: '/partials/participant-registration.html',
-				  controller: 'ParticipantRegistrationCtrl',
-				  size: 'lg',
-				  resolve: {
-				    participant: function () {
-				      return participant;
-				    },
-				    tournaments: function() {
-				      return $scope.tournaments.$promise;
-				    }
-				  }
-				}).result;				
-			}
 
-		  	$scope.add = function(){
-		  		openModal().then(function(newParticipant) {
-		  				pages[0].unshift(newParticipant);
-						$scope.totals = Statistics.get();
-		  			}).finally(function(){
+				$scope.refresh = function($event){
+					if(event.keyCode === 13){
+						registerSingleSelected();
+					} else {
+						debouncedRefresh();
+					}
+				};
+
+				$scope.more = function(){
+					var newPage = ++$scope.searchCriteria.page;
+					Participant.query($scope.searchCriteria)
+						.$promise.then(function(freshParticipants){
+							pages[newPage] = freshParticipants;
+						});
+				};
+
+				$scope.participants = function(){
+					return _.flatten(pages);
+				};
+
+				function registerSingleSelected(){
+					var participants = $scope.participants();
+					if(participants.length === 1){
+						var participant = participants[0];
+						participant.isPresent = true;
+						participant.$save();
+					}
+				}
+
+				$scope.registerSelected = function(){
+					angular.forEach($scope.participants(), function(participant){
+						participant.isPresent = true;
+						participant.$save();
+
+					});
+				};
+
+				$scope.unregisterSelected = function(){
+					angular.forEach($scope.participants(), function(participant){
+						participant.isPresent = false;
+						participant.$save();
+
+					});
+				};
+
+
+				/*
+				 * Opens modal with the particpant and tournament promises
+				 * this will delay opening of modal until they are resolved.
+				 */
+				function openModal(participant) {
+					$scope.modalOpen=true;
+					
+					return $modal.open({
+					  templateUrl: '/partials/participant-registration.html',
+					  controller: 'ParticipantRegistrationCtrl',
+					  size: 'lg',
+					  resolve: {
+					    participant: function () {
+					      return participant;
+					    },
+					    tournaments: function() {
+					      return $scope.tournaments.$promise;
+					    }
+					  }
+					}).result;				
+				}
+
+			  	$scope.add = function(){
+			  		openModal().then(function(newParticipant) {
+			  				pages[0].unshift(newParticipant);
+							$scope.totals = Statistics.get();
+			  			}).finally(function(){
+							$scope.modalOpen=false;
+			  			});
+				};
+
+			  	$scope.hasDetails = function(participant) {
+			    	return participant.age || participant.height || participant.weight;
+	  			};
+
+	  			$scope.show = function(participant){
+	  				openModal(participant).finally(function(){
 						$scope.modalOpen=false;
 		  			});
-			};
+	  			};
 
-		  	$scope.hasDetails = function(participant) {
-		    	return participant.age || participant.height || participant.weight;
-  			};
-
-  			$scope.show = function(participant){
-  				openModal(participant).finally(function(){
-					$scope.modalOpen=false;
-	  			});
-  			};
-
-  			/*
-			 * Opens modal when particpants are viewed through /participant/:id
-   			 */
-			if($routeParams.participantId){
-				var participant = Participant.get({id:$routeParams.participantId});
-				openModal(participant.$promise).then(function(updatedParticipant){
-					participants[updatedParticipant.id] = updatedParticipant;
-				}).finally(function(){
-					$scope.modalOpen=false;
-	  			});
-			}
+	  			/*
+				 * Opens modal when particpants are viewed through /participant/:id
+	   			 */
+				if($routeParams.participantId){
+					var participant = Participant.get({id:$routeParams.participantId});
+					openModal(participant.$promise).then(function(updatedParticipant){
+						participants[updatedParticipant.id] = updatedParticipant;
+					}).finally(function(){
+						$scope.modalOpen=false;
+		  			});
+				}
 
 		}])
 
