@@ -1,40 +1,41 @@
-<div class="container-fluid" ng-controller="ParticipantListCtrl">
-
+<div class="container container-fluid" ng-controller="ParticipantListCtrl">
 	<!--Title, add and download button -->
 	<div class="row">
 		<div class="col-md-12">
-			<h2>
-				Participants
-				<small class="totals  hidden-xs">
-			        <ng-pluralize count="totals.participants" when="{'one': '1 person', 'other': '{} people'}"></ng-pluralize>
-			        from
-			        <ng-pluralize count="totals.clubs" when="{'one': '1 club', 'other': '{} clubs'}"></ng-pluralize>
-			        in
-			        <ng-pluralize count="totals.countries" when="{'one': '1 country', 'other': '{} countries'}"></ng-pluralize>
-				</small>
+			<div class="page-header">
+				<h2>
+					Participants
+					<small class="totals  hidden-xs">
+				        <ng-pluralize count="totals.participants" when="{'one': '1 person', 'other': '{} people'}"></ng-pluralize>
+				        from
+				        <ng-pluralize count="totals.clubs" when="{'one': '1 club', 'other': '{} clubs'}"></ng-pluralize>
+				        in
+				        <ng-pluralize count="totals.countries" when="{'one': '1 country', 'other': '{} countries'}"></ng-pluralize>
+					</small>
 
-				<div class="pull-right">
-				  	<div class="btn-group ">
-						<button role="button" ng-click="add()" role="button" class="btn btn-default">
-							<span class="glyphicon glyphicon-plus"></span>Add</span>
-						</button>
+					<div class="pull-right">
+					  	<div class="btn-group ">
+							<button role="button" ng-click="add()" role="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-plus"></span>Add</span>
+							</button>
 
-					    <button  role="button" class="btn btn-default dropdown-toggle"
-					            data-toggle="dropdown">
-				            <span class="glyphicon glyphicon-download"></span> 
-				            Download
-				            <span class="caret"></span>
-					    </button>
-	
-					    <ul class="dropdown-menu pull-right">
-							<!--TODO: Implement links-->
-							<li><a href="/download/participants">Participant</a></li>
-							<li><a href="/download/clubs">Clubs</a></li>
-							<li><a href="/download/details">Finalist Details</a></li>
-					    </ul>
+						    <button  role="button" class="btn btn-default dropdown-toggle"
+						            data-toggle="dropdown">
+					            <span class="glyphicon glyphicon-download"></span> 
+					            Download
+					            <span class="caret"></span>
+						    </button>
+		
+						    <ul class="dropdown-menu pull-right">
+								<!--TODO: Implement links-->
+								<li><a href="/download/participants">Participant</a></li>
+								<li><a href="/download/clubs">Clubs</a></li>
+								<li><a href="/download/details">Finalist Details</a></li>
+						    </ul>
+						</div>
 					</div>
-				</div>
-			</h2>
+				</h2>
+			</div>
 		</div>
 	</div>
 	<!--Search bar -->
@@ -98,12 +99,12 @@
 						    	</span>
 					    	</span>
 						</td>
-						<td class="flag" >
+						<td>
 							<htm-flag country="participant.country"></htm-flag></td>
-						<td title="Name">{{participant.name}}</td>
-						<td title="Short Name">{{participant.shortName}}</td>
-						<td title="Club">{{participant.club.name}}</td>
-						<td title="Club Code">{{participant.club.code}}</td>
+						<td>{{participant.name}}</td>
+						<td>{{participant.shortName}}</td>
+						<td>{{participant.club.name}}</td>
+						<td>{{participant.club.code}}</td>
 						<td ng-repeat="tournament in tournaments">
 							<htm-subscription-label person="participant" tournament="tournament"/>
 						</td>

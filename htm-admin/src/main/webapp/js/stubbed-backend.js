@@ -250,6 +250,7 @@
 
                     var fights = [{
                                 id: 1,
+                                phase: 1,
                                 time: undefined,    //unscheduled
                                 name: 'First Fight',
                                 fighterA: { fighterNumber: 1},  // resolved future
@@ -257,12 +258,14 @@
 
                             },{
                                 id: 2,
+                                phase: 2,
                                 time: undefined,    //unscheduled
                                 name: 'Second Fight',
                                 fighterA: { fighterNumber: 2},
                                 fighterB: { fighterNumber: 1},
                             },{
                                 id: 3,
+                                phase: 3,
                                 time: 1000, //scheduled
                                 name: 'Third Fight',
                                 fighterA: { winnerOf: 1},   // un resolved future
@@ -277,6 +280,10 @@
                         pools: [{
                             id:1, 
                             name: 'Swimming',                  
+                            fights: [1,2,3]
+                        },{
+                            id:2, 
+                            name: 'Lava',                  
                             fights: [1,2,3]
                         }]
                     },{

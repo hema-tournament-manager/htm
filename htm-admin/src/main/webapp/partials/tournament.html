@@ -1,10 +1,51 @@
 <!--tournament.html-->
 <div ng-controller="TournamentCtrl">
-	<div class="container container-fluid" ng-repeat="phase in phases">
-		<div ng-show="phase.type === 'F'">
-			<h1>{{phase.name}}</h1>
-			<div class="panel panel-default">
-				<div class="panel-body"  >
+	<div class="container container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="page-header">
+					<h2>Participants</h2>
+				</div>
+
+				<table class="table table-striped table-condensed table-hover table-responsive">
+					<thead>
+						<tr>
+							<th>Checks</th>
+							<th>Number</th>
+							<th>Country</th>
+							<th>Name</th>
+							<th>Club</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="fighter in fighters">
+							<td>
+								<span>
+								    <span class="label" ng-class="fighter.isPresent ? 'label-success' : 'label-danger'" title="{{fighter.isPresent ? 'Checked in' : 'Not checked in yet'}}">
+								    	<span class="glyphicon glyphicon-check"></span>
+								    </span>
+								    <span class="label" ng-class="fighter.droppedOut ? 'label-danger' : 'label-success'" title="{{fighter.droppedOut ? 'Dropped out' : 'In tournament'}}">
+								    	<span class="glyphicon glyphicon-heart"></span>
+								    </span>
+									<span class="label" ng-class="fighter.gearChecked ? 'label-success' : 'label-danger'"><span class="glyphicon glyphicon-cog"></span>
+									</span>								    
+						    	</span>
+							</td>
+							<td>{{fighter.fighterNumber}}</td>
+							<td><htm-flag country="fighter.country"></htm-flag></td>
+							<td>{{fighter.name}}</td>
+							<td>{{fighter.club.name}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row" ng-repeat="phase in phases">
+			<div class="col-md-12">
+				<div ng-show="phase.type === 'F'">
+					<div class="page-header">
+						<h2>{{phase.name}}</h2>
+					</div>
 					<div class="col-xs-6 col-md-4" ng-repeat="fight in getFights(phase.fights)">
 						<div class="panel panel-default">
 							<div class="panel-heading">
@@ -12,76 +53,65 @@
 							</div>
 							  <ul class="list-group">
 								<li class="list-group-item">
-									<span ng-show="fight.fighterA.winnerOf">Winner of </span>
-									<span ng-show="fight.fighterA.loserOf">Loser of </span>
-									<span>{{getFighter(fight.fighterA).name}}</span>
+									<htm-fighter-name phases="phases" fights="fights" fighters="fighters" fighter="fight.fighterA"></htm-fighter-name>
 								</li>
 								<li class="list-group-item">
-									<span ng-show="fight.fighterB.winnerOf">Winner of </span>
-									<span ng-show="fight.fighterB.loserOf">Loser of </span>
-									<span>{{getFighter(fight.fighterB).name}}</span>
+									<htm-fighter-name phases="phases" fights="fights" fighters="fighters" fighter="fight.fighterB"></htm-fighter-name>
 								</li>											
 							</ul>
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div ng-show="phase.type === 'P'">
-			<h1>{{phase.name}}</h1>
-			<div class="panel panel-default" ng-repeat="pool in phase.pools">
-				<div class="panel-heading">
-					<h3 class="panel-title">{{pool.name}}</h3>
-				</div>
-				<div class="panel-body" >
-					<div class="col-xs-6 col-md-4" ng-repeat="fight in getFights(pool.fights)">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h3 class="panel-title">{{fight.name}}</h3>
+				<div ng-show="phase.type === 'P'">
+					<div class="page-header">
+						<h2>{{phase.name}}</h2>
+					</div>
+					<div class="panel panel-default" ng-repeat="pool in phase.pools">
+						<div class="panel-heading">
+							<h3 class="panel-title">{{pool.name}}</h3>
+						</div>
+						<div class="panel-body" >
+							<div class="col-xs-6 col-md-4" ng-repeat="fight in getFights(pool.fights)">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">{{fight.name}}</h3>
+									</div>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<htm-fighter-name phases="phases" fights="fights" fighters="fighters" fighter="fight.fighterA"></htm-fighter-name>
+										</li>
+										<li class="list-group-item">
+											<htm-fighter-name phases="phases" fights="fights" fighters="fighters" fighter="fight.fighterB"></htm-fighter-name>
+										</li>											
+									</ul>
+								</div>
 							</div>
-							  <ul class="list-group">
-								<li class="list-group-item">
-									<span ng-show="fight.fighterA.winnerOf">Winner of </span>
-									<span ng-show="fight.fighterA.loserOf">Loser of </span>
-									<span>{{getFighter(fight.fighterA).name}}</span>
-								</li>									
-								<li class="list-group-item">
-									<span ng-show="fight.fighterB.winnerOf">Winner of </span>
-									<span ng-show="fight.fighterB.loserOf">Loser of </span>
-									<span>{{getFighter(fight.fighterB).name}}</span>
-								</li>											
-							</ul>
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div ng-show="phase.type === 'E'">
-			<h1>{{phase.name}}</h1>
-			<div class="panel panel-default">
-				<div class="panel-body"  >
+				<div ng-show="phase.type === 'E'">
+					<div class="page-header">
+						<h2>{{phase.name}}</h2>
+					</div>
 					<div class="col-xs-6 col-md-4" ng-repeat="fight in getFights(phase.fights)">
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<h3 class="panel-title">{{fight.name}}</h3>
 							</div>
-							  <ul class="list-group">
-								<li class="list-group-item">
-									<span ng-show="fight.fighterA.winnerOf">Winner of </span>
-									<span ng-show="fight.fighterA.loserOf">Loser of </span>
-									<span>{{getFighter(fight.fighterA).name}}</span>
-								</li>									
-								<li class="list-group-item">
-									<span ng-show="fight.fighterB.winnerOf">Winner of </span>
-									<span ng-show="fight.fighterB.loserOf">Loser of </span>
-									<span>{{getFighter(fight.fighterB).name}}</span>
-								</li>											
-							</ul>
+								<ul class="list-group">
+									<li class="list-group-item">
+										<htm-fighter-name phases="phases" fights="fights" fighters="fighters" fighter="fight.fighterA"></htm-fighter-name>
+									</li>
+									<li class="list-group-item">
+										<htm-fighter-name phases="phases" fights="fights" fighters="fighters" fighter="fight.fighterB"></htm-fighter-name>
+									</li>											
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>		
+	</div>
 </div>
 

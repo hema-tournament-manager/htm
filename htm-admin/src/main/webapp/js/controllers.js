@@ -130,22 +130,7 @@
 				$scope.fighters = Fighter.query({id:$routeParams.tournamentId});
 				$scope.phases = Phase.query({id:$routeParams.tournamentId});
 
-				$scope.getFighter = function(fighterRef){
-					if(fighterRef.fighterNumber){
-						return _.find($scope.fighters, function(fighter){
-							return fighter.fighterNumber === fighterRef.fighterNumber;
-						});
-					}
 
-					var fightId = fighterRef.winnerOf || fighterRef.loserOf;
-					return $scope.getFight(fightId);
-				};
-
-				$scope.getFight = function(fightId){
-					return _.find($scope.fights, function(fight){
-						return fight.id === fightId;
-					});
-				};	
 
 				$scope.getFights = function(fightIds){
 					return _.filter($scope.fights, function(fight){
