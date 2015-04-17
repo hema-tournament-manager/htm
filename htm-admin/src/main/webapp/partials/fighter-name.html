@@ -1,5 +1,5 @@
 <span>
-	<span ng-show="fighter.winnerOf">Winner of {{getFightName(fighter.winnerOf)}}</span>
-	<span ng-show="fighter.loserOf">Loser of {{getFightName(fighter.loserOf)}}</span>
-	<span ng-show="fighter.fighterNumber">{{getFighter(fighter.fighterNumber).name}}</span>
+	<span ng-show="fighter.winnerOf">{{fighter.winnerOf ? "Winner of " + getFightName(fighter.winnerOf): ""}}</span>
+	<span ng-show="fighter.loserOf">{{fighter.loserOf  ? "Loser of " + getFightName(fighter.loserOf): ""}}</span>
+	<span ng-show="fighter.fighterNumber">{{fighter.fighterNumber ? getFighter(fighter.fighterNumber).name : ""}} </span>
 </span>
