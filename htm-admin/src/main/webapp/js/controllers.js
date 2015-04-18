@@ -122,21 +122,40 @@
 			};
 		}])
 
-		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', 'Fighter','Fight','Phase',
-			function($scope, $routeParams, Tournament, Fighter, Fight, Phase) {
+		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', 'Participant', 'Fighter','Fight','Phase',
+			function($scope, $routeParams, Tournament, Participant, Fighter, Fight, Phase) {
 				$scope.tournament = Tournament.get({id:$routeParams.tournamentId});
 				$scope.fights = Fight.query({id:$routeParams.tournamentId});
 
 				$scope.fighters = Fighter.query({id:$routeParams.tournamentId});
 				$scope.phases = Phase.query({id:$routeParams.tournamentId});
 
-
+				$scope.participant = {};
+				$scope.participants = []; 
 
 				$scope.getFights = function(fightIds){
 					return _.filter($scope.fights, function(fight){
 						return _.contains(fightIds,fight.id);
 					});
 				};	
+
+				$scope.searchParticipants = function(query){
+					var searchCriteria = {
+						page:0,
+						items:15,
+						query:query,
+					};
+
+					$scope.participants = Participant.query(searchCriteria);
+				}
+
+				$scope.addParticipant = function(){
+					if(angular.isUndefined($scope.participant)){
+						return;
+					}
+
+					
+				}
 		}]);
 
 	angular.module('htm.particpant', [])
