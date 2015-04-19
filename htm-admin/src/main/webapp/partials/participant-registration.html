@@ -172,28 +172,21 @@
               <th>Gear</th>
             </tr>
           </thead>
-          <tbody>
-            <tr ng-repeat="subscription in participant.subscriptions">
-                <td><a href="#/tournament/{{subscription.tournament.id}}/participant/{{participant.id}}" ng-click="cancel()" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-wrench"></span></a></td>
-                <td><htm-tournament-memo tournament="subscription.tournament"></htm-tournament-memo></td>
-                <td class="hidden-xs"><span>{{subscription.tournament.name}}</span></td>
-                <td><span class="glyphicon glyphicon-ok"></span></td>
-                <td>{{subscription.fighterNumber || '-' }}</td>
-                <td>{{subscription.pool || '-'}}</td>
-                <td>
-                    <span class="label label-success" ng-show="subscription.gearCheck"><span class="glyphicon glyphicon-ok"></span></span>
-                    <span class="label label-danger" ng-hide="subscription.gearCheck"><span class="glyphicon glyphicon-cog"></span></span>
-                </td>
-            </tr>
-            <tr ng-repeat="tournament in tournaments">
-                <td><a href="#/tournament/{{subscription.tournament.id}}/participant/{{participant.id}}" ng-click="cancel()" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-wrench"></span></a></td>
+          <tbody> 
+            <tr ng-repeat="tournament in tournaments" ng-init="subscription = participant.getSubscription(tournament.id)">
+                <!-- TODO: Check if link works -->
+                <td><a href="#/tournament/{{tournament.id}}" ng-click="cancel()" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-wrench"></span></a></td>
                 <td><htm-tournament-memo tournament="tournament"></htm-tournament-memo></td>
                 <td class="hidden-xs"><span>{{tournament.name}}</span></td>
-                <td><span class="glyphicon glyphicon-remove"></span></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>          
+                <td><span class="glyphicon" ng-class="{'glyphicon-ok':subscription, 'glyphicon-remove':!subscription}"></span></td>
+                <td><span ng-show="subscription">{{subscription.fighterNumber || '-' }}</span></td>
+                <td><span ng-show="subscription">{{subscription.pool || '-'}}</span></td>
+                <td>
+                  <span ng-show="subscription" class="label" ng-class="{'label-success': subscription.gearCheck, 'label-danger':!subscription.gearCheck}">
+                    <span class="glyphicon" ng-class="{'glyphicon-ok':subscription.gearCheck,'glyphicon-cog':!subscription.gearCheck}"></span>
+                  </span>
+                </td>
+            </tr>
           </tbody>
         </table>
       </tab>

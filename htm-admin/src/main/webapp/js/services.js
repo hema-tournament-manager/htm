@@ -8,7 +8,21 @@
 	angular.module('htm.api', ['ngResource'])
 	
 		.factory('Tournament', ['$resource', function($resource){
-			return $resource(api + 'tournament/:id', { "id" : "@id" });
+			return $resource(api + 'tournament/:id', { "id" : "@id" },{
+
+					get: { 
+						method: 'GET',
+						transformResponse: function(Tournament){
+							    
+
+
+							    return Tournament;
+						},
+						headers:{'Content-Type': undefined}
+					}
+
+
+			});
 		}])
 		.factory('Fight', ['$resource', function($resource) {
 			return $resource(api + 'tournament/:id/fight/:fightId', { "id" : "@id", "fightId":"@fightId" });
@@ -20,7 +34,7 @@
 			return $resource(api + 'tournament/:id/phase', { "id" : "@id"});
 		}])
 		.factory('Participant', ['$resource', function($resource){
-			return $resource(api + 'participant/:id', { "id" : "@id" }, 
+			var Participant = $resource(api + 'participant/:id', { "id" : "@id" }, 
 				{ 
 					update: { method: 'PUT' },
 					postPicture: { 
@@ -36,6 +50,18 @@
 					}
 				}
 			);
+
+		  	Participant.prototype.hasDetails = function(participant) {
+		    	return this.age || this.height || this.weight;
+  			};
+
+		  	Participant.prototype.getSubscription = function(tournamentId) {
+		    	return _.find(this.subscriptions,function(subscription){
+		    		return subscription.tournament === tournamentId;
+		    	});
+  			};
+
+  			return Participant;
 		}])
 
 		.factory('Country', ['$resource', function($resource) {

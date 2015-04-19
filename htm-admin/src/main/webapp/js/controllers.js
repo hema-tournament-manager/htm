@@ -268,9 +268,7 @@
 			  			});
 				};
 
-			  	$scope.hasDetails = function(participant) {
-			    	return participant.age || participant.height || participant.weight;
-	  			};
+
 
 	  			$scope.show = function(participant){
 	  				openModal(participant).finally(function(){

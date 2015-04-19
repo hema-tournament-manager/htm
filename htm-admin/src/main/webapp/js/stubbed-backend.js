@@ -65,17 +65,13 @@
                             gearChecked: true,
                             droppedOut: true,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 1, name: 'Dagger', memo: 'DG'
-                            }
+                            tournament: 1
                         },{
                             fighterNumber: 1,
                             gearChecked: false,
                             droppedOut: false,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 2, name: 'Longsword', memo: 'LS'
-                            }
+                            tournament: 2
                         }],
                         hasPicture: false
                     },  {   id: 1,
@@ -96,17 +92,13 @@
                             gearChecked: true,
                             droppedOut: true,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 1, name: 'Dagger', memo: 'DG'
-                            }
+                            tournament:3
                         },{
                             fighterNumber: 1,
                             gearChecked: false,
                             droppedOut: false,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 2, name: 'Longsword', memo: 'LS'
-                            }
+                            tournament: 2
                         }],
                         hasPicture: true
                     },{  id:  2,
@@ -128,17 +120,13 @@
                             gearChecked: true,
                             droppedOut: false,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 1, name: 'Longsword', memo: 'LS'
-                            }
+                            tournament: 1
                         },{
                             fighterNumber: 2,
                             gearChecked: false,
                             droppedOut: false,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 2, name: 'Longsword', memo: 'LS'
-                            }
+                            tournament: 2
                         }],
                         hasPicture: false
                     },{  id: 3,
@@ -161,17 +149,13 @@
                             gearChecked: false,
                             droppedOut: false,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 1, name: 'Longsword', memo: 'LS'
-                            }
+                            tournament: 1
                         },{
                             fighterNumber: 3,
                             gearChecked: false,
                             droppedOut: false,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 2, name: 'Longsword', memo: 'LS'
-                            }
+                            tournament: 2
                         }],
                         hasPicture: false
                     },{  id: 4,
@@ -194,9 +178,7 @@
                             gearChecked: true,
                             droppedOut: true,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 1, name: 'Longsword', memo: 'LS'
-                            }
+                            tournament: 1
                         }],
                         hasPicture: false
                     },{  id: 5,
@@ -217,9 +199,7 @@
                             gearChecked: false,
                             droppedOut: false,
                             pool: 'Swimming',
-                            tournament: {
-                                id: 1, name: 'Longsword', memo: 'LS'
-                            }
+                            tournament: 1
                         }],
                         hasPicture: false
                     }];

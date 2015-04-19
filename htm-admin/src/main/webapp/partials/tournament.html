@@ -61,10 +61,10 @@
 					</span>
 					<ui-select ng-model="participant" ng-disabled="disabled">
 						<ui-select-match placeholder="Select or search a participant in the list...">
-							<span><htm-flag country="participant.country"></htm-flag> {{$select.selected.name + " " + $select.selected.club.name}}</span>
+							<span><htm-flag country="participant.country"></htm-flag> {{$select.selected.name + " - " + $select.selected.club.name}}</span>
 
 							</ui-select-match>
-						<ui-select-choices repeat="participant in participants | filter: $select.search" refresh="searchParticipants($select.search)"refresh-delay="500">
+						<ui-select-choices repeat="participant in participants | filter: $select.search track by participant.id" refresh="searchParticipants($select.search)"refresh-delay="500">
 							<htm-flag country="participant.country"></htm-flag>
 							<span ng-bind-html="participant.name | highlight: $select.search"></span> - <span ng-bind-html="participant.club.name | highlight: $select.search"></span>
 						</ui-select-choices>

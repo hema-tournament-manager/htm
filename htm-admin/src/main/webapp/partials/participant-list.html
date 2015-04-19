@@ -94,7 +94,7 @@
 							    <span class="label" ng-class="participant.hasPicture ? 'label-success' : 'label-warning'" title="{{participant.hasPicture ? 'Picture is available' : 'No picture available yet'}}">
 							    	<span class="glyphicon glyphicon-picture"></span>
 							    </span>
-							    <span class="label" ng-class="hasDetails(participant) ? 'label-success' : 'label-default'" title="{{hasDetails(participant) ? 'Details are filled in' : 'No details filled in yet'}}">
+							    <span class="label" ng-class="participant.hasDetails() ? 'label-success' : 'label-default'" title="{{participant.hasDetails() ? 'Details are filled in' : 'No details filled in yet'}}">
 							    	<span class="glyphicon glyphicon-list"></span>
 						    	</span>
 					    	</span>
