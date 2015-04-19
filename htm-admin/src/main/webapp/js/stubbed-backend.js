@@ -28,24 +28,6 @@
                 {code2: "DE", name: "Germany"}
                 ];
 
-                var tournaments = [
-                {
-                    id: 1,
-                    name: "Longsword",
-                    memo: "LS", 
-                    participants: [1,2,3,4,5],
-                },{
-                    id: 2,
-                    name: "Dagger",
-                    memo: "DG", 
-                    participants: [1,2,3],
-                }, {
-                    id: 3,
-                    name: "Sword and shield",
-                    memo: "SAS", 
-                    participants: [],
-                }];
-
                 var participants = [{   id: 0,
 
                         name: 'Jack',
@@ -204,55 +186,13 @@
                         hasPicture: false
                     }];
   
-                var fighters = [{   id: 1,
-
-                        name: 'Jack',
-                        shortName: '1',
-                        club: {id: 1, name:'H.T.M',code:'HTM'},
-                        country: {code2: "NL", name: "Netherlands"},
-                        isPresent: true,
-                        fighterNumber: 1,
-                        gearChecked: true,
-                        droppedOut: true,
-
-
-                    },{
-                        id: 2,
-                        name: 'Jones',
-                        shortName: '1',
-                        club: {id: 1, name:'H.T.M',code:'HTM'},
-                        country: {code2: "NL", name: "Netherlands"},
-                        isPresent: true,
-                        fighterNumber: 2,
-                        gearChecked: true,
-                        droppedOut: true,
-                    }];
-
-                    var fights = [{
-                                id: 1,
-                                phase: 1,
-                                time: undefined,    //unscheduled
-                                name: 'First Fight',
-                                fighterA: { fighterNumber: 1},  // resolved future
-                                fighterB: { fighterNumber: 2},
-
-                            },{
-                                id: 2,
-                                phase: 2,
-                                time: undefined,    //unscheduled
-                                name: 'Second Fight',
-                                fighterA: { fighterNumber: 2},
-                                fighterB: { fighterNumber: 1},
-                            },{
-                                id: 3,
-                                phase: 3,
-                                time: 1000, //scheduled
-                                name: 'Third Fight',
-                                fighterA: { winnerOf: 1},   // un resolved future
-                                fighterB: { loserOf: 2},
-                            }];
-
-                var phases = [
+                var tournaments = [
+                {
+                    id: 1,
+                    name: "Longsword",
+                    memo: "LS", 
+                    participants: participants,
+                    phases: [
                     {
                         id: 1,
                         type: 'P', // Pool
@@ -282,7 +222,43 @@
                         type: 'E', // Elimination
                         fights: [1,2,3]
                     }
-                ];
+                ],
+                fights: [{
+                            id: 1,
+                            phase: 1,
+                            time: undefined,    //unscheduled
+                            name: 'First Fight',
+                            fighterA: { participant: 1},  // resolved future
+                            fighterB: { participant: 2},
+
+                        },{
+                            id: 2,
+                            phase: 2,
+                            time: undefined,    //unscheduled
+                            name: 'Second Fight',
+                            fighterA: { participant: 2},
+                            fighterB: { participant: 1},
+                        },{
+                            id: 3,
+                            phase: 3,
+                            time: 1000, //scheduled
+                            name: 'Third Fight',
+                            fighterA: { winnerOf: 1},   // un resolved future
+                            fighterB: { loserOf: 2},
+                        }],
+                },{
+                    id: 2,
+                    name: "Dagger",
+                    memo: "DG", 
+                    participants: participants,
+                    phases: [],
+                }, {
+                    id: 3,
+                    name: "Sword and shield",
+                    memo: "SAS", 
+                    participants: participants,
+                    phases: [],
+                }];
 
 
                 $httpBackend.whenGET(/^\/partials\//).passThrough();
@@ -298,8 +274,8 @@
 
 
 
-                $httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/fighter/).respond(fighters);
-                $httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/phase/).respond(phases);
+                //$httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/fighter/).respond(fighters);
+                //$httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/phase/).respond(phases);
                 $httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/phase\/[0-9]+/).respond(function(method, url, data) {
                     
                     return [200,undefined];

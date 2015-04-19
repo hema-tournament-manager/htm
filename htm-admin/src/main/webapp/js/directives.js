@@ -162,40 +162,8 @@
 		return {
 			restrict: 'E',
 			replace: true,
-			scope: {phases:"=",fights:"=",fighters:"=",fighter:"="},
-			templateUrl:'/partials/fighter-name.html',
-			controller: ['$scope',function($scope){
-
-				$scope.getFighter = function(fighterNumber){
-					return _.find($scope.fighters, function(fighter){
-						return fighter.fighterNumber === fighterNumber;
-					});
-				};
-
-				$scope.getFightName = function(fightId){
-					if(angular.isUndefined(fightId)){
-						return ''
-					}
-
-					var fight =  _.find($scope.fights, function(fight){
-						return fight.id === fightId;
-					});
-
-					var phase = _.find($scope.phases, function(phase){
-						return phase.id === fight.phase;
-					});
-
-					if(angular.isUndefined(phase.pools)){
-						return phase.name + " - " + fight.name;
-					}
-
-					var pool = _.find(phase.pools, function(pool){
-						return _.contains(pool.fights,fight.id);
-					});
-
-					return phase.name + " - " + pool.name + " " + fight.name ;
-				};	
-			}],
+			scope: {tournament:"=",fighter:"="},
+			templateUrl:'/partials/fighter-name.html'
 		};
 	})
 	.directive('htmLowerCase', function(){

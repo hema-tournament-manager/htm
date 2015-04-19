@@ -178,12 +178,12 @@
                 <td><a href="#/tournament/{{tournament.id}}" ng-click="cancel()" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-wrench"></span></a></td>
                 <td><htm-tournament-memo tournament="tournament"></htm-tournament-memo></td>
                 <td class="hidden-xs"><span>{{tournament.name}}</span></td>
-                <td><span class="glyphicon" ng-class="{'glyphicon-ok':subscription, 'glyphicon-remove':!subscription}"></span></td>
+                <td><span class="glyphicon" ng-class="subscription ? 'glyphicon-ok' : 'glyphicon-remove'"></span></td>
                 <td><span ng-show="subscription">{{subscription.fighterNumber || '-' }}</span></td>
                 <td><span ng-show="subscription">{{subscription.pool || '-'}}</span></td>
                 <td>
-                  <span ng-show="subscription" class="label" ng-class="{'label-success': subscription.gearCheck, 'label-danger':!subscription.gearCheck}">
-                    <span class="glyphicon" ng-class="{'glyphicon-ok':subscription.gearCheck,'glyphicon-cog':!subscription.gearCheck}"></span>
+                  <span ng-show="subscription" class="label" ng-class="subscription.gearCheck ? 'label-success' : 'label-danger'">
+                    <span class="glyphicon" ng-class="subscription.gearCheck ? 'glyphicon-ok' : 'glyphicon-cog'"></span>
                   </span>
                 </td>
             </tr>

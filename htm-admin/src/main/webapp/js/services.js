@@ -8,7 +8,7 @@
 	angular.module('htm.api', ['ngResource'])
 	
 		.factory('Tournament', ['$resource', function($resource){
-			return $resource(api + 'tournament/:id', { "id" : "@id" },{
+			var Tournament = $resource(api + 'tournament/:id', { "id" : "@id" },{
 
 					get: { 
 						method: 'GET',
@@ -19,10 +19,46 @@
 							    return Tournament;
 						},
 						headers:{'Content-Type': undefined}
+					}});
+
+			Tournament.prototype.getFights = function(fightIds){
+				return _.filter(this.fights, function(fight){
+					return _.contains(fightIds,fight.id);
+				});
+			};
+
+			Tournament.prototype.getFightName = function(fightId){
+					if(angular.isUndefined(fightId)){
+						return ''
 					}
 
+					var fight =  _.find(this.fights, function(fight){
+						return fight.id === fightId;
+					});
 
-			});
+					var phase = _.find(this.phases, function(phase){
+						return phase.id === fight.phase;
+					});
+
+					if(angular.isUndefined(phase.pools)){
+						return phase.name + " - " + fight.name;
+					}
+
+					var pool = _.find(phase.pools, function(pool){
+						return _.contains(pool.fights,fight.id);
+					});
+
+					return phase.name + " - " + pool.name + " " + fight.name ;
+			};
+			
+			Tournament.prototype.getParticipant = function(participantId){
+				return _.find(this.participants, function(participant){
+					return participant.id === participantId;
+				});
+			};
+
+			return Tournament			
+
 		}])
 		.factory('Fight', ['$resource', function($resource) {
 			return $resource(api + 'tournament/:id/fight/:fightId', { "id" : "@id", "fightId":"@fightId" });
