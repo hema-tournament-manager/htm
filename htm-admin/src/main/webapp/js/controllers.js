@@ -125,8 +125,8 @@
 		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', 'Participant', 'Fighter','Fight','Phase',
 			function($scope, $routeParams, Tournament, Participant, Fighter, Fight, Phase) {
 				$scope.tournament = Tournament.get({id:$routeParams.tournamentId});
-				$scope.participant = {};
 				$scope.participants = []; 
+				$scope.newPartipcant = {}; 
 
 				$scope.searchParticipants = function(query){
 					var searchCriteria = {
@@ -135,15 +135,29 @@
 						query:query,
 					};
 
-					$scope.participants = Participant.query(searchCriteria);
+					Participant.query(searchCriteria).$promise.then(function(participants){
+						$scope.participants = _.filter(participants,function(participant){
+							return !$scope.tournament.isSubscribed(participant);
+						}); 
+					});
 				}
 
-				$scope.addParticipant = function(){
-					if(angular.isUndefined($scope.participant)){
+				$scope.addParticipant = function(participant){
+					if($scope.tournament.isSubscribed(participant)){
+						//TODO: Handle error
 						return;
 					}
 
-					
+
+					$scope.tournament.subscribe(participant).then(function(subscription){
+						// Force refresh of participant list
+						$scope.newPartipcant = {};
+						$scope.participants = _.filter($scope.participants, function(oldParticipant){
+							return oldParticipant.id !== participant.id;
+						});
+					},function(error){
+						//TODO: Handle error
+					});
 				}
 		}]);
 

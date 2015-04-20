@@ -54,26 +54,25 @@
 						</tr>
 					</tbody>
 				</table>
-				
+
 				<span class="input-group">
 					<span class="input-group-addon">
 							<span class="glyphicon glyphicon-search" title="Search participant"></span>
-
 					</span>
-					<ui-select ng-model="participant" ng-disabled="disabled">
+					<ui-select ng-model="newPartipcant.selected">
 						<ui-select-match placeholder="Select or search a participant in the list...">
 							<span>
-								<htm-flag country="participant.country"></htm-flag>
-								<span> {{$select.selected.name + " - " + $select.selected.club.name}}</span> 
+								<htm-flag country="newPartipcant.selected.country"></htm-flag>
+								<span> {{newPartipcant.selected.name + " - " + newPartipcant.selected.club.name}}</span> 
 							</span>
 							</ui-select-match>
-						<ui-select-choices repeat="participant in participants | filter: $select.search track by participant.id" refresh="searchParticipants($select.search)"refresh-delay="500">
-							<htm-flag country="participant.country"></htm-flag>
-							<span ng-bind-html="participant.name | highlight: $select.search"></span> - <span ng-bind-html="participant.club.name | highlight: $select.search"></span>
+						<ui-select-choices repeat="participant in participants | filter: $select.search" refresh="searchParticipants($select.search)"refresh-delay="500">
+							<span><htm-flag country="participant.country"></htm-flag>
+							<span ng-bind-html="participant.name | highlight: $select.search"></span> - <span ng-bind-html="participant.club.name | highlight: $select.search"></span></span>
 						</ui-select-choices>
 					</ui-select>
 					<span class="input-group-btn">
-						<button role="button" class="btn btn-default" ng-click="addParticipant()">
+						<button role="button" class="btn btn-default" ng-click="addParticipant(newPartipcant.selected)">
 							<span class="glyphicon glyphicon-plus" title="Add participant to tournament"></span>
 						</button>
 					</span>

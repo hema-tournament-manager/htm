@@ -32,11 +32,11 @@
         <div ng-form="idForm" role="form" novalidate>
           <div class="form-group">
             <label for="name">Name</label>
-            <input ng-model="participant.name" type="text" class="form-control" name="name" required="required"/>
+            <input ng-model="participant.name" type="text" class="form-control" name="name" required="true"/>
           </div>
           <div class="form-group">
             <label for="shortName">Short name (used in the viewer)</label>
-            <input ng-model="participant.shortName" type="text" class="form-control" name="shortName" required="required"/>
+            <input ng-model="participant.shortName" type="text" class="form-control" name="shortName" required="true"/>
           </div>
           <div class="form-group">
             <label for="club">Club</label>
@@ -44,7 +44,7 @@
               <span class="input-group-btn">
                 <button ng-click="showAddNewClub()" class="btn btn-default" type="button" title="Add new club"><span class="glyphicon glyphicon-plus"/></button>
               </span>
-              <ui-select ng-model="participant.club" ng-disabled="disabled" required="required">
+              <ui-select ng-model="participant.club">
                 <ui-select-match placeholder="Select or search a club in the list...">{{$select.selected.name}}</ui-select-match>
                 <ui-select-choices repeat="club in clubs | filter: $select.search">
                   <span ng-bind-html="club.code | highlight: $select.search"></span> - <span ng-bind-html="club.name | highlight: $select.search"></span>
@@ -55,13 +55,13 @@
               <span class="input-group-btn">
                   <button ng-click="hideAddNewClub()" class="btn btn-success" type="button" title="Cancel add new club"><span class="glyphicon glyphicon-plus"/></button>
               </span>
-              <input ng-model="participant.club.name" htm-focus-on="addNewClubVisible" type="text" class="form-control" required="required"/>
+              <input ng-model="participant.club.name" htm-focus-on="addNewClubVisible" type="text" class="form-control" required="true"/>
             </div>
           </div>
           <div class="form-group" ng-show="addNewClubVisible">
             <label for="clubCode">Club code</label>
             <div class="form-group">
-                <input ng-model="participant.club.code" type="text" class="form-control" required="required" popover="The club code is used as a short hand to identify a club when the full name can not be displayed"/>
+                <input ng-model="participant.club.code" type="text" class="form-control" required="true" popover="The club code is used as a short hand to identify a club when the full name can not be displayed"/>
             </div>
           </div>
 
@@ -72,7 +72,7 @@
                 <htm-flag country="participant.country"></htm-flag>
               </span>
 
-              <ui-select ng-model="participant.country" ng-disabled="disabled" required="required">
+              <ui-select ng-model="participant.country" ng-disabled="disabled" required="true">
                 <ui-select-match placeholder="Select or search a country in the list...">{{$select.selected.name}}</ui-select-match>
                 <ui-select-choices repeat="country in countries | filter: $select.search">
                   <span ng-bind-html="country.code2 | highlight: $select.search"></span> - <span ng-bind-html="country.name | highlight: $select.search"></span>

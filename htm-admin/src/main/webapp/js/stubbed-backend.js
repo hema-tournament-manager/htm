@@ -46,13 +46,13 @@
                             fighterNumber: 1,
                             gearChecked: true,
                             droppedOut: true,
-                            pool: 'Swimming',
+                            
                             tournament: 1
                         },{
                             fighterNumber: 1,
                             gearChecked: false,
                             droppedOut: false,
-                            pool: 'Swimming',
+                            
                             tournament: 2
                         }],
                         hasPicture: false
@@ -73,13 +73,13 @@
                             fighterNumber: 1,
                             gearChecked: true,
                             droppedOut: true,
-                            pool: 'Swimming',
+                            
                             tournament:3
                         },{
                             fighterNumber: 1,
                             gearChecked: false,
                             droppedOut: false,
-                            pool: 'Swimming',
+                            
                             tournament: 2
                         }],
                         hasPicture: true
@@ -101,13 +101,13 @@
                             fighterNumber: 2,
                             gearChecked: true,
                             droppedOut: false,
-                            pool: 'Swimming',
+                            
                             tournament: 1
                         },{
                             fighterNumber: 2,
                             gearChecked: false,
                             droppedOut: false,
-                            pool: 'Swimming',
+                            
                             tournament: 2
                         }],
                         hasPicture: false
@@ -124,19 +124,18 @@
                         height: 188,
                         weight: 82,
                         previousWins: [ {text:'previousWins'},{text:'previousWins'}],
-                        fighterNumber: 'fighterNumber',
 
                         subscriptions: [{
                             fighterNumber: 3,
                             gearChecked: false,
                             droppedOut: false,
-                            pool: 'Swimming',
+                            
                             tournament: 1
                         },{
                             fighterNumber: 3,
                             gearChecked: false,
                             droppedOut: false,
-                            pool: 'Swimming',
+                            
                             tournament: 2
                         }],
                         hasPicture: false
@@ -153,13 +152,12 @@
                         height: 188,
                         weight: 82,
                         previousWins: [ {text:'previousWins'},{text:'previousWins'}],
-                        fighterNumber: 'fighterNumber',
 
                         subscriptions: [{
                             fighterNumber: 4,
                             gearChecked: true,
                             droppedOut: true,
-                            pool: 'Swimming',
+                            
                             tournament: 1
                         }],
                         hasPicture: false
@@ -180,7 +178,7 @@
                             fighterNumber: 5,
                             gearChecked: false,
                             droppedOut: false,
-                            pool: 'Swimming',
+                            
                             tournament: 1
                         }],
                         hasPicture: false
@@ -191,7 +189,7 @@
                     id: 1,
                     name: "Longsword",
                     memo: "LS", 
-                    participants: participants,
+                    participants: [participants[0]],
                     phases: [
                     {
                         id: 1,
@@ -324,6 +322,16 @@
                     var participant = {id:participants.length,hasPicture:true};
                     participants.push(participant);
                     return [200,participant];
+                });
+
+                $httpBackend.whenPOST(/\/api\/v3\/participant\/[0-9]+\/subscribe\/[0-9]+/).respond(function(method, url, data) {
+                    console.log('participant subscribed ' + data);
+
+                    var subscription = angular.fromJson(data);
+                    var participant = participants[subscription.participant]
+                    participant.subscriptions.push(subscription);
+                    subscription.fighterNumber = 100;
+                    return [200,subscription];
                 });
 
                 $httpBackend.whenPOST(/\/api\/v3\/participant\/[0-9]+/).respond(function(method, url, data) {

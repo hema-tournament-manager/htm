@@ -7,19 +7,31 @@
 
 	angular.module('htm.api', ['ngResource'])
 	
-		.factory('Tournament', ['$resource', function($resource){
-			var Tournament = $resource(api + 'tournament/:id', { "id" : "@id" },{
+		.factory('Tournament', ['$resource', 'Participant','Phase','Fight',
+			function($resource,Participant,Phase,Fight){
+				var Tournament = $resource(api + 'tournament/:id', { "id" : "@id" },{
 
-					get: { 
-						method: 'GET',
-						transformResponse: function(Tournament){
-							    
+						get: { 
+							method: 'GET',
+							isArray: false,
+							transformResponse: function(Tournament){
+								    
+								angular.forEach(Tournament.participants, function(participant,index){
+									Tournament.participants[index] = new Participant(participant);
+								});
 
+								angular.forEach(Tournament.phases, function(phase,index){
+									Tournament.phases[index] = new Phase(phase);
+								});
+
+								angular.forEach(Tournament.fights, function(fight,index){
+									Tournament.fights[index] = new Fight(fight);
+								});
 
 							    return Tournament;
-						},
-						headers:{'Content-Type': undefined}
-					}});
+							},
+							headers:{'Content-Type': undefined}
+						}});
 
 			Tournament.prototype.getFights = function(fightIds){
 				return _.filter(this.fights, function(fight){
@@ -57,6 +69,19 @@
 				});
 			};
 
+			Tournament.prototype.subscribe = function(participant){
+				var self = this;
+				return participant.subscribe(this.id).then(function(subscription){
+					self.participants.push(participant);
+				});
+			};
+
+			Tournament.prototype.isSubscribed = function(participant){
+				return _.some(this.participants, function(tParticipant){
+					return tParticipant.id === participant.id;
+				});
+			}
+
 			return Tournament			
 
 		}])
@@ -69,7 +94,7 @@
 		.factory('Phase', ['$resource', function($resource) {
 			return $resource(api + 'tournament/:id/phase', { "id" : "@id"});
 		}])
-		.factory('Participant', ['$resource', function($resource){
+		.factory('Participant', ['$resource', 'Subscription', function($resource, Subscription){
 			var Participant = $resource(api + 'participant/:id', { "id" : "@id" }, 
 				{ 
 					update: { method: 'PUT' },
@@ -83,6 +108,19 @@
 							    return fd;
 						},
 						headers:{'Content-Type': undefined}
+					}, 
+
+					query: { 
+						method: 'GET',
+						isArray: true,
+						transformResponse: function(ParticipantList){
+
+							angular.forEach(ParticipantList, function(participant,index){
+								ParticipantList[index] = new Participant(participant);
+							});
+
+							return ParticipantList;
+						},
 					}
 				}
 			);
@@ -97,7 +135,26 @@
 		    	});
   			};
 
+  			/**
+  				Subscribes a participant to a tournament
+  			*/
+			Participant.prototype.subscribe = function(tournamentId){
+  				var self = this;
+
+  				var subscription = new Subscription({ participant: this.id,
+  													  tournament: tournamentId, 
+										 			  gearChecked: false,
+                            			  			  droppedOut: false})
+  				return subscription.$save().then(function(subscription){
+  					self.subscriptions.push(subscription);
+  				});
+  			}
+
   			return Participant;
+		}])
+
+		.factory('Subscription', ['$resource', function($resource) {
+  			return $resource(api+'participant/:participant/subscribe/:tournament',{ "participant" : "@participant","tournament" : "@tournament" });
 		}])
 
 		.factory('Country', ['$resource', function($resource) {
