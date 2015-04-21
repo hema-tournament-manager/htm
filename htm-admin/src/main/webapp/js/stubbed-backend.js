@@ -270,7 +270,21 @@
                     return [200, tournament, {}];
                 });
 
+                $httpBackend.whenPOST(/\/api\/v3\/phase\/[0-9]+\/fight/).respond(function(method, url, data) {
+                    
+                    var parts = url.split('/');
+                    var id = parseInt(parts[parts.length-2]);
 
+                    var fight = {
+                            id: 999,
+                            phase: id,
+                            time: undefined,    //unscheduled
+                            name: 'Posted Fight',
+                            fighterA: {},
+                            fighterB: {},
+                        };
+                    return [200,fight];
+                });
 
                 //$httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/fighter/).respond(fighters);
                 //$httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/phase/).respond(phases);

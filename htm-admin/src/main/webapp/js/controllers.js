@@ -122,8 +122,8 @@
 			};
 		}])
 
-		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', 'Participant', 'Fighter','Fight','Phase',
-			function($scope, $routeParams, Tournament, Participant, Fighter, Fight, Phase) {
+		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', 'Participant', 'Fight','Phase',
+			function($scope, $routeParams, Tournament, Participant, Fight, Phase) {
 				$scope.tournament = Tournament.get({id:$routeParams.tournamentId});
 				$scope.participants = []; 
 				$scope.newPartipcant = {}; 
@@ -148,9 +148,9 @@
 						return;
 					}
 
-
 					$scope.tournament.subscribe(participant).then(function(subscription){
-						// Force refresh of participant list
+						// Clear search result and remove 
+						// subscribed participant from the result list
 						$scope.newPartipcant = {};
 						$scope.participants = _.filter($scope.participants, function(oldParticipant){
 							return oldParticipant.id !== participant.id;
@@ -159,6 +159,13 @@
 						//TODO: Handle error
 					});
 				}
+
+				$scope.addFight = function(freestylePhase){
+					return $scope.tournament.addFight(freestylePhase).catch(function(error){
+						//TODO: Handle error
+					});
+				};
+
 		}]);
 
 	angular.module('htm.particpant', [])

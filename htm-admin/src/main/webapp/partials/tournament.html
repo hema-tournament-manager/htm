@@ -85,7 +85,16 @@
 				<!-- Free style phase -->
 				<div ng-show="phase.type === 'F'">
 					<div class="page-header">
-						<h3>{{phase.name}}</h3>
+						<h3>
+							<span>{{phase.name}}</span>
+							<div class="pull-right">
+								<div class="btn-group ">
+									<button role="button" ng-click="addFight(phase)" role="button" class="btn btn-default">
+										<span class="glyphicon glyphicon-plus"></span>Add Fight</span>
+									</button>
+								</div>
+							</div>
+						</h3>
 					</div>
 					<div class="col-xs-6 col-md-4" ng-repeat="fight in tournament.getFights(phase.fights)">
 						<div class="panel panel-default">

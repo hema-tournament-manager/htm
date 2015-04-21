@@ -34,6 +34,8 @@
 						}});
 
 			Tournament.prototype.getFights = function(fightIds){
+				fightIds = fightIds || [];
+
 				return _.filter(this.fights, function(fight){
 					return _.contains(fightIds,fight.id);
 				});
@@ -73,6 +75,7 @@
 				var self = this;
 				return participant.subscribe(this.id).then(function(subscription){
 					self.participants.push(participant);
+					return this;
 				});
 			};
 
@@ -82,17 +85,33 @@
 				});
 			}
 
+			Tournament.prototype.addFight = function(freestylePhase){
+				var self = this;
+				return freestylePhase.addFight().then(function(fight){
+					self.fights.push(fight);
+					return this;
+				});
+			}			
+
 			return Tournament			
 
 		}])
 		.factory('Fight', ['$resource', function($resource) {
-			return $resource(api + 'tournament/:id/fight/:fightId', { "id" : "@id", "fightId":"@fightId" });
+			return $resource(api + 'phase/:phase/fight/:id', { "phase" : "@phase", "id":"@id" });
 		}])		
-		.factory('Fighter', ['$resource', function($resource) {
-			return $resource(api + 'tournament/:id/fighter/:fighterNumber', { "id" : "@id", "fighterNumber":"@fighterNumber" });
-		}])
-		.factory('Phase', ['$resource', function($resource) {
-			return $resource(api + 'tournament/:id/phase', { "id" : "@id"});
+		.factory('Phase', ['$resource','Fight', function($resource,Fight) {
+			var Phase = $resource(api + 'tournament/:id/phase', { "id" : "@id"});
+
+			Phase.prototype.addFight = function(){
+  				var self = this;
+
+				return new Fight({phase:this.id}).$save().then(function(fight){
+					self.fights.push(fight.id);
+					return fight;
+				});
+			}
+
+			return Phase;
 		}])
 		.factory('Participant', ['$resource', 'Subscription', function($resource, Subscription){
 			var Participant = $resource(api + 'participant/:id', { "id" : "@id" }, 
@@ -139,7 +158,6 @@
   				Subscribes a participant to a tournament
   			*/
 			Participant.prototype.subscribe = function(tournamentId){
-  				var self = this;
 
   				var subscription = new Subscription({ participant: this.id,
   													  tournament: tournamentId, 
@@ -147,6 +165,7 @@
                             			  			  droppedOut: false})
   				return subscription.$save().then(function(subscription){
   					self.subscriptions.push(subscription);
+  					return subscription;
   				});
   			}
 
