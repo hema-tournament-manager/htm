@@ -115,13 +115,18 @@
 			return {
 				restrict : 'A',
 				link : function($scope,element,attr) {
-					
-					$(element).focus(function(){if(this.select)this.select();});
 
 					$scope.$watch(attr.htmFocusOn,function(_focusVal) {
 						if(_focusVal){
+							// Wrapped in timeout so event 
+							// can trigger in new eval round 
 							$timeout(function() {
-								$(element).focus();
+								var selected = angular.element(element)[0];
+								selected.focus();
+
+								if(selected.select){
+									selected.select();
+								}
 							});
 						}
 					 });

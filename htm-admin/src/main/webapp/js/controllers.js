@@ -143,6 +143,7 @@
 				}
 
 				$scope.addParticipant = function(participant){
+
 					if($scope.tournament.isSubscribed(participant)){
 						//TODO: Handle error
 						return;

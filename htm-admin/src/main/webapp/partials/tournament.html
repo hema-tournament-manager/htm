@@ -20,7 +20,7 @@
 				</h2>
 			</div>
 		</div>
-		<!-- Participants table -->
+		<!-- Participants table and search/add menu -->
 		<div class="row">
 			<div class="col-md-12">
 				<table class="table table-striped table-condensed table-hover table-responsive">
@@ -59,7 +59,7 @@
 					<span class="input-group-addon">
 							<span class="glyphicon glyphicon-search" title="Search participant"></span>
 					</span>
-					<ui-select ng-model="newPartipcant.selected">
+					<ui-select ng-model="newPartipcant.selected" focus-on="newParticipantAdded" >
 						<ui-select-match placeholder="Select or search a participant in the list...">
 							<span>
 								<htm-flag country="newPartipcant.selected.country"></htm-flag>
@@ -72,7 +72,7 @@
 						</ui-select-choices>
 					</ui-select>
 					<span class="input-group-btn">
-						<button role="button" class="btn btn-default" ng-click="addParticipant(newPartipcant.selected)">
+						<button role="button" class="btn btn-default" ng-click="addParticipant(newPartipcant.selected); $broadcast('newParticipantAdded');" ng-disabled="!newPartipcant.selected"  htm-focus-on="newPartipcant.selected">
 							<span class="glyphicon glyphicon-plus" title="Add participant to tournament"></span>
 						</button>
 					</span>

@@ -163,6 +163,7 @@
   													  tournament: tournamentId, 
 										 			  gearChecked: false,
                             			  			  droppedOut: false})
+  				var self = this;
   				return subscription.$save().then(function(subscription){
   					self.subscriptions.push(subscription);
   					return subscription;
