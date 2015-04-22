@@ -171,6 +171,50 @@
 			templateUrl:'/partials/fighter-name.html'
 		};
 	})
+	.directive('htmFightPanel', function() {
+		return {
+			restrict: 'E',
+			replace: true,
+			scope: {fight:"=",tournament:"="},
+			templateUrl:'/partials/fight-panel.html',
+			controller: ['$scope','$modal', function($scope, $modal){
+
+				$scope.editFight = function(fight){
+		 		 	$modal.open({
+						templateUrl: '/partials/fight-edit.html',
+						controller: 'FightEditCtrl',
+						size: 'sm',
+						resolve: {
+							fight: function () {
+							  return fight;
+							},
+							tournaments: function() {
+							  return $scope.tournament;
+							}
+						}
+					});	
+				}
+				$scope.editFighter = function(fighter){
+					
+		 		 	$modal.open({
+						templateUrl: '/partials/fighter-edit.html',
+						controller: 'FighterEditCtrl',
+						size: 'sm',
+						resolve: {
+							fighter: function () {
+							  return fighter;
+							},
+							tournaments: function() {
+							  return $scope.tournament;
+							}
+						}
+					});				
+				}
+
+
+			}],
+		};
+	})
 	.directive('htmLowerCase', function(){
 		return {
 			require: 'ngModel',
