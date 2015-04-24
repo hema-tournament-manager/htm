@@ -123,28 +123,32 @@
 		}])
 		.controller('FighterEditCtrl', ['$scope', '$modalInstance', 'tournament', 'fight', 'fighter', 
 			function($scope, $modalInstance, tournament,fight,fighter) {
-
-				$scope.fight = fight;
-				$scope.fighter = fighter;
+				
+				$scope.fromFightTabActive = angular.isDefined(fighter.winnerOf) || angular.isDefined(fighter.loserOf);
 				$scope.tournament = tournament;
+				$scope.fight = angular.copy(fight);
+
+				if(fighter === fight.fighterA){
+					$scope.fighter = $scope.fight.fighterA
+				} else if(fighter === fight.fighterB){
+					$scope.fighter = $scope.fight.fighterB
+				} else {
+					$scope.fighter = fighter;
+				}
 
 
 				$scope.save = function() {
 
 					$scope.fight.$save(function(savedFight){
-						$modalInstance.close(savedFight);
+						$modalInstance.close(angular.copy(savedFight,fight));
 					},function(error){
 						//TODO: Handle error.
 					});
 				};
 
 				$scope.cancel = function() {
+					$modalInstance.dismiss('cancel');
 					
-					$scope.fight.$get(function(refreshedFight){
-						$modalInstance.dismiss('cancel');
-					}, function(error){
-						//TODO: Handle error.
-					});
 				};
 
 				$scope.getPotentialPrecursors = function(){

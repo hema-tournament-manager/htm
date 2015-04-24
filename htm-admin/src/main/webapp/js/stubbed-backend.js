@@ -28,7 +28,7 @@
                 {code2: "DE", name: "Germany"}
                 ];
 
-                var participants = [{   id: 0,
+                var participants = [{   id: 1,
 
                         name: 'Jack',
                         shortName: '0',
@@ -42,21 +42,9 @@
                         weight: 82,
                         previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
-                        subscriptions: [{
-                            fighterNumber: 1,
-                            gearChecked: true,
-                            droppedOut: true,
-                            
-                            tournament: 1
-                        },{
-                            fighterNumber: 1,
-                            gearChecked: false,
-                            droppedOut: false,
-                            
-                            tournament: 2
-                        }],
+                        subscriptions: [],
                         hasPicture: false
-                    },  {   id: 1,
+                    },  {   id: 2,
 
                         name: 'Jones',
                         shortName: '1',
@@ -69,21 +57,9 @@
                         weight: 82,
                         previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
-                        subscriptions: [{
-                            fighterNumber: 1,
-                            gearChecked: true,
-                            droppedOut: true,
-                            
-                            tournament:3
-                        },{
-                            fighterNumber: 1,
-                            gearChecked: false,
-                            droppedOut: false,
-                            
-                            tournament: 2
-                        }],
+                        subscriptions: [],
                         hasPicture: true
-                    },{  id:  2,
+                    },{  id:  3,
 
                         name: 'Lumber',
                         shortName: '2',
@@ -97,21 +73,9 @@
                         weight: 82,
                         previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
-                        subscriptions: [{
-                            fighterNumber: 2,
-                            gearChecked: true,
-                            droppedOut: false,
-                            
-                            tournament: 1
-                        },{
-                            fighterNumber: 2,
-                            gearChecked: false,
-                            droppedOut: false,
-                            
-                            tournament: 2
-                        }],
+                        subscriptions: [],
                         hasPicture: false
-                    },{  id: 3,
+                    },{  id: 4,
 
                         name: 'Jack',
                         shortName: '3',
@@ -125,19 +89,7 @@
                         weight: 82,
                         previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
-                        subscriptions: [{
-                            fighterNumber: 3,
-                            gearChecked: false,
-                            droppedOut: false,
-                            
-                            tournament: 1
-                        },{
-                            fighterNumber: 3,
-                            gearChecked: false,
-                            droppedOut: false,
-                            
-                            tournament: 2
-                        }],
+                        subscriptions: [],
                         hasPicture: false
                     },{  id: 4,
 
@@ -153,13 +105,7 @@
                         weight: 82,
                         previousWins: [ {text:'previousWins'},{text:'previousWins'}],
 
-                        subscriptions: [{
-                            fighterNumber: 4,
-                            gearChecked: true,
-                            droppedOut: true,
-                            
-                            tournament: 1
-                        }],
+                        subscriptions: [],
                         hasPicture: false
                     },{  id: 5,
 
@@ -174,13 +120,7 @@
                         height: 188,
                         weight: 82,
                         previousWins: [ {text:'previousWins'},{text:'previousWins'}],
-                        subscriptions: [{
-                            fighterNumber: 5,
-                            gearChecked: false,
-                            droppedOut: false,
-                            
-                            tournament: 1
-                        }],
+                        subscriptions: [],
                         hasPicture: false
                     }];
   
@@ -189,7 +129,7 @@
                     id: 1,
                     name: "Longsword",
                     memo: "LS", 
-                    participants: [participants[0]],
+                    participants: [],
                     phases: [
                     {
                         id: 1,
@@ -198,27 +138,23 @@
                         pools: [{
                             id:1, 
                             name: 'Swimming',                  
-                            fights: [1,2,3,4]
-                        },{
-                            id:2, 
-                            name: 'Lava',                  
-                            fights: [1,2,3,4]
+                            fights: [1,2]
                         }]
                     },{
                         id: 2,
                         type: 'F', // Freestyle
                         name: "Freestyle Phase",
-                        fights: [1,2,3,4]
+                        fights: []
                     },{
                         id: 3,
                         name: "Semi-Finals",
                         type: 'E', // Elimination
-                        fights: [1,2,3,4]
+                        fights: [3,4]
                     },{
                         id: 4,
                         name: "Finals",
                         type: 'E', // Elimination
-                        fights: [1,2,3,4]
+                        fights: [5]
                     }
                 ],
                 fights: [{
@@ -226,16 +162,16 @@
                             phase: 1,
                             time: undefined,    //unscheduled
                             name: 'First Fight',
-                            fighterA: { participant: 1},  // resolved future
-                            fighterB: { participant: 2},
+                            fighterA: {},  // resolved future
+                            fighterB: {},
 
                         },{
                             id: 2,
-                            phase: 2,
+                            phase: 1,
                             time: undefined,    //unscheduled
                             name: 'Second Fight',
-                            fighterA: { participant: 2},
-                            fighterB: { participant: 1},
+                            fighterA: {},
+                            fighterB: {},
                         },{
                             id: 3,
                             phase: 3,
@@ -248,20 +184,27 @@
                             phase: 3,
                             time: 1000, //scheduled
                             name: 'Fourth Fight',
+                            fighterA: { winnerOf: 2},   // un resolved future
+                            fighterB: { loserOf: 1},
+                        },{
+                            id: 5,
+                            phase: 4,
+                            time: 1000, //scheduled
+                            name: 'Fifth Fight',
                             fighterA: { winnerOf: 3},   // un resolved future
-                            fighterB: { loserOf: 3},
+                            fighterB: { loserOf: 4},
                         }],
                 },{
                     id: 2,
                     name: "Dagger",
                     memo: "DG", 
-                    participants: participants,
+                    participants: [],
                     phases: [],
                 }, {
                     id: 3,
                     name: "Sword and shield",
                     memo: "SAS", 
-                    participants: participants,
+                    participants: [],
                     phases: [],
                 }];
 
@@ -274,7 +217,13 @@
                     var tournament = angular.fromJson(data);
                     tournament.id = tournaments.length;
                     tournaments.push(tournament);
-                    return [200, tournament, {}];
+                    return [200, tournament];
+                });
+                $httpBackend.whenPOST(/\/api\/v3\/phase\/[0-9]+\/fight\/[0-9]+/).respond(function(method, url, data) {
+                    console.log('fight posted ' + data);
+
+                    var fight = angular.fromJson(data);
+                    return [200,fight];
                 });
 
                 $httpBackend.whenPOST(/\/api\/v3\/phase\/[0-9]+\/fight/).respond(function(method, url, data) {
@@ -292,31 +241,23 @@
                         };
                     return [200,fight];
                 });
+                $httpBackend.whenGET(/\/api\/v3\/phase\/[0-9]+\/fight\/[0-9]+/).respond(function(method, url, data) {
+                    
+                    var parts = url.split('/');
 
-                //$httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/fighter/).respond(fighters);
-                //$httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/phase/).respond(phases);
-                $httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/phase\/[0-9]+/).respond(function(method, url, data) {
+                    var id = parseInt(parts[parts.length-1]);
                     
-                    return [200,undefined];
-                });
-                $httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/fight/).respond(function(method, url, data) {
-                    return [200,fights];
+                
+                    return [200,tournaments[0].fights[id-1]];
                 });
 
-                $httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+\/fight\/[0-9]+/).respond(function(method, url, data) {
-                    
-                    return [200,undefined];
-                });
-                $httpBackend.whenPOST(/\/api\/v3\/tournament\/[0-9]+\/fight\/[0-9]+/).respond(function(method, url, data) {
-                    
-                    return [200,undefined];
-                });
+
 
                 $httpBackend.whenGET(/\/api\/v3\/tournament\/[0-9]+/).respond(function(method, url, data) {
                     var parts = url.split('/');
                     var id = parseInt(parts[parts.length-1]);
 
-                    return [200,tournaments[id]];
+                    return [200,tournaments[id-1]];
                 });
                 $httpBackend.whenGET('/api/v3/tournament').respond(tournaments);
 
@@ -324,7 +265,7 @@
                 $httpBackend.whenGET(/\/api\/v3\/participant\/[0-9]+/).respond(function(method, url, data) {
                     var parts = url.split('/');
                     var id = parseInt(parts[parts.length-1]);
-                    return [200,participants[id]];
+                    return [200,participants[id-1]];
                 });
 
                 $httpBackend.whenPOST(/\/api\/v3\/participant\/picture\/[0-9]+/).respond(function(method, url, data) {
@@ -332,7 +273,7 @@
 
                     var parts = url.split('/');
                     var id = parseInt(parts[parts.length-1]);
-                    participants[id].hasPicture=true;
+                    participants[id-1].hasPicture=true;
                     var participant = {id:id,hasPicture:true};
 
                     return [200,participant];
@@ -349,9 +290,9 @@
                     console.log('participant subscribed ' + data);
 
                     var subscription = angular.fromJson(data);
-                    var participant = participants[subscription.participant]
+                    var participant = participants[subscription.participant-1]
                     participant.subscriptions.push(subscription);
-                    subscription.fighterNumber = 100;
+                    subscription.fighterNumber = 999;
                     return [200,subscription];
                 });
 
@@ -367,7 +308,7 @@
                         clubs.push(angular.copy(club));
                     }
 
-                    return [200];
+                    return [200,participant];
                 });
 
 
@@ -386,7 +327,7 @@
                     }
 
                     participants.push(participant);
-                    return [200, participant, {}];
+                    return [200, participant];
                 });
 
 

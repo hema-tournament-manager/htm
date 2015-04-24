@@ -11,7 +11,29 @@
 <div class="modal-body">
 	<form name="fightForm" class="form" novalidate>
 	    <tabset justified="true" type="pills">
-			<tab>
+			<tab >
+				<tab-heading>From Participants List</tab-heading>
+				<table class="table table-striped table-condensed table-hover table-responsive">
+					<thead>
+						<tr>
+							<th>Number</th>
+							<th>Country</th>
+							<th>Name</th>
+							<th>Club</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="participant in getPotentialParticipants()" ng-init="subscription = participant.getSubscription(tournament.id)" ng-click="setParticipant(participant)" ng-class="{'info' : isParticipant(participant)}">
+							<td>{{subscription.fighterNumber}}</td>
+							<td><htm-flag country="participant.country"></htm-flag></td>
+							<td>{{participant.name}}</td>
+							<td>{{participant.club.name}}</td>
+						</tr>
+					</tbody>
+				</table>
+	     	</tab>
+
+			<tab active="fromFightTabActive">
 				<tab-heading>From Fight</tab-heading>
 				<table class="table table-hover">
 					<tbody>
@@ -24,27 +46,7 @@
 				</table>
 
 	      	</tab>
-			<tab>
-				<tab-heading>From Participants List</tab-heading>
-				<table class="table table-striped table-condensed table-hover table-responsive">
-					<thead>
-						<tr>
-							<th>Number</th>
-							<th>Country</th>
-							<th>Name</th>
-							<th>Club</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="participant in getPotentialParticipants()" ng-init="subscription = participant.getSubscription(tournament.id)" ng-click="setParticipant(participant)" g-class="{'info' : isParticipant(participant)}">
-							<td>{{subscription.fighterNumber}}</td>
-							<td><htm-flag country="participant.country"></htm-flag></td>
-							<td>{{participant.name}}</td>
-							<td>{{participant.club.name}}</td>
-						</tr>
-					</tbody>
-				</table>
-	     	</tab>	      
+	      
       	</tabset>
     </form>
 </div>
