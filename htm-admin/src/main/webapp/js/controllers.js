@@ -121,6 +121,80 @@
 				});					
 			};
 		}])
+		.controller('FighterEditCtrl', ['$scope', '$modalInstance', 'tournament', 'fight', 'fighter', 
+			function($scope, $modalInstance, tournament,fight,fighter) {
+
+				$scope.fight = fight;
+				$scope.fighter = fighter;
+				$scope.tournament = tournament;
+
+
+				$scope.save = function() {
+
+					$scope.fight.$save(function(savedFight){
+						$modalInstance.close(savedFight);
+					},function(error){
+						//TODO: Handle error.
+					});
+				};
+
+				$scope.cancel = function() {
+					
+					$scope.fight.$get(function(refreshedFight){
+						$modalInstance.dismiss('cancel');
+					}, function(error){
+						//TODO: Handle error.
+					});
+				};
+
+				$scope.getPotentialPrecursors = function(){
+					var phaseIdx = _.findIndex($scope.tournament.phases,function(phase){
+						return $scope.fight.phase === phase.id;
+					});
+
+					var precursorPhases = $scope.tournament.phases.slice(0,phaseIdx + 1);
+
+					return _.filter($scope.tournament.fights, function(precursorFight){
+						return precursorFight.id !== $scope.fight.id && _.some(precursorPhases, function(precursorPhase){
+							return precursorPhase.id === precursorFight.phase;
+						})
+					});
+				};
+
+				$scope.getPotentialParticipants = function(){
+					return $scope.tournament.participants;
+				};
+
+				$scope.setWinner = function(fight){
+					$scope.fighter.winnerOf = fight.id;
+					$scope.fighter.loserOf = undefined;
+					$scope.fighter.particpant = undefined;
+				};
+
+				$scope.setLoser = function(fight){
+					$scope.fighter.winnerOf = undefined;
+					$scope.fighter.loserOf =  fight.id;
+					$scope.fighter.participant = undefined;
+				};		
+
+				$scope.setParticipant = function(participant){
+					$scope.fighter.winnerOf = undefined;
+					$scope.fighter.loserOf =  undefined;
+					$scope.fighter.participant = participant.id;
+				};
+
+				$scope.isWinnerOf = function(fight){
+					return $scope.fighter.winnerOf === fight.id;
+				}
+				$scope.isLoserOf = function(fight){
+					return $scope.fighter.loserOf === fight.id;
+				}
+
+				$scope.isParticipant = function(participant){
+					return $scope.fighter.participant === participant.id;
+				}
+
+		}])
 
 		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', 'Participant', 'Fight','Phase',
 			function($scope, $routeParams, Tournament, Participant, Fight, Phase) {
@@ -301,7 +375,8 @@
 
 		}])
 
-		.controller('ParticipantRegistrationCtrl',function($scope, $modalInstance, Country, Participant, Club, participant, tournaments) {
+		.controller('ParticipantRegistrationCtrl',['$scope', '$modalInstance', 'Country', 'Participant', 'Club', 'participant', 'tournaments',
+			function($scope, $modalInstance, Country, Participant, Club, participant, tournaments) {
 
 			$scope.pictures = {files:[]};
 			$scope.participant = participant || new Participant({club: {}, isPresent: false, previousWins: [], subscriptions: [], hasPicture: false });
@@ -388,7 +463,11 @@
 			};
 
 
-		})
+		}])
 	;
+
+
+
+	
 
 })();

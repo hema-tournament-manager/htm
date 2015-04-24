@@ -3,21 +3,22 @@
 		<h3 class="panel-title clearfix">{{fight.name}}
 			<!-- TODO: Check link -->
 			<a href="#schedule" class="label label-warning"  title="Show schedule" ng-hide="fight.time">Unscheduled</a>
-			<button class="btn btn-default btn-sm pull-right" title="Edit Fight" ng-click="editFight(fight)">
+			<!-- TODO: Implement edit fight -->
+			<button class="btn btn-default btn-sm pull-right" title="Edit Fight" ng-click="editFight()">
 				<span class="glyphicon glyphicon-wrench"></span>
 			</button>
 		</h3>
 	</div>
 	  <ul class="list-group">
 		<li class="list-group-item clearfix">
-			<button class="btn btn-default btn-sm pull-right" title="Edit Fight" ng-click="editFighter(fighterA)">
+			<button class="btn btn-default btn-sm pull-right" title="Edit Fight" ng-click="editFighter(fight.fighterA)">
 				<span class="glyphicon glyphicon-wrench"></span>
 			</button>
 			<htm-fighter-name tournament="tournament" fighter="fight.fighterA"></htm-fighter-name>
 			
 		</li>
 		<li class="list-group-item clearfix">
-			<button class="btn btn-default btn-sm pull-right"  title="Edit Fight" ng-click="editFighter(fighterB)">
+			<button class="btn btn-default btn-sm pull-right"  title="Edit Fight" ng-click="editFighter(fight.fighterB)">
 				<span class="glyphicon glyphicon-wrench"></span>
 			</button>
 			<htm-fighter-name tournament="tournament" fighter="fight.fighterB"></htm-fighter-name>

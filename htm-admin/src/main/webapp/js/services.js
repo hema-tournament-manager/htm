@@ -42,6 +42,10 @@
 			};
 
 			Tournament.prototype.getFightName = function(fightId){
+					if(angular.isObject(fightId)){
+						fightId = fightId.id;
+					}
+
 					if(angular.isUndefined(fightId)){
 						return ''
 					}
@@ -50,9 +54,7 @@
 						return fight.id === fightId;
 					});
 
-					var phase = _.find(this.phases, function(phase){
-						return phase.id === fight.phase;
-					});
+					var phase = this.getPhase(fight.phase);
 
 					if(angular.isUndefined(phase.pools)){
 						return phase.name + " - " + fight.name;
@@ -64,6 +66,13 @@
 
 					return phase.name + " - " + pool.name + " " + fight.name ;
 			};
+
+			Tournament.prototype.getPhase = function(phaseId){
+				return _.find(this.phases, function(phase){
+					return phase.id === phaseId;
+				});
+			}
+
 			
 			Tournament.prototype.getParticipant = function(participantId){
 				return _.find(this.participants, function(participant){

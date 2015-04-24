@@ -198,27 +198,27 @@
                         pools: [{
                             id:1, 
                             name: 'Swimming',                  
-                            fights: [1,2,3]
+                            fights: [1,2,3,4]
                         },{
                             id:2, 
                             name: 'Lava',                  
-                            fights: [1,2,3]
+                            fights: [1,2,3,4]
                         }]
                     },{
                         id: 2,
                         type: 'F', // Freestyle
                         name: "Freestyle Phase",
-                        fights: [1,2,3]
+                        fights: [1,2,3,4]
                     },{
                         id: 3,
                         name: "Semi-Finals",
                         type: 'E', // Elimination
-                        fights: [1,2,3,1,2,3]
+                        fights: [1,2,3,4]
                     },{
                         id: 4,
                         name: "Finals",
                         type: 'E', // Elimination
-                        fights: [1,2,3]
+                        fights: [1,2,3,4]
                     }
                 ],
                 fights: [{
@@ -243,6 +243,13 @@
                             name: 'Third Fight',
                             fighterA: { winnerOf: 1},   // un resolved future
                             fighterB: { loserOf: 2},
+                        },{
+                            id: 4,
+                            phase: 3,
+                            time: 1000, //scheduled
+                            name: 'Fourth Fight',
+                            fighterA: { winnerOf: 3},   // un resolved future
+                            fighterB: { loserOf: 3},
                         }],
                 },{
                     id: 2,

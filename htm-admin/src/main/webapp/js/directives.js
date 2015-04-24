@@ -168,7 +168,7 @@
 			restrict: 'E',
 			replace: true,
 			scope: {tournament:"=",fighter:"="},
-			templateUrl:'/partials/fighter-name.html'
+			templateUrl:'/partials/tournament-fighter-name.html'
 		};
 	})
 	.directive('htmFightPanel', function() {
@@ -176,17 +176,17 @@
 			restrict: 'E',
 			replace: true,
 			scope: {fight:"=",tournament:"="},
-			templateUrl:'/partials/fight-panel.html',
+			templateUrl:'/partials/tournament-fight-panel.html',
 			controller: ['$scope','$modal', function($scope, $modal){
 
-				$scope.editFight = function(fight){
+				$scope.editFight = function(){
 		 		 	$modal.open({
 						templateUrl: '/partials/fight-edit.html',
 						controller: 'FightEditCtrl',
 						size: 'sm',
 						resolve: {
 							fight: function () {
-							  return fight;
+							  return $scope.fight;
 							},
 							tournaments: function() {
 							  return $scope.tournament;
@@ -199,12 +199,16 @@
 		 		 	$modal.open({
 						templateUrl: '/partials/fighter-edit.html',
 						controller: 'FighterEditCtrl',
-						size: 'sm',
+						size: 'lg',
 						resolve: {
 							fighter: function () {
 							  return fighter;
 							},
-							tournaments: function() {
+							fight: function () {
+							  return $scope.fight;
+							},
+
+							tournament: function() {
 							  return $scope.tournament;
 							}
 						}
