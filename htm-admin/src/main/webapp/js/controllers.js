@@ -383,7 +383,7 @@
 			function($scope, $modalInstance, Country, Participant, Club, participant, tournaments) {
 
 			$scope.pictures = {files:[]};
-			$scope.participant = participant || new Participant({club: {}, isPresent: false, previousWins: [], subscriptions: [], hasPicture: false });
+			$scope.participant = angular.copy(participant) || new Participant({club: {}, isPresent: false, previousWins: [], subscriptions: [], hasPicture: false });
 			$scope.tournaments = _.filter(tournaments,function(tournament){
 				return !_.find($scope.participant.subscriptions,function(subscription){
 					return subscription.tournament.id === tournament.id;
@@ -430,7 +430,7 @@
 			$scope.save = function() {
 
 				$scope.participant.$save(function(savedParticipant){
-					$modalInstance.close(savedParticipant);
+					$modalInstance.close(angular.copy(savedParticipant,participant));
 				},function(error){
 					//TODO: Handle error.
 				});
@@ -442,18 +442,7 @@
 			};
 
 			$scope.cancel = function() {
-				if(angular.isUndefined($scope.participant.id)){
-					$modalInstance.dismiss('cancel');
-					return;
-				}
-
-				$scope.participant.$get(function(refreshedParticipant){
-					$modalInstance.dismiss('cancel');
-				}, function(error){
-					//TODO: Handle error.
-				});
-
-				
+				$modalInstance.dismiss('cancel');
 			};
 
 			$scope.upload = function(pictures){
