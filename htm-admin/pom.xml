@@ -34,7 +34,12 @@
 			<artifactId>jetty-webapp</artifactId>
 			<version>9.2.10.v20150310</version>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>com.googlecode.webutilities</groupId>
+			<artifactId>webutilities</artifactId>
+			<version>0.0.7</version>
+		</dependency>
 
 
 		<dependency>
@@ -43,6 +48,8 @@
 			<version>4.7</version>
 			<scope>test</scope>
 		</dependency>
+
+
 
 	</dependencies>
 
