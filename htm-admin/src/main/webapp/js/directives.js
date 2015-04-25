@@ -153,11 +153,8 @@
 
 							filesFun.assign($scope,files);
 						
-
 							onChangeFun($scope)(files);
 							
-
-
 						});
 					});
 				}

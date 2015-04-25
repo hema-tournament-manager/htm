@@ -200,8 +200,8 @@
 
 		}])
 
-		.controller('TournamentCtrl', ['$scope', '$routeParams', 'Tournament', 'Participant', 'Fight','Phase',
-			function($scope, $routeParams, Tournament, Participant, Fight, Phase) {
+		.controller('TournamentCtrl', ['$scope', '$routeParams', '$modal','Tournament', 'Participant', 'Fight','Phase',
+			function($scope, $routeParams, $modal, Tournament, Participant, Fight, Phase) {
 				$scope.tournament = Tournament.get({id:$routeParams.tournamentId});
 				$scope.participants = []; 
 				$scope.newPartipcant = {}; 
@@ -245,6 +245,35 @@
 					});
 				};
 
+				$scope.showElimination = function(){
+
+					$modal.open({
+					  templateUrl: '/partials/tournament-generate-elimination.html',
+					  controller: 'TournamentGenerateEliminationCtrl',
+					  size: 'sm',
+					  resolve: {
+					    tournament: function() {
+					      return $scope.tournament.$promise;
+					    }
+					  }
+					})	
+
+				
+				}
+
+		}])
+
+
+		.controller('TournamentGenerateEliminationCtrl',['$scope', '$modalInstance', 'tournament',
+			function($scope, $modalInstance, tournament) {
+
+				$scope.generate = function(n){
+					tournament.$generateElimination({n:n}).then(function(updatedTournament){
+						$modalInstance.close(updatedTournament);
+					}, function(error){	
+						//TODO: Handle error
+					});
+				}
 		}]);
 
 	angular.module('htm.particpant', [])

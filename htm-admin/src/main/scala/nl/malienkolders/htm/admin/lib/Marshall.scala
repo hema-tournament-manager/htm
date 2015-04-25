@@ -13,7 +13,7 @@ object Marshall {
   case class MarshalledTournamentV3(id: Long, name: String, 
       memo: String, participants:  Seq[MarshalledParticipantV3],phases: List[MarshalledPhaseV3], fights: List[MarshalledFightV3])
 
-  case class MarshalledPhaseV3(id:Long, tournament: Long, phaseType: String, name: String, pools: Option[List[MarshalledPoolV3]],fights:Seq[MarshalledFightV3])    
+  case class MarshalledPhaseV3(id:Long, tournament: Long, phaseType: String, name: String, pools: Option[List[MarshalledPoolV3]],fights:List[Long])    
   case class MarshalledFightV3(id: Long, phase: Long, name: String, fighterA: MarshalledFighterV3, fighterB: MarshalledFighterV3)
   
   case class MarshalledPoolV3
@@ -146,7 +146,7 @@ object Marshall {
         p.name.is,
         p match { case pool: PoolPhase => None
         		case _ => None},
-        p.fights.map(_.toMarshalledV3)
+        p.fights.map(_.id.is).toList
      
     )
     

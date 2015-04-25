@@ -9,101 +9,110 @@
 	
 		.factory('Tournament', ['$resource', 'Participant','Phase','Fight',
 			function($resource,Participant,Phase,Fight){
-				var Tournament = $resource(api + 'tournament/:id', { "id" : "@id" },{
 
+				function transformResponse(response){
+					var tournament = angular.fromJson(response);
+
+					angular.forEach(tournament.participants, function(participant,index){
+						tournament.participants[index] = new Participant(participant);
+					});
+
+					angular.forEach(tournament.phases, function(phase,index){
+						tournament.phases[index] = new Phase(phase);
+					});
+
+					angular.forEach(tournament.fights, function(fight,index){
+						tournament.fights[index] = new Fight(fight);
+					});
+
+				    return tournament;
+				}
+
+				var Tournament = $resource(api + 'tournament/:id', { "id" : "@id" },{
 						get: { 
 							method: 'GET',
 							isArray: false,
-							transformResponse: function(response){
-    							var tournament = angular.fromJson(response);
-
-								angular.forEach(tournament.participants, function(participant,index){
-									tournament.participants[index] = new Participant(participant);
-								});
-
-								angular.forEach(tournament.phases, function(phase,index){
-									tournament.phases[index] = new Phase(phase);
-								});
-
-								angular.forEach(tournament.fights, function(fight,index){
-									tournament.fights[index] = new Fight(fight);
-								});
-
-							    return tournament;
-							},
-							headers:{'Content-Type': undefined}
-						}});
-
-			Tournament.prototype.getFights = function(fightIds){
-				fightIds = fightIds || [];
-
-				return _.filter(this.fights, function(fight){
-					return _.contains(fightIds,fight.id);
+							transformResponse: transformResponse,
+						
+						}, 
+						generateElimination: { 
+							method: 'GET',
+							isArray: false,
+							url: api + 'tournament/:id/generate/elimination/',
+							transformResponse: transformResponse,
+						},							
 				});
-			};
 
-			Tournament.prototype.getFightName = function(fightId){
-					if(angular.isObject(fightId)){
-						fightId = fightId.id;
-					}
+				Tournament.prototype.getFights = function(fightIds){
+					fightIds = fightIds || [];
 
-					if(angular.isUndefined(fightId)){
-						return ''
-					}
-
-					var fight =  _.find(this.fights, function(fight){
-						return fight.id === fightId;
+					return _.filter(this.fights, function(fight){
+						return _.contains(fightIds,fight.id);
 					});
+				};
 
-					var phase = this.getPhase(fight.phase);
+				Tournament.prototype.getFightName = function(fightId){
+						if(angular.isObject(fightId)){
+							fightId = fightId.id;
+						}
 
-					if(angular.isUndefined(phase.pools)){
-						return phase.name + " - " + fight.name;
-					}
+						if(angular.isUndefined(fightId)){
+							return ''
+						}
 
-					var pool = _.find(phase.pools, function(pool){
-						return _.contains(pool.fights,fight.id);
+						var fight =  _.find(this.fights, function(fight){
+							return fight.id === fightId;
+						});
+
+						var phase = this.getPhase(fight.phase);
+
+						if(angular.isUndefined(phase.pools)){
+							return fight.name;
+						}
+
+						var pool = _.find(phase.pools, function(pool){
+							return _.contains(pool.fights,fight.id);
+						});
+
+						return pool.name + " " + fight.name ;
+				};
+
+				Tournament.prototype.getPhase = function(phaseId){
+					return _.find(this.phases, function(phase){
+						return phase.id === phaseId;
 					});
+				}
 
-					return phase.name + " - " + pool.name + " " + fight.name ;
-			};
+				
+				Tournament.prototype.getParticipant = function(participantId){
+					return _.find(this.participants, function(participant){
+						return participant.id === participantId;
+					});
+				};
 
-			Tournament.prototype.getPhase = function(phaseId){
-				return _.find(this.phases, function(phase){
-					return phase.id === phaseId;
-				});
-			}
+				Tournament.prototype.subscribe = function(participant){
+					var self = this;
+					return participant.subscribe(this.id).then(function(subscription){
+						self.participants.push(participant);
+						return this;
+					});
+				};
 
-			
-			Tournament.prototype.getParticipant = function(participantId){
-				return _.find(this.participants, function(participant){
-					return participant.id === participantId;
-				});
-			};
+				Tournament.prototype.isSubscribed = function(participant){
+					return _.some(this.participants, function(tParticipant){
+						return tParticipant.id === participant.id;
+					});
+				}
 
-			Tournament.prototype.subscribe = function(participant){
-				var self = this;
-				return participant.subscribe(this.id).then(function(subscription){
-					self.participants.push(participant);
-					return this;
-				});
-			};
+				Tournament.prototype.addFight = function(freestylePhase){
+					var self = this;
+					return freestylePhase.addFight().then(function(fight){
+						self.fights.push(fight);
+						return this;
+					});
+				}			
 
-			Tournament.prototype.isSubscribed = function(participant){
-				return _.some(this.participants, function(tParticipant){
-					return tParticipant.id === participant.id;
-				});
-			}
-
-			Tournament.prototype.addFight = function(freestylePhase){
-				var self = this;
-				return freestylePhase.addFight().then(function(fight){
-					self.fights.push(fight);
-					return this;
-				});
-			}			
-
-			return Tournament			
+				return Tournament			
 
 		}])
 		.factory('Fight', ['$resource', function($resource) {

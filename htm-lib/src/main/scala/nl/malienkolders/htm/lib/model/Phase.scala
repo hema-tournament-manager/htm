@@ -80,7 +80,7 @@ class EliminationPhase extends Phase[EliminationPhase] {
 
   def fights = eliminationFights.toSeq
   
-  val phaseType = PoolType
+  val phaseType = EliminationType
 
 
 }
