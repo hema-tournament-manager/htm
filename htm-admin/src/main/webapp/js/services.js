@@ -40,6 +40,12 @@
 							isArray: false,
 							url: api + 'tournament/:id/generate/elimination/',
 							transformResponse: transformResponse,
+						}, 
+						generatePools: { 
+							method: 'GET',
+							isArray: false,
+							url: api + 'tournament/:id/generate/pools/',
+							transformResponse: transformResponse,
 						},							
 				});
 

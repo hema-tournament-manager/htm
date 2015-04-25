@@ -5,7 +5,7 @@
 			<div class="page-header">
 				<h2>
 					Participants
-					<small class="totals  hidden-xs">
+					<small class="totals hidden-xs" ng-show="totals.$resolved">
 				        <ng-pluralize count="totals.participants" when="{'one': '1 person', 'other': '{} people'}"></ng-pluralize>
 				        from
 				        <ng-pluralize count="totals.clubs" when="{'one': '1 club', 'other': '{} clubs'}"></ng-pluralize>

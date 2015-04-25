@@ -13,7 +13,7 @@ import net.liftweb.common.Full
 import nl.malienkolders.htm.admin.lib.exporter.JsonFightExporter
 import nl.malienkolders.htm.lib.util.Helpers
 import net.liftweb.common.Empty
-import nl.malienkolders.htm.admin.lib.Marshall._
+import nl.malienkolders.htm.admin.lib.Marshallers._
 import nl.malienkolders.htm.admin.lib.TournamentGenerators._
 
 object AdminRest extends RestHelper {
@@ -48,7 +48,16 @@ object AdminRest extends RestHelper {
       Tournament.findByKey(tournamentId) match {
         case Full(p) =>
           val n = request.param("n").map(_.toInt).getOrElse(1);
-          p.generateElimination(n.min(8).max(1))
+          p.generateElimination(n.min(8))
+          Extraction.decompose(p.toMarshalledV3)
+        case _ => NotFoundResponse()
+      }
+      
+    case "api" :: "v3" :: "tournament" :: AsLong(tournamentId) :: "generate" :: "pools" :: Nil JsonGet request =>
+      Tournament.findByKey(tournamentId) match {
+        case Full(p) =>
+          val n = request.param("n").map(_.toInt).getOrElse(8);
+          p.generatePools(n)
           Extraction.decompose(p.toMarshalledV3)
         case _ => NotFoundResponse()
       }

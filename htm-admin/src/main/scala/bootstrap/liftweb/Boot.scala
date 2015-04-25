@@ -101,5 +101,6 @@ class Boot {
     Helpers.openUrlFromSystemProperty("htm.admin.url")
 
     ResourceBundleImporter.run()
+    
   }
 }

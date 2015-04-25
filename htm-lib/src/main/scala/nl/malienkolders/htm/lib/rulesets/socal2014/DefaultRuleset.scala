@@ -47,7 +47,49 @@ abstract class SocalRuleset extends Ruleset {
     s1.wins.compareTo(s2.wins) > 0
   }
 
-  def planning(pool: Pool): List[PoolFight] = Nil
+  def planning(pool: Pool): List[PoolFight] = {
+    val maxNumberOfRounds = pool.participants.size - (if (pool.participants.size.isEven) 1 else 0)
+
+    // don't generate fights after all fighters have faced each other
+    // with 4 fighters everyone has to fight 3 times, so you need 3 rounds
+    // with 5 fighters everyone has to fight 4 times, but every round one person cannot fight, so you need 5 rounds
+    val rawPairings = (for (i <- 0 to (maxNumberOfRounds - 1)) yield { roundRobinPairing(pool.participants.size, i) }).flatten
+    val pairings = rawPairings.filter(p => p._1 != -1 && p._2 != -1)
+    pairings.zipWithIndex.map {
+      case ((a, b), i) =>
+        val subA = pool.participants(a - 1).subscription(pool.tournament)
+        val subB = pool.participants(b - 1).subscription(pool.tournament)
+
+        PoolFight.create
+          .fighterAFuture(SpecificFighter(Some(pool.participants(a - 1))).format)
+          .fighterBFuture(SpecificFighter(Some(pool.participants(b - 1))).format)
+          .order(i + 1)
+          .cancelled(List(subA, subB).flatten.exists(_.droppedOut.is))
+    }.toList
+  }
+  
+  def roundRobinPairing(nrOfPeople: Int, iteration: Int): List[(Int, Int)] = {
+    val pin = 1
+    val (topRow: List[Int], bottomRow: List[Int]) = rotate(topRowForCount(nrOfPeople), bottomRowForCount(nrOfPeople), iteration)
+    val result = (pin +: topRow).zip(bottomRow.reverse)
+    if (nrOfPeople == 5 && (iteration == 3 || iteration == 4))
+      result.reverse
+    else
+      result
+  }
+  
+  def topRowForCount(nrOfPeople: Int): List[Int] = (2 to ((nrOfPeople + 1) / 2)).toList
+
+  def bottomRowForCount(nrOfPeople: Int): List[Int] = ((((nrOfPeople + 1) / 2) + 1) to nrOfPeople).toList ++ (if (nrOfPeople.isOdd) List(-1) else List())
+
+  
+  def rotate(topRow: List[Int], bottomRow: List[Int], iterations: Int): (List[Int], List[Int]) = iterations match {
+    case 0 => (topRow, bottomRow)
+    case _ => rotate(
+      bottomRow.takeRight(1) ++ topRow.dropRight(1),
+      topRow.takeRight(1) ++ bottomRow.dropRight(1),
+      iterations - 1)
+  }
 
   def ranking(p: Pool): List[(Participant, ParticipantScores)] = {
     // seed the Random with the pool id, so the random ranking is always the same for this pool

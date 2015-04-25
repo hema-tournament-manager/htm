@@ -257,10 +257,21 @@
 					    }
 					  }
 					})	
-
-				
 				}
 
+				$scope.showPools = function(){
+
+					$modal.open({
+					  templateUrl: '/partials/tournament-generate-pools.html',
+					  controller: 'TournamentGeneratePoolsCtrl',
+					  size: 'sm',
+					  resolve: {
+					    tournament: function() {
+					      return $scope.tournament.$promise;
+					    }
+					  }
+					})	
+				}
 		}])
 
 
@@ -274,7 +285,25 @@
 						//TODO: Handle error
 					});
 				}
-		}]);
+		}])
+
+		.controller('TournamentGeneratePoolsCtrl',['$scope', '$modalInstance', 'tournament',
+			function($scope, $modalInstance, tournament) {
+
+				$scope.tournament = tournament
+				$scope.maxParticipantsPerPool = tournament.participants.length;
+				$scope.participantsPerPool = Math.ceil(tournament.participants.length / 8)
+
+				$scope.generate = function(n){
+					tournament.$generatePools({n:$scope.participantsPerPool}).then(function(updatedTournament){
+						$modalInstance.close(updatedTournament);
+					}, function(error){	
+						//TODO: Handle error
+					});
+				}
+		}])
+
+		;
 
 	angular.module('htm.particpant', [])
 
