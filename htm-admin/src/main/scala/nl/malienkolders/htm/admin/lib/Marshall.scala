@@ -9,7 +9,15 @@ object Marshall {
   case class MarshalledTournamentSummary(id: Long, name: String, memo: String)
   case class MarshalledTournamentRound(id: Long, finished: Boolean)
   case class MarshalledTournament(id: Option[Long], name: String, memo: String, participants: List[Long])
-  case class MarshalledTournamentV3(id: Option[Long], name: String, memo: String, participants: List[Long])
+  case class MarshalledTournamentSummaryV3(id: Option[Long], name: String, memo: String, participants:  Option[Int])
+  case class MarshalledTournamentV3(id: Long, name: String, 
+      memo: String, participants:  Seq[MarshalledParticipantV3],phases: List[MarshalledPhaseV3], fights: List[MarshalledFightV3])
+
+  case class MarshalledPhaseV3(id:Long, tournament: Long, phaseType: String, name: String, pools: Option[List[MarshalledPoolV3]],fights:Seq[MarshalledFightV3])    
+  case class MarshalledFightV3(id: Long, phase: Long, name: String, fighterA: MarshalledFighterV3, fighterB: MarshalledFighterV3)
+  
+  case class MarshalledPoolV3
+  case class MarshalledFighterV3(winnerOf: Option[Long], loserOf: Option[Long], participant: Option[Long])
 
   case class MarshalledFighter(label: String, participant: Option[MarshalledParticipant])
 
@@ -87,7 +95,7 @@ object Marshall {
     height: Option[Int],
     weight: Option[Int],
     previousWins: List[String],
-    subscriptions: List[MarshalledSubscription],
+    subscriptions: List[MarshalledSubscriptionV3],
     hasPicture: Boolean)
 
   case class MarshalledSubscription(
@@ -97,9 +105,16 @@ object Marshall {
     pool: Option[String],
     tournament: MarshalledTournamentSummary)
 
+  case class MarshalledSubscriptionV3(
+    fighterNumber: Int,
+    gearChecked: Boolean,
+    droppedOut: Boolean,
+    tournament: Long)
   case class MarshalledViewerPoolFightSummary(order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, started: Boolean, finished: Boolean, score: TotalScore)
 
-  implicit class MarshallingScore[S <: Score[S, F], F <: Fight[F, S]](s: Score[S, F]) {
+
+  
+  implicit class MarshallingScore(s: Score[_,_]) {
 
     def toMarshalled =
       MarshalledScore(s.timeInFight.is, s.timeInWorld.is, s.pointsRed.is, s.pointsBlue.is,
@@ -121,6 +136,22 @@ object Marshall {
       this
     }
   }
+  
+  implicit class MarshallingPhase(p: Phase[_]){
+    
+    def toMarshalledV3 = MarshalledPhaseV3(
+        p.id.is,
+        p.tournament.is,
+        p.phaseType.code,
+        p.name.is,
+        p match { case pool: PoolPhase => None
+        		case _ => None},
+        p.fights.map(_.toMarshalledV3)
+     
+    )
+    
+  }
+    
   implicit class MarshallingTournament(t: Tournament) {
 
     def toMarshalled = MarshalledTournament(
@@ -128,15 +159,25 @@ object Marshall {
       t.name.is,
       t.mnemonic.is,
       t.participants.map(_.id.is).toList)
+    
+     def toMarshalledSummary = MarshalledTournamentSummary(t.id.is, t.name.is, t.mnemonic.is)
 
-    def toMarshalledV3 = MarshalledTournamentV3(
+    def toMarshalledSummaryV3 = MarshalledTournamentSummaryV3(
       Some(t.id.is),
       t.name.is,
       t.mnemonic.is,
-      t.participants.map(_.id.is).toList)
-
-    def toMarshalledSummary = MarshalledTournamentSummary(t.id.is, t.name.is, t.mnemonic.is)
+      Some(t.participants.size))
+    
+    def toMarshalledV3 = MarshalledTournamentV3(
+      t.id.is,
+      t.name.is,
+      t.mnemonic.is,
+      t.participants.map(_.toMarshalledV3),
+      t.phases.map(phase => MarshallingPhase(phase).toMarshalledV3).toList,
+      t.fights.map(fight => MarshallingFight(fight).toMarshalledV3).toList)
   }
+  
+
 
   implicit class MarshallingParticipant(p: Participant) {
 
@@ -152,13 +193,7 @@ object Marshall {
       Some(p.height.is),
       Some(p.weight.is),
       p.previousWins.is.split("""(\n|\r)+""").toList,
-      p.subscriptions.map(sub =>
-        MarshalledSubscription(
-          sub.fighterNumber.get,
-          sub.gearChecked.get,
-          sub.droppedOut.get,
-          p.poolForTournament(sub.tournament.foreign.get).map(_.poolName),
-          sub.tournament.foreign.get.toMarshalledSummary)).toList,
+      p.subscriptions.map(_.toMarshalledV3).toList,
       p.hasAvatar)
 
     def toMarshalled = MarshalledParticipant(
@@ -225,9 +260,15 @@ object Marshall {
       gearChecked = Some(p.gearChecked.get),
       droppedOut = Some(p.droppedOut.get),
       pool = p.participant.foreign.get.poolForTournament(p.tournament.foreign.get).map(_.poolName))
+      
+    def toMarshalledV3 = MarshalledSubscriptionV3(
+          p.fighterNumber.get,
+          p.gearChecked.get,
+          p.droppedOut.get,
+          p.tournament.foreign.map(_.id.is).getOrElse(0))
   }
 
-  implicit class MarshallingFight[F <: Fight[F, S], S <: Score[S, F]](p: Fight[F, S]) {
+  implicit class MarshallingFight(p: Fight[_, _]) {
 
     def toMarshalled = {
       val ruleset = p.phase.foreign.get.rulesetImpl
@@ -242,7 +283,7 @@ object Marshall {
         p.timeStart.is,
         p.timeStop.is,
         p.netDuration.is,
-        p.scores.map(_.toMarshalled).toList,
+        p.mapScores(_.toMarshalled).toList,
         fp.timeLimit,
         fp.exchangeLimit,
         ruleset.possiblePoints,
@@ -250,17 +291,26 @@ object Marshall {
         fp.breakAt,
         fp.breakDuration,
         fp.pointLimit,
-        fp.possibleHits.map(h => MarshalledHit(h.name, h.scoreType, h.side.serialized, h.scorings.map(s => MarshalledScoring(s.points.serialized, s.effect.serialized)))))
+        fp.possibleHits.map(h => MarshalledHit(h.name, h.scoreType, h.side.serialized, h.scorings.map(s => MarshalledScoring(s.points.serialized, s.effect.serialized))))
+        )
     }
+    
+    def toMarshalledV3 = MarshalledFightV3(
+    		p.id.is,    
+            p.phase.is,
+            p.name.is,
+            p.fighterA.toMarshalledV3,
+            p.fighterB.toMarshalledV3
+    )
 
-    def fromMarshalled(m: MarshalledFight) = {
-      p.timeStart(m.timeStart)
-      p.timeStop(m.timeStop)
-      p.netDuration(m.netDuration)
-      p.scores.clear
-      m.scores.foreach(s => p.addScore(p.createScore.fromMarshalled(s)))
-      this
-    }
+//    def fromMarshalled(m: MarshalledFight) = {
+//      p.timeStart(m.timeStart)
+//      p.timeStop(m.timeStop)
+//      p.netDuration(m.netDuration)
+//      p.scores.clear
+//      m.scores.foreach(s => p.addScore(p.createScore.fromMarshalled(s)))
+//      this
+//    }
 
   }
 
@@ -282,6 +332,23 @@ object Marshall {
       p <- f.participant
       s <- p.subscription(tournament)
     } yield s.toMarshalled)
+    
+    def toMarshalledV3 = MarshalledFighterV3(
+    	f match {
+    	  case winner: Winner => Some(winner.fight.fold(_.id.is, _.id.is))
+    	  case _ => None
+    	},
+		f match {
+    	  case loser: Loser => Some(loser.fight.fold(_.id.is, _.id.is))
+    	  case _ =>  None
+    	},
+		f match {
+    	  case pool: PoolFighter => Some(pool.participant.map(_.id.is).getOrElse(0));
+    	  case specific: SpecificFighter => Some(specific.participant.map(_.id.is).getOrElse(0));
+    	  case _ =>  None
+    	}      
+    )
+    
   }
 
   implicit class MarshallingPool(f: Pool) {

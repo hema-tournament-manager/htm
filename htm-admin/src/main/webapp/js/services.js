@@ -14,21 +14,22 @@
 						get: { 
 							method: 'GET',
 							isArray: false,
-							transformResponse: function(Tournament){
-								    
-								angular.forEach(Tournament.participants, function(participant,index){
-									Tournament.participants[index] = new Participant(participant);
+							transformResponse: function(response){
+    							var tournament = angular.fromJson(response);
+
+								angular.forEach(tournament.participants, function(participant,index){
+									tournament.participants[index] = new Participant(participant);
 								});
 
-								angular.forEach(Tournament.phases, function(phase,index){
-									Tournament.phases[index] = new Phase(phase);
+								angular.forEach(tournament.phases, function(phase,index){
+									tournament.phases[index] = new Phase(phase);
 								});
 
-								angular.forEach(Tournament.fights, function(fight,index){
-									Tournament.fights[index] = new Fight(fight);
+								angular.forEach(tournament.fights, function(fight,index){
+									tournament.fights[index] = new Fight(fight);
 								});
 
-							    return Tournament;
+							    return tournament;
 							},
 							headers:{'Content-Type': undefined}
 						}});
@@ -141,13 +142,14 @@
 					query: { 
 						method: 'GET',
 						isArray: true,
-						transformResponse: function(ParticipantList){
+						transformResponse: function(response){
+							var participantList = angular.fromJson(response);
 
-							angular.forEach(ParticipantList, function(participant,index){
-								ParticipantList[index] = new Participant(participant);
+							angular.forEach(participantList, function(participant,index){
+								participantList[index] = new Participant(participant);
 							});
 
-							return ParticipantList;
+							return participantList;
 						},
 					}
 				}

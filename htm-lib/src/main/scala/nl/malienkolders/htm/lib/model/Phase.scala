@@ -38,6 +38,8 @@ trait Phase[P <: Phase[P]] extends LongKeyedMapper[P] with IdPK with OneToMany[L
   def fights: Seq[Fight[_, _]]
 
   def rulesetImpl = Ruleset(ruleset.get)
+  
+  def phaseType: PhaseType
 
 }
 
@@ -64,6 +66,8 @@ class PoolPhase extends Phase[PoolPhase] {
   }
 
   def fights = pools.flatMap(_.fights)
+  
+  val phaseType = PoolType
 
 }
 object PoolPhase extends PoolPhase with LongKeyedMetaMapper[PoolPhase]
@@ -75,6 +79,9 @@ class EliminationPhase extends Phase[EliminationPhase] {
   object eliminationFights extends MappedOneToMany(EliminationFight, EliminationFight.phase, OrderBy(EliminationFight.id, Ascending)) with Owned[EliminationFight] with Cascade[EliminationFight]
 
   def fights = eliminationFights.toSeq
+  
+  val phaseType = PoolType
+
 
 }
 object EliminationPhase extends EliminationPhase with LongKeyedMetaMapper[EliminationPhase]
@@ -94,6 +101,8 @@ class FreeStylePhase extends Phase[FreeStylePhase] {
   def fights = freeStyleFights.sortWith(compareFights).toSeq
 
   def lastRound = freeStyleFights.foldLeft(0l) { case (acc, fight) => acc.max(fight.round.get) }
+  
+  val phaseType = FreeStyleType
 
 }
 

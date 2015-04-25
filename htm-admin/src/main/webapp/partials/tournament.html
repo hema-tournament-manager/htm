@@ -4,18 +4,34 @@
 		<div class="row">
 			<div class="page-header">
 				<h2><span>{{tournament.name}}</span>
+					
 				  	<div class="btn-group pull-right">
-						<button  role="button" class="btn btn-default dropdown-toggle"
+					  	<div class="btn-group">
+					  		<button  role="button" class="btn btn-default dropdown-toggle"
 						data-toggle="dropdown">
-							<span class="glyphicon glyphicon-download"></span> 
-							<span>Download</span>
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu pull-right">
-							<!--TODO: Implement links-->
-							<li><a href="/download/pools">Pools</a></li>
-							<li><a href="/download/schedule">Schedule</a></li>
-						</ul>
+								<span class="glyphicon glyphicon-random"></span> 
+								<span>Phases</span>
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu pull-left">
+								<li><a href="" ng-click="showFreestyle()">Freestyle</a></li>
+								<li><a href="" ng-click="showPool()">Pool</a></li>
+								<li><a href="" ng-click="showElimination()">Elimination</a></li>
+							</ul>
+						</div>
+					  	<div class="btn-group">
+					  		<button  role="button" class="btn btn-default dropdown-toggle"
+						data-toggle="dropdown">
+								<span class="glyphicon glyphicon-download"></span> 
+								<span>Download</span>
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu pull-right">
+								<!--TODO: Implement links-->
+								<li><a href="/download/pools">Pools</a></li>
+								<li><a href="/download/schedule">Schedule</a></li>
+							</ul>
+						</div>
 					</div>
 				</h2>
 			</div>
@@ -83,7 +99,7 @@
 		<div class="row" ng-repeat="phase in tournament.phases">
 			<div class="col-md-12">
 				<!-- Free style phase -->
-				<div ng-show="phase.type === 'F'">
+				<div ng-show="phase.phaseType === 'F'">
 					<div class="page-header">
 						<h3>
 							<span>{{phase.name}}</span>
@@ -101,7 +117,7 @@
 					</div>
 				</div>
 				<!-- Pool phase -->
-				<div ng-show="phase.type === 'P'">
+				<div ng-show="phase.phaseType === 'P'">
 					<div class="page-header">
 						<h3>{{phase.name}}</h3>
 					</div>
@@ -117,7 +133,7 @@
 					</div>
 				</div>
 				<!-- Elimination phase -->
-				<div ng-show="phase.type === 'E'">
+				<div ng-show="phase.phaseType === 'E'">
 					<div class="page-header">
 						<h3>{{phase.name}}</h3>
 					</div>

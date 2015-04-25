@@ -162,7 +162,7 @@
                             phase: 1,
                             time: undefined,    //unscheduled
                             name: 'First Fight',
-                            fighterA: {},  // resolved future
+                            fighterA: {participant : 1},  // resolved future
                             fighterB: {},
 
                         },{
@@ -330,7 +330,6 @@
                     return [200, participant];
                 });
 
-
                 $httpBackend.whenGET('/api/v3/participant/totals').respond(function(method, url, data){
 
                     var totals = {
@@ -341,7 +340,6 @@
                     
                     return [200,totals];
                 });
-
 
                 $httpBackend.whenGET(/\/api\/v3\/participant.*/).respond(function(method,url,data,headers){
                     console.log('participant queried ' + url);
