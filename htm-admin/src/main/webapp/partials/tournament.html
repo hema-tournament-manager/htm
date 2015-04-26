@@ -112,7 +112,7 @@
 							</div>
 						</h3>
 					</div>
-					<div class="col-xs-6 col-md-4" ng-repeat="fight in tournament.getFights(phase.fights)">
+					<div class="col-xs-6 col-md-4" ng-repeat="fight in phase.fights">
 						<htm-fight-panel fight="fight" tournament="tournament"></htm-fight-panel>
 					</div>
 				</div>
@@ -126,7 +126,7 @@
 							<h3 class="panel-title">{{pool.name}}</h3>
 						</div>
 						<div class="panel-body" >
-							<div class="col-xs-6 col-md-4" ng-repeat="fight in tournament.getFights(pool.fights)">
+							<div class="col-xs-6 col-md-4" ng-repeat="fight in phase.getFights(pool.fights)">
 								<htm-fight-panel fight="fight" tournament="tournament"></htm-fight-panel>
 							</div>
 						</div>
@@ -137,7 +137,7 @@
 					<div class="page-header">
 						<h3>{{phase.name}}</h3>
 					</div>
-					<div class="col-xs-6 col-md-4" ng-repeat="fight in tournament.getFights(phase.fights)">
+					<div class="col-xs-6 col-md-4" ng-repeat="fight in phase.fights">
 						<htm-fight-panel fight="fight" tournament="tournament"></htm-fight-panel>
 					</div>
 				</div>

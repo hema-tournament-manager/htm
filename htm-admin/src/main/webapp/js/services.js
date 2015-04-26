@@ -18,11 +18,13 @@
 					});
 
 					angular.forEach(tournament.phases, function(phase,index){
-						tournament.phases[index] = new Phase(phase);
-					});
+						var phase = new Phase(phase);
 
-					angular.forEach(tournament.fights, function(fight,index){
-						tournament.fights[index] = new Fight(fight);
+						angular.forEach(phase.fights, function(fight,index){
+							phase.fights[index] = new Fight(fight);
+						});
+
+						tournament.phases[index] = phase;
 					});
 
 				    return tournament;
@@ -48,47 +50,6 @@
 							transformResponse: transformResponse,
 						},							
 				});
-
-				Tournament.prototype.getFights = function(fightIds){
-					fightIds = fightIds || [];
-
-					return _.filter(this.fights, function(fight){
-						return _.contains(fightIds,fight.id);
-					});
-				};
-
-				Tournament.prototype.getFightName = function(fightId){
-						if(angular.isObject(fightId)){
-							fightId = fightId.id;
-						}
-
-						if(angular.isUndefined(fightId)){
-							return ''
-						}
-
-						var fight =  _.find(this.fights, function(fight){
-							return fight.id === fightId;
-						});
-
-						var phase = this.getPhase(fight.phase);
-
-						if(angular.isUndefined(phase.pools)){
-							return fight.name;
-						}
-
-						var pool = _.find(phase.pools, function(pool){
-							return _.contains(pool.fights,fight.id);
-						});
-
-						return pool.name + " " + fight.name ;
-				};
-
-				Tournament.prototype.getPhase = function(phaseId){
-					return _.find(this.phases, function(phase){
-						return phase.id === phaseId;
-					});
-				}
-
 				
 				Tournament.prototype.getParticipant = function(participantId){
 					return _.find(this.participants, function(participant){
@@ -110,12 +71,8 @@
 					});
 				}
 
-				Tournament.prototype.addFight = function(freestylePhase){
-					var self = this;
-					return freestylePhase.addFight().then(function(fight){
-						self.fights.push(fight);
-						return this;
-					});
+				Tournament.prototype.getFight = function(fightId){
+					return _.findWhere(_.flatten(_.pluck(this.phases,'fights')),{id:fightId});	
 				}			
 
 				return Tournament			
@@ -135,6 +92,14 @@
 					return fight;
 				});
 			}
+
+			Phase.prototype.getFights = function(fightIds){
+				fightIds = fightIds || [];
+
+				return _.filter(this.fights, function(fight){
+					return _.contains(fightIds,fight.id);
+				});
+			};
 
 			return Phase;
 		}])

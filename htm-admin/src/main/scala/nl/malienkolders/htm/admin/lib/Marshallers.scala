@@ -11,9 +11,9 @@ object Marshallers {
   case class MarshalledTournament(id: Option[Long], name: String, memo: String, participants: List[Long])
   case class MarshalledTournamentSummaryV3(id: Option[Long], name: String, memo: String, participants: Option[Int])
   case class MarshalledTournamentV3(id: Long, name: String,
-    memo: String, participants: Seq[MarshalledParticipantV3], phases: List[MarshalledPhaseV3], fights: List[MarshalledFightV3])
+    memo: String, participants: Seq[MarshalledParticipantV3], phases: List[MarshalledPhaseV3])
 
-  case class MarshalledPhaseV3(id: Long, tournament: Long, phaseType: String, name: String, pools: Option[List[MarshalledPoolV3]], fights: List[Long])
+  case class MarshalledPhaseV3(id: Long, tournament: Long, phaseType: String, name: String, pools: Option[List[MarshalledPoolV3]], fights: List[MarshalledFightV3])
   case class MarshalledFightV3(id: Long, phase: Long, name: String, fighterA: MarshalledFighterV3, fighterB: MarshalledFighterV3)
 
   case class MarshalledPoolV3(id: Long, name: String, fights: List[Long])
@@ -147,8 +147,7 @@ object Marshallers {
         case pool: PoolPhase => Some(pool.pools.map(_.toMarshalledV3).toList)
         case _ => None
       },
-      p.fights.map(_.id.is).toList)
-
+      p.fights.map(_.toMarshalledV3).toList)
   }
 
   implicit class MarshallingTournament(t: Tournament) {
@@ -172,8 +171,7 @@ object Marshallers {
       t.name.is,
       t.mnemonic.is,
       t.participants.map(_.toMarshalledV3),
-      t.phases.map(phase => MarshallingPhase(phase).toMarshalledV3).toList,
-      t.fights.map(fight => MarshallingFight(fight).toMarshalledV3).toList)
+      t.phases.map(phase => MarshallingPhase(phase).toMarshalledV3).toList)
   }
 
   implicit class MarshallingParticipant(p: Participant) {
@@ -355,7 +353,7 @@ object Marshallers {
       f.finished_?,
       f.fights.size,
       f.participants.size)
-      
+
     def toMarshalledV3 = MarshalledPoolV3(f.id.is, f.poolName, f.fights.map(_.id.is).toList)
 
   }
