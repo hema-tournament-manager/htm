@@ -98,8 +98,26 @@
 		<!-- Phases  -->
 		<div class="row" ng-repeat="phase in tournament.phases">
 			<div class="col-md-12">
+				<!-- Pool phase -->
+				<div ng-show="phase.isPool()">
+					<div class="page-header">
+						<h3>{{phase.name}}</h3>
+					</div>
+					<!-- TODO: Show pools -->
+
+					<div class="panel panel-default" ng-repeat="pool in phase.pools">
+						<div class="panel-heading">
+							<h3 class="panel-title">{{pool.name}}</h3>
+						</div>
+						<div class="panel-body" >
+							<div class="col-xs-6 col-md-4" ng-repeat="fight in phase.getFights(pool.fights)">
+								<htm-fight-panel fight="fight" tournament="tournament"></htm-fight-panel>
+							</div>
+						</div>
+					</div>
+				</div>
 				<!-- Free style phase -->
-				<div ng-show="phase.phaseType === 'F'">
+				<div ng-show="phase.isFreestyle()">
 					<div class="page-header">
 						<h3>
 							<span>{{phase.name}}</span>
@@ -116,24 +134,8 @@
 						<htm-fight-panel fight="fight" tournament="tournament"></htm-fight-panel>
 					</div>
 				</div>
-				<!-- Pool phase -->
-				<div ng-show="phase.phaseType === 'P'">
-					<div class="page-header">
-						<h3>{{phase.name}}</h3>
-					</div>
-					<div class="panel panel-default" ng-repeat="pool in phase.pools">
-						<div class="panel-heading">
-							<h3 class="panel-title">{{pool.name}}</h3>
-						</div>
-						<div class="panel-body" >
-							<div class="col-xs-6 col-md-4" ng-repeat="fight in phase.getFights(pool.fights)">
-								<htm-fight-panel fight="fight" tournament="tournament"></htm-fight-panel>
-							</div>
-						</div>
-					</div>
-				</div>
 				<!-- Elimination phase -->
-				<div ng-show="phase.phaseType === 'E'">
+				<div ng-show="phase.isElimination()">
 					<div class="page-header">
 						<h3>{{phase.name}}</h3>
 					</div>

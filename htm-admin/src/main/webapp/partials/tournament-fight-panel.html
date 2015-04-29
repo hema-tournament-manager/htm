@@ -13,14 +13,14 @@
 	</div>
 	  <ul class="list-group">
 		<li class="list-group-item clearfix">
-			<button class="btn btn-default btn-sm pull-right" title="Edit Fight" ng-click="editFighter(fight.fighterA)">
+			<button class="btn btn-default btn-sm pull-right" title="Edit Fight" ng-hide="fight.isPool()" ng-click="editFighter(fight.fighterA)">
 				<span class="glyphicon glyphicon-wrench"></span>
 			</button>
 			<htm-fighter-name tournament="tournament" fighter="fight.fighterA"></htm-fighter-name>
 			
 		</li>
 		<li class="list-group-item clearfix">
-			<button class="btn btn-default btn-sm pull-right"  title="Edit Fight" ng-click="editFighter(fight.fighterB)">
+			<button class="btn btn-default btn-sm pull-right"  title="Edit Fight" ng-hide="fight.isPool()" ng-click="editFighter(fight.fighterB)">
 				<span class="glyphicon glyphicon-wrench"></span>
 			</button>
 			<htm-fighter-name tournament="tournament" fighter="fight.fighterB"></htm-fighter-name>

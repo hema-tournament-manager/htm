@@ -11,8 +11,29 @@
 <div class="modal-body">
 	<form name="fightForm" class="form" novalidate>
 	    <tabset justified="true" type="pills">
-			<tab >
-				<tab-heading>From Participants List</tab-heading>
+	    
+			<tab active="fromPoolTabActive">
+				<tab-heading>From Pool</tab-heading>
+				<table class="table table-striped table-condensed table-hover table-responsive">
+					<thead>
+						<tr>
+							<th>Pool</th>
+							<th colspan="8">Ranking</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="pool in tournament.getPools()">
+							<td>{{pool.name}}</td>
+							<td ng-repeat="rank in [1,2,3,4,5,6,7,8]" ng-click="setPoolRank(pool,rank)" class="text-center" ng-class="{'info' : isPoolRank(pool,rank)}">{{rank}}</td>
+						</tr>
+					</tbody>
+				</table>
+	     	</tab>
+
+
+			<tab active="fromParticipantTabActive">
+				<tab-heading>From Participant Ranking</tab-heading>
+				<!-- TODO: Sort by rank-->
 				<table class="table table-striped table-condensed table-hover table-responsive">
 					<thead>
 						<tr>
@@ -38,9 +59,9 @@
 				<table class="table table-hover">
 					<tbody>
 						<tr ng-repeat="precursor in getPotentialPrecursors()">
-							<td>{{tournament.getFightName(precursor)}}</td>
-							<td><button class="btn btn-default"  ng-class="{'btn-info' : isWinnerOf(precursor)}" ng-click="setWinner(precursor)">Winner</a></td>
-							<td><button class="btn btn-default"  ng-class="{'btn-info' : isLoserOf(precursor)}" ng-click="setLoser(precursor)">Loser</a></td>
+							<td>{{precursor.name}}</td>
+							<td class="text-center" ng-class="{'info' : isWinnerOf(precursor)}" ng-click="setWinner(precursor)">Winner</td>
+							<td class="text-center"  ng-class="{'info' : isLoserOf(precursor)}" ng-click="setLoser(precursor)">Loser</td>
 						</tr>
 					</tbody>
 				</table>

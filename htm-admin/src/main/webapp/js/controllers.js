@@ -125,6 +125,9 @@
 			function($scope, $modalInstance, tournament,fight,fighter) {
 				
 				$scope.fromFightTabActive = angular.isDefined(fighter.winnerOf) || angular.isDefined(fighter.loserOf);
+				$scope.fromParticipantTabActive = angular.isDefined(fighter.particpant);
+				$scope.fromPoolTabActive = angular.isDefined(fighter.pool);
+
 				$scope.tournament = tournament;
 				$scope.fight = angular.copy(fight);
 
@@ -136,9 +139,7 @@
 					$scope.fighter = fighter;
 				}
 
-
 				$scope.save = function() {
-
 					$scope.fight.$save(function(savedFight){
 						$modalInstance.close(angular.copy(savedFight,fight));
 					},function(error){
@@ -148,21 +149,40 @@
 
 				$scope.cancel = function() {
 					$modalInstance.dismiss('cancel');
-					
 				};
 
+
+
 				$scope.getPotentialPrecursors = function(){
-					var phaseIdx = _.findIndex($scope.tournament.phases,function(phase){
-						return $scope.fight.phase === phase.id;
-					});
 
-					var precursorPhases = $scope.tournament.phases.slice(0,phaseIdx + 1);
+					if(fight.isElimination()){
 
-					return _.filter($scope.tournament.fights, function(precursorFight){
-						return precursorFight.id !== $scope.fight.id && _.some(precursorPhases, function(precursorPhase){
-							return precursorPhase.id === precursorFight.phase;
+						var phaseIdx = _.findIndex($scope.tournament.phases,function(phase){
+							return $scope.fight.phase === phase.id && $scope.fight.phaseType === phase.phaseType;
+						});
+
+						var precursorPhases = _.filter($scope.tournament.phases.slice(0,phaseIdx + 1), function(phase){
+							return phase.isElimination();
+						});
+
+						var precursorFights = _.flatten(_.pluck(precursorPhases,'fights'));
+
+						return _.reject(precursorFights, function(fight){
+							return fight.equals($scope.fight);
+						});
+					}
+
+					if(fight.isFreestyle()){
+						var phase = _.findWhere($scope.tournament.phases, {
+							id:$scope.fight.phase,
+							phaseType:$scope.fight.phaseType
 						})
-					});
+
+						return phase.fights;
+					}
+
+					return [];
+
 				};
 
 				$scope.getPotentialParticipants = function(){
@@ -173,18 +193,33 @@
 					$scope.fighter.winnerOf = fight.id;
 					$scope.fighter.loserOf = undefined;
 					$scope.fighter.particpant = undefined;
+					$scope.fighter.pool = undefined;
+					$scope.fighter.rank = undefined;
+
 				};
 
 				$scope.setLoser = function(fight){
 					$scope.fighter.winnerOf = undefined;
 					$scope.fighter.loserOf =  fight.id;
 					$scope.fighter.participant = undefined;
+					$scope.fighter.pool = undefined;
+					$scope.fighter.rank = undefined;
 				};		
 
 				$scope.setParticipant = function(participant){
 					$scope.fighter.winnerOf = undefined;
 					$scope.fighter.loserOf =  undefined;
 					$scope.fighter.participant = participant.id;
+					$scope.fighter.pool = undefined;
+					$scope.fighter.rank = undefined;
+				};
+
+				$scope.setPoolRank = function(pool, rank){
+					$scope.fighter.winnerOf = undefined;
+					$scope.fighter.loserOf =  undefined;
+					$scope.fighter.participant = undefined;
+					$scope.fighter.pool = pool.id;
+					$scope.fighter.rank = rank;
 				};
 
 				$scope.isWinnerOf = function(fight){
@@ -196,6 +231,11 @@
 
 				$scope.isParticipant = function(participant){
 					return $scope.fighter.participant === participant.id;
+				}
+
+
+				$scope.isPoolRank = function(pool,rank){
+					return $scope.fighter.pool === pool.id && $scope.fighter.rank === rank;	
 				}
 
 		}])
@@ -336,8 +376,6 @@
 
 				var debouncedRefresh = _.debounce(_refresh, 250);
 
-
-
 				$scope.refresh = function($event){
 					if(event.keyCode === 13){
 						registerSingleSelected();
@@ -347,7 +385,9 @@
 				};
 
 				$scope.more = function(){
+
 					var newPage = ++$scope.searchCriteria.page;
+
 					Participant.query($scope.searchCriteria)
 						.$promise.then(function(freshParticipants){
 							pages[newPage] = freshParticipants;
@@ -359,7 +399,9 @@
 				};
 
 				function registerSingleSelected(){
+
 					var participants = $scope.participants();
+					
 					if(participants.length === 1){
 						var participant = participants[0];
 						participant.isPresent = true;

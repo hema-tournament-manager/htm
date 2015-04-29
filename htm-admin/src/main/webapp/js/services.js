@@ -70,16 +70,40 @@
 						return tParticipant.id === participant.id;
 					});
 				}
-
+				Tournament.prototype.getFights = function(){
+					return _.flatten(_.pluck(this.phases,'fights'));	
+				}	
 				Tournament.prototype.getFight = function(fightId){
 					return _.findWhere(_.flatten(_.pluck(this.phases,'fights')),{id:fightId});	
-				}			
+				}	
+
+				Tournament.prototype.getPools = function(){
+					return _.compact(_.flatten(_.pluck(this.phases,'pools')));
+				}		
 
 				return Tournament			
 
 		}])
 		.factory('Fight', ['$resource', function($resource) {
-			return $resource(api + 'phase/:phase/fight/:id', { "phase" : "@phase", "id":"@id" });
+			var Fight =  $resource(api + 'phase/:phase/fight/:id', { "phase" : "@phase", "id":"@id" });
+
+			Fight.prototype.isPool = function(){
+				return this.phaseType === 'P'
+			}
+
+			Fight.prototype.isFreestyle = function(){
+				return this.phaseType === 'F'
+			}
+
+			Fight.prototype.isElimination = function(){
+				return this.phaseType === 'E'
+			}
+
+			Fight.prototype.equals = function(fight){
+				return this.id === fight.id && this.phaseType === fight.phaseType;
+			}
+
+			return Fight;
 		}])		
 		.factory('Phase', ['$resource','Fight', function($resource,Fight) {
 			var Phase = $resource(api + 'tournament/:id/phase', { "id" : "@id"});
@@ -100,6 +124,18 @@
 					return _.contains(fightIds,fight.id);
 				});
 			};
+
+			Phase.prototype.isPool = function(){
+				return this.phaseType === 'P'
+			}
+
+			Phase.prototype.isFreestyle = function(){
+				return this.phaseType === 'F'
+			}
+
+			Phase.prototype.isElimination = function(){
+				return this.phaseType === 'E'
+			}
 
 			return Phase;
 		}])

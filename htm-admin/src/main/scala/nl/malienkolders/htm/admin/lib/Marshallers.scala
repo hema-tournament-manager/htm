@@ -14,11 +14,10 @@ object Marshallers {
     memo: String, participants: Seq[MarshalledParticipantV3], phases: List[MarshalledPhaseV3])
 
   case class MarshalledPhaseV3(id: Long, tournament: Long, phaseType: String, name: String, pools: Option[List[MarshalledPoolV3]], fights: List[MarshalledFightV3])
-  case class MarshalledFightV3(id: Long, phase: Long, name: String, fighterA: MarshalledFighterV3, fighterB: MarshalledFighterV3)
+  case class MarshalledFightV3(id: Long, phase: Long, phaseType: String, name: String, fighterA: MarshalledFighterV3, fighterB: MarshalledFighterV3)
 
   case class MarshalledPoolV3(id: Long, name: String, fights: List[Long])
-  case class MarshalledFighterV3(winnerOf: Option[Long], loserOf: Option[Long], participant: Option[Long])
-
+  case class MarshalledFighterV3(winnerOf: Option[Long], loserOf: Option[Long], participant: Option[Long], pool:Option[Long], rank:Option[Int])
   case class MarshalledFighter(label: String, participant: Option[MarshalledParticipant])
 
   case class MarshalledScoring(points: String, effect: String)
@@ -292,6 +291,7 @@ object Marshallers {
     def toMarshalledV3 = MarshalledFightV3(
       p.id.is,
       p.phase.is,
+      p.phaseType.code,
       p.name.is,
       p.fighterA.toMarshalledV3,
       p.fighterB.toMarshalledV3)
@@ -336,10 +336,19 @@ object Marshallers {
         case _ => None
       },
       f match {
-        case pool: PoolFighter => Some(pool.participant.map(_.id.is).getOrElse(0));
         case specific: SpecificFighter => Some(specific.participant.map(_.id.is).getOrElse(0));
         case _ => None
-      })
+      },
+      f match {
+        case pool: PoolFighter => Some(pool.participant.map(_.id.is).getOrElse(0));
+        case _ => None
+      },
+      f match {
+        case pool: PoolFighter => Some(pool.ranking);
+        case _ => None
+      }         
+    
+    )
 
   }
 
