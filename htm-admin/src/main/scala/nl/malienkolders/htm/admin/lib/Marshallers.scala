@@ -14,10 +14,14 @@ object Marshallers {
     memo: String, participants: Seq[MarshalledParticipantV3], phases: List[MarshalledPhaseV3])
 
   case class MarshalledPhaseV3(id: Long, tournament: Long, phaseType: String, name: String, pools: Option[List[MarshalledPoolV3]], fights: List[MarshalledFightV3])
-  case class MarshalledFightV3(id: Long, phase: Long, phaseType: String, name: String, fighterA: MarshalledFighterV3, fighterB: MarshalledFighterV3)
+  case class MarshalledFightV3(id: Option[Long], phase: Long, phaseType: String, name: String, fighterA: MarshalledFighterV3, fighterB: MarshalledFighterV3)
 
   case class MarshalledPoolV3(id: Long, name: String, fights: List[Long])
-  case class MarshalledFighterV3(winnerOf: Option[Long], loserOf: Option[Long], participant: Option[Long], pool:Option[Long], rank:Option[Int])
+  case class MarshalledFighterV3(winnerOf: Option[MarshalledWinner], loserOf: Option[MarshalledLoser], participant: Option[Long], pool: Option[MarshalledPoolFighter])
+  case class MarshalledWinner(id: Long, phaseType: String)
+  case class MarshalledLoser(id: Long, phaseType: String)
+  case class MarshalledPoolFighter(id: Long, rank: Int)
+
   case class MarshalledFighter(label: String, participant: Option[MarshalledParticipant])
 
   case class MarshalledScoring(points: String, effect: String)
@@ -289,12 +293,53 @@ object Marshallers {
     }
 
     def toMarshalledV3 = MarshalledFightV3(
-      p.id.is,
+      Some(p.id.is),
       p.phase.is,
       p.phaseType.code,
       p.name.is,
       p.fighterA.toMarshalledV3,
       p.fighterB.toMarshalledV3)
+
+    def fromMarshalledV3(m: MarshalledFightV3) {
+      p.name(m.name)
+      p.fighterAFuture(parseFighterFuture(m.fighterA))
+      p.fighterBFuture(parseFighterFuture(m.fighterB))
+    }
+
+    def parseFighterFuture(f: MarshalledFighterV3) = {
+
+      val fighter = (f.loserOf, f.participant, f.pool, f.winnerOf) match {
+        case (Some(loser), None, None, None) => {
+          val fighter : Option[Fighter] = loser.phaseType match {
+            case EliminationType.code => EliminationFight.findByKey(loser.id).map(Loser(_)).toOption
+            case FreeStyleType.code => FreeStyleFight.findByKey(loser.id).map(Loser(_)).toOption
+            case _ => None
+          }
+          fighter.getOrElse(UnknownFighter("Unknown loser of "+ loser.phaseType + loser.id))
+        }
+        case (None, None, None, Some(winner)) => {
+           val fighter : Option[Fighter] = winner.phaseType match {
+            case EliminationType.code => EliminationFight.findByKey(winner.id).map(Winner(_)).toOption
+            case FreeStyleType.code => FreeStyleFight.findByKey(winner.id).map(Winner(_)).toOption
+            case _ => None
+          }
+          fighter.getOrElse(UnknownFighter("Unknown winner of "+ winner.phaseType + winner.id))
+        } 
+        case (None, Some(participantId), None, None) => 
+          SpecificFighter(Participant.findByKey(participantId))
+        
+        case (None, None, Some(pool), None) => 
+          Pool.findByKey(pool.id).map(p => PoolFighter(p, pool.rank)).getOrElse(UnknownFighter("Unknown pool fighter of "+ pool.id + pool.rank))
+        
+        
+        case (None, None, None, None) => SpecificFighter(None)
+
+        case _ => UnknownFighter("Unknown combination")
+      }
+
+      fighter
+    }
+    
 
     //    def fromMarshalled(m: MarshalledFight) = {
     //      p.timeStart(m.timeStart)
@@ -328,27 +373,34 @@ object Marshallers {
 
     def toMarshalledV3 = MarshalledFighterV3(
       f match {
-        case winner: Winner => Some(winner.fight.fold(_.id.is, _.id.is))
+        case winner: Winner => Some(MarshalledWinner(winner.fight.fold(_.id.is, _.id.is), winner.fight.fold(_.phaseType.code, _.phaseType.code)))
         case _ => None
       },
       f match {
-        case loser: Loser => Some(loser.fight.fold(_.id.is, _.id.is))
+        case loser: Loser => Some(MarshalledLoser(loser.fight.fold(_.id.is, _.id.is), loser.fight.fold(_.phaseType.code, _.phaseType.code)))
         case _ => None
       },
       f match {
-        case specific: SpecificFighter => Some(specific.participant.map(_.id.is).getOrElse(0));
+        case specific: SpecificFighter => specific.participant.map(_.id.is);
+        case poolFighter: PoolFighter => {
+          if(poolFighter.pool.finished_?){ 
+        	 poolFighter.participant.map(_.id.is);
+          } else {
+            None 
+          }
+        }
         case _ => None
       },
       f match {
-        case pool: PoolFighter => Some(pool.participant.map(_.id.is).getOrElse(0));
+        case poolFighter: PoolFighter => {
+          if(poolFighter.pool.finished_?){ 
+        	 None
+          } else {
+            Some(MarshalledPoolFighter(poolFighter.pool.id.is, poolFighter.ranking))
+          }
+        }
         case _ => None
-      },
-      f match {
-        case pool: PoolFighter => Some(pool.ranking);
-        case _ => None
-      }         
-    
-    )
+      })
 
   }
 

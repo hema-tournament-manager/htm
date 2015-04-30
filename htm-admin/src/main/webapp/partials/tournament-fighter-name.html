@@ -2,4 +2,5 @@
 	<span ng-show="fighter.winnerOf">{{fighter.winnerOf ? "Winner of " + tournament.getFight(fighter.winnerOf).name: ""}}</span>
 	<span ng-show="fighter.loserOf">{{fighter.loserOf  ? "Loser of " + tournament.getFight(fighter.loserOf).name: ""}}</span>
 	<span ng-show="fighter.participant">{{fighter.participant ? tournament.getParticipant(fighter.participant).name : ""}} </span>
+	<span ng-show="fighter.pool">Rank {{fighter.pool.rank}} of pool {{fighter.pool ? tournament.getPool(fighter.pool.id).name: ""}} </span>
 </span>

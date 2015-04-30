@@ -6,6 +6,33 @@ object TournamentGenerators {
 
   implicit class EliminationPhaseGenerator(t: Tournament) {
 
+    def generateEliminationFromPools() {
+    
+      t.eliminationPhase.eliminationFights.clear()
+      val pools = t.poolPhase.pools
+      val poolCount = pools.size
+     
+      def generateFromPools(x: Int): (List[EliminationFight], List[EliminationFight]) = x match {
+        case _ if x < poolCount / 2 =>
+          val (left, right) = generateFromPools(x + 1)
+          (EliminationFight.create.round(1).name("1/" + poolCount + " Finals, Fight " + (x + 1)).fighterAFuture(PoolFighter(pools(x), 1).format).fighterBFuture(PoolFighter(pools(poolCount / 2 + x), 2).format) :: left,
+            EliminationFight.create.round(1).name("1/" + poolCount + " Finals, Fight " + (poolCount / 2 + x + 1)).fighterAFuture(PoolFighter(pools(poolCount / 2 + x), 1).format).fighterBFuture(PoolFighter(pools(x), 2).format) :: right)
+        case _ => (Nil, Nil)
+      }
+      
+      
+      val (left, right) = generateFromPools(0)
+      val round1 = left ++ right
+
+      t.eliminationPhase.eliminationFights ++= round1
+      // we have to save the fights to get their id's
+      t.save()
+
+      generateNextRound(round1, 2)
+
+      generateFinals()
+    }
+
     def generateElimination(n: Int) = {
       val nthFinals = Math.pow(2, n.max(1)).toInt
 
@@ -23,42 +50,42 @@ object TournamentGenerators {
       generateNextRound(round1.toList, 2)
 
       generateFinals()
+    }
 
-      def generateNextRound(previous: List[EliminationFight], roundNumber: Int): Unit =
-        previous.size match {
-          case n if n < 4 => Nil
-          case n =>
-            val next = (for (i <- 0 to (n / 2 - 1)) yield EliminationFight.create
-              .round(roundNumber)
-              .name("1/" + (n / 2) + " Finals, Fight " + (i + 1))
-              .fighterAFuture(Winner(previous(i * 2)).format)
-              .fighterBFuture(Winner(previous(i * 2 + 1)).format)).toList
+    private def generateNextRound(previous: List[EliminationFight], roundNumber: Int): Unit =
+      previous.size match {
+        case n if n < 4 => Nil
+        case n =>
+          val next = (for (i <- 0 to (n / 2 - 1)) yield EliminationFight.create
+            .round(roundNumber)
+            .name("1/" + (n / 2) + " Finals, Fight " + (i + 1))
+            .fighterAFuture(Winner(previous(i * 2)).format)
+            .fighterBFuture(Winner(previous(i * 2 + 1)).format)).toList
 
-            t.eliminationPhase.eliminationFights ++= next
-            // we have to save the fights to get their id's
-            t.save()
+          t.eliminationPhase.eliminationFights ++= next
+          // we have to save the fights to get their id's
+          t.save()
 
-            generateNextRound(next, roundNumber + 1)
-        }
-
-      def generateFinals() = {
-        val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
-
-        // add fights if necessary
-        t.finalsPhase.eliminationFights ++= (for (i <- t.finalsPhase.eliminationFights.size to 1) yield EliminationFight.create)
-
-        t.finalsPhase.eliminationFights.head
-          .round(1)
-          .name("3rd Place")
-          .fighterAFuture(Loser(semiFinals(0)).format)
-          .fighterBFuture(Loser(semiFinals(1)).format)
-        t.finalsPhase.eliminationFights.last
-          .round(2)
-          .name("1st Place")
-          .fighterAFuture(Winner(semiFinals(0)).format)
-          .fighterBFuture(Winner(semiFinals(1)).format)
-        t.save()
+          generateNextRound(next, roundNumber + 1)
       }
+
+    private def generateFinals() = {
+      val semiFinals = t.eliminationPhase.eliminationFights.takeRight(2)
+
+      // add fights if necessary
+      t.finalsPhase.eliminationFights ++= (for (i <- t.finalsPhase.eliminationFights.size to 1) yield EliminationFight.create)
+
+      t.finalsPhase.eliminationFights.head
+        .round(1)
+        .name("3rd Place")
+        .fighterAFuture(Loser(semiFinals(0)).format)
+        .fighterBFuture(Loser(semiFinals(1)).format)
+      t.finalsPhase.eliminationFights.last
+        .round(2)
+        .name("1st Place")
+        .fighterAFuture(Winner(semiFinals(0)).format)
+        .fighterBFuture(Winner(semiFinals(1)).format)
+      t.save()
     }
   }
 

@@ -73,19 +73,23 @@
 				Tournament.prototype.getFights = function(){
 					return _.flatten(_.pluck(this.phases,'fights'));	
 				}	
-				Tournament.prototype.getFight = function(fightId){
-					return _.findWhere(_.flatten(_.pluck(this.phases,'fights')),{id:fightId});	
+				Tournament.prototype.getFight = function(ofFight){
+					return _.findWhere(_.flatten(_.pluck(this.phases,'fights')),ofFight);	
 				}	
 
 				Tournament.prototype.getPools = function(){
 					return _.compact(_.flatten(_.pluck(this.phases,'pools')));
+				}	
+
+				Tournament.prototype.getPool = function(poolId){
+					return _.findWhere(this.getPools(),{id:poolId});
 				}		
 
 				return Tournament			
 
 		}])
 		.factory('Fight', ['$resource', function($resource) {
-			var Fight =  $resource(api + 'phase/:phase/fight/:id', { "phase" : "@phase", "id":"@id" });
+			var Fight =  $resource(api + 'phase/:phaseType/:phase/fight/:id', { "phaseType" : "@phaseType", "phase":"@phase", "id":"@id"});
 
 			Fight.prototype.isPool = function(){
 				return this.phaseType === 'P'
@@ -106,12 +110,12 @@
 			return Fight;
 		}])		
 		.factory('Phase', ['$resource','Fight', function($resource,Fight) {
-			var Phase = $resource(api + 'tournament/:id/phase', { "id" : "@id"});
+			var Phase = $resource(api + '/phase/:phaseType/:id', { "phaseType":"@phaseType", "id" : "@id"});
 
 			Phase.prototype.addFight = function(){
   				var self = this;
 
-				return new Fight({phase:this.id}).$save().then(function(fight){
+				return new Fight({phaseType: this.phaseType, phase:this.id}).$save().then(function(fight){
 					self.fights.push(fight.id);
 					return fight;
 				});

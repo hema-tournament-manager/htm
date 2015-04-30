@@ -48,11 +48,15 @@ object AdminRest extends RestHelper {
       Tournament.findByKey(tournamentId) match {
         case Full(p) =>
           val n = request.param("n").map(_.toInt).getOrElse(1);
-          p.generateElimination(n.min(8))
+          n match {
+            case 0 => p.generateEliminationFromPools();
+            case _ => p.generateElimination(n.min(8))
+
+          }
           Extraction.decompose(p.toMarshalledV3)
         case _ => NotFoundResponse()
       }
-      
+
     case "api" :: "v3" :: "tournament" :: AsLong(tournamentId) :: "generate" :: "pools" :: Nil JsonGet request =>
       Tournament.findByKey(tournamentId) match {
         case Full(p) =>
@@ -61,7 +65,7 @@ object AdminRest extends RestHelper {
           Extraction.decompose(p.toMarshalledV3)
         case _ => NotFoundResponse()
       }
-      
+
     case "api" :: "v3" :: "participant" :: Nil JsonGet request =>
       val page = request.param("page").map(_.toInt).getOrElse(0)
       val itemsPerPage = request.param("items").map(_.toInt).getOrElse(20)
@@ -132,29 +136,99 @@ object AdminRest extends RestHelper {
           Extraction.decompose(p.toMarshalledV3)
         case _ => NotFoundResponse()
       }
-      
+
     case "api" :: "v3" :: "participant" :: AsLong(participantId) :: "subscribe" :: AsLong(tournamentId) :: Nil JsonPost json -> _ =>
       val participant = for {
         t <- Tournament.findByKey(tournamentId)
         p <- Participant.findByKey(participantId)
-      } yield { 
+      } yield {
         t.addParticipant(p.id.is)
         t.subscriptions.find(_.participant.is == p.id.is).map(_.toMarshalledV3)
-      } 
-      
+      }
+
       participant match {
-        case Full(p) =>Extraction.decompose(p)
+        case Full(p) => Extraction.decompose(p)
         case _ => NotFoundResponse()
       }
-      
-      
+
     case "api" :: "v3" :: "participant" :: "totals" :: Nil JsonGet _ =>
       case class TotalsResponseV3(participants: Long, clubs: Long, countries: Long)
       Extraction.decompose(TotalsResponseV3(
         participants = Participant.count,
         clubs = Participant.findAllFields(Seq(Participant.club), Distinct(), OrderBy(Participant.club, Ascending)).length,
         countries = Participant.findAllFields(Seq(Participant.country), Distinct()).length))
-        
+
+    case "api" :: "v3" :: "phase" :: phaseType :: AsLong(phaseId) :: Nil JsonGet _ =>
+      val phase = phaseType match {
+        case PoolType.code => PoolPhase.findByKey(phaseId)
+        case EliminationType.code => EliminationPhase.findByKey(phaseId)
+        case FreeStyleType.code => FreeStylePhase.findByKey(phaseId)
+        case _ => Empty
+      }
+
+      phase match {
+        case Full(p) => Extraction.decompose(p.toMarshalledV3)
+        case _ => NotFoundResponse()
+      }
+
+    case "api" :: "v3" :: "phase" :: phaseType :: AsLong(phaseId) :: "fight" :: AsLong(fightId) :: Nil JsonGet _ =>
+      // phaseId is intentionally ignored here
+      // just here to keep get api simmetric
+      val fight = phaseType match {
+        case PoolType.code => PoolFight.findByKey(fightId)
+        case EliminationType.code => EliminationFight.findByKey(fightId)
+        case FreeStyleType.code => FreeStyleFight.findByKey(fightId)
+        case _ => Empty
+      }
+
+      fight match {
+        case Full(f) => Extraction.decompose(f.toMarshalledV3)
+        case _ => NotFoundResponse()
+      }
+
+    case "api" :: "v3" :: "phase" :: phaseType :: AsLong(phaseId) :: "fight" :: AsLong(fightId) :: Nil JsonPost json -> _ =>
+      // phaseId is intentionally ignored here
+      // just here to keep get api simmetric
+      val fight = phaseType match {
+        case PoolType.code => PoolFight.findByKey(fightId)
+        case EliminationType.code => EliminationFight.findByKey(fightId)
+        case FreeStyleType.code => FreeStyleFight.findByKey(fightId)
+        case _ => Empty
+      }
+
+      fight match {
+        case Full(f) => {
+          val m = Extraction.extract[MarshalledFightV3](json)
+          f.fromMarshalledV3(m)
+          f.save()
+          Extraction.decompose(f.toMarshalledV3)
+        }
+        case _ => NotFoundResponse()
+      }
+
+    case "api" :: "v3" :: "phase" :: "F" :: AsLong(phaseId) :: "fight" :: "add" :: Nil JsonPost json -> _ =>
+      val phase = FreeStylePhase.findByKey(phaseId)
+
+      phase match {
+        case Full(f) => {
+
+          val fightNr = f.fights.filter(_.round.get == 1).map(_.fightNr.get).max + 1
+
+          val fight  = FreeStyleFight.create
+            .round(1)
+            .fightNr(fightNr)
+            .name("Round " + 1 + " Fight " + fightNr)
+            .fighterAFuture(SpecificFighter(None))
+            .fighterBFuture(SpecificFighter(None))
+
+            f.freeStyleFights += fight
+            f.save()
+          
+            Extraction.decompose(fight.toMarshalledV3)
+
+        }
+        case _ => NotFoundResponse()
+      }
     //=== Old API's ==================================================
 
     case "api" :: "v1" :: "status" :: "all" :: Nil JsonGet _ =>

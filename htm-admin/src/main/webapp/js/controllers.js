@@ -190,20 +190,18 @@
 				};
 
 				$scope.setWinner = function(fight){
-					$scope.fighter.winnerOf = fight.id;
+					$scope.fighter.winnerOf = {id:fight.id,phaseType:fight.phaseType};
 					$scope.fighter.loserOf = undefined;
 					$scope.fighter.particpant = undefined;
 					$scope.fighter.pool = undefined;
-					$scope.fighter.rank = undefined;
 
 				};
 
 				$scope.setLoser = function(fight){
 					$scope.fighter.winnerOf = undefined;
-					$scope.fighter.loserOf =  fight.id;
+					$scope.fighter.loserOf =  {id:fight.id,phaseType:fight.phaseType};
 					$scope.fighter.participant = undefined;
 					$scope.fighter.pool = undefined;
-					$scope.fighter.rank = undefined;
 				};		
 
 				$scope.setParticipant = function(participant){
@@ -211,22 +209,20 @@
 					$scope.fighter.loserOf =  undefined;
 					$scope.fighter.participant = participant.id;
 					$scope.fighter.pool = undefined;
-					$scope.fighter.rank = undefined;
 				};
 
 				$scope.setPoolRank = function(pool, rank){
 					$scope.fighter.winnerOf = undefined;
 					$scope.fighter.loserOf =  undefined;
 					$scope.fighter.participant = undefined;
-					$scope.fighter.pool = pool.id;
-					$scope.fighter.rank = rank;
+					$scope.fighter.pool = {id: pool.id, rank: rank};
 				};
 
 				$scope.isWinnerOf = function(fight){
-					return $scope.fighter.winnerOf === fight.id;
+					return $scope.fighter.winnerOf.id === fight.id && $scope.fighter.winnerOf.phaseType === fight.phaseType;
 				}
 				$scope.isLoserOf = function(fight){
-					return $scope.fighter.loserOf === fight.id;
+					return $scope.fighter.loserOf.id === fight.id && $scope.fighter.loserOf.phaseType === fight.phaseType;
 				}
 
 				$scope.isParticipant = function(participant){
@@ -235,7 +231,7 @@
 
 
 				$scope.isPoolRank = function(pool,rank){
-					return $scope.fighter.pool === pool.id && $scope.fighter.rank === rank;	
+					return $scope.fighter.pool.id === pool.id && $scope.fighter.pool.rank === rank;	
 				}
 
 		}])
