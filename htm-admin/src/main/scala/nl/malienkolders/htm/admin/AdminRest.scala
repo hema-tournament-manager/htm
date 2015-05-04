@@ -206,13 +206,13 @@ object AdminRest extends RestHelper {
         case _ => NotFoundResponse()
       }
 
-    case "api" :: "v3" :: "phase" :: "F" :: AsLong(phaseId) :: "fight" :: "add" :: Nil JsonPost json -> _ =>
+    case "api" :: "v3" :: "phase" :: "F" :: AsLong(phaseId) :: "fight" :: Nil JsonPost json -> _ =>
       val phase = FreeStylePhase.findByKey(phaseId)
 
       phase match {
         case Full(f) => {
 
-          val fightNr = f.fights.filter(_.round.get == 1).map(_.fightNr.get).max + 1
+          val fightNr = f.fights.filter(_.round.get == 1).map(_.fightNr.get).reduceOption(_ min _).getOrElse(1L);
 
           val fight  = FreeStyleFight.create
             .round(1)

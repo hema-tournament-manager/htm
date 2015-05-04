@@ -275,7 +275,7 @@
 				}
 
 				$scope.addFight = function(freestylePhase){
-					return $scope.tournament.addFight(freestylePhase).catch(function(error){
+					return freestylePhase.addFight(freestylePhase).catch(function(error){
 						//TODO: Handle error
 					});
 				};

@@ -113,6 +113,10 @@
 			var Phase = $resource(api + '/phase/:phaseType/:id', { "phaseType":"@phaseType", "id" : "@id"});
 
 			Phase.prototype.addFight = function(){
+				if(!this.isFreestyle()){
+					return;
+				}
+
   				var self = this;
 
 				return new Fight({phaseType: this.phaseType, phase:this.id}).$save().then(function(fight){
