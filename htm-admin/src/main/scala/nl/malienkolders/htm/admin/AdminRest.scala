@@ -22,6 +22,7 @@ object AdminRest extends RestHelper {
 
   serve {
     case "api" :: "v3" :: "club" :: Nil JsonGet _ =>
+      //TODO: Make clubs a proper object
       val clubs = Participant.findAllFields(Seq(Participant.club, Participant.clubCode), Distinct(), OrderBy(Participant.club, Ascending))
         .map(p => MarshalledClub(None, p.clubCode, p.club))
       Extraction.decompose(clubs)
@@ -155,6 +156,7 @@ object AdminRest extends RestHelper {
       case class TotalsResponseV3(participants: Long, clubs: Long, countries: Long)
       Extraction.decompose(TotalsResponseV3(
         participants = Participant.count,
+        //TODO: Make this more efficient
         clubs = Participant.findAllFields(Seq(Participant.club), Distinct(), OrderBy(Participant.club, Ascending)).length,
         countries = Participant.findAllFields(Seq(Participant.country), Distinct()).length))
 
