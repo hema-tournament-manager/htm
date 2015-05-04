@@ -9,7 +9,7 @@
 <div class="modal-body">
     <div class="list-group">
         <!-- TODO: Top 2 per pool -->
-        <a href="" class="list-group-item" ng-click="generate(0)">Top 2 per Pool</a>
+        <a href="" class="list-group-item" ng-click="generate(0)" ng-class="{disabled: !canGenerate(0)}">Top 2 per Pool</a>
         <a href="" class="list-group-item" ng-click="generate(4)"><sup>1</sup>&frasl;<sub>16</sub> Finals</a>
         <a href="" class="list-group-item" ng-click="generate(3)"><sup>1</sup>&frasl;<sub>8</sub> Finals</a>
         <a href="" class="list-group-item" ng-click="generate(2)"><sup>1</sup>&frasl;<sub>4</sub> Finals</a>

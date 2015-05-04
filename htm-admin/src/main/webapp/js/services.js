@@ -141,6 +141,11 @@
 				return this.phaseType === 'E'
 			}
 
+			Phase.prototype.isFinals = function(){
+				//TODO: Bit of a hack to determine if this elimination phase is the finals
+				return this.phaseType === 'E' && this.name === 'Finals'
+			}
+
 			return Phase;
 		}])
 		.factory('Participant', ['$resource', 'Subscription', function($resource, Subscription){

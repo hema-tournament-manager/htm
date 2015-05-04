@@ -7,13 +7,14 @@
   </h2>
 </div>
 <div class="modal-body">
-    <form class="form">
+    <form class="form-inline" name="poolForm">
       <div class="form-group">
-        <div class="input-group">
-        <input class="form-control"  type="number" ng-model="participantsPerPool" name="participants" min="1" required="true">
-          <span class="input-group-btn">
-              <button class="btn btn-default" ng-click="generate()">Generate</button>
-          </span>        
-      </div>
+          <div class="input-group ">
+            <input class="form-control"  type="number" ng-model="pools" name="participants" min="1" max="{{maxPools}}" required="true">
+              <span class="input-group-btn">
+                  <button class="btn btn-default" ng-disabled="!poolForm.$valid" ng-click="generate()">Generate</button>
+              </span>        
+          </div>
+        </div>
     </form>
 </div>

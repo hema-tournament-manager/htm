@@ -3,35 +3,19 @@
 	<div class="container container-fluid">
 		<div class="row">
 			<div class="page-header">
-				<h2><span>{{tournament.name}}</span>
-					
+				<h2><span>{{tournament.name}}</span>		
 				  	<div class="btn-group pull-right">
-					  	<div class="btn-group">
-					  		<button  role="button" class="btn btn-default dropdown-toggle"
-						data-toggle="dropdown">
-								<span class="glyphicon glyphicon-random"></span> 
-								<span>Phases</span>
-								<span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu pull-left">
-								<li><a href="" ng-click="showFreestyle()">Freestyle</a></li>
-								<li><a href="" ng-click="showPools()">Pool</a></li>
-								<li><a href="" ng-click="showElimination()">Elimination</a></li>
-							</ul>
-						</div>
-					  	<div class="btn-group">
-					  		<button  role="button" class="btn btn-default dropdown-toggle"
-						data-toggle="dropdown">
-								<span class="glyphicon glyphicon-download"></span> 
-								<span>Download</span>
-								<span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu pull-right">
-								<!--TODO: Implement links-->
-								<li><a href="/download/pools">Pools</a></li>
-								<li><a href="/download/schedule">Schedule</a></li>
-							</ul>
-						</div>
+				  		<button  role="button" class="btn btn-default dropdown-toggle"
+					data-toggle="dropdown">
+							<span class="glyphicon glyphicon-download"></span> 
+							<span>Download</span>
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu pull-right">
+							<!--TODO: Implement links-->
+							<li><a href="/download/pools">Pools</a></li>
+							<li><a href="/download/schedule">Schedule</a></li>
+						</ul>
 					</div>
 				</h2>
 			</div>
@@ -101,7 +85,11 @@
 				<!-- Pool phase -->
 				<div ng-show="phase.isPool()">
 					<div class="page-header">
-						<h3>{{phase.name}}</h3>
+						<h3><span>{{phase.name}}</span>
+						  	<div class="btn-group pull-right">
+								<button  role="button" class="btn btn-sm  btn-default pull-right" ng-click="showPools()" ng-disabled="!canShowPools()"><span class="glyphicon glyphicon-random"></span> Generate</span></button>
+							</div>
+						</h3>
 					</div>
 					<!-- TODO: Show pools -->
 
@@ -121,12 +109,10 @@
 					<div class="page-header">
 						<h3>
 							<span>{{phase.name}}</span>
-							<div class="pull-right">
-								<div class="btn-group ">
-									<button role="button" ng-click="addFight(phase)" role="button" class="btn btn-default">
-										<span class="glyphicon glyphicon-plus"></span>Add Fight</span>
-									</button>
-								</div>
+							<div class="pull-right btn-group">
+								<button role="button" ng-click="addFight(phase)" role="button" class="btn btn-sm btn-default">
+									<span class="glyphicon glyphicon-plus"></span> Add Fight</span>
+								</button>
 							</div>
 						</h3>
 					</div>
@@ -137,7 +123,12 @@
 				<!-- Elimination phase -->
 				<div ng-show="phase.isElimination()">
 					<div class="page-header">
-						<h3>{{phase.name}}</h3>
+						<h3>
+							<span>{{phase.name}}</span>
+						  	<div class="btn-group pull-right" ng-hide="phase.isFinals()">
+								<button role="button" class="btn btn-sm btn-default" ng-click="showElimination()"><span class="glyphicon glyphicon-random"></span> Generate</button>
+							</div>
+						</h3>
 					</div>
 					<div class="col-xs-6 col-md-4" ng-repeat="fight in phase.fights">
 						<htm-fight-panel fight="fight" tournament="tournament"></htm-fight-panel>

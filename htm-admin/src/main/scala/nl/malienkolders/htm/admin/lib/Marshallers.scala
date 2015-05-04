@@ -310,28 +310,27 @@ object Marshallers {
 
       val fighter = (f.loserOf, f.participant, f.pool, f.winnerOf) match {
         case (Some(loser), None, None, None) => {
-          val fighter : Option[Fighter] = loser.phaseType match {
+          val fighter: Option[Fighter] = loser.phaseType match {
             case EliminationType.code => EliminationFight.findByKey(loser.id).map(Loser(_)).toOption
             case FreeStyleType.code => FreeStyleFight.findByKey(loser.id).map(Loser(_)).toOption
             case _ => None
           }
-          fighter.getOrElse(UnknownFighter("Unknown loser of "+ loser.phaseType + loser.id))
+          fighter.getOrElse(UnknownFighter("Unknown loser of " + loser.phaseType + loser.id))
         }
         case (None, None, None, Some(winner)) => {
-           val fighter : Option[Fighter] = winner.phaseType match {
+          val fighter: Option[Fighter] = winner.phaseType match {
             case EliminationType.code => EliminationFight.findByKey(winner.id).map(Winner(_)).toOption
             case FreeStyleType.code => FreeStyleFight.findByKey(winner.id).map(Winner(_)).toOption
             case _ => None
           }
-          fighter.getOrElse(UnknownFighter("Unknown winner of "+ winner.phaseType + winner.id))
-        } 
-        case (None, Some(participantId), None, None) => 
+          fighter.getOrElse(UnknownFighter("Unknown winner of " + winner.phaseType + winner.id))
+        }
+        case (None, Some(participantId), None, None) =>
           SpecificFighter(Participant.findByKey(participantId))
-        
-        case (None, None, Some(pool), None) => 
-          Pool.findByKey(pool.id).map(p => PoolFighter(p, pool.rank)).getOrElse(UnknownFighter("Unknown pool fighter of "+ pool.id + pool.rank))
-        
-        
+
+        case (None, None, Some(pool), None) =>
+          Pool.findByKey(pool.id).map(p => PoolFighter(p, pool.rank)).getOrElse(UnknownFighter("Unknown pool fighter of " + pool.id + pool.rank))
+
         case (None, None, None, None) => SpecificFighter(None)
 
         case _ => UnknownFighter("Unknown combination")
@@ -339,7 +338,6 @@ object Marshallers {
 
       fighter
     }
-    
 
     //    def fromMarshalled(m: MarshalledFight) = {
     //      p.timeStart(m.timeStart)
@@ -373,32 +371,35 @@ object Marshallers {
 
     def toMarshalledV3 = MarshalledFighterV3(
       f match {
-        case winner: Winner => Some(MarshalledWinner(winner.fight.fold(_.id.is, _.id.is), winner.fight.fold(_.phaseType.code, _.phaseType.code)))
+        case winner: Winner =>
+          if (winner.fight.fold(_.finished_?, _.finished_?))
+            None
+          else
+            Some(MarshalledWinner(winner.fight.fold(_.id.is, _.id.is), winner.fight.fold(_.phaseType.code, _.phaseType.code)))
         case _ => None
       },
       f match {
-        case loser: Loser => Some(MarshalledLoser(loser.fight.fold(_.id.is, _.id.is), loser.fight.fold(_.phaseType.code, _.phaseType.code)))
+        case loser: Loser =>
+          if (loser.fight.fold(_.finished_?, _.finished_?))
+            None
+          else
+        	Some(MarshalledLoser(loser.fight.fold(_.id.is, _.id.is), loser.fight.fold(_.phaseType.code, _.phaseType.code)))
+
         case _ => None
       },
       f match {
         case specific: SpecificFighter => specific.participant.map(_.id.is);
-        case poolFighter: PoolFighter => {
-          if(poolFighter.pool.finished_?){ 
-        	 poolFighter.participant.map(_.id.is);
-          } else {
-            None 
-          }
-        }
+        case poolFighter: PoolFighter => poolFighter.participant.map(_.id.is);
+        case winner: Winner => winner.participant.map(_.id.is)
+        case loser: Loser => loser.participant.map(_.id.is)
         case _ => None
       },
       f match {
-        case poolFighter: PoolFighter => {
-          if(poolFighter.pool.finished_?){ 
-        	 None
-          } else {
+        case poolFighter: PoolFighter =>
+          if (poolFighter.pool.finished_?)
+            None
+          else
             Some(MarshalledPoolFighter(poolFighter.pool.id.is, poolFighter.ranking))
-          }
-        }
         case _ => None
       })
 

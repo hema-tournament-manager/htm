@@ -219,19 +219,18 @@
 				};
 
 				$scope.isWinnerOf = function(fight){
-					return $scope.fighter.winnerOf.id === fight.id && $scope.fighter.winnerOf.phaseType === fight.phaseType;
+					return angular.isDefined($scope.fighter.winnerOf) && $scope.fighter.winnerOf.id === fight.id && $scope.fighter.winnerOf.phaseType === fight.phaseType;
 				}
 				$scope.isLoserOf = function(fight){
-					return $scope.fighter.loserOf.id === fight.id && $scope.fighter.loserOf.phaseType === fight.phaseType;
+					return angular.isDefined($scope.fighter.loserOf) && $scope.fighter.loserOf.id === fight.id && $scope.fighter.loserOf.phaseType === fight.phaseType;
 				}
 
 				$scope.isParticipant = function(participant){
 					return $scope.fighter.participant === participant.id;
 				}
 
-
 				$scope.isPoolRank = function(pool,rank){
-					return $scope.fighter.pool.id === pool.id && $scope.fighter.pool.rank === rank;	
+					return angular.isDefined($scope.fighter.pool) && $scope.fighter.pool.id === pool.id && $scope.fighter.pool.rank === rank;	
 				}
 
 		}])
@@ -308,35 +307,63 @@
 					  }
 					})	
 				}
-		}])
 
+				$scope.canShowPools = function(){
+					return $scope.tournament.participants.length > 1;
+				}
+		}])
 
 		.controller('TournamentGenerateEliminationCtrl',['$scope', '$modalInstance', 'tournament',
 			function($scope, $modalInstance, tournament) {
 
 				$scope.generate = function(n){
+					if(!$scope.canGenerate(n)){
+						return;
+					}
+
 					tournament.$generateElimination({n:n}).then(function(updatedTournament){
 						$modalInstance.close(updatedTournament);
 					}, function(error){	
 						//TODO: Handle error
 					});
-				}
+				};
+
+				$scope.canGenerate = function(n){
+					if(n < 0){
+						return false;
+					}
+
+					if(n === 0){
+						return tournament.getPools().length >= 2;
+					}
+
+					return true;
+				};
+
+				$scope.cancel = function() {
+					$modalInstance.dismiss('cancel');
+				};
 		}])
 
 		.controller('TournamentGeneratePoolsCtrl',['$scope', '$modalInstance', 'tournament',
 			function($scope, $modalInstance, tournament) {
 
 				$scope.tournament = tournament
-				$scope.maxParticipantsPerPool = tournament.participants.length;
-				$scope.participantsPerPool = Math.ceil(tournament.participants.length / 8)
+				$scope.maxPools = Math.floor(tournament.participants.length / 2);
+				$scope.pools = Math.min($scope.maxPools, Math.max(2, Math.floor(tournament.participants.length / 4)));
 
 				$scope.generate = function(n){
-					tournament.$generatePools({n:$scope.participantsPerPool}).then(function(updatedTournament){
+					tournament.$generatePools({n:$scope.pools}).then(function(updatedTournament){
 						$modalInstance.close(updatedTournament);
 					}, function(error){	
 						//TODO: Handle error
 					});
 				}
+
+				$scope.cancel = function() {
+					$modalInstance.dismiss('cancel');
+				};
+
 		}])
 
 		;
