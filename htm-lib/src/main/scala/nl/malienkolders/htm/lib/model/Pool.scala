@@ -38,9 +38,7 @@ class Pool extends LongKeyedMapper[Pool] with OneToMany[Long, Pool] with ManyToM
 }
 object Pool extends Pool with LongKeyedMetaMapper[Pool] {
   def defaultArena(tournament: Tournament): Arena = {
-    tournament.defaultArena.foreign
-    .getOrElse(Arena.findAll.headOption
-        .getOrElse(Arena.create.name("Default Arena").saveMe))
+    tournament.defaultArena.foreign.getOrElse(Arena.default)
   }
 
   def create(t: Tournament) = super.create.arena(defaultArena(t)).startTime(System.currentTimeMillis())

@@ -3,8 +3,15 @@ package nl.malienkolders.htm.admin.lib
 import nl.malienkolders.htm.lib.model._
 import net.liftweb.mapper.By
 import nl.malienkolders.htm.admin.lib.Utils.PimpedParticipant
+import nl.malienkolders.htm.lib.model.Arena
 
 object Marshallers {
+
+  case class MarshalledEventV3(name: String, arenas: List[MarshalledArenaV3], days: List[MarshalledDayV3])
+
+  case class MarshalledArenaV3(id: Long, name: String)
+  case class MarshalledDayV3(date: Long, timeSlots: List[MarshalledTimeSlotV3])
+  case class MarshalledTimeSlotV3(id: Long, name: String, arena: Long, from: Long, to: Long)
 
   case class MarshalledTournamentSummary(id: Long, name: String, memo: String)
   case class MarshalledTournamentRound(id: Long, finished: Boolean)
@@ -115,6 +122,26 @@ object Marshallers {
     droppedOut: Boolean,
     tournament: Long)
   case class MarshalledViewerPoolFightSummary(order: Long, fighterA: MarshalledParticipant, fighterB: MarshalledParticipant, started: Boolean, finished: Boolean, score: TotalScore)
+
+  implicit class MarshallingArena(a: Arena) {
+    def toMarshalledV3 = MarshalledArenaV3(a.id.is, a.name.is)
+  }
+
+  implicit class MarshallingTimeSlot(t: ArenaTimeSlot) {
+    def toMarshalledV3 = MarshalledTimeSlotV3(t.id.is, t.name.is, t.arena.is, t.from.is, t.to.is)
+  }
+
+  implicit class MarshallingDay(d: Day) {
+    def toMarshalledV3 = MarshalledDayV3(d.date.is, d.timeslots.map(_.toMarshalledV3).toList)
+  }
+
+  implicit class MarshallingEvent(e: Event) {
+
+    def toMarshalledV3 = MarshalledEventV3(
+      e.name.is,
+      Arena.findAll().map(_.toMarshalledV3),
+      Day.findAll().map(_.toMarshalledV3))
+  }
 
   implicit class MarshallingScore(s: Score[_, _]) {
 
@@ -383,7 +410,7 @@ object Marshallers {
           if (loser.fight.fold(_.finished_?, _.finished_?))
             None
           else
-        	Some(MarshalledLoser(loser.fight.fold(_.id.is, _.id.is), loser.fight.fold(_.phaseType.code, _.phaseType.code)))
+            Some(MarshalledLoser(loser.fight.fold(_.id.is, _.id.is), loser.fight.fold(_.phaseType.code, _.phaseType.code)))
 
         case _ => None
       },

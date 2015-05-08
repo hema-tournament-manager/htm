@@ -30,6 +30,9 @@ object AdminRest extends RestHelper {
     case "api" :: "v3" :: "country" :: Nil JsonGet _ =>
       Extraction.decompose(Country.findAll().map(_.toMarshalled))
 
+    case "api" :: "v3" :: "event" :: Nil JsonGet _ =>
+      Extraction.decompose(Event.theOne.toMarshalledV3)      
+      
     case "api" :: "v3" :: "tournament" :: Nil JsonGet _ =>
       Extraction.decompose(Tournament.findAll.map(_.toMarshalledSummaryV3))
 
@@ -239,8 +242,8 @@ object AdminRest extends RestHelper {
     case "api" :: "event" :: Nil JsonGet _ =>
       JString(Event.theOne.name.get)
 
-    case "api" :: "arenas" :: Nil JsonGet _ =>
-      Extraction.decompose(Arena.findAll.map(_.toMarshalled))
+//    case "api" :: "arenas" :: Nil JsonGet _ =>
+//      Extraction.decompose(Arena.findAll.map(_.toMarshalled))
 
     //    case "api" :: "arena" :: AsLong(arenaId) :: Nil JsonGet _ =>
     //      Extraction.decompose(Arena.findByKey(arenaId).map { arena =>

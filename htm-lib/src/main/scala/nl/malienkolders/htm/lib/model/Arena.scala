@@ -9,7 +9,6 @@ import Helpers._
 import scala.xml._
 import net.liftweb.json._
 
-case class MarshalledArena(id: Long, name: String)
 
 class Arena extends LongKeyedMapper[Arena] with IdPK with CreatedUpdated with Ordered[Arena] with ManyToMany with OneToMany[Long, Arena] {
   def getSingleton = Arena
@@ -31,11 +30,14 @@ class Arena extends LongKeyedMapper[Arena] with IdPK with CreatedUpdated with Or
 
   def compare(that: Arena) = this.name.is.compareTo(that.name.is)
 
-  def toMarshalled = MarshalledArena(id.get, name.get)
+  
 }
 
 object Arena extends Arena with LongKeyedMetaMapper[Arena] {
   override def dbTableName = "arenas"
+    
+  def default: Arena = findAll().headOption.getOrElse(Arena.create.name("Default Arena").saveMe())
+
 }
 
 class ArenaViewers extends LongKeyedMapper[ArenaViewers] with IdPK {
