@@ -1,0 +1,15 @@
+<div class="col-md-12">
+  <h2>Tournaments</h2>
+  <div class="alert alert-warning" ng-show="isError()">
+    <p>Could not load tournaments because {{tournaments.error.status}}:{{tournaments.error.statusText}}.</p>
+  </div>
+  <div class="list-group">
+    <a class="list-group-item" href="/tournaments/{{tournament.identifier}}" ng-repeat="tournament in tournaments">
+      <h4 class="list-group-item-heading">
+        <htm-tournament-memo tournament="tournament"></htm-tournament-memo>
+        <span>{{tournament.name}}</span>
+        <span class="badge pull-right">{{tournament.participants.length}}</span>
+      </h4>
+    </a>
+  </div>
+</div>
