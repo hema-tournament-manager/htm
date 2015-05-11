@@ -1,4 +1,5 @@
 angular.module('htm.tournament', [
   'angular-meteor',
-  'ui.router'
+  'ui.router',
+  'ui.bootstrap'
 ]);
