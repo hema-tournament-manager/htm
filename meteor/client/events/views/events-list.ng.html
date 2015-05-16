@@ -1,0 +1,8 @@
+<h2>Events</h2>
+<div class="list-group">
+  <a ng-repeat="event in events" class="list-group-item" ng-class="{'list-group-item-info': event._id === activeEvent}" ng-click="setActive(event)">{{event.name}}</a>
+  <a class="list-group-item">
+    <input type="text" class="form-control" ng-model="newEvent.name" placeholder="New Event"/>
+    <button class="btn btn-primary" ng-click="newEvent.owner=$root.currentUser._id; events.save(newEvent); newEvent={}">Add Event</button>
+  </a>
+</div>

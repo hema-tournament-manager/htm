@@ -1,0 +1,6 @@
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ picker.active.name }} <span class="caret"></span></a>
+  <ul class="dropdown-menu" role="menu">
+    <li ng-repeat="event in picker.events"><a href="#" ng-click="picker.setActive(event)">{{ event.name }}</a></li>
+  </ul>
+</li>

@@ -1,5 +1,11 @@
-angular.module('htm.tournament').controller('TournamentsListCtrl', function($scope, $meteor) {
-  $scope.tournaments = $meteor.collection(Tournaments);
+angular.module('htm.tournament').controller('TournamentsListCtrl', function($scope, $meteor, $rootScope) {
+  $meteor.autorun($scope, function() {
+    $scope.event = $meteor.object(Events, Session.get('event'));
+    $scope.tournaments = $meteor.collection(function() {
+      return Tournaments.find({event: Session.get('event')});
+    });
+  });
+  
 
   $scope.addNewTournamentVisible = false;
   $scope.focusOnAddTournament = false;
@@ -78,6 +84,8 @@ angular.module('htm.tournament').controller('TournamentsListCtrl', function($sco
   $scope.save = function() {
     var t = $scope.newTournament;
     var tournament = {
+      event: $scope.event._id,
+      owner: $rootScope.currentUser._id,
       name: t.name,
       memo: t.updateMemo(),
       participants: []

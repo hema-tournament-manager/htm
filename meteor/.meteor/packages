@@ -13,6 +13,6 @@ twbs:bootstrap
 accounts-ui
 accounts-password
 less
-datacrush:meteor-bootswatch-superhero
 aramk:tinycolor
 angularui:angular-ui-bootstrap
+u2622:persistent-session
