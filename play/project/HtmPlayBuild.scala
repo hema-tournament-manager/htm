@@ -13,11 +13,11 @@ object HtmBuild extends Build {
 		"org.webjars" % "jquery-ui" % "1.10.3",
 		"org.webjars" % "bootstrap" % "3.0.0" exclude ("org.webjars", "jquery"),
 		"org.webjars" % "angularjs" % "1.1.5" exclude ("org.webjars", "jquery"),
-		"org.webjars" % "angular-ui-bootstrap" % "0.6.0-1" exclude ("org.webjars", "jquery"),
+		"org.webjars" % "angular-ui-bootstrap" % "0.13.0" exclude ("org.webjars", "jquery"),
 		"org.webjars" % "underscorejs" % "1.5.1" exclude ("org.webjars", "jquery"),
 		"nl.malienkolders" %% "htm-lib" % appVersion,
 		"net.databinder.dispatch" %% "dispatch-core" % "0.11.0",
-		"net.liftweb" %% "lift-webkit" % "2.5",
+		"net.liftweb" %% "lift-webkit" % "2.5.1",
 		"commons-io" % "commons-io" % "2.4")
 
 	val viewer = play.Project(
