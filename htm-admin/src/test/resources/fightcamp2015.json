@@ -1,0 +1,64 @@
+{  "name": "Fightcamp 2015",
+  "days": [
+    { "date": "2015-08-07",
+      "timeslots": [
+        { "name": "Workshops", "from": "10:00", "to": "14:30" },
+        { "name": "Federschwert", "from": "14:30", "to": "16:30" },
+        { "name": "Waite Sabre", "from": "16:30", "to": "18:30" },
+        { "name": "Lecture", "from": "18:30", "to": "19:30" }
+      ]
+    },
+    { "date": "2015-08-08",
+      "timeslots": [
+        { "name": "Workshops", "from": "10:00", "to": "17:00" },
+        { "name": "Assault at Arms", "from": "17:00", "to": "18:30" },
+        { "name": "Rapier", "from": "18:30", "to": "19:30" }
+      ]
+    },
+    { "date": "2015-08-09",
+      "timeslots": [
+        { "name": "Team Tournament", "from": "09:45", "to": "11:45" },
+        { "name": "Workshops", "from": "11:45", "to": "15:00" },
+        { "name": "Eggleton Cup", "from": "15:00", "to": "17:00" }
+      ]
+    }
+  ],
+  "arenas": 2,
+  "tournaments": [
+    { "id": "eggleton",
+      "name": "Eggleton Cup",
+      "mnemonic": "EGG",
+      "freeStylePhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-finals", "fighters": 4 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    },
+    { "id": "assault-at-arms",
+      "name": "Assault at Arms",
+      "mnemonic": "AAA",
+      "freeStylePhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-finals", "fighters": 4 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    },
+    { "id": "rapier",
+      "name": "Rapier Tournament",
+      "mnemonic": "R",
+      "freeStylePhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-finals", "fighters": 4 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    },
+    { "id": "waite-sabre",
+      "name": "Waite Sabre Challenge",
+      "mnemonic": "WSC",
+      "freeStylePhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-finals", "fighters": 4 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    },
+    { "id": "federschwert",
+      "name": "Federschwert Tournament",
+      "mnemonic": "F",
+      "freeStylePhase": { "ruleset": "fightcamp-2014-default" },
+      "eliminationPhase": { "ruleset": "fightcamp-2014-finals", "fighters": 4 },
+      "finalsPhase": { "ruleset": "fightcamp-2014-finals" }
+    }
+  ]
+}
