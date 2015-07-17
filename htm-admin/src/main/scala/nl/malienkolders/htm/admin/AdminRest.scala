@@ -113,7 +113,11 @@ object AdminRest extends RestHelper {
         case Full(p) =>
           p.fromMarshalled(m).save()
           true
-        case _ => false
+        case _ => 
+          val p = Participant.create
+          p.fromMarshalled(m)
+          p.save()
+          true
       })
 
     case "api" :: "participants" :: AsLong(participantId) :: "haspicture" :: Nil JsonGet _ =>
