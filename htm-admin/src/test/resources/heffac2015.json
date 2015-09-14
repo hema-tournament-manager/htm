@@ -1,0 +1,32 @@
+{ "name": "HEFFAC 2015",
+  "days": [
+    { "date": "2015-10-10",
+      "timeslots": [
+        { "name": "Poules", "from": "12:00", "to": "17:00" }
+      ]
+    },
+    { "date": "2015-10-11",
+      "timeslots": [
+        { "name": "Eliminatie", "from": "12:00", "to": "13:30" },
+        { "name": "Finale", "from": "13:30", "to": "14:00" }
+      ]
+    }
+  ],
+  "arenas": 2,
+  "tournaments": [
+    { "id": "nylon",
+      "name": "Nylon",
+      "mnemonic": "N",
+      "poolPhase": { "ruleset": "heffac-2015-default" },
+      "eliminationPhase": { "ruleset": "heffac-2015-finals", "fighters": 4 },
+      "finalsPhase": { "ruleset": "heffac-2015-finals" }
+    },
+    { "id": "staal",
+      "name": "Staal",
+      "mnemonic": "S",
+      "poolPhase": { "ruleset": "heffac-2015-default" },
+      "eliminationPhase": { "ruleset": "heffac-2015-finals", "fighters": 4 },
+      "finalsPhase": { "ruleset": "heffac-2015-finals" }
+    }
+  ]
+}
