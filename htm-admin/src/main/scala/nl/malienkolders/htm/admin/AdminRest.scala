@@ -113,7 +113,7 @@ object AdminRest extends RestHelper {
         case Full(p) =>
           p.fromMarshalled(m).save()
           true
-        case _ => 
+        case _ =>
           val p = Participant.create
           p.fromMarshalled(m)
           p.save()
