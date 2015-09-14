@@ -117,6 +117,7 @@ class Boot {
     nl.malienkolders.htm.lib.rulesets.kriegesschule2014.KriegesSchuleRuleset.registerAll()
     nl.malienkolders.htm.lib.rulesets.bergen2014.BergenOpenRuleset.registerAll()
     nl.malienkolders.htm.lib.rulesets.fightcamp2014.FightcampRuleset.registerAll
+    nl.malienkolders.htm.lib.rulesets.heffac2015.HeffacRuleset.registerAll
 
     val entries: List[ConvertableToMenu] =
       (Menu(Loc("index", "index" :: Nil, "Welcome", Hidden))) ::
@@ -150,8 +151,8 @@ class Boot {
     // LiftRules.statelessDispatch.append(AdminRest)
     LiftRules.dispatch.append(AdminRest)
 
-    // Use jQuery 1.4
-    LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts
+    // Use jQuery
+    LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQueryArtifacts
 
     //Show the spinny image when an Ajax call starts
     LiftRules.ajaxStart =
