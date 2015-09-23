@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('htm',
-    [ 'common.playRoutes', 'common.filters', 'htm.services', 'ui.bootstrap' ])
+    [ 'ngRoute', 'common.playRoutes', 'common.filters', 'htm.services', 'ui.bootstrap' ])
     .controller('EmptyCtrl',
         [ '$scope', '$location', 'playRoutes', 'stateService', EmptyCtrl ])
     .controller('FightCtrl',
