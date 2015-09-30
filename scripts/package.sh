@@ -8,6 +8,13 @@ die () {
 
 VERSION=$1
 cd ..
+
+# clean output dir
+rm -f scripts/package/win/admin/webapps/ROOT.war
+rm -Rf scripts/package/win/viewer
+rm -f scripts/package/win/htm-admin-$VERSION.zip
+rm -f scripts/package/win/htm-viewer-$VERSION.zip
+
 sed -i "s/val buildVersion = \"[^\"]*\"/val buildVersion = \"${VERSION}\"/" project/HtmBuild.scala 
 sbt clean package
 sbt "project lib" publishLocal
