@@ -182,9 +182,11 @@ class Schedule {
         "* [title]" #> fightLabel(f) &
         "* [rel]" #> "popover" &
         "* [data-content]" #> fightInfo(f)
+        
+    val arenas = Arena.findAll()
 
-    ".arena" #> Arena.findAll.map(a =>
-      ".arena [class+]" #> ("col-md-" + colspan) &
+    ".arena-container [style]" #> ("width: " + (arenas.size * 410) + "px") &
+      ".arena" #> arenas.map(a =>
         ".arenaName" #> a.name.get &
         ".download-schedule" #> SHtml.link("/download/schedule/arena", () => throw new ResponseShortcutException(downloadSchedule(a)), Text("Download schedule")) &
         ".days-panel-group [id]" #> ("arena-days-" + a.id.is.toString) &

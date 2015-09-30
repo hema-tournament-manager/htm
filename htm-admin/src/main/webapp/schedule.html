@@ -75,6 +75,18 @@ tr.fight .time {
 .popover .blue {
   background-color: blue;
 }
+
+.arena-container-container {
+  overflow-x: scroll;
+  padding-top: 10px; 
+}
+
+.arena {
+  width: 400px;
+  float: left;
+  margin-right: 10px;
+}
+
 </style>
 <script type="text/javascript">
     $(function () {
@@ -87,71 +99,74 @@ tr.fight .time {
     });
 </script>    </head>
     <div class="lift:Schedule">
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
-          <div class="arena">
-            <div class="panel panel-default" style="width: 100%">
-              <div class="panel-heading">
-                <h3 class="panel-title">
-                  <span class="arenaName">Arena</span>
-                  <div class="dropdown pull-right">
-                    <a id="arena-menu" class="dropdown-toggle" href="#" data-toggle="dropdown" title="Fight menu"> <span class="glyphicon glyphicon-chevron-down"></span>
-                    </a>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="arena-menu">
-                      <li><a class="download-schedule">Download schedule</a></li>
-                    </ul>
-                  </div>
-                </h3>
-              </div>
-              <div class="panel-group days-panel-group">
-                <div class="day panel panel-default">
+          <div class="col-md-9 arena-container-container">
+            <div class="arena-container">
+              <div class="arena">
+                <div class="panel panel-default" style="width: 100%">
                   <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" class="daydate">February 1st</a>
-                    </h4>
+                    <h3 class="panel-title">
+                      <span class="arenaName">Arena</span>
+                      <div class="dropdown pull-right">
+                        <a id="arena-menu" class="dropdown-toggle" href="#" data-toggle="dropdown" title="Fight menu"> <span class="glyphicon glyphicon-chevron-down"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="arena-menu">
+                          <li><a class="download-schedule">Download schedule</a></li>
+                        </ul>
+                      </div>
+                    </h3>
                   </div>
-                  <div class="panel-collapse collapse">
-                    <table class="timeslot table">
-                      <thead>
-                        <tr class="header">
-                          <th colspan="2"><span class="from"></span><span class="to"></span></th>
-                          <th width="100%"><span class="name"></span></th>
-                          <th>
-                            <div class="btn-group pull-right">
-                              <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                <li class="action"><a href="#">Action</a></li>
-                              </ul>
-                            </div>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr class="fight">
-                          <td class="time">14:00</td>
-                          <td class="tournament">Longsword open</td>
-                          <td class="name">Fight 1</td>
-                          <td>
-                            <div class="btn-group pull-right">
-                              <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                <li class="action"><a href="#">Unschedule</a></li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <div class="panel-group days-panel-group">
+                    <div class="day panel panel-default">
+                      <div class="panel-heading">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse" class="daydate">February 1st</a>
+                        </h4>
+                      </div>
+                      <div class="panel-collapse collapse">
+                        <table class="timeslot table">
+                          <thead>
+                            <tr class="header">
+                              <th colspan="2"><span class="from"></span><span class="to"></span></th>
+                              <th width="100%"><span class="name"></span></th>
+                              <th>
+                                <div class="btn-group pull-right">
+                                  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                  </button>
+                                  <ul class="dropdown-menu">
+                                    <li class="action"><a href="#">Action</a></li>
+                                  </ul>
+                                </div>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr class="fight">
+                              <td class="time">14:00</td>
+                              <td class="tournament">Longsword open</td>
+                              <td class="name">Fight 1</td>
+                              <td>
+                                <div class="btn-group pull-right">
+                                  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                  </button>
+                                  <ul class="dropdown-menu">
+                                    <li class="action"><a href="#">Unschedule</a></li>
+                                  </ul>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
           <div class="unscheduled col-md-3">
             <div class="tournament panel panel-default">
               <div class="panel-heading">
@@ -212,6 +227,11 @@ tr.fight .time {
           </div>
         </div>
       </div>
+      <script>
+      $(document).ready(function(){
+          $('.arena-container-container').doubleScroll();
+       });
+      </script>
     </div>
   </div>
 </body>
