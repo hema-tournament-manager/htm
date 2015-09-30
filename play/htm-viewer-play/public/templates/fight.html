@@ -24,7 +24,7 @@
 			<div class="club">{{fighterB.participant.club}}</div>
 		</div>
 	</div>
-	<div class="message" ng-show="message" ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}"><div ng-bind-html-unsafe="message"></div></div>
+	<div class="message" ng-show="message"><div ng-bind-html="messageHtmlSafe"></div></div>
 	<div class="labels">
 		<div class="exchanges">Exchanges</div>
 		<div class="points red">Points</div>

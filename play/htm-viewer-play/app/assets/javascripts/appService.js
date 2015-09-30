@@ -5,7 +5,7 @@
 // Demonstrate how to register services
 // In this case it is a simple value service.
 angular.module('htm.services', [])
-  .factory("stateService", function() {
+  .factory("stateService", ['$sce', function($sce) {
 	  var _ = window._;
 	  var callback = function(update) {};
 	  var view = "empty";
@@ -68,6 +68,7 @@ angular.module('htm.services', [])
 			  console.log(view_);
 			  console.log(state[view]);
 			  state[view] = _.extend(state[view], update);
+			  state[view].messageHtmlSafe = $sce.trustAsHtml(update.message);
 			  callback(view, state[view], update);
 		  },
 		  broadcast: function(update) {
@@ -81,4 +82,4 @@ angular.module('htm.services', [])
 			  callback = callback_;
 		  }
 	  };
-  });
+  }]);
