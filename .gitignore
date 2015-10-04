@@ -29,3 +29,6 @@ test*.txt
 *.swp
 resourcebundle
 .history
+.cache-main
+.cache-tests
+export.csv

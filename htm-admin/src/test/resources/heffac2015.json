@@ -12,7 +12,7 @@
       ]
     }
   ],
-  "arenas": 2,
+  "arenas": 6,
   "tournaments": [
     { "id": "nylon",
       "name": "Nylon",
