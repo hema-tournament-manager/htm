@@ -68,14 +68,16 @@ angular.module('htm.services', [])
 			  console.log(view_);
 			  console.log(state[view]);
 			  state[view] = _.extend(state[view], update);
-			  state[view].messageHtmlSafe = $sce.trustAsHtml(update.message);
+			  state[view].messageHtmlSafe = $sce.trustAsHtml(state[view].message);
 			  callback(view, state[view], update);
 		  },
 		  broadcast: function(update) {
 			  state[view] = _.extend(state[view], update);
+			  state[view].messageHtmlSafe = $sce.trustAsHtml(state[view].message);
 			  callback(view, state[view], update);
 		  },
 		  get: function(view) {
+			  state[view].messageHtmlSafe = $sce.trustAsHtml(state[view].message);
 			  return state[view];
 		  },
 		  change: function(callback_) {
