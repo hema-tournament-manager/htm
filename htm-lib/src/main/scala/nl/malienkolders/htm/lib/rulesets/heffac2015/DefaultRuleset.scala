@@ -162,7 +162,7 @@ abstract class HeffacRuleset extends Ruleset {
       Hit("Double", "double", CenterSide, List(Scoring(ExchangePoints, PlusOne), Scoring(DoubleHits, PlusOne))),
       Hit("Clean hit...", "clean", RightSide, List(Scoring(ExchangePoints, PlusOne), Scoring(CleanHitsRight, PlusOne), Scoring(PointsRight, Pick(possiblePoints)))),
       Hit("Afterblow...", "afterblow", LeftSide, List(Scoring(ExchangePoints, PlusOne), Scoring(AfterblowsLeft, PlusOne), Scoring(PointsLeft, Pick(possiblePointsAfterblow)))),
-      Hit("No hit", "none", CenterSide, List(Scoring(ExchangePoints, PlusOne))),
+      Hit("Unclear hit", "none", CenterSide, List(Scoring(ExchangePoints, PlusOne))),
       Hit("Afterblow...", "afterblow", RightSide, List(Scoring(ExchangePoints, PlusOne), Scoring(AfterblowsRight, PlusOne), Scoring(PointsRight, Pick(possiblePointsAfterblow))))))
 }
 
