@@ -41,7 +41,7 @@ object UrlImporter extends Loggable {
         .experience(sDef.xp)
         .gearChecked(false)
       t.save()
-      for (poolnumber <- sDef.pool) {
+      for (poolnumber <- sDef.pool if poolnumber > 0) {
         val pool = t.poolPhase.pool(poolnumber)
         pool.participants += p
         t.poolPhase.save()
