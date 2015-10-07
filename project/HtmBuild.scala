@@ -71,7 +71,7 @@ object BuildSettings {
   val buildOrganization = "nl.malienkolders"
 
   val buildName = "HTM"
-  val buildVersion = "1.4.7"
+  val buildVersion = "1.4.8"
   val buildScalaVersion = "2.10.4"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
