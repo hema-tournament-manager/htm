@@ -109,7 +109,7 @@ object FightPickFighter {
             ".number *" #> participant.subscription(t).get.fighterNumber.get &
               ".name *" #> SHtml.a(() => pickFighter(participant), Text(participant.name.get)) &
               ".pool *" #> pool.poolName &
-              ".score" #> (("* *" #> scores.numberOfFights) :: (scores.fields.zip(average.fields).map { case (s, avg) => "* *" #> <span><span class="absolute-value">{ s.value().toString }</span>/<span class="average-value">{ avg.value().toString }</span></span> }).toList)
+              ".score" #> (("* *" #> scores.numberOfFights) :: (scores.fields.zip(average.fields).map { case (s, avg) => "* *" #> <span><span class="absolute-value">{ s.value().toString() }</span>/<span class="average-value">{ (math.floor(avg.value() * 100) / 100).toString }</span></span> }).toList)
 
         }) &
         "#pick-pool" #> (
