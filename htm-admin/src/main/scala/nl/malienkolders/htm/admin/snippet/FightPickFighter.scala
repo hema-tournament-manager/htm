@@ -71,7 +71,7 @@ object FightPickFighter {
     }
 
     def average(s: Scores): Scores = {
-      val denominator = s.fields(0).value().max(1)
+      val denominator = s.numberOfFights.max(1)
       GenericScores(s.numberOfFights, s.fields.map(s =>
         s.copy(value = () => s.value().toString.toDouble / denominator)))
     }
