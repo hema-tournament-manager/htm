@@ -27,6 +27,13 @@
       "poolPhase": { "ruleset": "heffac-2015-default" },
       "eliminationPhase": { "ruleset": "heffac-2015-finals", "fighters": 4 },
       "finalsPhase": { "ruleset": "heffac-2015-finals" }
+    },
+    { "id": "wapenpas",
+      "name": "Wapenpas",
+      "mnemonic": "EP",
+      "freeStylePhase": { "ruleset": "heffac-2015-default" },
+      "eliminationPhase": { "ruleset": "heffac-2015-finals", "fighters": 4 },
+      "finalsPhase": { "ruleset": "heffac-2015-finals" }
     }
   ]
 }
